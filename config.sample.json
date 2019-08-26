@@ -1,0 +1,8 @@
+{
+  "database": {
+    "host": "localhost",
+    "name": "lunchmoney",
+    "user": "lunchmoney",
+    "password": "secret"
+  }
+}

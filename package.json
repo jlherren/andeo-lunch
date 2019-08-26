@@ -1,0 +1,22 @@
+{
+  "name": "lunchmoney",
+  "version": "1.0.0",
+  "main": "src/main.js",
+  "license": "MIT",
+  "scripts": {
+    "server": "node src/main.js",
+    "test": "jest --watchAll",
+    "dev": "nodemon src/main.js"
+  },
+  "dependencies": {
+    "koa": "~2.8.0",
+    "koa-logger": "~3.2.1",
+    "koa-router": "~7.4.0",
+    "mysql2": "~1.6.0"
+  },
+  "devDependencies": {
+    "jest": "~24.9.0",
+    "nodemon": "~1.19.0",
+    "supertest": "~4.0.0"
+  }
+}
