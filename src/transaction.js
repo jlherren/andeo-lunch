@@ -4,6 +4,9 @@ const util = require('./util');
 const SYSTEM_USER = 1;
 const EPSILON = 1e-6;
 
+const CURRENCY_POINTS = 1;
+const CURRENCY_MONEY = 2;
+
 /**
  * Re-inserts the transactions related to a specific event
  *
@@ -16,20 +19,20 @@ async function rebuildEventTransactions(id) {
     }
 
     let event = await db.get('event', id);
-    let attendances = await db.query(
+    let attendances = /** @type {Array<Attendance>} */ await db.query(
         'SELECT * FROM attendance WHERE event = :event ORDER BY id',
         {event: id},
     );
 
-    let balanceInvalidationDate = await db.scalar(
+    let balanceInvalidationDate = /** @type {string} */ await db.scalar(
         'SELECT MIN(date) FROM transaction WHERE event = :event',
         {event: id},
     );
 
     // delete existing transactions for that event
-    let existingTransactions = await db.query('SELECT * FROM transaction WHERE event = :event', {event: id});
-    let existingTransactionKeyFunc = row => `${row.user}/${row.contraUser}/${row.type}`;
-    existingTransactions = util.toMultiMap(existingTransactions, existingTransactionKeyFunc);
+    let existingTransactions = /** @type {Array<Transaction>} */await db.query('SELECT * FROM transaction WHERE event = :event', {event: id});
+    let existingTransactionKeyFunc = row => `${row.user}/${row.contraUser}/${row.currency}`;
+    existingTransactions = util.groupBy(existingTransactions, existingTransactionKeyFunc);
 
     // await db.execute('DELETE FROM transaction WHERE event = :event', {event: id});
 
@@ -47,26 +50,45 @@ async function rebuildEventTransactions(id) {
     let inserts = [];
     let updates = [];
 
-    function addInsert(user, contra, type, amount) {
-        let existingTransactionKey = `${user}/${contra}/${type}`;
+    /**
+     * @param {number} user
+     * @param {number} contra
+     * @param {number} amount
+     * @param {number} currency
+     */
+    function addInsert(user, contra, amount, currency) {
+        let existingTransactionKey = `${user}/${contra}/${currency}`;
 
         if (existingTransactionKey in existingTransactions && existingTransactions[existingTransactionKey].length) {
             let transaction = existingTransactions[existingTransactionKey].shift();
             transaction.date = event.date;
             transaction.amount = amount;
             updates.push(transaction);
-        } else {
+        }
+        else {
             let row = {
-                date: event.date,
-                user: user,
+                date:       event.date,
+                user:       user,
                 contraUser: contra,
-                type: type,
-                amount: amount,
-                balance: 0,
-                event: id,
+                currency:   currency,
+                amount:     amount,
+                balance:    0,
+                event:      id,
             };
             inserts.push(row);
         }
+    }
+
+    /**
+     * Insert a double transaction
+     *
+     * @param {number} user
+     * @param {number} amount
+     * @param {number} currency
+     */
+    function addTransaction(user, amount, currency) {
+        addInsert(user, SYSTEM_USER, amount, currency);
+        addInsert(SYSTEM_USER, user, -amount, currency);
     }
 
     let moneyPerBuyer = event.moneyCost / nBuyers;
@@ -78,27 +100,23 @@ async function rebuildEventTransactions(id) {
             // points credit for organizing the event
             let points = attendance.pointsCredited * (event.pointsCost / totalPoints);
             // Note: event.pointsCost / totalPoints should be equal to 1
-            addInsert(attendance.user, SYSTEM_USER, 1, points);
-            addInsert(SYSTEM_USER, attendance.user, 1, -points);
+            addTransaction(attendance.user, points, CURRENCY_POINTS);
         }
 
         if (attendance.type === 1) {
             // points cost for attending the event
-            addInsert(attendance.user, SYSTEM_USER, 1, -pointsPerAttendant);
-            addInsert(SYSTEM_USER, attendance.user, 1, pointsPerAttendant);
+            addTransaction(attendance.user, -pointsPerAttendant, CURRENCY_POINTS);
         }
 
         if (nBuyers) {
             if (attendance.buyer) {
                 // money credit for financing the event
-                addInsert(attendance.user, SYSTEM_USER, 2, moneyPerBuyer);
-                addInsert(SYSTEM_USER, attendance.user, 2, -moneyPerBuyer);
+                addTransaction(attendance.user, moneyPerBuyer, CURRENCY_MONEY);
             }
 
             if (attendance.type === 1) {
                 // money cost for attending the event
-                addInsert(attendance.user, SYSTEM_USER, 2, -moneyPerAttendant);
-                addInsert(SYSTEM_USER, attendance.user, 2, moneyPerAttendant);
+                addTransaction(attendance.user, -moneyPerAttendant, CURRENCY_MONEY);
             }
         }
     }
@@ -110,7 +128,7 @@ async function rebuildEventTransactions(id) {
 }
 
 /**
- * Update transaction balances starting at the given date
+ * Update transaction balances starting at the given date, assuming that transaction amounts have changed since then
  *
  * @param {Date} startDate
  * @return {Promise<number>} Number of updates performed
@@ -124,12 +142,12 @@ async function recalculateBalances(startDate) {
     let date = startDate;
     let id = -1;
 
-    let balancesByTypeAndUser = {};
+    let balancesByCurrencyAndUser = {};
     let nUpdates = 0;
 
     while (true) {
         // Note: MariaDB's explain seems to like this better than "date >= :date AND (date > :date OR id > :id)"
-        let transactions = await db.query(
+        let transactions = /** @type {Array<Transaction>} */ await db.query(
             'SELECT * FROM transaction WHERE date > :date OR (date = :date AND id > :id) ORDER BY date, id LIMIT 1000',
             {date: date, id: id},
         );
@@ -141,26 +159,26 @@ async function recalculateBalances(startDate) {
         let updates = [];
 
         for (let transaction of transactions) {
-            let type = transaction.type;
+            let currency = transaction.currency;
             let user = transaction.user;
 
-            if (!(type in balancesByTypeAndUser)) {
-                balancesByTypeAndUser[type] = {};
+            if (!(currency in balancesByCurrencyAndUser)) {
+                balancesByCurrencyAndUser[currency] = {};
             }
 
-            if (!(user in balancesByTypeAndUser[type])) {
+            if (!(user in balancesByCurrencyAndUser[currency])) {
                 // fetch current balance for that user
-                let balance = await db.scalar(
-                    'SELECT balance FROM transaction WHERE type = :type AND user = :user AND date < :date ORDER BY date DESC, id DESC LIMIT 1',
-                    {type: type, user: user},
+                let balance = /** @type {number} */ await db.scalar(
+                    'SELECT balance FROM transaction WHERE currency = :currency AND user = :user AND date < :date ORDER BY date DESC, id DESC LIMIT 1',
+                    {currency: currency, user: user},
                 );
-                balancesByTypeAndUser[type][user] = balance || 0;
+                balancesByCurrencyAndUser[currency][user] = balance || 0;
             }
 
-            balancesByTypeAndUser[type][user] += transaction.amount;
+            balancesByCurrencyAndUser[currency][user] += transaction.amount;
 
-            if (Math.abs(balancesByTypeAndUser[type][user] - transaction.balance) > EPSILON) {
-                updates.push({id: transaction.id, balance: balancesByTypeAndUser[type][user]});
+            if (Math.abs(balancesByCurrencyAndUser[currency][user] - transaction.balance) > EPSILON) {
+                updates.push({id: transaction.id, balance: balancesByCurrencyAndUser[currency][user]});
             }
 
             // store cursor for next query
@@ -185,16 +203,20 @@ async function rebuildUserBalances() {
         UPDATE user u
         SET u.currentPoints = (SELECT t.balance
                                FROM transaction t
-                               WHERE t.type = 1
+                               WHERE t.currency = :ttPoints
                                  AND t.user = u.id
                                ORDER BY t.date DESC, t.id DESC
                                LIMIT 1),
             u.currentMoney  = (SELECT t.balance
                                FROM transaction t
-                               WHERE t.type = 2
+                               WHERE t.currency = :ttMoney
                                  AND t.user = u.id
                                ORDER BY t.date DESC, t.id DESC
                                LIMIT 1)
     `;
-    db.execute(sql);
+    await db.execute(sql, {ttPoints: CURRENCY_POINTS, ttMoney: CURRENCY_MONEY});
 }
+
+exports.CURRENCY_POINTS = CURRENCY_POINTS;
+exports.CURRENCY_MONEY = CURRENCY_MONEY;
+exports.rebuildEventTransactions = rebuildEventTransactions;

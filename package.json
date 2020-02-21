@@ -15,6 +15,9 @@
     "mysql2": "~2.1.0"
   },
   "devDependencies": {
+    "@types/koa": "~2.11.1",
+    "@types/koa-router": "~7.4.0",
+    "@types/koa-logger": "~3.1.1",
     "jest": "~25.1.0",
     "nodemon": "~2.0.2",
     "supertest": "~4.0.2"

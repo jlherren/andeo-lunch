@@ -1,12 +1,17 @@
 'use strict';
 
 const PackageJson = require('../package');
-const db = require('./db');
 
+/**
+ * @param {Application.Context} ctx
+ */
 function getVersion(ctx) {
     ctx.body = PackageJson.version;
 }
 
+/**
+ * @param {Router} router
+ */
 function register(router) {
     router.get('/version', getVersion);
 }

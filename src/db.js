@@ -2,14 +2,21 @@
 
 const config = require('../config');
 const mysql = require('mysql2/promise');
-const util = require('./util');
+const Util = require('./util');
 
+/**
+ * @typedef {Object<string, any>} RowObject
+ */
+
+/**
+ * Pool config
+ */
 const POOL_CONFIG = {
-    host: config.database.host || 'localhost',
-    user: config.database.user || 'lunchmoney',
-    password: config.database.password,
-    database: config.database.name || 'lunchmoney',
-    connectionLimit: config.database.connectionLimit || 10,
+    host:              config.database.host || 'localhost',
+    user:              config.database.user || 'lunchmoney',
+    password:          config.database.password,
+    database:          config.database.name || 'lunchmoney',
+    connectionLimit:   config.database.connectionLimit || 10,
     namedPlaceholders: true,
 };
 
@@ -26,15 +33,21 @@ function connection() {
     return transactionConnection || pool;
 }
 
-async function query(sql, params, key) {
+/**
+ * @param {string} sql
+ * @param {RowObject} params
+ * @return {Array}
+ */
+async function query(sql, params) {
     let [rows, cols] = await connection().query(sql, params);
-    if (key == null) {
-        return rows;
-    } else {
-        return util.toMap(rows, key);
-    }
+    return rows;
 }
 
+/**
+ * @param {string} sql
+ * @param {RowObject} params
+ * @return {Array|null}
+ */
 async function one(sql, params) {
     let rows = await query(sql, params);
     if (rows.length === 1) {
@@ -46,6 +59,11 @@ async function one(sql, params) {
     throw new Error('Non-unique result');
 }
 
+/**
+ * @param {string} sql
+ * @param {RowObject} params
+ * @return {Promise<Array>}
+ */
 async function column(sql, params) {
     let rows = await connection().query(sql, params);
     return rows.map(row => {
@@ -53,10 +71,15 @@ async function column(sql, params) {
         for (let key in row) {
             return row[key];
         }
-        throw new Error('No column defined in column()');
+        throw new Error('No column found in column()');
     });
 }
 
+/**
+ * @param {string} sql
+ * @param {RowObject} params
+ * @return {Promise<any>}
+ */
 async function scalar(sql, params) {
     let row = await one(sql, params);
     if (row === null) {
@@ -66,14 +89,14 @@ async function scalar(sql, params) {
     for (let key in row) {
         return row[key];
     }
-    throw new Error('No column defined in scalar()');
+    throw new Error('No column found in scalar()');
 }
 
 /**
  * @param {string} table
  * @param {number} id
  * @param {string} [where] Additional where condition string
- * @return {Promise<*|null|undefined>}
+ * @return {Promise<any>}
  */
 async function get(table, id, where) {
     if (where !== undefined) {
@@ -84,6 +107,11 @@ async function get(table, id, where) {
     return one(`SELECT * FROM ${table} WHERE id = :id${where}`, {id: id});
 }
 
+/**
+ * @param {string} table
+ * @param {Array<RowObject>|RowObject} rows
+ * @return {Promise<null>}
+ */
 async function insert(table, rows) {
     if (!Array.isArray(rows)) {
         rows = [rows];
@@ -99,6 +127,11 @@ async function insert(table, rows) {
     return ret;
 }
 
+/**
+ * @param {string} table
+ * @param {Array<RowObject>, RowObject} rows
+ * @return {Promise<null>}
+ */
 async function update(table, rows) {
     if (!Array.isArray(rows)) {
         rows = [rows];
@@ -116,6 +149,11 @@ async function update(table, rows) {
     return ret;
 }
 
+/**
+ * @param {string} sql
+ * @param {RowObject} [params]
+ * @return {Promise<any>}
+ */
 async function execute(sql, params) {
     return await connection().execute(sql, params);
 }

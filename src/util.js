@@ -1,9 +1,10 @@
 /**
- * @param {Array.<any>} array
- * @param {string|function} key
- * @return {Object.<any, TextRow>}
+ * @template T
+ * @param {Array<T>} array
+ * @param {string|function(item: T): string|number} key
+ * @return {Object<string|number, T>}
  */
-function toMap(array, key) {
+function indexBy(array, key) {
     let ret = {};
     for (let item of array) {
         let keyValue = typeof key === 'string' ? item[key] : item[key(item)];
@@ -16,11 +17,12 @@ function toMap(array, key) {
 }
 
 /**
- * @param {Array.<any>} array
- * @param {string|function} key
- * @return {Object.<any, Array.<TextRow>>}
+ * @template T
+ * @param {Array<T>} array
+ * @param {string|function(item: T): string|number} key
+ * @return {Object<string|number, Array<T>>}
  */
-function toMultiMap(array, key) {
+function groupBy(array, key) {
     let ret = {};
     for (let item of array) {
         let keyValue = typeof key === 'string' ? item[key] : key(item);
@@ -33,5 +35,5 @@ function toMultiMap(array, key) {
     return ret;
 }
 
-exports.toMap = toMap;
-exports.toMultiMap = toMultiMap;
+exports.indexBy = indexBy;
+exports.groupBy = groupBy;
