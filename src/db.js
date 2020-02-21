@@ -69,8 +69,19 @@ async function scalar(sql, params) {
     throw new Error('No column defined in scalar()');
 }
 
-async function get(table, id) {
-    return one(`SELECT * FROM ${table} WHERE id = :id`, {id: id});
+/**
+ * @param {string} table
+ * @param {number} id
+ * @param {string} [where] Additional where condition string
+ * @return {Promise<*|null|undefined>}
+ */
+async function get(table, id, where) {
+    if (where !== undefined) {
+        where = ` AND (${where})`;
+    } else {
+        where = '';
+    }
+    return one(`SELECT * FROM ${table} WHERE id = :id${where}`, {id: id});
 }
 
 async function insert(table, rows) {

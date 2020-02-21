@@ -1,6 +1,7 @@
 'use strict';
 
 const db = require('./db');
+const ControllerFactory = require('./controllerFactory');
 
 /**
  * Map a user to an object suitable to return over the API
@@ -37,30 +38,20 @@ function mapTransaction(transaction) {
     };
 }
 
-async function getUsers(ctx) {
-    let [rows, fields] = await db.pool.query(
-        'SELECT id, name, currentPoints, currentMoney FROM user WHERE hidden = 0 ORDER BY id');
-    ctx.body = rows.map(row => mapUser(row));
-}
-
-async function getUser(ctx) {
-    let row = await db.get('user', ctx.params.id);
-    if (row) {
-        ctx.body = mapUser(row);
-    } else {
-        ctx.throw(404, 'No such user');
-    }
-}
-
 async function getUserTransactions(ctx) {
-    let rows = await db.query('SELECT * FROM transaction WHERE user = :user', {user: ctx.params.id});
+    let rows = await db.query('SELECT * FROM transaction WHERE user = :user', {user: ctx.params.user});
     ctx.body = rows.map(row => mapTransaction(row));
 }
 
 function register(router) {
-    router.get('/users', getUsers);
-    router.get('/users/:id', getUser);
-    router.get('/users/:id/transactions', getUserTransactions);
+    let user = {
+        name: 'user',
+        mapper: mapUser,
+        where: 'hidden = 0',
+    };
+    router.get('/users', ControllerFactory.getObjectListController(user));
+    router.get('/users/:user', ControllerFactory.getSingleObjectController(user));
+    router.get('/users/:user/transactions', getUserTransactions);
 }
 
 exports.register = register;

@@ -5,6 +5,7 @@ const Router = require('koa-router');
 const Logger = require('koa-logger');
 const misc = require('./misc');
 const user = require('./user');
+const event = require('./event');
 
 const app = new Koa();
 const router = new Router();
@@ -27,6 +28,7 @@ app.use(async (ctx, next) => {
 
 misc.register(router);
 user.register(router);
+event.register(router);
 
 app.use(router.routes());
 app.use(router.allowedMethods());
