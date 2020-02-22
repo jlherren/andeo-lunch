@@ -1,18 +1,21 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <!-- Stats-->
+    <user-stats/>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+import {mapGetters} from 'vuex';
+import UserStats from "../components/userStats";
 
 export default {
   name: 'Home',
   components: {
-    HelloWorld
+    UserStats
+  },
+  mounted: {
   }
 }
 </script>

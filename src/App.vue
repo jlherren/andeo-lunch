@@ -1,32 +1,82 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+    <!-- If logged in, show app contents -->
+    <v-app v-if="loggedIn">
+        <!-- App Bar -->
+        <v-app-bar app>
+            <v-spacer/>
+            <v-toolbar-title>{{ userName }}</v-toolbar-title>
+            <v-spacer/>
+            <v-btn icon>
+                <v-icon>mdi-menu</v-icon>
+            </v-btn>
+        </v-app-bar>
+
+        <v-content>
+            <router-view/>
+        </v-content>
+
+        <!-- Navigation -->
+        <v-bottom-navigation>
+            <v-btn v-for="link in navigationLinks" :to="link.url" :key="link.title">
+                <span>{{link.title}}</span>
+                <v-icon>{{link.icon}}</v-icon>
+            </v-btn>
+        </v-bottom-navigation>
+    </v-app>
+
+    <!-- If not logged in, show Login Page -->
+    <v-app v-else>
+        <Login/>
+    </v-app>
 </template>
 
+<script>
+    import Login from "./views/Login";
+    import {mapGetters} from 'vuex';
+
+    export default {
+        name: 'App',
+
+        components: {
+            Login
+        },
+
+        data: () => ({
+            loggedIn: true,
+            navigationLinks: [
+                {
+                    url: '/',
+                    title: 'Home',
+                    icon: 'mdi-home'
+                },
+                {
+                    url: '/Calendar',
+                    title: 'Calendar',
+                    icon: 'mdi-calendar'
+                },
+                {
+                    url: '/Menus',
+                    title: 'Menus',
+                    icon: 'mdi-silverware'
+                },
+                {
+                    url: '/Cash',
+                    title: 'Cash',
+                    icon: 'mdi-cash'
+                },
+            ]
+        }),
+
+        computed: {
+          ...mapGetters({
+            userName: 'getUserName'
+          }),
+        }
+    };
+</script>
+
 <style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
+  .centerText {
+    text-align: center;
   }
-}
 </style>
