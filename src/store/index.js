@@ -10,7 +10,17 @@ export default new Vuex.Store({
             lastName: 'Wiedemann',
             points: 7.52,
             money: -218.15,
-            isVegetarian: false
+            settings: {
+                weekdays: {
+                    monday: true,
+                    tuesday: true,
+                    wednesday: true,
+                    thursday: false,
+                    friday: false
+                },
+                isVegetarian: false,
+                generalInfo: null
+            }
         },
         menus: [
             {
@@ -63,9 +73,15 @@ export default new Vuex.Store({
         },
         getMenus(state) {
             return state.menus;
+        },
+        getSettings(state) {
+            return state.user.settings;
         }
     },
-    mutations: {},
+    mutations: {
+        updateSettings(state, newSettings) {
+            state.user.settings = newSettings;
+        }
+    },
     actions: {},
-    modules: {}
 })

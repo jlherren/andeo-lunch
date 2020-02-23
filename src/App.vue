@@ -6,9 +6,7 @@
             <v-spacer/>
             <v-toolbar-title>{{ userName }}</v-toolbar-title>
             <v-spacer/>
-            <v-btn icon>
-                <v-icon>mdi-menu</v-icon>
-            </v-btn>
+            <settings-dialog/>
         </v-app-bar>
 
         <v-content>
@@ -33,11 +31,13 @@
 <script>
     import Login from "./views/Login";
     import {mapGetters} from 'vuex';
+    import SettingsDialog from "./components/settingsDialog";
 
     export default {
         name: 'App',
 
         components: {
+            SettingsDialog,
             Login
         },
 
