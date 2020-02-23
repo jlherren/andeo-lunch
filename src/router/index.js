@@ -15,17 +15,17 @@ const routes = [
     component: Home
   },
   {
-    path: '/Calendar',
+    path: '/calendar',
     name: 'Calendar',
     component: Calendar
   },
   {
-    path: '/Menus',
+    path: '/menus',
     name: 'Menus',
     component: Menus
   },
   {
-    path: '/Cash',
+    path: '/cash',
     name: 'Cash',
     component: Cash
   },

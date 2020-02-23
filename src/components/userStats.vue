@@ -2,11 +2,11 @@
     <v-container>
         <v-row no-gutters>
             <v-col cols="6">
-                <div class="centerText">Points</div>
+                <div class="center-text">Points</div>
                 <div :class="getValueClass(this.points)">{{ points }}</div>
             </v-col>
             <v-col cols="6">
-                <div class="centerText">Money</div>
+                <div class="center-text">Money</div>
                 <div :class="getValueClass(this.money)">{{ money }}</div>
             </v-col>
         </v-row>
@@ -26,7 +26,7 @@
         },
         methods: {
             getValueClass(value) {
-                let classString = 'centerText ';
+                let classString = 'center-text ';
                 classString += value > 0 ? 'positiveValue' : 'negativeValue';
                 return classString;
             }

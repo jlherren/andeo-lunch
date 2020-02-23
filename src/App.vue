@@ -1,6 +1,6 @@
 <template>
     <!-- If logged in, show app contents -->
-    <v-app v-if="loggedIn">
+    <v-app v-if="isLoggedIn">
         <!-- App Bar -->
         <v-app-bar app>
             <v-spacer/>
@@ -16,7 +16,7 @@
         </v-content>
 
         <!-- Navigation -->
-        <v-bottom-navigation>
+        <v-bottom-navigation fixed>
             <v-btn v-for="link in navigationLinks" :to="link.url" :key="link.title">
                 <span>{{link.title}}</span>
                 <v-icon>{{link.icon}}</v-icon>
@@ -42,7 +42,6 @@
         },
 
         data: () => ({
-            loggedIn: true,
             navigationLinks: [
                 {
                     url: '/',
@@ -50,17 +49,17 @@
                     icon: 'mdi-home'
                 },
                 {
-                    url: '/Calendar',
+                    url: '/calendar',
                     title: 'Calendar',
                     icon: 'mdi-calendar'
                 },
                 {
-                    url: '/Menus',
+                    url: '/menus',
                     title: 'Menus',
                     icon: 'mdi-silverware'
                 },
                 {
-                    url: '/Cash',
+                    url: '/cash',
                     title: 'Cash',
                     icon: 'mdi-cash'
                 },
@@ -68,15 +67,16 @@
         }),
 
         computed: {
-          ...mapGetters({
-            userName: 'getUserName'
-          }),
+            ...mapGetters({
+                userName: 'getUserName',
+                isLoggedIn: 'isLoggedIn'
+            }),
         }
     };
 </script>
 
 <style lang="scss">
-  .centerText {
-    text-align: center;
-  }
+    .center-text {
+        text-align: center;
+    }
 </style>
