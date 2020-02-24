@@ -1,9 +1,16 @@
 <template>
     <div>
-        <v-btn @click="switchDialog" icon>
-            <v-icon>mdi-menu</v-icon>
-        </v-btn>
-        <v-dialog v-model="open" fullscreen>
+        <v-list-item @click="switchDialog">
+            <v-list-item-icon>
+                <v-icon>mdi-settings</v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-content>
+                <v-list-item-title>Settings</v-list-item-title>
+            </v-list-item-content>
+        </v-list-item>
+
+        <v-dialog v-model="open" fullscreen transition="scroll-x-transition">
             <v-card>
                 <v-app-bar fixed>
                     <v-btn color="error" @click="cancel" icon>
@@ -18,17 +25,17 @@
                     <v-form>
                         <v-container>
                             <h2>Default Opt-In</h2>
-                            <v-checkbox v-model="settings.weekdays.monday" dense label="Montag"/>
-                            <v-checkbox v-model="settings.weekdays.tuesday" dense label="Dienstag"/>
-                            <v-checkbox v-model="settings.weekdays.wednesday" dense label="Mittwoch"/>
-                            <v-checkbox v-model="settings.weekdays.thursday" dense label="Donnerstag"/>
-                            <v-checkbox v-model="settings.weekdays.friday" dense label="Freitag"/>
+                            <v-checkbox v-model="settings.weekdays.monday" dense label="Monday"/>
+                            <v-checkbox v-model="settings.weekdays.tuesday" dense label="Tuesday"/>
+                            <v-checkbox v-model="settings.weekdays.wednesday" dense label="Wednesday"/>
+                            <v-checkbox v-model="settings.weekdays.thursday" dense label="Thursday"/>
+                            <v-checkbox v-model="settings.weekdays.friday" dense label="Friday"/>
                         </v-container>
                         <v-divider/>
                         <v-container>
                             <h2>Sonstige </h2>
-                            <v-checkbox v-model="settings.isVegetarian" dense label="Vegetarier"/>
-                            <v-textarea v-model="settings.generalInfo" dense filled label="Bemerkung bei Opt-In"/>
+                            <v-checkbox v-model="settings.isVegetarian" dense label="Vegetarian"/>
+                            <v-textarea v-model="settings.generalInfo" dense filled label="Default note on Opt-In"/>
                         </v-container>
                     </v-form>
                 </v-content>
@@ -42,6 +49,9 @@
 
     export default {
         name: "settingsDialog",
+        props: {
+
+        },
         data() {
             return {
                 open: false,

@@ -5,6 +5,7 @@ import Home from '../views/Home.vue'
 import Calendar from '../views/Calendar.vue'
 import Menus from '../views/Menus.vue'
 import Cash from '../views/Cash.vue'
+import MenuDetail from '../views/MenuDetail.vue'
 
 Vue.use(VueRouter);
 
@@ -28,6 +29,11 @@ const routes = [
     path: '/cash',
     name: 'Cash',
     component: Cash
+  },
+  {
+    path: '/menus/:id',
+    name: 'MenuDetail',
+    component: MenuDetail
   },
 
 ];

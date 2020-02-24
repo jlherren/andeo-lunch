@@ -1,15 +1,22 @@
 <template>
     <!-- If logged in, show app contents -->
     <v-app v-if="isLoggedIn">
+        <v-navigation-drawer v-model="drawer" fixed temporary right>
+            <v-list dense>
+                <settings-dialog/>
+            </v-list>
+        </v-navigation-drawer>
+
         <!-- App Bar -->
         <v-app-bar app>
-            <v-spacer/>
             <v-toolbar-title>{{ userName }}</v-toolbar-title>
             <v-spacer/>
-            <settings-dialog/>
+            <v-btn icon @click.stop="drawer = !drawer">
+                <v-icon>mdi-menu</v-icon>
+            </v-btn>
         </v-app-bar>
 
-        <v-content>
+        <v-content class="margin-bottom">
             <router-view/>
         </v-content>
 
@@ -63,7 +70,8 @@
                     title: 'Cash',
                     icon: 'mdi-cash'
                 },
-            ]
+            ],
+            drawer: null
         }),
 
         computed: {
@@ -78,5 +86,9 @@
 <style lang="scss">
     .center-text {
         text-align: center;
+    }
+
+    .margin-bottom {
+        margin-bottom: 50px;
     }
 </style>

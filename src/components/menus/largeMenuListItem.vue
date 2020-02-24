@@ -1,25 +1,11 @@
 <template>
-    <v-list-item to="/menus" three-line>
+    <v-list-item :to="link" three-line>
         <v-list-item-content>
-            <v-list-item-subtitle class="center-text">{{menu.date}}</v-list-item-subtitle>
+            <v-list-item-subtitle class="center-text">{{fullDate}}</v-list-item-subtitle>
             <v-list-item-title class="center-text">{{menu.name}}</v-list-item-title>
 
             <v-list-item-content>
-                <div class="custom-row justify-center">
-                    <div class="total">
-                        <span>{{ total }}</span>
-                    </div>
-                    <div class="custom-column">
-                        <div class="custom-row">
-                            <v-icon>mdi-food</v-icon>
-                            <div>{{ menu.people.meat }}</div>
-                        </div>
-                        <div class="custom-row">
-                            <v-icon>mdi-food-apple</v-icon>
-                            <div>{{ menu.people.vegi }}</div>
-                        </div>
-                    </div>
-                </div>
+                <participants class="justify-center" :participants="menu.participants"/>
             </v-list-item-content>
 
         </v-list-item-content>
@@ -27,14 +13,17 @@
 </template>
 
 <script>
+    import Participants from "./participants";
     export default {
         name: "largeMenuListItem",
+        components: {Participants},
         props: {
             menu: {
                 date: null,
                 name: null,
                 isToday: true,
-                people: {
+                weekday: null,
+                participants: {
                     meat: 0,
                     vegi: 0
                 }
@@ -42,34 +31,18 @@
         },
         computed: {
             total() {
-                return this.menu.people.meat + this.menu.people.vegi;
+                return this.menu.participants.meat + this.menu.participants.vegi;
+            },
+            fullDate() {
+                return this.menu.weekday.substr(0, 2) + ', ' + this.menu.date;
+            },
+            link() {
+                return '/menus/' + this.menu.id;
             }
         }
     }
 </script>
 
 <style lang="scss" scoped>
-    .total {
-        display: flex;
-        flex-flow: column;
-        justify-content: center;
-        font-size: 28pt;
-        color: #43A047;
-        text-align: center;
-        margin: 0 20px;
 
-        span {
-            height: 28pt;
-        }
-    }
-
-    .custom-row {
-        display: flex;
-        flex-flow: row;
-    }
-
-    .custom-column {
-        display: flex;
-        flex-flow: column;
-    }
 </style>

@@ -26,32 +26,70 @@ export default new Vuex.Store({
             {
                 id: 5,
                 name: 'Russischer Salat',
-                date: 'Fr, 23.02.20',
+                date: '23.02.20',
+                weekday: 'Friday',
                 isToday: true,
-                people: {
+                participants: {
+                    meat: 9,
+                    vegi: 3
+                },
+                helpers: [
+                    {
+                        firstName: 'Michael',
+                        lastName: 'Kunst',
+                        points: 4
+                    },
+                    {
+                        firstName: 'Jean-Luc',
+                        lastName: 'Herren',
+                        points: 4
+                    },
+
+                ]
+            },
+            {
+                id: 10,
+                name: 'Pastaplausch',
+                date: '24.02.20',
+                weekday: 'Monday',
+                isToday: false,
+                participants: {
                     meat: 9,
                     vegi: 3
                 }
             },
             {
-                id: 10,
-                name: 'Pastaplausch',
-                date: 'Mo, 24.02.20',
-            },
-            {
                 id: 11,
                 name: 'Griechischer Salat',
-                date: 'Di, 25.02.20',
+                date: '25.02.20',
+                weekday: 'Tuesday',
+                isToday: false,
+                participants: {
+                    meat: 9,
+                    vegi: 3
+                }
             },
             {
                 id: 12,
                 name: 'Pizza',
-                date: 'Mi, 26.02.20',
+                date: '26.02.20',
+                weekday: 'Wednesday',
+                isToday: false,
+                participants: {
+                    meat: 9,
+                    vegi: 3
+                }
             },
             {
                 id: 13,
                 name: 'Sandwich Action',
-                date: 'Do, 27.02.20',
+                date: '27.02.20',
+                weekday: 'Thursday',
+                isToday: false,
+                participants: {
+                    meat: 9,
+                    vegi: 3
+                }
             },
         ]
     },
@@ -73,6 +111,12 @@ export default new Vuex.Store({
         },
         getMenus(state) {
             return state.menus;
+        },
+        getMenuById: (state) => (id) => {
+            return state.menus.find(menu => menu.id == id);
+        },
+        getTodoById: (state) => (id) => {
+            return state.todos.find(todo => todo.id === id)
         },
         getSettings(state) {
             return state.user.settings;
