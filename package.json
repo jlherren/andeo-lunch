@@ -4,7 +4,7 @@
   "main": "src/main.js",
   "license": "MIT",
   "scripts": {
-    "server": "node src/main.js",
+    "serve": "node src/main.js",
     "test": "jest --watchAll",
     "dev": "nodemon src/main.js",
     "lint": "eslint src tests"

@@ -24,19 +24,19 @@ function mapEvent(event) {
 }
 
 /**
- * Map an event attendance to an object suitable to return over the API
+ * Map an event participation to an object suitable to return over the API
  *
- * @param {Attendance} attendance
- * @returns {ApiAttendance}
+ * @param {Participation} participation
+ * @returns {ApiParticipation}
  */
-function mapAttendance(attendance) {
+function mapParticipation(participation) {
     return {
-        id:             attendance.id,
-        user:           attendance.user,
-        event:          attendance.event,
-        type:           attendance.type,
-        pointsCredited: attendance.pointsCredited,
-        buyer:          !!attendance.buyer,
+        id:             participation.id,
+        user:           participation.user,
+        event:          participation.event,
+        type:           participation.type,
+        pointsCredited: participation.pointsCredited,
+        buyer:          !!participation.buyer,
     };
 }
 
@@ -44,18 +44,18 @@ function mapAttendance(attendance) {
  * @param {Application.Context} ctx
  * @returns {Promise<void>}
  */
-async function getAttendanceList(ctx) {
-    let rows = await db.query('SELECT * FROM attendance WHERE event = :event', {event: ctx.params.event});
-    ctx.body = rows.map(row => mapAttendance(row));
+async function getParticipationList(ctx) {
+    let rows = await db.query('SELECT * FROM participation WHERE event = :event', {event: ctx.params.event});
+    ctx.body = rows.map(row => mapParticipation(row));
 }
 
 /**
  * @param {Application.Context} ctx
  * @returns {Promise<void>}
  */
-async function getSingleAttendance(ctx) {
-    let row = /** @type {Attendance} */ await db.one('SELECT * FROM attendance WHERE event = :event AND id = :id', {event: ctx.params.event, id: ctx.params.id});
-    ctx.body = mapAttendance(row);
+async function getSingleParticipation(ctx) {
+    let row = /** @type {Participation} */ await db.one('SELECT * FROM participation WHERE event = :event AND id = :id', {event: ctx.params.event, id: ctx.params.id});
+    ctx.body = mapParticipation(row);
 }
 
 /**
@@ -68,8 +68,8 @@ function register(router) {
     };
     router.get('/events', ControllerFactory.getObjectListController(event));
     router.get('/events/:event', ControllerFactory.getSingleObjectController(event));
-    router.get('/events/:event/attendances', getAttendanceList);
-    router.get('/events/:event/attendances/:id', getSingleAttendance);
+    router.get('/events/:event/participations', getParticipationList);
+    router.get('/events/:event/participations/:id', getSingleParticipation);
 }
 
 exports.register = register;

@@ -39,7 +39,7 @@
  */
 
 /**
- * @typedef {Object} Attendance
+ * @typedef {Object} Participation
  * @property {number} id
  * @property {number} user
  * @property {number} event
@@ -81,7 +81,7 @@
  */
 
 /**
- * @typedef {Object} ApiAttendance
+ * @typedef {Object} ApiParticipation
  * @property {number} id
  * @property {number} user
  * @property {number} event

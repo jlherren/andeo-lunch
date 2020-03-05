@@ -21,8 +21,8 @@ async function rebuildEventTransactions(id) {
     }
 
     let event = await db.get('event', id);
-    let attendances = /** @type {Array<Attendance>} */ await db.query(
-        'SELECT * FROM attendance WHERE event = :event ORDER BY id',
+    let participations = /** @type {Array<Participation>} */ await db.query(
+        'SELECT * FROM participation WHERE event = :event ORDER BY id',
         {event: id},
     );
 
@@ -41,12 +41,12 @@ async function rebuildEventTransactions(id) {
     let nBuyers = 0;
     let nAttenders = 0;
     let totalPoints = 0;
-    for (let attendance of attendances) {
-        nBuyers += attendance.buyer;
-        if (attendance.type === 1) {
+    for (let participation of participations) {
+        nBuyers += participation.buyer;
+        if (participation.type === 1) {
             nAttenders++;
         }
-        totalPoints += attendance.pointsCredited;
+        totalPoints += participation.pointsCredited;
     }
 
     let inserts = [];
@@ -96,28 +96,28 @@ async function rebuildEventTransactions(id) {
     let pointsPerAttendant = event.pointsCost / nAttenders;
     let moneyPerAttendant = event.moneyCost / nAttenders;
 
-    for (let attendance of attendances) {
-        if (attendance.pointsCredited) {
+    for (let participation of participations) {
+        if (participation.pointsCredited) {
             // points credit for organizing the event
-            let points = attendance.pointsCredited * (event.pointsCost / totalPoints);
+            let points = participation.pointsCredited * (event.pointsCost / totalPoints);
             // Note: event.pointsCost / totalPoints should be equal to 1
-            addTransaction(attendance.user, points, CURRENCY_POINTS);
+            addTransaction(participation.user, points, CURRENCY_POINTS);
         }
 
-        if (attendance.type === 1) {
-            // points cost for attending the event
-            addTransaction(attendance.user, -pointsPerAttendant, CURRENCY_POINTS);
+        if (participation.type === 1) {
+            // points cost for participating in the event
+            addTransaction(participation.user, -pointsPerAttendant, CURRENCY_POINTS);
         }
 
         if (nBuyers) {
-            if (attendance.buyer) {
+            if (participation.buyer) {
                 // money credit for financing the event
-                addTransaction(attendance.user, moneyPerBuyer, CURRENCY_MONEY);
+                addTransaction(participation.user, moneyPerBuyer, CURRENCY_MONEY);
             }
 
-            if (attendance.type === 1) {
-                // money cost for attending the event
-                addTransaction(attendance.user, -moneyPerAttendant, CURRENCY_MONEY);
+            if (participation.type === 1) {
+                // money cost for participating in the event
+                addTransaction(participation.user, -moneyPerAttendant, CURRENCY_MONEY);
             }
         }
     }
