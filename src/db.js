@@ -2,7 +2,6 @@
 
 const config = require('../config');
 const mysql = require('mysql2/promise');
-const Util = require('./util');
 
 /**
  * @typedef {Object<string, any>} RowObject
@@ -27,7 +26,7 @@ let transactionConnection = null;
  * Returns the connection of the running transaction or the pool if no transaction
  * is active
  *
- * @return {Connection|PromisePool}
+ * @returns {Connection|PromisePool}
  */
 function connection() {
     return transactionConnection || pool;
@@ -36,17 +35,17 @@ function connection() {
 /**
  * @param {string} sql
  * @param {RowObject} params
- * @return {Array}
+ * @returns {Array}
  */
 async function query(sql, params) {
-    let [rows, cols] = await connection().query(sql, params);
+    let [rows] = await connection().query(sql, params);
     return rows;
 }
 
 /**
  * @param {string} sql
  * @param {RowObject} params
- * @return {Array|null}
+ * @returns {Promise<Array|null>}
  */
 async function one(sql, params) {
     let rows = await query(sql, params);
@@ -62,9 +61,9 @@ async function one(sql, params) {
 /**
  * @param {string} sql
  * @param {RowObject} params
- * @return {Promise<Array>}
+ * @returns {Promise<Array>}
  */
-async function column(sql, params) {
+async function column(sql, params) { // eslint-disable-line no-unused-vars
     let rows = await connection().query(sql, params);
     return rows.map(row => {
         // noinspection LoopStatementThatDoesntLoopJS
@@ -78,7 +77,7 @@ async function column(sql, params) {
 /**
  * @param {string} sql
  * @param {RowObject} params
- * @return {Promise<any>}
+ * @returns {Promise<any>}
  */
 async function scalar(sql, params) {
     let row = await one(sql, params);
@@ -96,9 +95,9 @@ async function scalar(sql, params) {
  * @param {string} table
  * @param {number} id
  * @param {string} [where] Additional where condition string
- * @return {Promise<any>}
+ * @returns {Promise<any>}
  */
-async function get(table, id, where) {
+function get(table, id, where) {
     if (where !== undefined) {
         where = ` AND (${where})`;
     } else {
@@ -110,14 +109,14 @@ async function get(table, id, where) {
 /**
  * @param {string} table
  * @param {Array<RowObject>|RowObject} rows
- * @return {Promise<null>}
+ * @returns {Promise<null>}
  */
 async function insert(table, rows) {
     if (!Array.isArray(rows)) {
         rows = [rows];
     }
     let ret = null;
-    // TODO: Optimize this into a multi-insert statement
+
     for (let row of rows) {
         let cols = Object.keys(row);
         let qs = new Array(cols.length).fill('?');
@@ -130,7 +129,7 @@ async function insert(table, rows) {
 /**
  * @param {string} table
  * @param {Array<RowObject>, RowObject} rows
- * @return {Promise<null>}
+ * @returns {Promise<null>}
  */
 async function update(table, rows) {
     if (!Array.isArray(rows)) {
@@ -152,15 +151,15 @@ async function update(table, rows) {
 /**
  * @param {string} sql
  * @param {RowObject} [params]
- * @return {Promise<any>}
+ * @returns {Promise<any>}
  */
-async function execute(sql, params) {
-    return await connection().execute(sql, params);
+function execute(sql, params) {
+    return connection().execute(sql, params);
 }
 
 /**
  * @param {function(connection: Connection)} executor
- * @return {Promise<any>}
+ * @returns {Promise<any>}
  */
 async function transaction(executor) {
     if (transactionConnection) {
@@ -181,7 +180,7 @@ async function transaction(executor) {
 /**
  * Whether a transaction is active
  *
- * @return {boolean}
+ * @returns {boolean}
  */
 function isTransaction() {
     return !!transactionConnection;

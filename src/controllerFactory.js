@@ -1,3 +1,5 @@
+'use strict';
+
 const db = require('./db');
 
 /**
@@ -9,7 +11,7 @@ const db = require('./db');
  * @param {string} [options.table] Table to query (defaults to options.name)
  * @param {string} [options.param] Param name in URL (defaults to options.name)
  * @param {string} [options.where] Additional WHERE string
- * @return {Function}
+ * @returns {Function}
  */
 function getSingleObjectController(options) {
     let table = options.table || options.name;
@@ -33,17 +35,17 @@ function getSingleObjectController(options) {
  * @param {Function} options.mapper Mapper function for the DB row to returned object
  * @param {string} [options.table] Table to query (defaults to options.name)
  * @param {string} [options.where] Additional WHERE string
- * @return {Function}
+ * @returns {Function}
  */
 function getListObjectController(options) {
     let table = options.table || options.name;
     let where = '';
     if (options.where !== undefined) {
-        where = ' WHERE ' + options.where;
+        where = ` WHERE ${options.where}`;
     }
 
     return async function (ctx) {
-        let [rows, fields] = await db.pool.query(
+        let [rows] = await db.pool.query(
             `SELECT * FROM ${table}${where} ORDER BY id`);
         ctx.body = rows.map(row => options.mapper(row));
     };

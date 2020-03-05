@@ -12,7 +12,7 @@ ij_continuation_indent_size = 8
 ij_smart_tabs = true
 ij_wrap_on_typing = false
 
-[{*.cjs,*.js}]
+[{*.cjs, *.js}]
 ij_continuation_indent_size = 4
 ij_smart_tabs = false
 ij_javascript_align_imports = false
@@ -33,7 +33,7 @@ ij_javascript_array_initializer_wrap = off
 ij_javascript_assignment_wrap = off
 ij_javascript_binary_operation_sign_on_next_line = false
 ij_javascript_binary_operation_wrap = off
-ij_javascript_blacklist_imports = rxjs/Rx,node_modules/**/*,@angular/material,@angular/material/typings/**,~/node_modules/**/*,@/node_modules/**/*
+ij_javascript_blacklist_imports = rxjs/Rx, node_modules/**/*, @angular/material, @angular/material/typings/**, ~/node_modules/**/*, @/node_modules/**/*
 ij_javascript_blank_lines_after_imports = 1
 ij_javascript_blank_lines_around_class = 1
 ij_javascript_blank_lines_around_field = 0
@@ -175,7 +175,7 @@ ij_javascript_while_brace_force = always
 ij_javascript_while_on_new_line = false
 ij_javascript_wrap_comments = false
 
-[{composer.lock,bowerrc,jest.config,.babelrc,.stylelintrc,.eslintrc,*.jsb3,*.jsb2,*.json}]
+[{composer.lock, bowerrc, jest.config, .babelrc, .stylelintrc, .eslintrc, *.jsb3, *.jsb2, *.json}]
 indent_size = 2
 ij_smart_tabs = false
 ij_json_keep_blank_lines_in_code = 0

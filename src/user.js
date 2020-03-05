@@ -7,15 +7,15 @@ const ControllerFactory = require('./controllerFactory');
  * Map a user to an object suitable to return over the API
  *
  * @param {User} user
- * @return {ApiUser}
+ * @returns {ApiUser}
  */
 function mapUser(user) {
     return {
-        id: user.id,
-        name: user.name,
+        id:       user.id,
+        name:     user.name,
         balances: {
             points: user.currentPoints,
-            money: user.currentMoney,
+            money:  user.currentMoney,
         },
     };
 }
@@ -25,24 +25,24 @@ function mapUser(user) {
  *
  * @param {Transaction} transaction
  *
- * @return {ApiTransaction}
+ * @returns {ApiTransaction}
  */
 function mapTransaction(transaction) {
     return {
-        id: transaction.id,
-        date: transaction.date,
-        user: transaction.user,
+        id:         transaction.id,
+        date:       transaction.date,
+        user:       transaction.user,
         contraUser: transaction.contraUser,
-        event: transaction.event,
-        currency: transaction.currency,
-        amount: transaction.amount,
-        balance: transaction.balance,
+        event:      transaction.event,
+        currency:   transaction.currency,
+        amount:     transaction.amount,
+        balance:    transaction.balance,
     };
 }
 
 /**
  * @param {Application.Context} ctx
- * @return {Promise<void>}
+ * @returns {Promise<void>}
  */
 async function getUserTransactions(ctx) {
     let rows = await db.query('SELECT * FROM transaction WHERE user = :user', {user: ctx.params.user});
@@ -54,9 +54,9 @@ async function getUserTransactions(ctx) {
  */
 function register(router) {
     let opts = {
-        name: 'user',
+        name:   'user',
         mapper: mapUser,
-        where: 'hidden = 0',
+        where:  'hidden = 0',
     };
     router.get('/users', ControllerFactory.getObjectListController(opts));
     router.get('/users/:user', ControllerFactory.getSingleObjectController(opts));

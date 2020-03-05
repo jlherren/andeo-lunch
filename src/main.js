@@ -12,10 +12,6 @@ const router = new Router();
 
 app.use(Logger());
 
-app.on('error', err => {
-    console.error('index error', err);
-});
-
 app.use(async (ctx, next) => {
     try {
         await next();

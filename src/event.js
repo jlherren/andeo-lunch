@@ -7,18 +7,18 @@ const ControllerFactory = require('./controllerFactory');
  * Map a user to an object suitable to return over the API
  *
  * @param {Event} event
- * @return {ApiEvent}
+ * @returns {ApiEvent}
  */
 function mapEvent(event) {
     return {
-        id: event.id,
-        type: event.type,
-        date: event.date,
-        name: event.name,
+        id:    event.id,
+        type:  event.type,
+        date:  event.date,
+        name:  event.name,
         lunch: event.lunch,
         costs: {
             points: event.pointsCost,
-            money: event.moneyCost,
+            money:  event.moneyCost,
         },
     };
 }
@@ -27,22 +27,22 @@ function mapEvent(event) {
  * Map an event attendance to an object suitable to return over the API
  *
  * @param {Attendance} attendance
- * @return {ApiAttendance}
+ * @returns {ApiAttendance}
  */
 function mapAttendance(attendance) {
     return {
-        id: attendance.id,
-        user: attendance.user,
-        event: attendance.event,
-        type: attendance.type,
+        id:             attendance.id,
+        user:           attendance.user,
+        event:          attendance.event,
+        type:           attendance.type,
         pointsCredited: attendance.pointsCredited,
-        buyer: !!attendance.buyer,
+        buyer:          !!attendance.buyer,
     };
 }
 
 /**
  * @param {Application.Context} ctx
- * @return {Promise<void>}
+ * @returns {Promise<void>}
  */
 async function getAttendanceList(ctx) {
     let rows = await db.query('SELECT * FROM attendance WHERE event = :event', {event: ctx.params.event});
@@ -51,16 +51,19 @@ async function getAttendanceList(ctx) {
 
 /**
  * @param {Application.Context} ctx
- * @return {Promise<void>}
+ * @returns {Promise<void>}
  */
 async function getSingleAttendance(ctx) {
-    let row = await db.one('SELECT * FROM attendance WHERE event = :event AND id = :id', {event: ctx.params.event, id: ctx.params.id});
+    let row = /** @type {Attendance} */ await db.one('SELECT * FROM attendance WHERE event = :event AND id = :id', {event: ctx.params.event, id: ctx.params.id});
     ctx.body = mapAttendance(row);
 }
 
+/**
+ * @param {Router} router
+ */
 function register(router) {
     let event = {
-        name: 'event',
+        name:   'event',
         mapper: mapEvent,
     };
     router.get('/events', ControllerFactory.getObjectListController(event));

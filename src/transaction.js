@@ -1,3 +1,5 @@
+'use strict';
+
 const db = require('./db');
 const util = require('./util');
 
@@ -11,7 +13,7 @@ const CURRENCY_MONEY = 2;
  * Re-inserts the transactions related to a specific event
  *
  * @param {number} id
- * @return {Promise<void>}
+ * @returns {Promise<void>}
  */
 async function rebuildEventTransactions(id) {
     if (!db.isTransaction()) {
@@ -24,7 +26,7 @@ async function rebuildEventTransactions(id) {
         {event: id},
     );
 
-    let balanceInvalidationDate = /** @type {string} */ await db.scalar(
+    let balanceInvalidationDate = /** @type {Date} */ await db.scalar(
         'SELECT MIN(date) FROM transaction WHERE event = :event',
         {event: id},
     );
@@ -64,8 +66,7 @@ async function rebuildEventTransactions(id) {
             transaction.date = event.date;
             transaction.amount = amount;
             updates.push(transaction);
-        }
-        else {
+        } else {
             let row = {
                 date:       event.date,
                 user:       user,
@@ -131,7 +132,7 @@ async function rebuildEventTransactions(id) {
  * Update transaction balances starting at the given date, assuming that transaction amounts have changed since then
  *
  * @param {Date} startDate
- * @return {Promise<number>} Number of updates performed
+ * @returns {Promise<number>} Number of updates performed
  */
 async function recalculateBalances(startDate) {
     if (!db.isTransaction()) {
@@ -159,8 +160,7 @@ async function recalculateBalances(startDate) {
         let updates = [];
 
         for (let transaction of transactions) {
-            let currency = transaction.currency;
-            let user = transaction.user;
+            let {currency, user} = transaction;
 
             if (!(currency in balancesByCurrencyAndUser)) {
                 balancesByCurrencyAndUser[currency] = {};
@@ -182,8 +182,7 @@ async function recalculateBalances(startDate) {
             }
 
             // store cursor for next query
-            date = transaction.date;
-            id = transaction.id;
+            ({date, id} = transaction);
         }
 
         await db.update('transaction', updates);
@@ -196,7 +195,7 @@ async function recalculateBalances(startDate) {
 /**
  * Update the user table with the balances taken from the transaction table
  *
- * @return {Promise<void>}
+ * @returns {Promise<void>}
  */
 async function rebuildUserBalances() {
     let sql = `

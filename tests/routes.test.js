@@ -1,3 +1,5 @@
+'use strict';
+
 const request = require('supertest');
 const main = require('../src/main');
 const PackageJson = require('../package');
