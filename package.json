@@ -5,8 +5,9 @@
   "license": "MIT",
   "scripts": {
     "serve": "node src/main.js",
-    "test": "jest --watchAll",
-    "dev": "nodemon src/main.js",
+    "test": "jest",
+    "test-watch": "jest --watchAll",
+    "serve-watch": "nodemon src/main.js",
     "lint": "eslint src tests"
   },
   "dependencies": {
