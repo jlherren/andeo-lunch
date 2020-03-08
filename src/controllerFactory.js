@@ -1,55 +1,45 @@
 'use strict';
 
-const db = require('./db');
-
 /**
  * Create a controller that returns a single object by its ID
  *
  * @param {object} options Options
- * @param {string} options.name Name of the object
+ * @param {typeof Model} options.model Model class of the object
  * @param {Function} options.mapper Mapper function for the DB row to returned object
- * @param {string} [options.table] Table to query (defaults to options.name)
- * @param {string} [options.param] Param name in URL (defaults to options.name)
+ * @param {string} [options.param] Param name in URL (defaults to options.model.name.toLowerCase())
  * @param {string} [options.where] Additional WHERE string
  * @returns {Function}
  */
-function getSingleObjectController(options) {
-    let table = options.table || options.name;
-    let param = options.param || options.name;
+exports.makeSingleObjectController = function makeSingleObjectController(options) {
+    let param = options.param || options.model.name.toLowerCase();
 
     return async function (ctx) {
-        let row = await db.get(table, ctx.params[param], options.where);
-        if (row) {
-            ctx.body = options.mapper(row);
+        // Note: Not using findByPk() because it doesn't allow options.where
+        let where = {
+            id: ctx.params[param],
+            ...options.where,
+        };
+        let user = await options.model.findOne({where});
+        if (user) {
+            ctx.body = options.mapper(user);
         } else {
-            ctx.throw(404, `No such ${options.name}`);
+            ctx.throw(404, `No such ${options.model.name}`);
         }
     };
-}
+};
 
 /**
  * Create a controller that returns a list of objects
  *
  * @param {object} options Options
- * @param {string} options.name Name of the object
+ * @param {typeof Model} options.model Model class of the object
  * @param {Function} options.mapper Mapper function for the DB row to returned object
- * @param {string} [options.table] Table to query (defaults to options.name)
  * @param {string} [options.where] Additional WHERE string
  * @returns {Function}
  */
-function getListObjectController(options) {
-    let table = options.table || options.name;
-    let where = '';
-    if (options.where !== undefined) {
-        where = ` WHERE ${options.where}`;
-    }
-
+exports.makeObjectListController = function makeObjectListController(options) {
     return async function (ctx) {
-        let [rows] = await db.pool.query(
-            `SELECT * FROM ${table}${where} ORDER BY id`);
-        ctx.body = rows.map(row => options.mapper(row));
+        let users = await options.model.findAll({where: options.where});
+        ctx.body = users.map(user => options.mapper(user));
     };
-}
-
-exports.getSingleObjectController = getSingleObjectController;
-exports.getObjectListController = getListObjectController;
+};

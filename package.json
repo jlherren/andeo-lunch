@@ -1,25 +1,29 @@
 {
   "name": "lunchmoney",
-  "version": "1.0.0",
-  "main": "src/main.js",
-  "license": "MIT",
+  "version": "0.0.0",
+  "main": "src/app.js",
+  "license": "UNLICENSED",
+  "private": true,
   "scripts": {
-    "serve": "node src/main.js",
+    "serve": "node src/app.js",
+    "serve-watch": "nodemon src/app.js",
     "test": "jest",
     "test-watch": "jest --watchAll",
-    "serve-watch": "nodemon src/main.js",
-    "lint": "eslint src tests"
+    "lint": "eslint src tests",
+    "db:init": "node src/scripts/initDb.js"
   },
   "dependencies": {
     "koa": "~2.11.0",
     "koa-logger": "~3.2.1",
     "koa-router": "~8.0.8",
-    "mysql2": "~2.1.0"
+    "mysql2": "~2.1.0",
+    "sequelize": "~5.21.5",
+    "sqlite3": "~4.1.1"
   },
   "devDependencies": {
     "@types/koa": "~2.11.1",
-    "@types/koa-router": "~7.4.0",
     "@types/koa-logger": "~3.1.1",
+    "@types/koa-router": "~7.4.0",
     "eslint": "~6.8.0",
     "eslint-plugin-jest": "~23.8.1",
     "eslint-plugin-jsdoc": "~22.0.0",

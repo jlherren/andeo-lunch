@@ -57,7 +57,6 @@
     ],
     "camelcase": "error",
     "capitalized-comments": "off",
-    "class-methods-use-this": "error",
     "comma-dangle": [
       "error",
       "always-multiline"
@@ -119,8 +118,13 @@
       "error",
       "beside"
     ],
-    "indent": "error",
-    "indent-legacy": "error",
+    "indent": [
+      "error",
+      4,
+      {
+        "SwitchCase": 1
+      }
+    ],
     "init-declarations": "error",
     "jsx-quotes": "error",
     "key-spacing": [
@@ -142,10 +146,8 @@
       "error",
       "unix"
     ],
-    "lines-around-comment": "error",
     "lines-around-directive": "error",
     "lines-between-class-members": "error",
-    "max-classes-per-file": "error",
     "max-depth": "error",
     "max-len": "off",
     "max-lines": "error",
@@ -154,7 +156,6 @@
     "max-params": "off",
     "max-statements": "off",
     "max-statements-per-line": "error",
-    "multiline-comment-style": "error",
     "new-parens": "error",
     "newline-after-var": "off",
     "newline-before-return": "off",
@@ -235,7 +236,12 @@
     "no-setter-return": "error",
     "no-shadow": "error",
     "no-spaced-func": "error",
-    "no-sync": "error",
+    "no-sync": [
+      "error",
+      {
+        "allowAtRootLevel": true
+      }
+    ],
     "no-tabs": "error",
     "no-template-curly-in-string": "error",
     "no-ternary": "off",

@@ -1,18 +1,26 @@
 'use strict';
 
-const request = require('supertest');
-const main = require('../src/main');
+const supertest = require('supertest');
+
+const lunchMoney = require('../src/app');
 const PackageJson = require('../package');
 
+let server = lunchMoney.listen();
+let request = supertest.agent(server, {});
+
 // close the server after each test
-afterAll(() => {
-    main.server.close();
-});
+afterAll(() => lunchMoney.close());
 
 describe('basic route tests', () => {
     test('get version route', async () => {
-        const response = await request(main.server).get('/version');
+        let response = await request.get('/version');
         expect(response.status).toEqual(200);
         expect(response.text).toContain(PackageJson.version);
+    });
+
+    test('get currencies route', async () => {
+        let response = await request.get('/currencies');
+        expect(response.status).toEqual(200);
+        expect(response.body).toMatchObject({});
     });
 });

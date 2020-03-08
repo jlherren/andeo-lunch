@@ -1,6 +1,6 @@
 'use strict';
 
-const db = require('./db');
+const Models = require('./models');
 const ControllerFactory = require('./controllerFactory');
 
 /**
@@ -44,23 +44,27 @@ function mapTransaction(transaction) {
  * @param {Application.Context} ctx
  * @returns {Promise<void>}
  */
-async function getUserTransactions(ctx) {
-    let rows = await db.query('SELECT * FROM transaction WHERE user = :user', {user: ctx.params.user});
-    ctx.body = rows.map(row => mapTransaction(row));
+async function getUserTransactionLists(ctx) {
+    let transactions = await Models.Transaction.findAll({
+        where: {
+            user: ctx.params.user,
+        },
+    });
+    ctx.body = transactions.map(transaction => mapTransaction(transaction));
 }
 
 /**
  * @param {Router} router
  */
-function register(router) {
+exports.register = function register(router) {
     let opts = {
-        name:   'user',
+        model:  Models.User,
         mapper: mapUser,
-        where:  'hidden = 0',
+        where:  {
+            hidden: 0,
+        },
     };
-    router.get('/users', ControllerFactory.getObjectListController(opts));
-    router.get('/users/:user', ControllerFactory.getSingleObjectController(opts));
-    router.get('/users/:user/transactions', getUserTransactions);
-}
-
-exports.register = register;
+    router.get('/users', ControllerFactory.makeObjectListController(opts));
+    router.get('/users/:user', ControllerFactory.makeSingleObjectController(opts));
+    router.get('/users/:user/transactions', getUserTransactionLists);
+};

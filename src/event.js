@@ -1,6 +1,6 @@
 'use strict';
 
-const db = require('./db');
+const Models = require('./models');
 const ControllerFactory = require('./controllerFactory');
 
 /**
@@ -45,8 +45,12 @@ function mapParticipation(participation) {
  * @returns {Promise<void>}
  */
 async function getParticipationList(ctx) {
-    let rows = await db.query('SELECT * FROM participation WHERE event = :event', {event: ctx.params.event});
-    ctx.body = rows.map(row => mapParticipation(row));
+    let participations = await Models.Participation.findAll({
+        where: {
+            event: ctx.params.event,
+        },
+    });
+    ctx.body = participations.map(participation => mapParticipation(participation));
 }
 
 /**
@@ -54,22 +58,28 @@ async function getParticipationList(ctx) {
  * @returns {Promise<void>}
  */
 async function getSingleParticipation(ctx) {
-    let row = /** @type {Participation} */ await db.one('SELECT * FROM participation WHERE event = :event AND id = :id', {event: ctx.params.event, id: ctx.params.id});
-    ctx.body = mapParticipation(row);
+    let participation = await Models.Participation.findOne({
+        where: {
+            event: ctx.params.event,
+            id:    ctx.params.participation,
+        },
+    });
+    if (!participation) {
+        ctx.throw(404, 'No such participation');
+    }
+    ctx.body = mapParticipation(participation);
 }
 
 /**
  * @param {Router} router
  */
-function register(router) {
-    let event = {
-        name:   'event',
+exports.register = function register(router) {
+    let opts = {
+        model:  Models.Event,
         mapper: mapEvent,
     };
-    router.get('/events', ControllerFactory.getObjectListController(event));
-    router.get('/events/:event', ControllerFactory.getSingleObjectController(event));
+    router.get('/events', ControllerFactory.makeObjectListController(opts));
+    router.get('/events/:event', ControllerFactory.makeSingleObjectController(opts));
     router.get('/events/:event/participations', getParticipationList);
-    router.get('/events/:event/participations/:id', getSingleParticipation);
-}
-
-exports.register = register;
+    router.get('/events/:event/participations/:participation', getSingleParticipation);
+};

@@ -1,46 +1,53 @@
 'use strict';
 
-const db = require('./db');
-const util = require('./util');
+const Sequelize = require('sequelize');
 
-const SYSTEM_USER = 1;
-const EPSILON = 1e-6;
-
-const CURRENCY_POINTS = 1;
-const CURRENCY_MONEY = 2;
+const Models = require('./models');
+const Utils = require('./utils');
+const Constants = require('./constants');
 
 /**
  * Re-inserts the transactions related to a specific event
  *
- * @param {number} id
+ * @param {Transaction} dbTransaction
+ * @param {number} eventId
  * @returns {Promise<void>}
  */
-async function rebuildEventTransactions(id) {
-    if (!db.isTransaction()) {
-        throw new Error('Cannot call rebuildEventTransactions() outside of a transaction');
+exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTransaction, eventId) {
+    let event = await Models.Event.findByPk(eventId, {transaction: dbTransaction});
+
+    let participations = await Models.Participation.findAll({
+        where:       {event: event.id},
+        order:       [['id', 'ASC']],
+        transaction: dbTransaction,
+    });
+
+    let {balanceInvalidationDate} = await Models.Transaction.findOne({
+        where:       {event: event.id},
+        attributes:  [[Sequelize.fn('MIN', Sequelize.col('date')), 'balanceInvalidationDate']],
+        transaction: dbTransaction,
+        raw:         true,
+    });
+
+    if (event.date < balanceInvalidationDate) {
+        balanceInvalidationDate = event.date;
     }
 
-    let event = await db.get('event', id);
-    let participations = /** @type {Array<Participation>} */ await db.query(
-        'SELECT * FROM participation WHERE event = :event ORDER BY id',
-        {event: id},
-    );
+    // get all existing transactions for that event
+    let existingTransactions = await Models.Transaction.findAll({
+        where:       {
+            event: event.id,
+        },
+        transaction: dbTransaction,
+    });
 
-    let balanceInvalidationDate = /** @type {Date} */ await db.scalar(
-        'SELECT MIN(date) FROM transaction WHERE event = :event',
-        {event: id},
-    );
-
-    // delete existing transactions for that event
-    let existingTransactions = /** @type {Array<Transaction>} */await db.query('SELECT * FROM transaction WHERE event = :event', {event: id});
     let existingTransactionKeyFunc = row => `${row.user}/${row.contraUser}/${row.currency}`;
-    existingTransactions = util.groupBy(existingTransactions, existingTransactionKeyFunc);
-
-    // await db.execute('DELETE FROM transaction WHERE event = :event', {event: id});
+    existingTransactions = Utils.groupBy(existingTransactions, existingTransactionKeyFunc);
 
     let nBuyers = 0;
     let nAttenders = 0;
     let totalPoints = 0;
+
     for (let participation of participations) {
         nBuyers += participation.buyer;
         if (participation.type === 1) {
@@ -67,16 +74,16 @@ async function rebuildEventTransactions(id) {
             transaction.amount = amount;
             updates.push(transaction);
         } else {
-            let row = {
+            let transaction = {
                 date:       event.date,
                 user:       user,
                 contraUser: contra,
                 currency:   currency,
                 amount:     amount,
                 balance:    0,
-                event:      id,
+                event:      event.id,
             };
-            inserts.push(row);
+            inserts.push(transaction);
         }
     }
 
@@ -88,8 +95,8 @@ async function rebuildEventTransactions(id) {
      * @param {number} currency
      */
     function addTransaction(user, amount, currency) {
-        addInsert(user, SYSTEM_USER, amount, currency);
-        addInsert(SYSTEM_USER, user, -amount, currency);
+        addInsert(user, Constants.SYSTEM_USER, amount, currency);
+        addInsert(Constants.SYSTEM_USER, user, -amount, currency);
     }
 
     let moneyPerBuyer = event.moneyCost / nBuyers;
@@ -101,43 +108,45 @@ async function rebuildEventTransactions(id) {
             // points credit for organizing the event
             let points = participation.pointsCredited * (event.pointsCost / totalPoints);
             // Note: event.pointsCost / totalPoints should be equal to 1
-            addTransaction(participation.user, points, CURRENCY_POINTS);
+            addTransaction(participation.user, points, Constants.CURRENCY_POINTS);
         }
 
         if (participation.type === 1) {
             // points cost for participating in the event
-            addTransaction(participation.user, -pointsPerAttendant, CURRENCY_POINTS);
+            addTransaction(participation.user, -pointsPerAttendant, Constants.CURRENCY_POINTS);
         }
 
         if (nBuyers) {
             if (participation.buyer) {
                 // money credit for financing the event
-                addTransaction(participation.user, moneyPerBuyer, CURRENCY_MONEY);
+                addTransaction(participation.user, moneyPerBuyer, Constants.CURRENCY_MONEY);
             }
 
             if (participation.type === 1) {
                 // money cost for participating in the event
-                addTransaction(participation.user, -moneyPerAttendant, CURRENCY_MONEY);
+                addTransaction(participation.user, -moneyPerAttendant, Constants.CURRENCY_MONEY);
             }
         }
     }
 
-    await db.insert('transaction', inserts);
-    await db.update('transaction', updates);
-    await recalculateBalances(balanceInvalidationDate);
-    await rebuildUserBalances();
-}
+    await Models.Transaction.bulkCreate(inserts, {transaction: dbTransaction});
+    // // TODO: can we bulk-save somehow?
+    for (let update of updates) {
+        await update.save();
+    }
+    await recalculateBalances(dbTransaction, balanceInvalidationDate);
+    await rebuildUserBalances(dbTransaction);
+};
 
 /**
  * Update transaction balances starting at the given date, assuming that transaction amounts have changed since then
  *
+ * @param {Transaction} dbTransaction
  * @param {Date} startDate
  * @returns {Promise<number>} Number of updates performed
  */
-async function recalculateBalances(startDate) {
-    if (!db.isTransaction()) {
-        throw new Error('Cannot call recalculateBalances() outside of a transaction');
-    }
+async function recalculateBalances(dbTransaction, startDate) {
+    let {Op} = Sequelize;
 
     // date and id of last handled transaction
     let date = startDate;
@@ -147,17 +156,33 @@ async function recalculateBalances(startDate) {
     let nUpdates = 0;
 
     while (true) {
-        // Note: MariaDB's explain seems to like this better than "date >= :date AND (date > :date OR id > :id)"
-        let transactions = /** @type {Array<Transaction>} */ await db.query(
-            'SELECT * FROM transaction WHERE date > :date OR (date = :date AND id > :id) ORDER BY date, id LIMIT 1000',
-            {date: date, id: id},
-        );
+        // Note: MariaDB's explain seems to like this better:
+        //     date > :date OR (date = :date AND id > :id)
+        // rather than:
+        //     date >= :date AND (date > :date OR id > :id)
+        let transactions = await Models.Transaction.findAll({
+            where:       {
+                [Op.or]: [
+                    {
+                        date: {[Op.gt]: date},
+                    },
+                    {
+                        date: date,
+                        id:   {[Op.gt]: id},
+                    },
+                ],
+            },
+            order:       [
+                ['date', 'ASC'],
+                ['id', 'ASC'],
+            ],
+            limit:       1000,
+            transaction: dbTransaction,
+        });
 
         if (!transactions.length) {
             break;
         }
-
-        let updates = [];
 
         for (let transaction of transactions) {
             let {currency, user} = transaction;
@@ -168,25 +193,34 @@ async function recalculateBalances(startDate) {
 
             if (!(user in balancesByCurrencyAndUser[currency])) {
                 // fetch current balance for that user
-                let balance = /** @type {number} */ await db.scalar(
-                    'SELECT balance FROM transaction WHERE currency = :currency AND user = :user AND date < :date ORDER BY date DESC, id DESC LIMIT 1',
-                    {currency: currency, user: user},
-                );
-                balancesByCurrencyAndUser[currency][user] = balance || 0;
+                let row = await Models.Transaction.findOne({
+                    attributes:  [Sequelize.col('balance')],
+                    where:       {
+                        currency: currency,
+                        user:     user,
+                        date:     {[Op.lt]: startDate},
+                    },
+                    order:       [
+                        ['date', 'DESC'],
+                        ['id', 'DESC'],
+                    ],
+                    transaction: dbTransaction,
+                    raw:         true,
+                });
+                balancesByCurrencyAndUser[currency][user] = row ? row.balance : 0;
             }
 
             balancesByCurrencyAndUser[currency][user] += transaction.amount;
 
-            if (Math.abs(balancesByCurrencyAndUser[currency][user] - transaction.balance) > EPSILON) {
-                updates.push({id: transaction.id, balance: balancesByCurrencyAndUser[currency][user]});
+            if (Math.abs(balancesByCurrencyAndUser[currency][user] - transaction.balance) > Constants.EPSILON) {
+                transaction.balance = balancesByCurrencyAndUser[currency][user];
+                await transaction.save({transaction: dbTransaction});
+                nUpdates++;
             }
 
             // store cursor for next query
             ({date, id} = transaction);
         }
-
-        await db.update('transaction', updates);
-        nUpdates += updates.length;
     }
 
     return nUpdates;
@@ -195,9 +229,10 @@ async function recalculateBalances(startDate) {
 /**
  * Update the user table with the balances taken from the transaction table
  *
+ * @param {Transaction} dbTransaction
  * @returns {Promise<void>}
  */
-async function rebuildUserBalances() {
+async function rebuildUserBalances(dbTransaction) {
     let sql = `
         UPDATE user u
         SET u.currentPoints = (SELECT t.balance
@@ -213,9 +248,12 @@ async function rebuildUserBalances() {
                                ORDER BY t.date DESC, t.id DESC
                                LIMIT 1)
     `;
-    await db.execute(sql, {ttPoints: CURRENCY_POINTS, ttMoney: CURRENCY_MONEY});
-}
 
-exports.CURRENCY_POINTS = CURRENCY_POINTS;
-exports.CURRENCY_MONEY = CURRENCY_MONEY;
-exports.rebuildEventTransactions = rebuildEventTransactions;
+    await dbTransaction.sequelize.query(sql, {
+        replacements: {
+            ttPoints: Constants.CURRENCY_POINTS,
+            ttMoney:  Constants.CURRENCY_MONEY,
+        },
+        transaction:  dbTransaction,
+    });
+}
