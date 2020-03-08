@@ -7,11 +7,13 @@ const Utils = require('./utils');
 const Constants = require('./constants');
 
 /**
- * Re-inserts the transactions related to a specific event
+ * Re-inserts the transactions related to a specific event.  This does not recalculate the balances, so you
+ * may want to run recalculateBalances() and rebuildUserBalances() afterwards.
  *
  * @param {Transaction} dbTransaction
  * @param {number} eventId
- * @returns {Promise<void>}
+ * @returns {Promise<{earliestDate: Date, nUpdates: number}>} Earliest date that was affected, useful for
+ *                                                            recalculateBalances() and number of update
  */
 exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTransaction, eventId) {
     let event = await Models.Event.findByPk(eventId, {transaction: dbTransaction});
@@ -22,15 +24,14 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
         transaction: dbTransaction,
     });
 
-    let {balanceInvalidationDate} = await Models.Transaction.findOne({
+    let {earliestDate} = await Models.Transaction.findOne({
         where:       {event: event.id},
-        attributes:  [[Sequelize.fn('MIN', Sequelize.col('date')), 'balanceInvalidationDate']],
+        attributes:  [[Sequelize.fn('MIN', Sequelize.col('date')), 'earliestDate']],
         transaction: dbTransaction,
         raw:         true,
     });
-
-    if (event.date < balanceInvalidationDate) {
-        balanceInvalidationDate = event.date;
+    if (event.date < earliestDate) {
+        earliestDate = event.date;
     }
 
     // get all existing transactions for that event
@@ -130,12 +131,14 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
     }
 
     await Models.Transaction.bulkCreate(inserts, {transaction: dbTransaction});
-    // // TODO: can we bulk-save somehow?
     for (let update of updates) {
         await update.save();
     }
-    await recalculateBalances(dbTransaction, balanceInvalidationDate);
-    await rebuildUserBalances(dbTransaction);
+
+    return {
+        earliestDate,
+        nUpdates: inserts.length + updates.length,
+    };
 };
 
 /**
@@ -145,7 +148,7 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
  * @param {Date} startDate
  * @returns {Promise<number>} Number of updates performed
  */
-async function recalculateBalances(dbTransaction, startDate) {
+exports.recalculateBalances = async function recalculateBalances(dbTransaction, startDate) {
     let {Op} = Sequelize;
 
     // date and id of last handled transaction
@@ -224,7 +227,7 @@ async function recalculateBalances(dbTransaction, startDate) {
     }
 
     return nUpdates;
-}
+};
 
 /**
  * Update the user table with the balances taken from the transaction table
@@ -232,7 +235,7 @@ async function recalculateBalances(dbTransaction, startDate) {
  * @param {Transaction} dbTransaction
  * @returns {Promise<void>}
  */
-async function rebuildUserBalances(dbTransaction) {
+exports.rebuildUserBalances = async function rebuildUserBalances(dbTransaction) {
     let sql = `
         UPDATE user u
         SET u.currentPoints = (SELECT t.balance
@@ -256,4 +259,4 @@ async function rebuildUserBalances(dbTransaction) {
         },
         transaction:  dbTransaction,
     });
-}
+};

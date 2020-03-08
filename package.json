@@ -11,7 +11,8 @@
     "test-watch": "jest --watchAll",
     "lint": "eslint src tests",
     "db:init": "node src/scripts/initDb.js",
-    "db:createUser": "node src/scripts/createUser.js"
+    "db:createUser": "node src/scripts/createUser.js",
+    "db:rebuild": "node src/scripts/rebuildTransactions.js"
   },
   "dependencies": {
     "koa": "~2.11.0",

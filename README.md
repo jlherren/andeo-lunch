@@ -36,6 +36,10 @@ To create a new user:
 
     yarn db:createUser
 
+## Rebuild all transactions
+
+    yarn db:rebuild
+
 # Yarn scripts
 
 - `yarn serve` will launch the server.
