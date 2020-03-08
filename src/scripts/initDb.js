@@ -1,6 +1,6 @@
 'use strict';
 
-let lunchMoney = require('../app');
+const lunchMoney = require('../app');
 
 lunchMoney.sequelizePromise.then(async sequelize => {
     await sequelize.sync();

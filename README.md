@@ -30,6 +30,12 @@ If the database is still empty, the following command will create all tables:
 
     yarn db:init
 
+## Create a user
+
+To create a new user:
+
+    yarn db:createUser
+
 # Yarn scripts
 
 - `yarn serve` will launch the server.
