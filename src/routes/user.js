@@ -65,6 +65,6 @@ exports.register = function register(router) {
         },
     };
     router.get('/users', Factory.makeObjectListController(opts));
-    router.get('/users/:user', Factory.makeSingleObjectController(opts));
-    router.get('/users/:user/transactions', getUserTransactionLists);
+    router.get('/users/:user(\\d+)', Factory.makeSingleObjectController(opts));
+    router.get('/users/:user(\\d+)/transactions', getUserTransactionLists);
 };

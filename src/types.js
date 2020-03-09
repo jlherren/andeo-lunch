@@ -32,7 +32,6 @@
 
 /**
  * @typedef {Object} ApiParticipation
- * @property {number} id
  * @property {number} user
  * @property {number} event
  * @property {number} type

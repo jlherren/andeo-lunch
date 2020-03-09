@@ -3,6 +3,7 @@
 const Koa = require('koa');
 const Router = require('koa-router');
 const Logger = require('koa-logger');
+const BodyParser = require('koa-bodyparser');
 
 const UserRoutes = require('./routes/user');
 const EventRoutes = require('./routes/event');
@@ -27,12 +28,18 @@ class LunchMoney {
             ...options || {},
         };
         this.sequelizePromise = Db.connect(this.options.config.database);
+        this.server = null;
 
         this.app = new Koa();
+
         if (this.options.logging) {
             this.app.use(Logger());
         }
-        this.server = null;
+
+        this.app.use(BodyParser({
+            enableTypes: ['json'],
+            strict:      true,
+        }));
 
         this.app.use(async (ctx, next) => {
             try {
