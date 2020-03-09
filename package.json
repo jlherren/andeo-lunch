@@ -1,12 +1,12 @@
 {
   "name": "lunchmoney",
   "version": "0.0.0",
-  "main": "src/app.js",
+  "main": "src/lunchMoney.js",
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
-    "serve": "node src/app.js",
-    "serve-watch": "nodemon src/app.js",
+    "serve": "node src/lunchMoney.js",
+    "serve-watch": "nodemon src/lunchMoney.js",
     "test": "jest",
     "test-watch": "jest --watchAll",
     "lint": "eslint src tests",

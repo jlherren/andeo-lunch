@@ -1,9 +1,9 @@
 'use strict';
 
-const LunchMoney = require('../app');
-const config = require('../config');
+const LunchMoney = require('../lunchMoney');
+const ConfigProvider = require('../configProvider');
 
-let lunchMoney = new LunchMoney({config: config.getMainConfig()});
+let lunchMoney = new LunchMoney({config: ConfigProvider.getMainConfig()});
 
 lunchMoney.initDb()
     .then(() => lunchMoney.close());

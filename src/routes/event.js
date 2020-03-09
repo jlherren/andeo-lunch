@@ -1,7 +1,7 @@
 'use strict';
 
-const Models = require('./models');
-const ControllerFactory = require('./controllerFactory');
+const Models = require('../db/models');
+const Factory = require('./factory');
 
 /**
  * Map a user to an object suitable to return over the API
@@ -78,8 +78,8 @@ exports.register = function register(router) {
         model:  Models.Event,
         mapper: mapEvent,
     };
-    router.get('/events', ControllerFactory.makeObjectListController(opts));
-    router.get('/events/:event', ControllerFactory.makeSingleObjectController(opts));
+    router.get('/events', Factory.makeObjectListController(opts));
+    router.get('/events/:event', Factory.makeSingleObjectController(opts));
     router.get('/events/:event/participations', getParticipationList);
     router.get('/events/:event/participations/:participation', getSingleParticipation);
 };

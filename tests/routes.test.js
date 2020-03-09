@@ -2,11 +2,11 @@
 
 const supertest = require('supertest');
 
-const LunchMoney = require('../src/app');
+const LunchMoney = require('../src/lunchMoney');
 const PackageJson = require('../package');
-const config = require('../src/config');
+const ConfigProvider = require('../src/configProvider');
 
-let lunchMoney = new LunchMoney({config: config.getTestConfig()});
+let lunchMoney = new LunchMoney({config: ConfigProvider.getTestConfig()});
 let server = lunchMoney.listen();
 let request = supertest.agent(server, {});
 

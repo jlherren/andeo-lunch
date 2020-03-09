@@ -1,16 +1,16 @@
 'use strict';
 
-const LunchMoney = require('../app');
-const Transaction = require('../transaction');
-const Models = require('../models');
-const config = require('../config');
-const db = require('../db');
+const LunchMoney = require('../lunchMoney');
+const Transaction = require('../transactionRebuilder');
+const Models = require('../db/models');
+const ConfigProvider = require('../configProvider');
+const Db = require('../db');
 
-let lunchMoney = new LunchMoney({config: config.getMainConfig()});
+let lunchMoney = new LunchMoney({config: ConfigProvider.getMainConfig()});
 
 lunchMoney.waitReady()
     .then(async () => {
-        await db.sequelize.transaction(async transaction => {
+        await Db.sequelize.transaction(async transaction => {
             let events = await Models.Event.findAll({transaction});
             let overAllEarliestDate = null;
             let nUpdatesTotal = 0;

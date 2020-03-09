@@ -2,10 +2,10 @@
 
 const Sequelize = require('sequelize');
 
-const Models = require('./models');
+const Models = require('./db/models');
 const Utils = require('./utils');
 const Constants = require('./constants');
-const db = require('./db');
+const Db = require('./db');
 
 /**
  * Re-inserts the transactions related to a specific event.  This does not recalculate the balances, so you
@@ -295,7 +295,7 @@ exports.rebuildEvent = async function rebuildEvent(dbTransaction, event) {
     if (dbTransaction !== null) {
         await execute();
     } else {
-        await db.sequelize.transaction(async t => {
+        await Db.sequelize.transaction(async t => {
             dbTransaction = t;
             await execute();
         });

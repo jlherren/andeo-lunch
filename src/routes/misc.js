@@ -1,7 +1,7 @@
 'use strict';
 
-const PackageJson = require('../package');
-const Constants = require('./constants');
+const PackageJson = require('../../package');
+const Constants = require('../constants');
 
 /**
  * @param {Application.Context} ctx

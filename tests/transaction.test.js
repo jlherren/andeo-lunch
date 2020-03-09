@@ -1,16 +1,16 @@
 'use strict';
 
-const Models = require('../src/models');
-const LunchMoney = require('../src/app');
+const Models = require('../src/db/models');
+const LunchMoney = require('../src/lunchMoney');
 const Constants = require('../src/constants');
-const tx = require('../src/transaction');
-const config = require('../src/config');
+const TransactionRebuilder = require('../src/transactionRebuilder');
+const ConfigProvider = require('../src/configProvider');
 
 /** @type {LunchMoney|null} */
 let lunchMoney = null;
 
 beforeEach(async () => {
-    lunchMoney = new LunchMoney({config: config.getTestConfig()});
+    lunchMoney = new LunchMoney({config: ConfigProvider.getTestConfig()});
     await lunchMoney.initDb();
 });
 
@@ -71,7 +71,7 @@ describe('transaction tests', () => {
     test('lunch for two', async () => {
         let [user1, user2] = await createUsers(2);
         let event = await createLunch([user1, user2], user1, user1);
-        await tx.rebuildEvent(null, event);
+        await TransactionRebuilder.rebuildEvent(null, event);
         await user1.reload();
         await user2.reload();
 
@@ -89,7 +89,7 @@ describe('transaction tests', () => {
     test('reuse transactions on change', async () => {
         let [user1, user2] = await createUsers(2);
         let event = await createLunch([user1, user2], user1, user1);
-        await tx.rebuildEvent(null, event);
+        await TransactionRebuilder.rebuildEvent(null, event);
 
         let transactions = await Models.Transaction.findAll();
         expect(transactions.length).toEqual(12);
@@ -97,7 +97,7 @@ describe('transaction tests', () => {
 
         // change costs and rebuild
         await event.update({pointsCost: 12, moneyCost: 40});
-        await tx.rebuildEvent(null, event);
+        await TransactionRebuilder.rebuildEvent(null, event);
 
         transactions = await Models.Transaction.findAll();
         expect(transactions.length).toEqual(12);
@@ -121,7 +121,7 @@ describe('transaction tests', () => {
             balance:    100,
         });
 
-        await tx.rebuildEvent(null, event);
+        await TransactionRebuilder.rebuildEvent(null, event);
         await user1.reload();
 
         let transactions = await Models.Transaction.findAll();

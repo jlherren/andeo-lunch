@@ -1,11 +1,11 @@
 'use strict';
 
-const Models = require('../models');
+const Models = require('../db/models');
 const Cli = require('../cli');
-const LunchMoney = require('../app');
-const config = require('../config');
+const LunchMoney = require('../lunchMoney');
+const ConfigProvider = require('../configProvider');
 
-let lunchMoney = new LunchMoney({config: config.getMainConfig()});
+let lunchMoney = new LunchMoney({config: ConfigProvider.getMainConfig()});
 
 lunchMoney.sequelizePromise.then(async sequelize => {
     let cli = new Cli();

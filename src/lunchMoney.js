@@ -4,13 +4,13 @@ const Koa = require('koa');
 const Router = require('koa-router');
 const Logger = require('koa-logger');
 
-const misc = require('./misc');
-const user = require('./user');
-const event = require('./event');
-const db = require('./db');
+const UserRoutes = require('./routes/user');
+const EventRoutes = require('./routes/event');
+const MiscRoutes = require('./routes/misc');
+const Db = require('./db');
 const Constants = require('./constants');
-const Models = require('./models');
-const config = require('./config');
+const Models = require('./db/models');
+const ConfigProvider = require('./configProvider');
 
 /**
  * Main app class
@@ -26,7 +26,7 @@ class LunchMoney {
             logging: false,
             ...options || {},
         };
-        this.sequelizePromise = db.connect(this.options.config.database);
+        this.sequelizePromise = Db.connect(this.options.config.database);
 
         this.app = new Koa();
         if (this.options.logging) {
@@ -92,9 +92,9 @@ class LunchMoney {
     createRouter() {
         let router = new Router();
 
-        misc.register(router);
-        user.register(router);
-        event.register(router);
+        MiscRoutes.register(router);
+        UserRoutes.register(router);
+        EventRoutes.register(router);
 
         return router;
     }
@@ -130,7 +130,7 @@ class LunchMoney {
 
 
 if (!module.parent) {
-    let mainConfig = config.getMainConfig();
+    let mainConfig = ConfigProvider.getMainConfig();
     let lm = new LunchMoney({
         config:  mainConfig,
         logging: true,

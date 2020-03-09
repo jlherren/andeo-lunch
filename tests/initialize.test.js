@@ -1,17 +1,17 @@
 'use strict';
 
-const LunchMoney = require('../src/app');
-const Models = require('../src/models');
+const LunchMoney = require('../src/lunchMoney');
+const Models = require('../src/db/models');
 const Constants = require('../src/constants');
-const config = require('../src/config');
-const db = require('../src/db');
-const tx = require('../src/transaction');
+const ConfigProvider = require('../src/configProvider');
+const Db = require('../src/db');
+const TransactionRebuilder = require('../src/transactionRebuilder');
 
 /** @type {LunchMoney|null} */
 let lunchMoney = null;
 
 beforeEach(async () => {
-    lunchMoney = new LunchMoney({config: config.getTestConfig()});
+    lunchMoney = new LunchMoney({config: ConfigProvider.getTestConfig()});
     await lunchMoney.initDb();
 });
 
@@ -29,8 +29,8 @@ test('empty db is sane', async () => {
 });
 
 test('rebuild user balances on empty db', async () => {
-    await db.sequelize.transaction(async dbTransaction => {
-        await tx.rebuildUserBalances(dbTransaction);
+    await Db.sequelize.transaction(async dbTransaction => {
+        await TransactionRebuilder.rebuildUserBalances(dbTransaction);
     });
     let systemUser = await Models.User.findByPk(Constants.SYSTEM_USER);
     expect(systemUser.currentPoints).toEqual(0);
