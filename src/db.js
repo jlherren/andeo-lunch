@@ -3,6 +3,9 @@
 const {Sequelize} = require('sequelize');
 const Models = require('./models');
 
+/** @type {Sequelize|null} */
+exports.sequelize = null;
+
 /**
  * @param {Object<string, any>} options
  * @returns {Promise<Sequelize>}
@@ -18,10 +21,10 @@ exports.connect = async function connect(options) {
         ...options,
     };
 
-    let sequelize = new Sequelize(options);
-    await sequelize.authenticate();
+    exports.sequelize = new Sequelize(options);
+    await exports.sequelize.authenticate();
 
-    Models.initModels(sequelize);
+    Models.initModels(exports.sequelize);
 
-    return sequelize;
+    return exports.sequelize;
 };

@@ -4,6 +4,8 @@ const LunchMoney = require('../src/app');
 const Models = require('../src/models');
 const Constants = require('../src/constants');
 const config = require('../src/config');
+const db = require('../src/db');
+const tx = require('../src/transaction');
 
 /** @type {LunchMoney|null} */
 let lunchMoney = null;
@@ -24,4 +26,13 @@ test('empty db is sane', async () => {
     expect(await Models.Event.findAll()).toEqual([]);
     expect(await Models.Participation.findAll()).toEqual([]);
     expect(await Models.Transaction.findAll()).toEqual([]);
+});
+
+test('rebuild user balances on empty db', async () => {
+    await db.sequelize.transaction(async dbTransaction => {
+        await tx.rebuildUserBalances(dbTransaction);
+    });
+    let systemUser = await Models.User.findByPk(Constants.SYSTEM_USER);
+    expect(systemUser.currentPoints).toEqual(0);
+    expect(systemUser.currentMoney).toEqual(0);
 });

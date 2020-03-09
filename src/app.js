@@ -77,12 +77,12 @@ class LunchMoney {
     }
 
     /**
-     * Get the sequelize instance
+     * Returns a promise that is resolved as soon as the app is ready
      *
-     * @returns {Promise<Sequelize>}
+     * @returns {Promise<void>}
      */
-    getSequelize() {
-        return this.sequelizePromise;
+    async waitReady() {
+        await this.sequelizePromise;
     }
 
     /**

@@ -94,9 +94,9 @@ module.exports.initModels = function initModels(sequelize) {
     User.init({
         username:      {type: ascii(64), allowNull: false, unique: true},
         password:      {type: ascii(255), allowNull: false},
+        name:          {type: DataTypes.STRING(64), allowNull: false},
         active:        {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
         hidden:        {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
-        name:          {type: DataTypes.STRING(64), allowNull: false},
         currentPoints: {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
         currentMoney:  {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
     }, {sequelize, modelName: 'user'});

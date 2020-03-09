@@ -153,7 +153,12 @@
     "lines-between-class-members": "error",
     "max-depth": "error",
     "max-len": "off",
-    "max-lines": "error",
+    "max-lines": [
+      "error",
+      {
+        "max": 500
+      }
+    ],
     "max-lines-per-function": "off",
     "max-nested-callbacks": "error",
     "max-params": "off",

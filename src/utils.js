@@ -3,9 +3,10 @@
 
 /**
  * @template T
+ * @template K
  * @param {Array<T>} array
- * @param {string|function(item: T): string|number} key
- * @returns {Object<string|number, T>}
+ * @param {string|function(item: T): K} key
+ * @returns {Object<K, T>}
  */
 function indexBy(array, key) {
     let ret = {};
@@ -21,9 +22,10 @@ function indexBy(array, key) {
 
 /**
  * @template T
+ * @template K
  * @param {Array<T>} array
- * @param {string|function(item: T): string|number} key
- * @returns {Object<string|number, Array<T>>}
+ * @param {string|function(item: T): K} key
+ * @returns {Object<K, Array<T>>}
  */
 function groupBy(array, key) {
     let ret = {};

@@ -5,18 +5,21 @@ const Sequelize = require('sequelize');
 const Models = require('./models');
 const Utils = require('./utils');
 const Constants = require('./constants');
+const db = require('./db');
 
 /**
  * Re-inserts the transactions related to a specific event.  This does not recalculate the balances, so you
  * may want to run recalculateBalances() and rebuildUserBalances() afterwards.
  *
  * @param {Transaction} dbTransaction
- * @param {number} eventId
+ * @param {Event|number} event
  * @returns {Promise<{earliestDate: Date, nUpdates: number}>} Earliest date that was affected, useful for
  *                                                            recalculateBalances() and number of update
  */
-exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTransaction, eventId) {
-    let event = await Models.Event.findByPk(eventId, {transaction: dbTransaction});
+exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTransaction, event) {
+    if (!(event instanceof Models.Event)) {
+        event = await Models.Event.findByPk(event, {transaction: dbTransaction});
+    }
 
     let participations = await Models.Participation.findAll({
         where:       {event: event.id},
@@ -30,20 +33,22 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
         transaction: dbTransaction,
         raw:         true,
     });
-    if (event.date < earliestDate) {
+    earliestDate = earliestDate ? new Date(earliestDate) : null;
+    if (earliestDate === null || event.date < earliestDate) {
         earliestDate = event.date;
     }
 
     // get all existing transactions for that event
-    let existingTransactions = await Models.Transaction.findAll({
-        where:       {
-            event: event.id,
-        },
-        transaction: dbTransaction,
-    });
-
-    let existingTransactionKeyFunc = row => `${row.user}/${row.contraUser}/${row.currency}`;
-    existingTransactions = Utils.groupBy(existingTransactions, existingTransactionKeyFunc);
+    /** @type {Object<string, Array<Transaction>>} */
+    let existingTransactions = Utils.groupBy(
+        await Models.Transaction.findAll({
+            where:       {
+                event: event.id,
+            },
+            transaction: dbTransaction,
+        }),
+        transaction => `${transaction.user}/${transaction.contraUser}/${transaction.currency}`,
+    );
 
     let nBuyers = 0;
     let nParticipants = 0;
@@ -135,6 +140,15 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
         await update.save();
     }
 
+    // remove superfluous transactions
+    let deleteIds = [];
+    for (let key in existingTransactions) {
+        for (let transaction of existingTransactions[key]) {
+            deleteIds.push(transaction.id);
+        }
+    }
+    await Models.Transaction.destroy({where: {id: deleteIds}});
+
     return {
         earliestDate,
         nUpdates: inserts.length + updates.length,
@@ -148,7 +162,7 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
  * @param {Date} startDate
  * @returns {Promise<number>} Number of updates performed
  */
-exports.recalculateBalances = async function recalculateBalances(dbTransaction, startDate) {
+exports.rebuildTransactionBalances = async function rebuildTransactionBalances(dbTransaction, startDate) {
     let {Op} = Sequelize;
 
     // date and id of last handled transaction
@@ -239,18 +253,18 @@ exports.rebuildUserBalances = async function rebuildUserBalances(dbTransaction) 
     // Careful: This query must work with MySQL and also SQLite
     let sql = `
         UPDATE "user" AS u
-        SET currentPoints = (SELECT t.balance
-                               FROM "transaction" AS t
-                               WHERE t.currency = :ttPoints
-                                 AND t.user = u.id
-                               ORDER BY t.date DESC, t.id DESC
-                               LIMIT 1),
-            currentMoney  = (SELECT t.balance
-                               FROM "transaction" AS t
-                               WHERE t.currency = :ttMoney
-                                 AND t.user = u.id
-                               ORDER BY t.date DESC, t.id DESC
-                               LIMIT 1)
+        SET currentPoints = COALESCE((SELECT t.balance
+                                      FROM "transaction" AS t
+                                      WHERE t.currency = :ttPoints
+                                        AND t.user = u.id
+                                      ORDER BY t.date DESC, t.id DESC
+                                      LIMIT 1), 0),
+            currentMoney  = COALESCE((SELECT t.balance
+                                      FROM "transaction" AS t
+                                      WHERE t.currency = :ttMoney
+                                        AND t.user = u.id
+                                      ORDER BY t.date DESC, t.id DESC
+                                      LIMIT 1), 0)
     `;
 
     await dbTransaction.sequelize.query(sql, {
@@ -260,4 +274,30 @@ exports.rebuildUserBalances = async function rebuildUserBalances(dbTransaction) 
         },
         transaction:  dbTransaction,
     });
+};
+
+/**
+ * Rebuild everything regarding one event that has changed
+ *
+ * @param {Transaction|null} dbTransaction
+ * @param {Event|number} event
+ */
+exports.rebuildEvent = async function rebuildEvent(dbTransaction, event) {
+    /**
+     * @returns {Promise<void>}
+     */
+    async function execute() {
+        let {earliestDate} = await exports.rebuildEventTransactions(dbTransaction, event);
+        await exports.rebuildTransactionBalances(dbTransaction, earliestDate);
+        await exports.rebuildUserBalances(dbTransaction);
+    }
+
+    if (dbTransaction !== null) {
+        await execute();
+    } else {
+        await db.sequelize.transaction(async t => {
+            dbTransaction = t;
+            await execute();
+        });
+    }
 };
