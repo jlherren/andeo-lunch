@@ -1,18 +1,21 @@
 'use strict';
 
 const Models = require('../src/models');
+const LunchMoney = require('../src/app');
 const Constants = require('../src/constants');
-const db = require('../src/db');
 const tx = require('../src/transaction');
+const config = require('../src/config');
 
-let sequelize = null;
+/** @type {LunchMoney|null} */
+let lunchMoney = null;
 
-beforeAll(async () => {
-    sequelize = await db.connect({
-        dialect: 'sqlite',
-        storage: ':memory:',
-    });
-    await sequelize.sync();
+beforeEach(async () => {
+    lunchMoney = new LunchMoney({config: config.getTestConfig()});
+    await lunchMoney.initDb();
+});
+
+afterEach(async () => {
+    await lunchMoney.close();
 });
 
 /**
@@ -34,6 +37,7 @@ async function createUsers(n) {
 
 describe('transaction tests', () => {
     test('simple lunch for two', async () => {
+        let sequelize = await lunchMoney.getSequelize();
         let event = await Models.Event.create({
             type:       Constants.EVENT_TYPE_LUNCH,
             date:       new Date('2020-01-10 12:00'),
@@ -67,9 +71,14 @@ describe('transaction tests', () => {
         await user1.reload();
         await user2.reload();
 
+        let nPointTransactions = await Models.Transaction.count({where: {event: event.id, currency: Constants.CURRENCY_POINTS}});
+        let nMoneyTransactions = await Models.Transaction.count({where: {event: event.id, currency: Constants.CURRENCY_MONEY}});
+
         expect(user1.currentPoints).toEqual(2);
         expect(user2.currentPoints).toEqual(-2);
         expect(user1.currentMoney).toEqual(12);
         expect(user2.currentMoney).toEqual(-12);
+        expect(nPointTransactions).toEqual(6);
+        expect(nMoneyTransactions).toEqual(6);
     });
 });

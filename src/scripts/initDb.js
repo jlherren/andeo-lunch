@@ -1,8 +1,9 @@
 'use strict';
 
-const lunchMoney = require('../app');
+const LunchMoney = require('../app');
+const config = require('../config');
 
-lunchMoney.sequelizePromise.then(async sequelize => {
-    await sequelize.sync();
-    await sequelize.close();
-});
+let lunchMoney = new LunchMoney({config: config.getMainConfig()});
+
+lunchMoney.initDb()
+    .then(() => lunchMoney.close());

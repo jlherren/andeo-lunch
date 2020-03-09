@@ -2,13 +2,14 @@
 
 const supertest = require('supertest');
 
-const lunchMoney = require('../src/app');
+const LunchMoney = require('../src/app');
 const PackageJson = require('../package');
+const config = require('../src/config');
 
+let lunchMoney = new LunchMoney({config: config.getTestConfig()});
 let server = lunchMoney.listen();
 let request = supertest.agent(server, {});
 
-// close the server after each test
 afterAll(() => lunchMoney.close());
 
 describe('basic route tests', () => {

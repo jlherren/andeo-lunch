@@ -8,17 +8,30 @@ const misc = require('./misc');
 const user = require('./user');
 const event = require('./event');
 const db = require('./db');
+const Constants = require('./constants');
+const Models = require('./models');
 const config = require('./config');
 
 /**
  * Main app class
  */
 class LunchMoney {
-    constructor() {
-        this.sequelizePromise = db.connect(config.database);
+    /**
+     * @param {Object<string, any>} [options]
+     * @param {Config} options.config
+     * @param {boolean} [options.logging]
+     */
+    constructor(options) {
+        this.options = {
+            logging: false,
+            ...options || {},
+        };
+        this.sequelizePromise = db.connect(this.options.config.database);
 
         this.app = new Koa();
-        this.app.use(Logger());
+        if (this.options.logging) {
+            this.app.use(Logger());
+        }
         this.server = null;
 
         this.app.use(async (ctx, next) => {
@@ -37,15 +50,46 @@ class LunchMoney {
             return next();
         });
 
-        let router = this.getRouter();
+        let router = this.createRouter();
         this.app.use(router.routes());
         this.app.use(router.allowedMethods());
     }
 
     /**
-     * @returns {Router}
+     * Initialize an empty DB with tables and defaults
+     *
+     * @returns {Promise<void>}
      */
-    getRouter() {
+    async initDb() {
+        let sequelize = await this.sequelizePromise;
+        await sequelize.sync();
+        let systemUser = await Models.User.findByPk(Constants.SYSTEM_USER);
+        if (!systemUser) {
+            await Models.User.create({
+                id:       Constants.SYSTEM_USER,
+                username: 'system',
+                name:     'System User',
+                active:   false,
+                hidden:   true,
+                password: '',
+            });
+        }
+    }
+
+    /**
+     * Get the sequelize instance
+     *
+     * @returns {Promise<Sequelize>}
+     */
+    getSequelize() {
+        return this.sequelizePromise;
+    }
+
+    /**
+     * @returns {Router}
+     * @private
+     */
+    createRouter() {
         let router = new Router();
 
         misc.register(router);
@@ -58,10 +102,14 @@ class LunchMoney {
     /**
      * Start listening on the configured port
      *
-     * @param {number} [port]
      * @returns {Server}
      */
-    listen(port) {
+    listen() {
+        let {port} = this.options.config;
+        // Setting port to null is valid!
+        if (port === undefined) {
+            port = 3000;
+        }
         this.server = this.app.listen(port);
         return this.server;
     }
@@ -72,16 +120,22 @@ class LunchMoney {
      * @returns {Promise<void>}
      */
     async close() {
-        this.server.close();
+        if (this.server) {
+            this.server.close();
+        }
         let sequelize = await this.sequelizePromise;
         sequelize.close();
     }
 }
 
-let lm = new LunchMoney();
 
 if (!module.parent) {
-    lm.listen(config.port || 3000);
+    let mainConfig = config.getMainConfig();
+    let lm = new LunchMoney({
+        config:  mainConfig,
+        logging: true,
+    });
+    lm.listen();
 }
 
-module.exports = lm;
+module.exports = LunchMoney;

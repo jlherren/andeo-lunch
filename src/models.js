@@ -2,21 +2,68 @@
 
 const {Model, DataTypes} = require('sequelize');
 
+/**
+ * @class Model
+ * @property {number} id
+ * @property {Date} createdAt
+ * @property {Date} updatedAt
+ */
+
+/**
+ * @property {string} username
+ * @property {string} password
+ * @property {boolean} active
+ * @property {boolean} hidden
+ * @property {string} name
+ * @property {number} currentPoints
+ * @property {number} currentMoney
+ */
 class User extends Model {
 }
 
+/**
+ * @property {number} type
+ * @property {Date} date
+ * @property {string} name
+ * @property {number|null} lunch
+ * @property {number} pointsCost
+ * @property {number} moneyCost
+ */
 class Event extends Model {
 }
 
+/**
+ */
 class Lunch extends Model {
 }
 
+/**
+ * @property {number} user
+ * @property {number} event
+ * @property {number} type
+ * @property {number} pointsCredited
+ * @property {boolean} buyer
+ */
 class Participation extends Model {
 }
 
+/**
+ * @property {Date} date
+ * @property {number} user
+ * @property {number} contraUser
+ * @property {number} currency
+ * @property {number} amount
+ * @property {number} balance
+ * @property {number} event
+ */
 class Transaction extends Model {
 }
 
+/**
+ * @property {number} user
+ * @property {Date} start
+ * @property {Date} end
+ */
 class Presence extends Model {
 }
 

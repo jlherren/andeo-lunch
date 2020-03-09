@@ -2,7 +2,10 @@
 
 const Models = require('../models');
 const Cli = require('../cli');
-const lunchMoney = require('../app');
+const LunchMoney = require('../app');
+const config = require('../config');
+
+let lunchMoney = new LunchMoney({config: config.getMainConfig()});
 
 lunchMoney.sequelizePromise.then(async sequelize => {
     let cli = new Cli();
