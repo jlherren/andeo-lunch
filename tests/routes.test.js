@@ -15,7 +15,7 @@ describe('basic route tests', () => {
     test('get version route', async () => {
         let response = await request.get('/version');
         expect(response.status).toEqual(200);
-        expect(response.text).toContain(PackageJson.version);
+        expect(response.text).toEqual(PackageJson.version);
     });
 
     test('get currencies route', async () => {

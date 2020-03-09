@@ -46,13 +46,13 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
     existingTransactions = Utils.groupBy(existingTransactions, existingTransactionKeyFunc);
 
     let nBuyers = 0;
-    let nAttenders = 0;
+    let nParticipants = 0;
     let totalPoints = 0;
 
     for (let participation of participations) {
         nBuyers += participation.buyer;
-        if (participation.type === 1) {
-            nAttenders++;
+        if (participation.type === Constants.PARTICIPATION_FULL) {
+            nParticipants++;
         }
         totalPoints += participation.pointsCredited;
     }
@@ -101,8 +101,8 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
     }
 
     let moneyPerBuyer = event.moneyCost / nBuyers;
-    let pointsPerAttendant = event.pointsCost / nAttenders;
-    let moneyPerAttendant = event.moneyCost / nAttenders;
+    let pointsPerParticipant = event.pointsCost / nParticipants;
+    let moneyPerParticipant = event.moneyCost / nParticipants;
 
     for (let participation of participations) {
         if (participation.pointsCredited) {
@@ -112,9 +112,9 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
             addTransaction(participation.user, points, Constants.CURRENCY_POINTS);
         }
 
-        if (participation.type === 1) {
+        if (participation.type === Constants.PARTICIPATION_FULL) {
             // points cost for participating in the event
-            addTransaction(participation.user, -pointsPerAttendant, Constants.CURRENCY_POINTS);
+            addTransaction(participation.user, -pointsPerParticipant, Constants.CURRENCY_POINTS);
         }
 
         if (nBuyers) {
@@ -123,9 +123,9 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
                 addTransaction(participation.user, moneyPerBuyer, Constants.CURRENCY_MONEY);
             }
 
-            if (participation.type === 1) {
+            if (participation.type === Constants.PARTICIPATION_FULL) {
                 // money cost for participating in the event
-                addTransaction(participation.user, -moneyPerAttendant, Constants.CURRENCY_MONEY);
+                addTransaction(participation.user, -moneyPerParticipant, Constants.CURRENCY_MONEY);
             }
         }
     }
@@ -236,16 +236,17 @@ exports.recalculateBalances = async function recalculateBalances(dbTransaction, 
  * @returns {Promise<void>}
  */
 exports.rebuildUserBalances = async function rebuildUserBalances(dbTransaction) {
+    // Careful: This query must work with MySQL and also SQLite
     let sql = `
-        UPDATE user u
-        SET u.currentPoints = (SELECT t.balance
-                               FROM transaction t
+        UPDATE "user" AS u
+        SET currentPoints = (SELECT t.balance
+                               FROM "transaction" AS t
                                WHERE t.currency = :ttPoints
                                  AND t.user = u.id
                                ORDER BY t.date DESC, t.id DESC
                                LIMIT 1),
-            u.currentMoney  = (SELECT t.balance
-                               FROM transaction t
+            currentMoney  = (SELECT t.balance
+                               FROM "transaction" AS t
                                WHERE t.currency = :ttMoney
                                  AND t.user = u.id
                                ORDER BY t.date DESC, t.id DESC
