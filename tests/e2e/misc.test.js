@@ -6,11 +6,20 @@ const LunchMoney = require('../../src/lunchMoney');
 const PackageJson = require('../../package');
 const ConfigProvider = require('../../src/configProvider');
 
-let lunchMoney = new LunchMoney({config: ConfigProvider.getTestConfig()});
-let server = lunchMoney.listen();
-let request = supertest.agent(server, {});
+/** @type {LunchMoney|null} */
+let lunchMoney;
+/** @type {supertest.SuperTest|null} */
+let request;
 
-afterAll(() => lunchMoney.close());
+beforeAll(async () => {
+    lunchMoney = new LunchMoney({config: ConfigProvider.getTestConfig()});
+    await lunchMoney.waitReady();
+    request = supertest(lunchMoney.listen());
+});
+
+afterAll(async () => {
+    await lunchMoney.close();
+});
 
 describe('basic route tests', () => {
     test('get version route', async () => {

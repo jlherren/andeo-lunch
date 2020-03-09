@@ -28,6 +28,7 @@ class LunchMoney {
             ...options || {},
         };
         this.sequelizePromise = Db.connect(this.options.config.database);
+        /** @type {Server|null} */
         this.server = null;
 
         this.app = new Koa();
@@ -90,6 +91,13 @@ class LunchMoney {
      */
     async waitReady() {
         await this.sequelizePromise;
+    }
+
+    /**
+     * @return {Application}
+     */
+    getApp() {
+        return this.app;
     }
 
     /**
