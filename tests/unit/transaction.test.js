@@ -68,7 +68,7 @@ async function createLunch(participants, cook, buyer) {
 }
 
 describe('transaction tests', () => {
-    test('lunch for two', async () => {
+    it('correctly calculates a lunch for two', async () => {
         let [user1, user2] = await createUsers(2);
         let event = await createLunch([user1, user2], user1, user1);
         await TransactionRebuilder.rebuildEvent(null, event);
@@ -86,7 +86,7 @@ describe('transaction tests', () => {
         expect(nMoneyTransactions).toEqual(6);
     });
 
-    test('reuse transactions on change', async () => {
+    it('reuse transactions on event modification', async () => {
         let [user1, user2] = await createUsers(2);
         let event = await createLunch([user1, user2], user1, user1);
         await TransactionRebuilder.rebuildEvent(null, event);
@@ -106,7 +106,7 @@ describe('transaction tests', () => {
         expect(newTransactionIds).toEqual(originalTransactionIds);
     });
 
-    test('remove superfluous transactions', async () => {
+    it('remove superfluous transactions', async () => {
         let [user1, user2, user3] = await createUsers(3);
         let event = await createLunch([user1, user2], user1, user1);
 

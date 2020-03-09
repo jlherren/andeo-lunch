@@ -19,7 +19,7 @@ afterEach(async () => {
     await lunchMoney.close();
 });
 
-test('empty db is sane', async () => {
+it('creates a sane empty DB', async () => {
     let systemUser = await Models.User.findByPk(Constants.SYSTEM_USER);
     expect(systemUser).toBeInstanceOf(Models.User);
     expect(systemUser.hidden).toEqual(true);
@@ -30,7 +30,7 @@ test('empty db is sane', async () => {
     expect(await Models.Transaction.findAll()).toEqual([]);
 });
 
-test('rebuild user balances on empty db', async () => {
+it('correctly rebuilds user balances on an empty DB', async () => {
     await Db.sequelize.transaction(async dbTransaction => {
         await TransactionRebuilder.rebuildUserBalances(dbTransaction);
     });

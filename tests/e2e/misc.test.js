@@ -21,14 +21,14 @@ afterAll(async () => {
     await lunchMoney.close();
 });
 
-describe('basic route tests', () => {
-    test('get version route', async () => {
+describe('misc route tests', () => {
+    it('responds with backend version', async () => {
         let response = await request.get('/version');
         expect(response.status).toEqual(200);
         expect(response.text).toEqual(PackageJson.version);
     });
 
-    test('get currencies route', async () => {
+    it('responds with currency data', async () => {
         let response = await request.get('/currencies');
         expect(response.status).toEqual(200);
         expect(response.body).toMatchObject({});
