@@ -8,23 +8,30 @@ const RouteUtils = require('./route-utils');
 const Constants = require('../constants');
 const Db = require('../db');
 
+const nameSchema = Joi.string().normalize().min(1).regex(/\S/u);
+const typeSchema = Joi.number().integer().min(1).max(1);
+
 const eventCreateSchema = Joi.object({
-    name:       Joi.string().min(1).required(),
-    date:       Joi.date().required(),
-    type:       Joi.number().integer().min(1).required(),
-    pointsCost: Joi.number().min(0).required(),
-    moneyCost:  Joi.number().min(0).required(),
+    name:  nameSchema.required(),
+    date:  Joi.date().required(),
+    type:  typeSchema.required(),
+    costs: Joi.object({
+        points: Joi.number().min(0).required(),
+        money:  Joi.number().min(0).required(),
+    }).required(),
 });
 
 const eventUpdateSchema = Joi.object({
-    name:       Joi.string().min(1),
-    date:       Joi.date(),
-    pointsCost: Joi.number().min(0),
-    moneyCost:  Joi.number().min(0),
+    name:  nameSchema,
+    date:  Joi.date(),
+    costs: Joi.object({
+        points: Joi.number().min(0),
+        money:  Joi.number().min(0),
+    }),
 });
 
 const participationSchema = Joi.object({
-    type:           Joi.number().integer().min(1),
+    type:           Joi.number().integer().min(1).max(3),
     pointsCredited: Joi.number().min(0),
     buyer:          Joi.boolean(),
 });
@@ -101,7 +108,13 @@ async function getSingleParticipation(ctx) {
  */
 async function createEvent(ctx) {
     let value = RouteUtils.validateBody(ctx, eventCreateSchema);
-    let event = await Models.Event.create(value);
+    let event = await Models.Event.create({
+        name:       value.name,
+        date:       value.date,
+        type:       value.type,
+        pointsCost: value.costs.points,
+        moneyCost:  value.costs.money,
+    });
     ctx.status = 201;
     ctx.body = '';
     ctx.set('Location', `/events/${event.id}`);
@@ -117,6 +130,13 @@ async function updateEvent(ctx) {
     if (!event) {
         ctx.throw(404, 'No such event');
     }
+    value = {
+        name:       value.name,
+        date:       value.date,
+        type:       value.type,
+        pointsCost: value.costs && value.costs.points,
+        moneyCost:  value.costs && value.costs.money,
+    };
     await event.update(value);
     ctx.status = 204;
 }
@@ -150,7 +170,7 @@ async function saveParticipation(ctx) {
                 event:          eventId,
                 user:           userId,
             };
-            participation = await Models.Participation.create(value, {transaction});
+            await Models.Participation.create(value, {transaction});
         } else {
             await participation.update(value, {transaction});
         }

@@ -94,7 +94,7 @@ class LunchMoney {
     }
 
     /**
-     * @return {Application}
+     * @returns {Application}
      */
     getApp() {
         return this.app;

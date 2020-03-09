@@ -7,9 +7,9 @@ const PackageJson = require('../../package');
 const ConfigProvider = require('../../src/configProvider');
 
 /** @type {LunchMoney|null} */
-let lunchMoney;
+let lunchMoney = null;
 /** @type {supertest.SuperTest|null} */
-let request;
+let request = null;
 
 beforeAll(async () => {
     lunchMoney = new LunchMoney({config: ConfigProvider.getTestConfig()});
