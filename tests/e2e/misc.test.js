@@ -2,9 +2,9 @@
 
 const supertest = require('supertest');
 
-const LunchMoney = require('../src/lunchMoney');
-const PackageJson = require('../package');
-const ConfigProvider = require('../src/configProvider');
+const LunchMoney = require('../../src/lunchMoney');
+const PackageJson = require('../../package');
+const ConfigProvider = require('../../src/configProvider');
 
 let lunchMoney = new LunchMoney({config: ConfigProvider.getTestConfig()});
 let server = lunchMoney.listen();

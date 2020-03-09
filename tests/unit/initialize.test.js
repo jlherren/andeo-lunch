@@ -1,11 +1,11 @@
 'use strict';
 
-const LunchMoney = require('../src/lunchMoney');
-const Models = require('../src/db/models');
-const Constants = require('../src/constants');
-const ConfigProvider = require('../src/configProvider');
-const Db = require('../src/db');
-const TransactionRebuilder = require('../src/transactionRebuilder');
+const LunchMoney = require('../../src/lunchMoney');
+const Models = require('../../src/db/models');
+const Constants = require('../../src/constants');
+const ConfigProvider = require('../../src/configProvider');
+const Db = require('../../src/db');
+const TransactionRebuilder = require('../../src/transactionRebuilder');
 
 /** @type {LunchMoney|null} */
 let lunchMoney = null;
