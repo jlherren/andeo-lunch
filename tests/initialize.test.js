@@ -22,6 +22,8 @@ afterEach(async () => {
 test('empty db is sane', async () => {
     let systemUser = await Models.User.findByPk(Constants.SYSTEM_USER);
     expect(systemUser).toBeInstanceOf(Models.User);
+    expect(systemUser.hidden).toEqual(true);
+    expect(systemUser.active).toEqual(false);
     expect(await Models.User.count()).toEqual(1);
     expect(await Models.Event.findAll()).toEqual([]);
     expect(await Models.Participation.findAll()).toEqual([]);
