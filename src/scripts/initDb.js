@@ -6,4 +6,5 @@ const ConfigProvider = require('../configProvider');
 let lunchMoney = new LunchMoney({config: ConfigProvider.getMainConfig()});
 
 lunchMoney.initDb()
-    .then(() => lunchMoney.close());
+    .catch(err => console.error(err))
+    .finally(() => lunchMoney.close());

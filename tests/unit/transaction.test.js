@@ -38,28 +38,38 @@ async function createUsers(n) {
 }
 
 /**
+ * Create a sample lunch
+ *
+ * @returns {Promise<Event>}
+ */
+function createLunch() {
+    return /** @type {Promise<Event>} */ Models.Event.create({
+        type:                  Constants.EVENT_TYPE_LUNCH,
+        date:                  new Date('2020-01-10 12:00'),
+        name:                  'Test lunch',
+        pointsCost:            12,
+        moneyCost:             60,
+        vegetarianMoneyFactor: 0.5,
+    });
+}
+
+/**
  * Create a lunch with the given number of participants
  *
  * @param {Array<User>} participants
  * @param {User} cook
- * @param {User} buyer
+ * @param {User|null} buyer
  * @returns {Promise<Event>}
  */
-async function createLunch(participants, cook, buyer) {
-    let event = await Models.Event.create({
-        type:       Constants.EVENT_TYPE_LUNCH,
-        date:       new Date('2020-01-10 12:00'),
-        name:       'Test lunch',
-        pointsCost: 8,
-        moneyCost:  32,
-    });
+async function createLunchWithParticipations(participants, cook, buyer) {
+    let event = await createLunch();
 
     for (let participant of participants) {
         await Models.Participation.create({
             user:           participant.id,
             event:          event.id,
             type:           Constants.PARTICIPATION_NORMAL,
-            buyer:          participant.id === buyer.id,
+            buyer:          buyer !== null && participant.id === buyer.id,
             pointsCredited: participant.id === cook.id ? 8 : 0,
         });
     }
@@ -70,7 +80,7 @@ async function createLunch(participants, cook, buyer) {
 describe('transaction tests', () => {
     it('correctly calculates a lunch for two', async () => {
         let [user1, user2] = await createUsers(2);
-        let event = await createLunch([user1, user2], user1, user1);
+        let event = await createLunchWithParticipations([user1, user2], user1, user1);
         await TransactionRebuilder.rebuildEvent(null, event);
         await user1.reload();
         await user2.reload();
@@ -78,17 +88,17 @@ describe('transaction tests', () => {
         let nPointTransactions = await Models.Transaction.count({where: {event: event.id, currency: Constants.CURRENCY_POINTS}});
         let nMoneyTransactions = await Models.Transaction.count({where: {event: event.id, currency: Constants.CURRENCY_MONEY}});
 
-        expect(user1.points).toEqual(4);
-        expect(user2.points).toEqual(-4);
-        expect(user1.money).toEqual(16);
-        expect(user2.money).toEqual(-16);
+        expect(user1.points).toEqual(6);
+        expect(user2.points).toEqual(-6);
+        expect(user1.money).toEqual(30);
+        expect(user2.money).toEqual(-30);
         expect(nPointTransactions).toEqual(6);
         expect(nMoneyTransactions).toEqual(6);
     });
 
     it('reuse transactions on event modification', async () => {
         let [user1, user2] = await createUsers(2);
-        let event = await createLunch([user1, user2], user1, user1);
+        let event = await createLunchWithParticipations([user1, user2], user1, user1);
         await TransactionRebuilder.rebuildEvent(null, event);
 
         let transactions = await Models.Transaction.findAll();
@@ -106,9 +116,9 @@ describe('transaction tests', () => {
         expect(newTransactionIds).toEqual(originalTransactionIds);
     });
 
-    it('remove superfluous transactions', async () => {
+    it('removes superfluous transactions', async () => {
         let [user1, user2, user3] = await createUsers(3);
-        let event = await createLunch([user1, user2], user1, user1);
+        let event = await createLunchWithParticipations([user1, user2], user1, user1);
 
         // Create a bogus transaction that involves a third user (so the transaction can't possibly be reused)
         await Models.Transaction.create({
@@ -126,6 +136,154 @@ describe('transaction tests', () => {
 
         let transactions = await Models.Transaction.findAll();
         expect(transactions.length).toEqual(12);
-        expect(user1.points).toEqual(4);
+        expect(user1.points).toEqual(6);
+    });
+
+    it('correctly calculates a lunch with vegetarian participant', async () => {
+        let [user1, user2] = await createUsers(2);
+        let event = await createLunch();
+
+        await Models.Participation.bulkCreate([
+            {
+                user:           user1.id,
+                event:          event.id,
+                type:           Constants.PARTICIPATION_NORMAL,
+                buyer:          true,
+                pointsCredited: 8,
+            }, {
+                user:           user2.id,
+                event:          event.id,
+                type:           Constants.PARTICIPATION_VEGETARIAN,
+                buyer:          false,
+                pointsCredited: 0,
+            },
+        ]);
+
+        await TransactionRebuilder.rebuildEvent(null, event);
+        await user1.reload();
+        await user2.reload();
+
+        expect(user1.points).toEqual(6);
+        expect(user2.points).toEqual(-6);
+        expect(user1.money).toEqual(20);
+        expect(user2.money).toEqual(-20);
+    });
+
+    it('correctly calculates the points for a lunch with two cooks', async () => {
+        let [user1, user2, user3] = await createUsers(3);
+        let event = await createLunch();
+
+        await Models.Participation.bulkCreate([
+            {
+                user:           user1.id,
+                event:          event.id,
+                type:           Constants.PARTICIPATION_NORMAL,
+                buyer:          false,
+                pointsCredited: 5,
+            }, {
+                user:           user2.id,
+                event:          event.id,
+                type:           Constants.PARTICIPATION_NORMAL,
+                buyer:          false,
+                pointsCredited: 0,
+            }, {
+                user:           user3.id,
+                event:          event.id,
+                type:           Constants.PARTICIPATION_NORMAL,
+                buyer:          true,
+                pointsCredited: 7,
+            },
+        ]);
+
+        await TransactionRebuilder.rebuildEvent(null, event);
+        await user1.reload();
+        await user2.reload();
+        await user3.reload();
+
+        expect(user1.points).toEqual(1);
+        expect(user2.points).toEqual(-4);
+        expect(user3.points).toEqual(3);
+    });
+
+    it('correctly calculates the money for a lunch with two buyers', async () => {
+        let [user1, user2, user3] = await createUsers(3);
+        let event = await createLunch();
+
+        await Models.Participation.bulkCreate([
+            {
+                user:           user1.id,
+                event:          event.id,
+                type:           Constants.PARTICIPATION_NORMAL,
+                buyer:          true,
+                pointsCredited: 0,
+            }, {
+                user:           user2.id,
+                event:          event.id,
+                type:           Constants.PARTICIPATION_NORMAL,
+                buyer:          true,
+                pointsCredited: 8,
+            }, {
+                user:           user3.id,
+                event:          event.id,
+                type:           Constants.PARTICIPATION_NORMAL,
+                buyer:          false,
+                pointsCredited: 0,
+            },
+        ]);
+
+        await TransactionRebuilder.rebuildEvent(null, event);
+        await user1.reload();
+        await user2.reload();
+        await user3.reload();
+
+        expect(user1.money).toEqual(10);
+        expect(user2.money).toEqual(10);
+        expect(user3.money).toEqual(-20);
+    });
+
+    it('correctly ignores the money calculation if there is no buyers', async () => {
+        let [user1, user2] = await createUsers(2);
+        let event = await createLunchWithParticipations([user1, user2], user1, null);
+        await TransactionRebuilder.rebuildEvent(null, event);
+        await user1.reload();
+        await user2.reload();
+        expect(user1.money).toEqual(0);
+        expect(user2.money).toEqual(0);
+    });
+
+    it('correctly calculates the points if the credited points do not add up to the lunch cost', async () => {
+        let [user1, user2, user3] = await createUsers(3);
+        let event = await createLunch();
+
+        await Models.Participation.bulkCreate([
+            {
+                user:           user1.id,
+                event:          event.id,
+                type:           Constants.PARTICIPATION_NORMAL,
+                buyer:          true,
+                pointsCredited: 1,
+            }, {
+                user:           user2.id,
+                event:          event.id,
+                type:           Constants.PARTICIPATION_NORMAL,
+                buyer:          false,
+                pointsCredited: 3,
+            }, {
+                user:           user3.id,
+                event:          event.id,
+                type:           Constants.PARTICIPATION_NORMAL,
+                buyer:          false,
+                pointsCredited: 0,
+            },
+        ]);
+
+        await TransactionRebuilder.rebuildEvent(null, event);
+        await user1.reload();
+        await user2.reload();
+        await user3.reload();
+
+        expect(user1.points).toEqual(-1);
+        expect(user2.points).toEqual(5);
+        expect(user3.points).toEqual(-4);
     });
 });
