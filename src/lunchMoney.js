@@ -84,8 +84,24 @@ class LunchMoney {
             }, {
                 // Ignore if it exists already
                 ignoreDuplicates: true,
+            });
+
+        // Insert participation types
+        await Models.ParticipationType.bulkCreate([
+            {
+                id:    Constants.PARTICIPATION_NORMAL,
+                label: 'Opt-in',
+            }, {
+                id:    Constants.PARTICIPATION_VEGETARIAN,
+                label: 'Vegetarian opt-in',
+            }, {
+                id:    Constants.PARTICIPATION_NONE,
+                label: 'Opt-out',
             },
-        );
+        ], {
+            // Ignore if they exist already
+            ignoreDuplicates: true,
+        });
     }
 
     /**

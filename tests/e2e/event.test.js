@@ -4,6 +4,7 @@ const supertest = require('supertest');
 
 const LunchMoney = require('../../src/lunchMoney');
 const ConfigProvider = require('../../src/configProvider');
+const Constants = require('../../src/constants');
 
 /** @type {LunchMoney|null} */
 let lunchMoney = null;
@@ -23,11 +24,12 @@ afterEach(async () => {
 const sampleEvent = {
     name:  'Lunch',
     date:  '2020-01-15T11:00:00.000Z',
-    type:  1,
+    type:  Constants.EVENT_TYPE_LUNCH,
     costs: {
         points: 8,
         money:  32,
     },
+    vegetarianMoneyFactor: 0.5,
 };
 
 const eventUpdates = {
@@ -37,10 +39,11 @@ const eventUpdates = {
         points: 6,
         money:  25,
     },
+    vegetarianMoneyFactor: 0.75,
 };
 
 const disallowedUpdate = {
-    type: 1,
+    type: Constants.EVENT_TYPE_LUNCH,
 };
 
 const invalidData = {

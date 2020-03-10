@@ -58,7 +58,7 @@ async function createLunch(participants, cook, buyer) {
         await Models.Participation.create({
             user:           participant.id,
             event:          event.id,
-            type:           Constants.PARTICIPATION_FULL,
+            type:           Constants.PARTICIPATION_NORMAL,
             buyer:          participant.id === buyer.id,
             pointsCredited: participant.id === cook.id ? 8 : 0,
         });
@@ -78,10 +78,10 @@ describe('transaction tests', () => {
         let nPointTransactions = await Models.Transaction.count({where: {event: event.id, currency: Constants.CURRENCY_POINTS}});
         let nMoneyTransactions = await Models.Transaction.count({where: {event: event.id, currency: Constants.CURRENCY_MONEY}});
 
-        expect(user1.currentPoints).toEqual(4);
-        expect(user2.currentPoints).toEqual(-4);
-        expect(user1.currentMoney).toEqual(16);
-        expect(user2.currentMoney).toEqual(-16);
+        expect(user1.points).toEqual(4);
+        expect(user2.points).toEqual(-4);
+        expect(user1.money).toEqual(16);
+        expect(user2.money).toEqual(-16);
         expect(nPointTransactions).toEqual(6);
         expect(nMoneyTransactions).toEqual(6);
     });
@@ -126,6 +126,6 @@ describe('transaction tests', () => {
 
         let transactions = await Models.Transaction.findAll();
         expect(transactions.length).toEqual(12);
-        expect(user1.currentPoints).toEqual(4);
+        expect(user1.points).toEqual(4);
     });
 });

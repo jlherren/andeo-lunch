@@ -8,6 +8,37 @@ const Constants = require('./constants');
 const Db = require('./db');
 
 /**
+ * Get the weights for points and money for a certain participation to an event
+ *
+ * @param {Event} event
+ * @param {Participation} participation
+ * @returns {{moneyWeight: number, pointsWeight: number}}
+ */
+function getWeightsForParticipationType(event, participation) {
+    switch (participation.type) {
+        case Constants.PARTICIPATION_NORMAL:
+            return {
+                pointsWeight: 1,
+                moneyWeight:  1,
+
+            };
+        case Constants.PARTICIPATION_VEGETARIAN:
+            return {
+                pointsWeight: 1,
+                moneyWeight:  event.type === Constants.EVENT_TYPE_LUNCH ? event.vegetarianMoneyFactor : 1,
+            };
+        case Constants.PARTICIPATION_NONE:
+            return {
+                pointsWeight: 0,
+                moneyWeight:  0,
+
+            };
+        default:
+            throw new Error(`Unknown participation type ${participation.type}`);
+    }
+}
+
+/**
  * Re-inserts the transactions related to a specific event.  This does not recalculate the balances, so you
  * may want to run recalculateBalances() and rebuildUserBalances() afterwards.
  *
@@ -54,15 +85,18 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
     );
 
     let nBuyers = 0;
-    let nParticipants = 0;
-    let totalPoints = 0;
+    let totalPointsWeight = 0;
+    let totalMoneyWeight = 0;
+    let totalPointsCredited = 0;
 
     for (let participation of participations) {
-        nBuyers += participation.buyer;
-        if (participation.type === Constants.PARTICIPATION_FULL) {
-            nParticipants++;
+        if (participation.buyer) {
+            nBuyers++;
         }
-        totalPoints += participation.pointsCredited;
+        let {pointsWeight, moneyWeight} = getWeightsForParticipationType(event, participation);
+        totalPointsWeight += pointsWeight;
+        totalMoneyWeight += moneyWeight;
+        totalPointsCredited += participation.pointsCredited;
     }
 
     let inserts = [];
@@ -108,32 +142,37 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
         addInsert(systemUser.id, user, -amount, currency);
     }
 
-    let moneyPerBuyer = event.moneyCost / nBuyers;
-    let pointsPerParticipant = event.pointsCost / nParticipants;
-    let moneyPerParticipant = event.moneyCost / nParticipants;
+    let moneyPerBuyer = nBuyers > 0 ? event.moneyCost / nBuyers : 0;
+    let pointsCostPerWeightUnit = event.pointsCost / totalPointsWeight;
+    let moneyCostPerWeightUnit = event.moneyCost / totalMoneyWeight;
+    let pointsCostPerPointsCredited = event.pointsCost / totalPointsCredited;
+    // Note: pointsCostPerPointsCredited *should* usually be equal to 1, but let's not trust it anyway
 
     for (let participation of participations) {
-        if (participation.pointsCredited) {
-            // points credit for organizing the event
-            let points = participation.pointsCredited * (event.pointsCost / totalPoints);
-            // Note: event.pointsCost / totalPoints should be equal to 1
+        let {pointsWeight, moneyWeight} = getWeightsForParticipationType(event, participation);
+
+        // credit points for organizing the event
+        let points = participation.pointsCredited * pointsCostPerPointsCredited;
+        if (Math.abs(points) > Constants.EPSILON) {
             addTransaction(participation.user, points, Constants.CURRENCY_POINTS);
         }
 
-        if (participation.type === Constants.PARTICIPATION_FULL) {
-            // points cost for participating in the event
-            addTransaction(participation.user, -pointsPerParticipant, Constants.CURRENCY_POINTS);
+        // debit points for participating in the event
+        points = -pointsCostPerWeightUnit * pointsWeight;
+        if (Math.abs(points) > Constants.EPSILON) {
+            addTransaction(participation.user, points, Constants.CURRENCY_POINTS);
         }
 
-        if (nBuyers) {
+        if (nBuyers > 0 && Math.abs(moneyPerBuyer) > Constants.EPSILON) {
+            // credit money for financing the event
             if (participation.buyer) {
-                // money credit for financing the event
                 addTransaction(participation.user, moneyPerBuyer, Constants.CURRENCY_MONEY);
             }
 
-            if (participation.type === Constants.PARTICIPATION_FULL) {
-                // money cost for participating in the event
-                addTransaction(participation.user, -moneyPerParticipant, Constants.CURRENCY_MONEY);
+            // debit money for participating in the event
+            let money = -moneyCostPerWeightUnit * moneyWeight;
+            if (Math.abs(money) > Constants.EPSILON) {
+                addTransaction(participation.user, money, Constants.CURRENCY_MONEY);
             }
         }
     }
@@ -256,18 +295,18 @@ exports.rebuildUserBalances = async function rebuildUserBalances(dbTransaction) 
     // Careful: This query must work with MySQL and also SQLite
     let sql = `
         UPDATE "user" AS u
-        SET currentPoints = COALESCE((SELECT t.balance
-                                      FROM "transaction" AS t
-                                      WHERE t.currency = :ttPoints
-                                        AND t.user = u.id
-                                      ORDER BY t.date DESC, t.id DESC
-                                      LIMIT 1), 0),
-            currentMoney  = COALESCE((SELECT t.balance
-                                      FROM "transaction" AS t
-                                      WHERE t.currency = :ttMoney
-                                        AND t.user = u.id
-                                      ORDER BY t.date DESC, t.id DESC
-                                      LIMIT 1), 0)
+        SET points = COALESCE((SELECT t.balance
+                               FROM "transaction" AS t
+                               WHERE t.currency = :ttPoints
+                                 AND t.user = u.id
+                               ORDER BY t.date DESC, t.id DESC
+                               LIMIT 1), 0),
+            money  = COALESCE((SELECT t.balance
+                               FROM "transaction" AS t
+                               WHERE t.currency = :ttMoney
+                                 AND t.user = u.id
+                               ORDER BY t.date DESC, t.id DESC
+                               LIMIT 1), 0)
     `;
 
     await dbTransaction.sequelize.query(sql, {

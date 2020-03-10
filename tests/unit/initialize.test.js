@@ -35,6 +35,6 @@ it('correctly rebuilds user balances on an empty DB', async () => {
         await TransactionRebuilder.rebuildUserBalances(dbTransaction);
     });
     let systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
-    expect(systemUser.currentPoints).toEqual(0);
-    expect(systemUser.currentMoney).toEqual(0);
+    expect(systemUser.points).toEqual(0);
+    expect(systemUser.money).toEqual(0);
 });

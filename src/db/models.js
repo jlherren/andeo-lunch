@@ -15,8 +15,8 @@ const {Model, DataTypes} = require('sequelize');
  * @property {boolean} active Whether this user can log in, and can be added or removed from events
  * @property {boolean} hidden Whether the user should be displayed in a normal user listing
  * @property {string} name
- * @property {number} currentPoints
- * @property {number} currentMoney
+ * @property {number} points
+ * @property {number} money
  */
 class User extends Model {
 }
@@ -25,16 +25,17 @@ class User extends Model {
  * @property {number} type
  * @property {Date} date
  * @property {string} name
- * @property {number|null} lunch
  * @property {number} pointsCost
  * @property {number} moneyCost
+ * @property {number|null} vegetarianMoneyFactor
  */
 class Event extends Model {
 }
 
 /**
+ * @property {string} label
  */
-class Lunch extends Model {
+class ParticipationType extends Model {
 }
 
 /**
@@ -69,7 +70,7 @@ class Presence extends Model {
 
 exports.User = User;
 exports.Event = Event;
-exports.Lunch = Lunch;
+exports.ParticipationType = ParticipationType;
 exports.Participation = Participation;
 exports.Transaction = Transaction;
 exports.Presence = Presence;
@@ -92,30 +93,32 @@ module.exports.initModels = function initModels(sequelize) {
     }
 
     User.init({
-        username:      {type: ascii(64), allowNull: false, unique: true},
-        password:      {type: ascii(255), allowNull: false},
-        name:          {type: DataTypes.STRING(64), allowNull: false},
-        active:        {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
-        hidden:        {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
-        currentPoints: {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
-        currentMoney:  {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
+        username: {type: ascii(64), allowNull: false, unique: true},
+        password: {type: ascii(255), allowNull: false},
+        name:     {type: DataTypes.STRING(64), allowNull: false},
+        active:   {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
+        hidden:   {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
+        points:   {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
+        money:    {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
     }, {sequelize, modelName: 'user'});
 
-    Lunch.init({}, {sequelize, modelName: 'lunch'});
-
     Event.init({
-        type:       {type: DataTypes.TINYINT, allowNull: false},
-        date:       {type: DataTypes.DATE, allowNull: false},
-        name:       {type: DataTypes.STRING(255), allowNull: false},
-        lunch:      {type: DataTypes.INTEGER, allowNull: true, references: {model: Lunch}},
-        pointsCost: {type: DataTypes.DOUBLE, allowNull: false},
-        moneyCost:  {type: DataTypes.DOUBLE, allowNull: false},
+        type:                  {type: DataTypes.TINYINT, allowNull: false},
+        date:                  {type: DataTypes.DATE, allowNull: false},
+        name:                  {type: DataTypes.STRING(255), allowNull: false},
+        pointsCost:            {type: DataTypes.DOUBLE, allowNull: false},
+        moneyCost:             {type: DataTypes.DOUBLE, allowNull: false},
+        vegetarianMoneyFactor: {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 1},
     }, {sequelize, modelName: 'event'});
+
+    ParticipationType.init({
+        label: {type: DataTypes.STRING(64), allowNull: false},
+    }, {sequelize, modelName: 'participationType'});
 
     Participation.init({
         user:           {type: DataTypes.INTEGER, allowNull: false, unique: 'userEvent', references: {model: User}},
         event:          {type: DataTypes.INTEGER, allowNull: false, unique: 'userEvent', references: {model: Event}},
-        type:           {type: DataTypes.TINYINT, allowNull: false},
+        type:           {type: DataTypes.TINYINT, allowNull: false, references: {model: ParticipationType}},
         pointsCredited: {type: DataTypes.DOUBLE, allowNull: false},
         buyer:          {type: DataTypes.BOOLEAN, allowNull: false},
     }, {sequelize, modelName: 'participation'});

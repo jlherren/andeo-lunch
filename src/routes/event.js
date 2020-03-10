@@ -1,30 +1,37 @@
 'use strict';
 
+
 const Joi = require('@hapi/joi');
 
 const Models = require('../db/models');
 const Factory = require('./factory');
 const RouteUtils = require('./route-utils');
-const Constants = require('../constants');
 const Db = require('../db');
 
 const nameSchema = Joi.string().normalize().min(1).regex(/\S/u);
 const typeSchema = Joi.number().integer().min(1).max(1);
+const vegetarianMoneyFactorSchema = Joi.number().min(0).max(1);
 
 const eventCreateSchema = Joi.object({
-    name:  nameSchema.required(),
-    date:  Joi.date().required(),
-    type:  typeSchema.required(),
-    costs: Joi.object({
+    name:                  nameSchema.required(),
+    date:                  Joi.date().required(),
+    type:                  typeSchema.required(),
+    vegetarianMoneyFactor: Joi.when('type', {
+        is:        1,
+        then:      vegetarianMoneyFactorSchema.required(),
+        otherwise: Joi.forbidden(),
+    }),
+    costs:                 Joi.object({
         points: Joi.number().min(0).required(),
         money:  Joi.number().min(0).required(),
     }).required(),
 });
 
 const eventUpdateSchema = Joi.object({
-    name:  nameSchema,
-    date:  Joi.date(),
-    costs: Joi.object({
+    name:                  nameSchema,
+    date:                  Joi.date(),
+    vegetarianMoneyFactor: vegetarianMoneyFactorSchema,
+    costs:                 Joi.object({
         points: Joi.number().min(0),
         money:  Joi.number().min(0),
     }),
@@ -44,15 +51,15 @@ const participationSchema = Joi.object({
  */
 function mapEvent(event) {
     return {
-        id:    event.id,
-        type:  event.type,
-        date:  event.date,
-        name:  event.name,
-        lunch: event.lunch,
-        costs: {
+        id:                    event.id,
+        type:                  event.type,
+        date:                  event.date,
+        name:                  event.name,
+        costs:                 {
             points: event.pointsCost,
             money:  event.moneyCost,
         },
+        vegetarianMoneyFactor: event.vegetarianMoneyFactor,
     };
 }
 
@@ -109,11 +116,12 @@ async function getSingleParticipation(ctx) {
 async function createEvent(ctx) {
     let value = RouteUtils.validateBody(ctx, eventCreateSchema);
     let event = await Models.Event.create({
-        name:       value.name,
-        date:       value.date,
-        type:       value.type,
-        pointsCost: value.costs.points,
-        moneyCost:  value.costs.money,
+        name:                  value.name,
+        date:                  value.date,
+        type:                  value.type,
+        pointsCost:            value.costs.points,
+        moneyCost:             value.costs.money,
+        vegetarianMoneyFactor: value.vegetarianMoneyFactor,
     });
     ctx.status = 201;
     ctx.body = '';
@@ -122,22 +130,51 @@ async function createEvent(ctx) {
 
 /**
  * @param {Application.Context} ctx
+ * @param {Transaction} [transaction]
+ * @returns {Event}
+ */
+async function getEvent(ctx, transaction) {
+    let event = await Models.Event.findByPk(parseInt(ctx.params.event, 10), {transaction});
+    if (!event) {
+        ctx.throw(404, 'No such event');
+    }
+    return event;
+}
+
+/**
+ * @param {Application.Context} ctx
+ * @param {Transaction} [transaction]
+ * @returns {User}
+ */
+async function getUser(ctx, transaction) {
+    let user = await Models.User.findByPk(parseInt(ctx.params.user, 10), {transaction});
+    if (!user) {
+        ctx.throw(404, 'No such user');
+    }
+    if (!user.active) {
+        ctx.throw(403, 'User is not active');
+    }
+    return user;
+}
+
+/**
+ * @param {Application.Context} ctx
  * @returns {Promise<void>}
  */
 async function updateEvent(ctx) {
     let value = RouteUtils.validateBody(ctx, eventUpdateSchema);
-    let event = await Models.Event.findByPk(ctx.params.event);
-    if (!event) {
-        ctx.throw(404, 'No such event');
-    }
-    value = {
-        name:       value.name,
-        date:       value.date,
-        type:       value.type,
-        pointsCost: value.costs && value.costs.points,
-        moneyCost:  value.costs && value.costs.money,
-    };
-    await event.update(value);
+    await Db.sequelize.transaction(async transaction => {
+        let event = await getEvent(ctx, transaction);
+        value = {
+            name:                  value.name,
+            date:                  value.date,
+            type:                  value.type,
+            pointsCost:            value.costs && value.costs.points,
+            moneyCost:             value.costs && value.costs.money,
+            vegetarianMoneyFactor: value.vegetarianMoneyFactor,
+        };
+        await event.update(value, {transaction});
+    });
     ctx.status = 204;
 }
 
@@ -147,28 +184,24 @@ async function updateEvent(ctx) {
  */
 async function saveParticipation(ctx) {
     let value = RouteUtils.validateBody(ctx, participationSchema);
-    let eventId = parseInt(ctx.params.event, 10);
-    let userId = parseInt(ctx.params.user, 10);
-    if (userId === Constants.SYSTEM_USER) {
-        ctx.throw(400, 'System user cannot participate in events');
-    }
+    let event = await getEvent(ctx);
+    let user = await getUser(ctx);
     await Db.sequelize.transaction(async transaction => {
         let participation = await Models.Participation.findOne({
             where: {
-                event: eventId,
-                user:  userId,
+                event: event.id,
+                user:  user.id,
             },
             transaction,
         });
         if (!participation) {
             // doesn't exist yet, set defaults
             value = {
-                type:           Constants.PARTICIPATION_FULL,
                 pointsCredited: 0,
                 buyer:          false,
                 ...value,
-                event:          eventId,
-                user:           userId,
+                event:          event.id,
+                user:           user.id,
             };
             await Models.Participation.create(value, {transaction});
         } else {
@@ -183,12 +216,12 @@ async function saveParticipation(ctx) {
  * @returns {Promise<void>}
  */
 async function deleteParticipation(ctx) {
-    let eventId = parseInt(ctx.params.event, 10);
-    let userId = parseInt(ctx.params.user, 10);
+    let event = await getEvent(ctx);
+    let user = await getUser(ctx);
     let n = await Models.Participation.destroy({
         where: {
-            event: eventId,
-            user:  userId,
+            event: event.id,
+            user:  user.id,
         },
     });
     if (n) {

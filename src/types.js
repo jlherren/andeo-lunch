@@ -26,8 +26,8 @@
  * @property {number} type
  * @property {Date} date
  * @property {string} name
- * @property {number|null} lunch
  * @property {{points: number, money: number}} costs
+ * @property {number|null} vegetarianMoneyFactor
  */
 
 /**

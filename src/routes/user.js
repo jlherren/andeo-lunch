@@ -14,8 +14,8 @@ function mapUser(user) {
         id:       user.id,
         name:     user.name,
         balances: {
-            points: user.currentPoints,
-            money:  user.currentMoney,
+            points: user.points,
+            money:  user.money,
         },
     };
 }
