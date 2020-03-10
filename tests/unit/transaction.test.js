@@ -114,7 +114,7 @@ describe('transaction tests', () => {
         await Models.Transaction.create({
             event:      event.id,
             user:       user3.id,
-            contraUser: Constants.SYSTEM_USER,
+            contraUser: user2.id,
             currency:   Constants.CURRENCY_POINTS,
             date:       event.date,
             amount:     100,

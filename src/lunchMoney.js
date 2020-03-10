@@ -69,19 +69,23 @@ class LunchMoney {
      * @returns {Promise<void>}
      */
     async initDb() {
+        // Create tables
         let sequelize = await this.sequelizePromise;
         await sequelize.sync();
-        let systemUser = await Models.User.findByPk(Constants.SYSTEM_USER);
-        if (!systemUser) {
-            await Models.User.create({
-                id:       Constants.SYSTEM_USER,
-                username: 'system',
-                name:     'System User',
+
+        // Insert system user
+        await Models.User.create(
+            {
+                username: Constants.SYSTEM_USER_USERNAME,
+                name:     'System user',
                 active:   false,
                 hidden:   true,
-                password: '',
-            });
-        }
+                password: '*',
+            }, {
+                // Ignore if it exists already
+                ignoreDuplicates: true,
+            },
+        );
     }
 
     /**

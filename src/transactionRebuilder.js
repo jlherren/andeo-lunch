@@ -21,6 +21,9 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
         event = await Models.Event.findByPk(event, {transaction: dbTransaction});
     }
 
+    let systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}, transaction: dbTransaction});
+
+    /** @type {Array<Participation>} */
     let participations = await Models.Participation.findAll({
         where:       {event: event.id},
         order:       [['id', 'ASC']],
@@ -101,8 +104,8 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
      * @param {number} currency
      */
     function addTransaction(user, amount, currency) {
-        addInsert(user, Constants.SYSTEM_USER, amount, currency);
-        addInsert(Constants.SYSTEM_USER, user, -amount, currency);
+        addInsert(user, systemUser.id, amount, currency);
+        addInsert(systemUser.id, user, -amount, currency);
     }
 
     let moneyPerBuyer = event.moneyCost / nBuyers;

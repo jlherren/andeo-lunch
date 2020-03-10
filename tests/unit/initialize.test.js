@@ -20,7 +20,7 @@ afterEach(async () => {
 });
 
 it('creates a sane empty DB', async () => {
-    let systemUser = await Models.User.findByPk(Constants.SYSTEM_USER);
+    let systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
     expect(systemUser).toBeInstanceOf(Models.User);
     expect(systemUser.hidden).toEqual(true);
     expect(systemUser.active).toEqual(false);
@@ -34,7 +34,7 @@ it('correctly rebuilds user balances on an empty DB', async () => {
     await Db.sequelize.transaction(async dbTransaction => {
         await TransactionRebuilder.rebuildUserBalances(dbTransaction);
     });
-    let systemUser = await Models.User.findByPk(Constants.SYSTEM_USER);
+    let systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
     expect(systemUser.currentPoints).toEqual(0);
     expect(systemUser.currentMoney).toEqual(0);
 });

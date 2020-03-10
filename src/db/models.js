@@ -12,8 +12,8 @@ const {Model, DataTypes} = require('sequelize');
 /**
  * @property {string} username
  * @property {string} password
- * @property {boolean} active
- * @property {boolean} hidden
+ * @property {boolean} active Whether this user can log in, and can be added or removed from events
+ * @property {boolean} hidden Whether the user should be displayed in a normal user listing
  * @property {string} name
  * @property {number} currentPoints
  * @property {number} currentMoney
