@@ -3,6 +3,7 @@
 const Koa = require('koa');
 const Router = require('koa-router');
 const Logger = require('koa-logger');
+const cors = require('koa-cors');
 const BodyParser = require('koa-bodyparser');
 
 const UserRoutes = require('./routes/user');
@@ -32,6 +33,9 @@ class LunchMoney {
         this.server = null;
 
         this.app = new Koa();
+        this.app.use(cors({
+            origin: '*',
+        }));
 
         if (this.options.logging) {
             this.app.use(Logger());

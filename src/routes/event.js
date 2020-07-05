@@ -38,7 +38,11 @@ const eventUpdateSchema = Joi.object({
 });
 
 const participationSchema = Joi.object({
-    type:           Joi.number().integer().min(1).max(3),
+    type: Joi.number()
+        .integer()
+        .min(1)
+        .max(3)
+        .required(),
     pointsCredited: Joi.number().min(0),
     buyer:          Joi.boolean(),
 });
