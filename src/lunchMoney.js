@@ -145,10 +145,7 @@ class LunchMoney {
      */
     listen() {
         let {port} = this.options.config;
-        // Setting port to null is valid!
-        if (port === undefined) {
-            port = 3000;
-        }
+        // The port can be null to chose automatically
         this.server = this.app.listen(port);
         return this.server;
     }
