@@ -33,4 +33,12 @@ describe('misc route tests', () => {
         expect(response.status).toEqual(200);
         expect(response.body).toMatchObject({});
     });
+
+    it('responds to cors request', async () => {
+        let response = await request.options('/version')
+            .set('Access-Control-Request-Method', 'GET')
+            .set('Origin', 'http://www.example.com');
+        expect(response.status).toEqual(204);
+        expect(response.header['access-control-allow-origin']).toEqual('*');
+    });
 });
