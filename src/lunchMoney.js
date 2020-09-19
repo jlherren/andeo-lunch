@@ -6,6 +6,7 @@ const Logger = require('koa-logger');
 const cors = require('@koa/cors');
 const BodyParser = require('koa-bodyparser');
 
+const AccountRoutes = require('./routes/account');
 const UserRoutes = require('./routes/user');
 const EventRoutes = require('./routes/event');
 const MiscRoutes = require('./routes/misc');
@@ -62,6 +63,12 @@ class LunchMoney {
             return next();
         });
 
+        // Provide the LunchMoney instance to all controllers
+        this.app.use((ctx, next) => {
+            ctx.lunchMoney = this;
+            return next();
+        });
+
         let router = this.createRouter();
         this.app.use(router.routes());
         this.app.use(router.allowedMethods());
@@ -84,7 +91,7 @@ class LunchMoney {
                 name:     'System user',
                 active:   false,
                 hidden:   true,
-                password: '*',
+                password: null,
             }, {
                 // Ignore if it exists already
                 ignoreDuplicates: true,
@@ -125,15 +132,23 @@ class LunchMoney {
     }
 
     /**
+     * @returns {Config}
+     */
+    getConfig() {
+        return this.options.config;
+    }
+
+    /**
      * @returns {Router}
      * @private
      */
     createRouter() {
         let router = new Router();
 
-        MiscRoutes.register(router);
+        AccountRoutes.register(router);
         UserRoutes.register(router);
         EventRoutes.register(router);
+        MiscRoutes.register(router);
 
         return router;
     }

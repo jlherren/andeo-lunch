@@ -11,7 +11,8 @@ Create a file `config.json` and fill it with this for a MySQL database:
         "username": "lunchmoney",
         "password": "my-password"
       },
-      "port": 3000
+      "port": 3000,
+      "secret": "SOME_RANDOMLY_GENERATED_BASE_64_STRING_WITH_AT_LEAST_256_BITS"
     }
 
 Or if sqlite is preferred:
@@ -21,12 +22,13 @@ Or if sqlite is preferred:
         "dialect": "sqlite",
         "storage": "lunchmoney.db"
       },
-      "port": 3000
+      "port": 3000,
+      "secret": "SOME_RANDOMLY_GENERATED_BASE_64_STRING_WITH_AT_LEAST_256_BITS"
     }
 
 ## Create tables
 
-If the database is still empty, the following command will create all tables:
+If the database is still empty, the following command will create all tables and defaults:
 
     yarn db:init
 
@@ -35,10 +37,6 @@ If the database is still empty, the following command will create all tables:
 To create a new user:
 
     yarn db:createUser
-
-## Rebuild all transactions
-
-    yarn db:rebuild
 
 # Yarn scripts
 
@@ -50,3 +48,4 @@ To create a new user:
   useful during debugging.
 - `yarn lint` will run eslint and output all errors
 - `yarn lint --fix` will fix all errors that eslint can fix by itself.
+- `yarn db:rebuild` will rebuild all balances

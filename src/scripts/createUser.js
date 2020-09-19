@@ -29,7 +29,12 @@ lunchMoney.sequelizePromise.then(async sequelize => {
         }
         let name = await cli.question('Display name: ');
         let hashed = await AuthUtils.hashPassword(password1);
-        await Models.User.create({username, name, password: hashed, active: true});
+        await Models.User.create({
+            username,
+            name,
+            password: hashed,
+            active:   true,
+        });
         console.log(`User ${username} created successfully`);
     } catch (err) {
         console.error(err.message);

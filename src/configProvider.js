@@ -4,26 +4,31 @@ const fs = require('fs');
 const Joi = require('joi');
 
 /**
- * @typedef {Object<string, any>} Config
+ * @typedef {Object} Config
  * @property {Object<string, any>} database
  * @property {number} [port]
+ * @property {string} secret
+ * @property {string} tokenExpiry
  */
 const configSchema = Joi.object({
-    database: Joi.object({
+    database:    Joi.object({
         dialect: Joi.string().required(),
     }).unknown(true),
-    port:     Joi.number().required().allow(null),
-    secret:   Joi.string().required(),
+    port:        Joi.number().required().allow(null),
+    secret:      Joi.string().required().min(44).base64(),
+    tokenExpiry: Joi.string().min(1).default('30 days'),
 }).unknown(true);
 
 /**
  * @param {Config} config
+ * @returns {Config}
  */
 function validateConfig(config) {
-    let {error} = configSchema.validate(config);
+    let {error, value} = configSchema.validate(config);
     if (error) {
         throw error;
     }
+    return value;
 }
 
 /**
@@ -40,8 +45,7 @@ exports.getMainConfig = function getMainConfig() {
     }
 
     let config = JSON.parse(fs.readFileSync(fullPath).toString('UTF-8'));
-    validateConfig(config);
-    return config;
+    return validateConfig(config);
 };
 
 /**
@@ -50,13 +54,14 @@ exports.getMainConfig = function getMainConfig() {
  * @returns {Config}
  */
 exports.getTestConfig = function getTestConfig() {
+    // noinspection SpellCheckingInspection
     let config = /** @type {Config} */ {
-        database: {
+        database:    {
             dialect: 'sqlite',
             storage: ':memory:',
         },
-        port:     null,
+        port:        null,
+        secret:      'O1KQvnQKnlfPRn5c/N+tBerGlG+BIUOM7eOilKx2vj+8ykcaGyGMFR3AMuGtcoatH3C+r8zl03U/wNND',
     };
-    validateConfig(config);
-    return config;
+    return validateConfig(config);
 };

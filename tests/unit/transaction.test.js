@@ -29,7 +29,7 @@ async function createUsers(n) {
     for (let i = 0; i < n; i++) {
         users.push(await Models.User.create({
             username: `user-${i}`,
-            password: '',
+            password: null,
             active:   true,
             name:     `User ${i}`,
         }));
