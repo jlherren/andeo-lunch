@@ -14,6 +14,8 @@ let lunchMoney = null;
 let request = null;
 /** @type {User|null} */
 let user = null;
+/** @type {User|null} */
+let inactiveUser = null;
 
 beforeAll(async () => {
     lunchMoney = new LunchMoney({config: ConfigProvider.getTestConfig()});
@@ -24,6 +26,12 @@ beforeAll(async () => {
         active:   true,
         name:     'Test User',
     });
+    inactiveUser = await Models.User.create({
+        username: 'inactiveuser',
+        password: await AuthUtils.hashPassword('qwe456'),
+        active:   false,
+        name:     'Inactive User',
+    });
     request = supertest(lunchMoney.listen());
 });
 
@@ -31,12 +39,13 @@ afterAll(async () => {
     await lunchMoney.close();
 });
 
-describe('account route tests', () => {
+describe('account login route', () => {
     it('returns a token after correct login', async () => {
         let response = await request.post('/account/login')
             .send({username: 'testuser', password: 'abc123'});
         expect(response.status).toEqual(200);
-        let data = await JsonWebToken.verify(response.body.token, lunchMoney.getConfig().secret);
+        let config = lunchMoney.getConfig();
+        let data = await JsonWebToken.verify(response.body.token, config.secret);
         expect(data.id).toEqual(user.id);
     });
 
@@ -52,11 +61,34 @@ describe('account route tests', () => {
         expect(response.status).toEqual(401);
     });
 
-    it('returns a new token after renewing', async () => {
+    it('returns failure for inactive user', async () => {
         let response = await request.post('/account/login')
-            .send({username: 'testuser', password: 'abc123'});
-        response = await request.post('/account/renew').set('Authorization', `Bearer ${response.body.token}`);
-        let data = await JsonWebToken.verify(response.body.token, lunchMoney.getConfig().secret);
+            .send({username: 'inactiveuser', password: 'qwe456'});
+        expect(response.status).toEqual(401);
+    });
+});
+
+describe('account renew route', () => {
+    it('returns a new token after renewing', async () => {
+        // Fake a valid token
+        let config = lunchMoney.getConfig();
+        let token = await user.generateToken(config.secret);
+        let response = await request.post('/account/renew').set('Authorization', `Bearer ${token}`);
+        expect(response.status).toEqual(200);
+        let data = await JsonWebToken.verify(response.body.token, config.secret);
         expect(data.id).toEqual(user.id);
+    });
+
+    it('returns an error when renewing without an invalid token', async () => {
+        let response = await request.post('/account/renew').set('Authorization', 'Bearer WHATEVER');
+        expect(response.status).toEqual(401);
+    });
+
+    it('returns an error when renewing a newly inactive user', async () => {
+        // Fake a valid token
+        let config = lunchMoney.getConfig();
+        let token = await inactiveUser.generateToken(config.secret);
+        let response = await request.post('/account/renew').set('Authorization', `Bearer ${token}`);
+        expect(response.status).toEqual(401);
     });
 });

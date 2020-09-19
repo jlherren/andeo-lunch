@@ -22,11 +22,12 @@ const {Model, DataTypes} = require('sequelize');
 class User extends Model {
     /**
      * @param {string} secret
-     * @param {object} options
-     * @returns {string}
+     * @param {object} [options]
+     * @returns {Promise<string>}
      */
     generateToken(secret, options) {
-        return jsonWebToken.sign({id: this.id}, secret, options);
+        // sign() is supposed to return a promise, but it doesn't
+        return Promise.resolve(jsonWebToken.sign({id: this.id}, secret, options));
     }
 }
 
