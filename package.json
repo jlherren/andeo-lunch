@@ -15,27 +15,27 @@
     "db:rebuild": "node src/scripts/rebuildTransactions.js"
   },
   "dependencies": {
-    "@hapi/joi": "~17.1.0",
-    "koa": "~2.11.0",
-    "koa-bodyparser": "~4.2.1",
-    "koa-cors": "^0.0.16",
+    "joi": "~17.2.1",
+    "koa": "~2.13.0",
+    "koa-bodyparser": "~4.3.0",
+    "@koa/cors": "~3.1.0",
+    "@koa/router": "~9.4.0",
     "koa-logger": "~3.2.1",
-    "koa-router": "~8.0.8",
-    "mysql2": "~2.1.0",
-    "sequelize": "~5.21.5",
-    "sqlite3": "~4.1.1"
+    "mysql2": "~2.2.1",
+    "sequelize": "~6.3.5",
+    "sqlite3": "~5.0.0"
   },
   "devDependencies": {
-    "@types/hapi__joi": "~16.0.12",
-    "@types/koa": "~2.11.1",
+    "@types/joi": "~14.3.4",
+    "@types/koa": "~2.11.4",
     "@types/koa-logger": "~3.1.1",
-    "@types/koa-router": "~7.4.0",
-    "@types/supertest": "~2.0.8",
-    "eslint": "~6.8.0",
-    "eslint-plugin-jest": "~23.8.1",
-    "eslint-plugin-jsdoc": "~22.0.0",
-    "jest": "~25.1.0",
-    "nodemon": "~2.0.2",
+    "@types/koa-router": "~7.4.1",
+    "@types/supertest": "~2.0.10",
+    "eslint": "~7.9.0",
+    "eslint-plugin-jest": "~24.0.1",
+    "eslint-plugin-jsdoc": "~30.5.1",
+    "jest": "~26.4.2",
+    "nodemon": "~2.0.4",
     "supertest": "~4.0.2"
   }
 }

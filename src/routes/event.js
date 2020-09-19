@@ -1,7 +1,7 @@
 'use strict';
 
 
-const Joi = require('@hapi/joi');
+const Joi = require('joi');
 
 const Models = require('../db/models');
 const Factory = require('./factory');

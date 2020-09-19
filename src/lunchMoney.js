@@ -1,9 +1,9 @@
 'use strict';
 
 const Koa = require('koa');
-const Router = require('koa-router');
+const Router = require('@koa/router');
 const Logger = require('koa-logger');
-const cors = require('koa-cors');
+const cors = require('@koa/cors');
 const BodyParser = require('koa-bodyparser');
 
 const UserRoutes = require('./routes/user');
