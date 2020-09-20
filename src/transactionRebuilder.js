@@ -189,7 +189,7 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
             deleteIds.push(transaction.id);
         }
     }
-    await Models.Transaction.destroy({where: {id: deleteIds}});
+    await Models.Transaction.destroy({where: {id: deleteIds}, transaction: dbTransaction});
 
     return {
         earliestDate,
@@ -294,7 +294,7 @@ exports.rebuildTransactionBalances = async function rebuildTransactionBalances(d
 exports.rebuildUserBalances = async function rebuildUserBalances(dbTransaction) {
     // Careful: This query must work with MySQL and also SQLite
     let sql = `
-        UPDATE "user" AS u
+        UPDATE user AS u
         SET points = COALESCE((SELECT t.balance
                                FROM "transaction" AS t
                                WHERE t.currency = :ttPoints
