@@ -25,13 +25,7 @@ describe('misc route tests', () => {
     it('responds with backend version', async () => {
         let response = await request.get('/version');
         expect(response.status).toEqual(200);
-        expect(response.text).toEqual(PackageJson.version);
-    });
-
-    it('responds with currency data', async () => {
-        let response = await request.get('/currencies');
-        expect(response.status).toEqual(200);
-        expect(response.body).toMatchObject({});
+        expect(response.body.version).toEqual(PackageJson.version);
     });
 
     it('responds to cors request', async () => {

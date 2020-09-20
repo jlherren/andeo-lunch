@@ -16,22 +16,20 @@ const Db = require('./db');
  */
 function getWeightsForParticipationType(event, participation) {
     switch (participation.type) {
-        case Constants.PARTICIPATION_NORMAL:
+        case Constants.PARTICIPATION_TYPES.NORMAL:
             return {
                 pointsWeight: 1,
                 moneyWeight:  1,
-
             };
-        case Constants.PARTICIPATION_VEGETARIAN:
+        case Constants.PARTICIPATION_TYPES.VEGETARIAN:
             return {
                 pointsWeight: 1,
-                moneyWeight:  event.type === Constants.EVENT_TYPE_LUNCH ? event.vegetarianMoneyFactor : 1,
+                moneyWeight:  event.type === Constants.EVENT_TYPES.MEAL ? event.vegetarianMoneyFactor : 1,
             };
-        case Constants.PARTICIPATION_NONE:
+        case Constants.PARTICIPATION_TYPES.NONE:
             return {
                 pointsWeight: 0,
                 moneyWeight:  0,
-
             };
         default:
             throw new Error(`Unknown participation type ${participation.type}`);
@@ -154,25 +152,25 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
         // credit points for organizing the event
         let points = participation.pointsCredited * pointsCostPerPointsCredited;
         if (Math.abs(points) > Constants.EPSILON) {
-            addTransaction(participation.user, points, Constants.CURRENCY_POINTS);
+            addTransaction(participation.user, points, Constants.CURRENCIES.POINTS);
         }
 
         // debit points for participating in the event
         points = -pointsCostPerWeightUnit * pointsWeight;
         if (Math.abs(points) > Constants.EPSILON) {
-            addTransaction(participation.user, points, Constants.CURRENCY_POINTS);
+            addTransaction(participation.user, points, Constants.CURRENCIES.POINTS);
         }
 
         if (nBuyers > 0 && Math.abs(moneyPerBuyer) > Constants.EPSILON) {
             // credit money for financing the event
             if (participation.buyer) {
-                addTransaction(participation.user, moneyPerBuyer, Constants.CURRENCY_MONEY);
+                addTransaction(participation.user, moneyPerBuyer, Constants.CURRENCIES.MONEY);
             }
 
             // debit money for participating in the event
             let money = -moneyCostPerWeightUnit * moneyWeight;
             if (Math.abs(money) > Constants.EPSILON) {
-                addTransaction(participation.user, money, Constants.CURRENCY_MONEY);
+                addTransaction(participation.user, money, Constants.CURRENCIES.MONEY);
             }
         }
     }
@@ -311,8 +309,8 @@ exports.rebuildUserBalances = async function rebuildUserBalances(dbTransaction) 
 
     await dbTransaction.sequelize.query(sql, {
         replacements: {
-            ttPoints: Constants.CURRENCY_POINTS,
-            ttMoney:  Constants.CURRENCY_MONEY,
+            ttPoints: Constants.CURRENCIES.POINTS,
+            ttMoney:  Constants.CURRENCIES.MONEY,
         },
         transaction:  dbTransaction,
     });

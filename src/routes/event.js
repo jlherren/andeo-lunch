@@ -1,50 +1,56 @@
 'use strict';
 
-
 const Joi = require('joi');
 
 const Models = require('../db/models');
 const Factory = require('./factory');
 const RouteUtils = require('./route-utils');
 const Db = require('../db');
+const Constants = require('../constants');
+const TransactionRebuilder = require('../transactionRebuilder');
 
 const nameSchema = Joi.string().normalize().min(1).regex(/\S/u);
-const typeSchema = Joi.number().integer().min(1).max(1);
-const vegetarianMoneyFactorSchema = Joi.number().min(0).max(1);
+const eventTypeSchema = Joi.string().valid(...Object.values(Constants.EVENT_TYPE_NAMES));
+const participationTypeSchema = Joi.string().valid(...Object.values(Constants.PARTICIPATION_TYPE_NAMES));
+const factorSchema = Joi.number().min(0).max(1);
+const vegetarianApiName = Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.VEGETARIAN];
+const moneyApiName = Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY];
+const discountFactors = Joi.object({
+    [vegetarianApiName]: Joi.object({
+        [moneyApiName]: factorSchema.required(),
+    }).required(),
+});
+const currencySchema = Joi.number().min(0);
 
 const eventCreateSchema = Joi.object({
-    name:                  nameSchema.required(),
-    date:                  Joi.date().required(),
-    type:                  typeSchema.required(),
-    vegetarianMoneyFactor: Joi.when('type', {
-        is:        1,
-        then:      vegetarianMoneyFactorSchema.required(),
-        otherwise: Joi.forbidden(),
-    }),
-    costs:                 Joi.object({
-        points: Joi.number().min(0).required(),
-        money:  Joi.number().min(0).required(),
+    name:    nameSchema.required(),
+    date:    Joi.date().required(),
+    type:    eventTypeSchema.required(),
+    costs:   Joi.object({
+        points: currencySchema.required(),
+        money:  currencySchema.required(),
     }).required(),
+    factors: discountFactors.required(),
 });
 
 const eventUpdateSchema = Joi.object({
-    name:                  nameSchema,
-    date:                  Joi.date(),
-    vegetarianMoneyFactor: vegetarianMoneyFactorSchema,
-    costs:                 Joi.object({
-        points: Joi.number().min(0),
-        money:  Joi.number().min(0),
+    name:    nameSchema,
+    date:    Joi.date(),
+    costs:   Joi.object({
+        points: currencySchema,
+        money:  currencySchema,
     }),
+    factors: discountFactors,
 });
 
 const participationSchema = Joi.object({
-    type: Joi.number()
-        .integer()
-        .min(1)
-        .max(3)
-        .required(),
-    pointsCredited: Joi.number().min(0),
-    buyer:          Joi.boolean(),
+    type:     participationTypeSchema.required(),
+    credits:  Joi.object({
+        points: currencySchema.required(),
+    }),
+    provides: Joi.object({
+        money: Joi.boolean().required(),
+    }),
 });
 
 /**
@@ -55,15 +61,19 @@ const participationSchema = Joi.object({
  */
 function mapEvent(event) {
     return {
-        id:                    event.id,
-        type:                  event.type,
-        date:                  event.date,
-        name:                  event.name,
-        costs:                 {
+        id:      event.id,
+        type:    Constants.EVENT_TYPE_NAMES[event.type],
+        date:    event.date,
+        name:    event.name,
+        costs:   {
             points: event.pointsCost,
             money:  event.moneyCost,
         },
-        vegetarianMoneyFactor: event.vegetarianMoneyFactor,
+        factors: {
+            [vegetarianApiName]: {
+                [moneyApiName]: event.vegetarianMoneyFactor,
+            },
+        },
     };
 }
 
@@ -75,11 +85,15 @@ function mapEvent(event) {
  */
 function mapParticipation(participation) {
     return {
-        user:           participation.user,
-        event:          participation.event,
-        type:           participation.type,
-        pointsCredited: participation.pointsCredited,
-        buyer:          !!participation.buyer,
+        user:     participation.user,
+        event:    participation.event,
+        type:     Constants.PARTICIPATION_TYPE_NAMES[participation.type],
+        credits:  {
+            points: participation.pointsCredited,
+        },
+        provides: {
+            money: !!participation.buyer,
+        },
     };
 }
 
@@ -118,18 +132,23 @@ async function getSingleParticipation(ctx) {
  * @returns {Promise<void>}
  */
 async function createEvent(ctx) {
-    let value = RouteUtils.validateBody(ctx, eventCreateSchema);
-    let event = await Models.Event.create({
-        name:                  value.name,
-        date:                  value.date,
-        type:                  value.type,
-        pointsCost:            value.costs.points,
-        moneyCost:             value.costs.money,
-        vegetarianMoneyFactor: value.vegetarianMoneyFactor,
+    /** @type {ApiEvent} */
+    let apiEvent = RouteUtils.validateBody(ctx, eventCreateSchema);
+    let eventId = await Db.sequelize.transaction(async transaction => {
+        let event = await Models.Event.create({
+            name:                  apiEvent.name,
+            date:                  apiEvent.date,
+            type:                  Constants.EVENT_TYPE_IDS[apiEvent.type],
+            pointsCost:            apiEvent.costs.points,
+            moneyCost:             apiEvent.costs.money,
+            vegetarianMoneyFactor: apiEvent.factors.vegetarian.money,
+        }, {transaction});
+        await TransactionRebuilder.rebuildEvent(transaction, event);
+        return event.id;
     });
     ctx.status = 201;
     ctx.body = '';
-    ctx.set('Location', `/events/${event.id}`);
+    ctx.set('Location', `/events/${eventId}`);
 }
 
 /**
@@ -138,7 +157,11 @@ async function createEvent(ctx) {
  * @returns {Event}
  */
 async function getEvent(ctx, transaction) {
-    let event = await Models.Event.findByPk(parseInt(ctx.params.event, 10), {transaction});
+    let options = {
+        transaction,
+        lock: transaction ? transaction.LOCK.UPDATE : undefined,
+    };
+    let event = await Models.Event.findByPk(parseInt(ctx.params.event, 10), options);
     if (!event) {
         ctx.throw(404, 'No such event');
     }
@@ -151,7 +174,11 @@ async function getEvent(ctx, transaction) {
  * @returns {User}
  */
 async function getUser(ctx, transaction) {
-    let user = await Models.User.findByPk(parseInt(ctx.params.user, 10), {transaction});
+    let options = {
+        transaction,
+        lock: transaction ? transaction.LOCK.UPDATE : undefined,
+    };
+    let user = await Models.User.findByPk(parseInt(ctx.params.user, 10), options);
     if (!user) {
         ctx.throw(404, 'No such user');
     }
@@ -166,18 +193,20 @@ async function getUser(ctx, transaction) {
  * @returns {Promise<void>}
  */
 async function updateEvent(ctx) {
-    let value = RouteUtils.validateBody(ctx, eventUpdateSchema);
+    /** @type {ApiEvent} */
+    let apiEvent = RouteUtils.validateBody(ctx, eventUpdateSchema);
     await Db.sequelize.transaction(async transaction => {
         let event = await getEvent(ctx, transaction);
-        value = {
-            name:                  value.name,
-            date:                  value.date,
-            type:                  value.type,
-            pointsCost:            value.costs && value.costs.points,
-            moneyCost:             value.costs && value.costs.money,
-            vegetarianMoneyFactor: value.vegetarianMoneyFactor,
+        let update = {
+            name:                  apiEvent.name,
+            date:                  apiEvent.date,
+            type:                  apiEvent.type,
+            pointsCost:            apiEvent.costs && apiEvent.costs.points,
+            moneyCost:             apiEvent.costs && apiEvent.costs.money,
+            vegetarianMoneyFactor: apiEvent.factors && apiEvent.factors.vegetarian && apiEvent.factors.vegetarian.money,
         };
-        await event.update(value, {transaction});
+        await event.update(update, {transaction});
+        await TransactionRebuilder.rebuildEvent(transaction, event);
     });
     ctx.status = 204;
 }
@@ -187,7 +216,8 @@ async function updateEvent(ctx) {
  * @returns {Promise<void>}
  */
 async function saveParticipation(ctx) {
-    let value = RouteUtils.validateBody(ctx, participationSchema);
+    /** @type {ApiParticipation} */
+    let apiParticipation = RouteUtils.validateBody(ctx, participationSchema);
     let event = await getEvent(ctx);
     let user = await getUser(ctx);
     await Db.sequelize.transaction(async transaction => {
@@ -197,20 +227,21 @@ async function saveParticipation(ctx) {
                 user:  user.id,
             },
             transaction,
+            lock: transaction.LOCK.UPDATE,
         });
+        let data = {
+            type:           Constants.PARTICIPATION_TYPE_IDS[apiParticipation.type],
+            pointsCredited: apiParticipation.credits.points,
+            buyer:          apiParticipation.provides.money,
+        };
         if (!participation) {
-            // doesn't exist yet, set defaults
-            value = {
-                pointsCredited: 0,
-                buyer:          false,
-                ...value,
-                event:          event.id,
-                user:           user.id,
-            };
-            await Models.Participation.create(value, {transaction});
+            data.event = event.id;
+            data.user = user.id;
+            await Models.Participation.create(data, {transaction});
         } else {
-            await participation.update(value, {transaction});
+            await participation.update(data, {transaction});
         }
+        await TransactionRebuilder.rebuildEvent(transaction, event);
     });
     ctx.status = 204;
 }
@@ -222,11 +253,16 @@ async function saveParticipation(ctx) {
 async function deleteParticipation(ctx) {
     let event = await getEvent(ctx);
     let user = await getUser(ctx);
-    let n = await Models.Participation.destroy({
-        where: {
-            event: event.id,
-            user:  user.id,
-        },
+
+    let n = await Db.sequelize.transaction(async transaction => {
+        let nDestroyed = await Models.Participation.destroy({
+            where: {
+                event: event.id,
+                user:  user.id,
+            },
+        });
+        await TransactionRebuilder.rebuildEvent(transaction, event);
+        return nDestroyed;
     });
     if (n) {
         ctx.status = 204;

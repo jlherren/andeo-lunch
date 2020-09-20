@@ -1,5 +1,6 @@
 'use strict';
 
+const Constants = require('../constants');
 const Models = require('../db/models');
 const Factory = require('./factory');
 
@@ -34,7 +35,7 @@ function mapTransaction(transaction) {
         user:       transaction.user,
         contraUser: transaction.contraUser,
         event:      transaction.event,
-        currency:   transaction.currency,
+        currency:   Constants.CURRENCY_NAMES[transaction.currency],
         amount:     transaction.amount,
         balance:    transaction.balance,
     };

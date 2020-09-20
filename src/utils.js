@@ -40,5 +40,18 @@ function groupBy(array, key) {
     return ret;
 }
 
+/**
+ * @param {object} object
+ * @returns {object}
+ */
+function objectFlip(object) {
+    let ret = {};
+    for (let key in object) {
+        ret[object[key]] = key;
+    }
+    return ret;
+}
+
 exports.indexBy = indexBy;
 exports.groupBy = groupBy;
+exports.objectFlip = objectFlip;

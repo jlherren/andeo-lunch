@@ -22,34 +22,42 @@ afterEach(async () => {
 });
 
 const sampleEvent = {
-    name:  'Lunch',
-    date:  '2020-01-15T11:00:00.000Z',
-    type:  Constants.EVENT_TYPE_LUNCH,
-    costs: {
+    name:    'Lunch',
+    type:    'meal',
+    date:    '2020-01-15T11:00:00.000Z',
+    costs:   {
         points: 8,
         money:  32,
     },
-    vegetarianMoneyFactor: 0.5,
+    factors: {
+        vegetarian: {
+            money: 0.5,
+        },
+    },
 };
 
 const eventUpdates = {
-    name:  'Other lunch',
-    date:  '2020-01-20T13:00:00.000Z',
-    costs: {
+    name:    'Other lunch',
+    date:    '2020-01-20T13:00:00.000Z',
+    costs:   {
         points: 6,
         money:  25,
     },
-    vegetarianMoneyFactor: 0.75,
+    factors: {
+        vegetarian: {
+            money: 0.75,
+        },
+    },
 };
 
 const disallowedUpdate = {
-    type: Constants.EVENT_TYPE_LUNCH,
+    type: Constants.EVENT_TYPES.MEAL,
 };
 
 const invalidData = {
     name:  ['', ' ', '\t', 17],
     date:  ['What?', ''],
-    type:  [-1, 1.1, 99],
+    type:  [1.1, null, 'huge-party'],
     costs: [
         {
             points: -1,
@@ -90,6 +98,7 @@ describe('creating events', () => {
     it('allows to update an event', async () => {
         let response = await request.post('/events').send(sampleEvent);
         let {location} = response.headers;
+        expect(typeof location).toBe('string');
         let expected = {...sampleEvent};
         for (let key of Object.keys(eventUpdates)) {
             response = await request.post(location).send({[key]: eventUpdates[key]});
@@ -103,6 +112,7 @@ describe('creating events', () => {
     it('rejects disallowed updates', async () => {
         let response = await request.post('/events').send(sampleEvent);
         let {location} = response.headers;
+        expect(typeof location).toBe('string');
         for (let key of Object.keys(disallowedUpdate)) {
             response = await request.post(location).send({[key]: disallowedUpdate[key]});
             expect(response.status).toEqual(400);
@@ -112,6 +122,7 @@ describe('creating events', () => {
     it('rejects invalid updates', async () => {
         let response = await request.post('/events').send(sampleEvent);
         let {location} = response.headers;
+        expect(typeof location).toBe('string');
         for (let key of Object.keys(invalidData)) {
             for (let value of invalidData[key]) {
                 response = await request.post(location).send({[key]: value});
@@ -120,4 +131,3 @@ describe('creating events', () => {
         }
     });
 });
-

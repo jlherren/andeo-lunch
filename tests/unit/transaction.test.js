@@ -44,7 +44,7 @@ async function createUsers(n) {
  */
 function createLunch() {
     return /** @type {Promise<Event>} */ Models.Event.create({
-        type:                  Constants.EVENT_TYPE_LUNCH,
+        type:                  Constants.EVENT_TYPES.MEAL,
         date:                  new Date('2020-01-10 12:00'),
         name:                  'Test lunch',
         pointsCost:            12,
@@ -68,7 +68,7 @@ async function createLunchWithParticipations(participants, cook, buyer) {
         await Models.Participation.create({
             user:           participant.id,
             event:          event.id,
-            type:           Constants.PARTICIPATION_NORMAL,
+            type:           Constants.PARTICIPATION_TYPES.NORMAL,
             buyer:          buyer !== null && participant.id === buyer.id,
             pointsCredited: participant.id === cook.id ? 8 : 0,
         });
@@ -85,8 +85,8 @@ describe('transaction tests', () => {
         await user1.reload();
         await user2.reload();
 
-        let nPointTransactions = await Models.Transaction.count({where: {event: event.id, currency: Constants.CURRENCY_POINTS}});
-        let nMoneyTransactions = await Models.Transaction.count({where: {event: event.id, currency: Constants.CURRENCY_MONEY}});
+        let nPointTransactions = await Models.Transaction.count({where: {event: event.id, currency: Constants.CURRENCIES.POINTS}});
+        let nMoneyTransactions = await Models.Transaction.count({where: {event: event.id, currency: Constants.CURRENCIES.MONEY}});
 
         expect(user1.points).toEqual(6);
         expect(user2.points).toEqual(-6);
@@ -125,7 +125,7 @@ describe('transaction tests', () => {
             event:      event.id,
             user:       user3.id,
             contraUser: user2.id,
-            currency:   Constants.CURRENCY_POINTS,
+            currency:   Constants.CURRENCIES.POINTS,
             date:       event.date,
             amount:     100,
             balance:    100,
@@ -147,13 +147,13 @@ describe('transaction tests', () => {
             {
                 user:           user1.id,
                 event:          event.id,
-                type:           Constants.PARTICIPATION_NORMAL,
+                type:           Constants.PARTICIPATION_TYPES.NORMAL,
                 buyer:          true,
                 pointsCredited: 8,
             }, {
                 user:           user2.id,
                 event:          event.id,
-                type:           Constants.PARTICIPATION_VEGETARIAN,
+                type:           Constants.PARTICIPATION_TYPES.VEGETARIAN,
                 buyer:          false,
                 pointsCredited: 0,
             },
@@ -177,19 +177,19 @@ describe('transaction tests', () => {
             {
                 user:           user1.id,
                 event:          event.id,
-                type:           Constants.PARTICIPATION_NORMAL,
+                type:           Constants.PARTICIPATION_TYPES.NORMAL,
                 buyer:          false,
                 pointsCredited: 5,
             }, {
                 user:           user2.id,
                 event:          event.id,
-                type:           Constants.PARTICIPATION_NORMAL,
+                type:           Constants.PARTICIPATION_TYPES.NORMAL,
                 buyer:          false,
                 pointsCredited: 0,
             }, {
                 user:           user3.id,
                 event:          event.id,
-                type:           Constants.PARTICIPATION_NORMAL,
+                type:           Constants.PARTICIPATION_TYPES.NORMAL,
                 buyer:          true,
                 pointsCredited: 7,
             },
@@ -213,19 +213,19 @@ describe('transaction tests', () => {
             {
                 user:           user1.id,
                 event:          event.id,
-                type:           Constants.PARTICIPATION_NORMAL,
+                type:           Constants.PARTICIPATION_TYPES.NORMAL,
                 buyer:          true,
                 pointsCredited: 0,
             }, {
                 user:           user2.id,
                 event:          event.id,
-                type:           Constants.PARTICIPATION_NORMAL,
+                type:           Constants.PARTICIPATION_TYPES.NORMAL,
                 buyer:          true,
                 pointsCredited: 8,
             }, {
                 user:           user3.id,
                 event:          event.id,
-                type:           Constants.PARTICIPATION_NORMAL,
+                type:           Constants.PARTICIPATION_TYPES.NORMAL,
                 buyer:          false,
                 pointsCredited: 0,
             },
@@ -259,19 +259,19 @@ describe('transaction tests', () => {
             {
                 user:           user1.id,
                 event:          event.id,
-                type:           Constants.PARTICIPATION_NORMAL,
+                type:           Constants.PARTICIPATION_TYPES.NORMAL,
                 buyer:          true,
                 pointsCredited: 1,
             }, {
                 user:           user2.id,
                 event:          event.id,
-                type:           Constants.PARTICIPATION_NORMAL,
+                type:           Constants.PARTICIPATION_TYPES.NORMAL,
                 buyer:          false,
                 pointsCredited: 3,
             }, {
                 user:           user3.id,
                 event:          event.id,
-                type:           Constants.PARTICIPATION_NORMAL,
+                type:           Constants.PARTICIPATION_TYPES.NORMAL,
                 buyer:          false,
                 pointsCredited: 0,
             },

@@ -23,18 +23,18 @@
 /**
  * @typedef {Object} ApiEvent
  * @property {number} id
- * @property {number} type
+ * @property {string} type
  * @property {Date} date
  * @property {string} name
  * @property {{points: number, money: number}} costs
- * @property {number|null} vegetarianMoneyFactor
+ * @property {{vegetarian: number}} factors
  */
 
 /**
  * @typedef {Object} ApiParticipation
  * @property {number} user
  * @property {number} event
- * @property {number} type
- * @property {number} pointsCredited
- * @property {boolean} buyer
+ * @property {string} type
+ * @property {{points: number}} credits
+ * @property {{money: boolean}} provides
  */
