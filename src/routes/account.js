@@ -1,7 +1,6 @@
 'use strict';
 
 const Joi = require('joi');
-const JsonWebToken = require('jsonwebtoken');
 
 const Models = require('../db/models');
 const RouteUtils = require('./route-utils');
@@ -38,34 +37,9 @@ async function login(ctx) {
  * @returns {Promise<void>}
  */
 async function renew(ctx) {
-    await requireUser(ctx);
     let config = ctx.lunchMoney.getConfig();
     let token = await ctx.user.generateToken(config.secret, {expiresIn: config.tokenExpiry});
     ctx.body = {token};
-}
-
-/**
- * @param {Application.Context} ctx
- * @returns {Promise<void>}
- */
-async function requireUser(ctx) {
-    let auth = ctx.request.headers.authorization;
-    let match = auth.match(/^bearer\s+(?<token>\S+)$/ui);
-    if (match) {
-        let config = ctx.lunchMoney.getConfig();
-        try {
-            let data = await JsonWebToken.verify(match.groups.token, config.secret);
-            /** @type {User} */
-            let user = await Models.User.findByPk(data.id);
-            if (user && user.active) {
-                ctx.user = user;
-                return;
-            }
-        } catch (err) {
-            // Ignore
-        }
-    }
-    ctx.throw(401, 'Unauthorized');
 }
 
 /**

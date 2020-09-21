@@ -10,6 +10,7 @@ const AccountRoutes = require('./routes/account');
 const UserRoutes = require('./routes/user');
 const EventRoutes = require('./routes/event');
 const MiscRoutes = require('./routes/misc');
+const RouteUtils = require('./routes/route-utils');
 const Db = require('./db');
 const Constants = require('./constants');
 const Models = require('./db/models');
@@ -66,6 +67,13 @@ class LunchMoney {
         // Provide the LunchMoney instance to all controllers
         this.app.use((ctx, next) => {
             ctx.lunchMoney = this;
+            return next();
+        });
+
+        this.app.use(async (ctx, next) => {
+            if (!['/account/login', '/version'].includes(ctx.request.url)) {
+                await RouteUtils.requireUser(ctx);
+            }
             return next();
         });
 

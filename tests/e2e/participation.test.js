@@ -16,6 +16,8 @@ let request = null;
 let event = null;
 /** @type {User|null} */
 let user = null;
+/** @type {string|null} */
+let jwt = null;
 
 let sampleParticipation1 = {
     type:     'normal',
@@ -40,9 +42,11 @@ let sampleParticipation2 = {
 beforeEach(async () => {
     lunchMoney = new LunchMoney({config: ConfigProvider.getTestConfig()});
     await lunchMoney.initDb();
+    let password = 'abc123';
+    let username = 'test-user';
     user = await Models.User.create({
-        username: 'testuser',
-        password: await AuthUtils.hashPassword('abc123'),
+        username: username,
+        password: await AuthUtils.hashPassword(password),
         active:   true,
         name:     'Test User',
     });
@@ -54,7 +58,12 @@ beforeEach(async () => {
         moneyCost:             30,
         vegetarianMoneyFactor: 1,
     });
-    request = supertest(lunchMoney.listen());
+    request = supertest.agent(lunchMoney.listen());
+    if (jwt === null) {
+        let response = await request.post('/account/login').send({username, password});
+        jwt = response.body.token;
+    }
+    request.set('Authorization', `Bearer ${jwt}`);
 });
 
 afterEach(async () => {

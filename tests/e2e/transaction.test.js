@@ -20,6 +20,8 @@ let user1 = null;
 let user2 = null;
 /** @type {User|null} */
 let systemUser = null;
+/** @type {string|null} */
+let jwt = null;
 
 let participation1 = {
     type:     'normal',
@@ -45,15 +47,17 @@ beforeEach(async () => {
     lunchMoney = new LunchMoney({config: ConfigProvider.getTestConfig()});
     await lunchMoney.initDb();
     systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
+    let username = 'test-user-1';
+    let password = 'abc123';
     user1 = await Models.User.create({
-        username: 'testuser1',
-        password: await AuthUtils.hashPassword('abc123'),
+        username: username,
+        password: await AuthUtils.hashPassword(password),
         active:   true,
         name:     'Test User 1',
     });
     user2 = await Models.User.create({
-        username: 'testuser2',
-        password: await AuthUtils.hashPassword('abc123'),
+        username: 'test-user-2',
+        password: await AuthUtils.hashPassword(password),
         active:   true,
         name:     'Test User 2',
     });
@@ -65,7 +69,13 @@ beforeEach(async () => {
         moneyCost:             30,
         vegetarianMoneyFactor: 0.5,
     });
-    request = supertest(lunchMoney.listen());
+    request = supertest.agent(lunchMoney.listen());
+    if (jwt === null) {
+        let response = await request.post('/account/login')
+            .send({username, password});
+        jwt = response.body.token;
+    }
+    request.set('Authorization', `Bearer ${jwt}`);
 });
 
 afterEach(async () => {
