@@ -128,7 +128,7 @@ exports.initModels = function initModels(sequelize) {
     Participation.init({
         user:           {type: DataTypes.INTEGER, allowNull: false, unique: 'userEvent', references: {model: User}},
         event:          {type: DataTypes.INTEGER, allowNull: false, unique: 'userEvent', references: {model: Event}},
-        type:           {type: DataTypes.TINYINT, allowNull: false, references: {model: ParticipationType}},
+        type:           {type: DataTypes.INTEGER, allowNull: false, references: {model: ParticipationType}},
         pointsCredited: {type: DataTypes.DOUBLE, allowNull: false},
         buyer:          {type: DataTypes.BOOLEAN, allowNull: false},
     }, {sequelize, modelName: 'participation'});
