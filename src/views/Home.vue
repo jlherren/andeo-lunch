@@ -19,7 +19,7 @@ export default {
     MenuList,
     UserStats
   },
-  mounted: {
+  mounted() {
   }
 }
 </script>

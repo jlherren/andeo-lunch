@@ -1,7 +1,16 @@
 <template>
+    <!-- Shown briefly while the initial login check is still running -->
+    <v-app v-if="!initialCheckCompleted">
+        <v-container fill-height fluid>
+            <v-row justify="center">
+                    <v-progress-circular indeterminate size="100"/>
+            </v-row>
+        </v-container>
+    </v-app>
+
     <!-- If logged in, show app contents -->
-    <v-app v-if="isLoggedIn">
-        <v-navigation-drawer v-model="drawer" fixed temporary right>
+    <v-app v-else-if="isLoggedIn">
+        <v-navigation-drawer v-model="drawer" app fixed temporary right>
             <v-list dense>
                 <settings-dialog/>
             </v-list>
@@ -9,7 +18,7 @@
 
         <!-- App Bar -->
         <v-app-bar app>
-            <v-toolbar-title>{{ userName }}</v-toolbar-title>
+            <v-toolbar-title>{{ displayName }}</v-toolbar-title>
             <v-spacer/>
             <v-btn icon @click.stop="drawer = !drawer">
                 <v-icon>mdi-menu</v-icon>
@@ -32,7 +41,7 @@
     <!-- If not logged in, show Login Page -->
     <v-app v-else>
         <v-main>
-            <v-app-bar>
+            <v-app-bar app>
                 <v-toolbar-title>
                     Lunch Money
                 </v-toolbar-title>
@@ -85,9 +94,17 @@
 
         computed: {
             ...mapGetters({
-                userName: 'getUserName',
-                isLoggedIn: 'isLoggedIn'
+                displayName: 'getDisplayName',
+                isLoggedIn:  'isLoggedIn',
             }),
+
+            initialCheckCompleted() {
+                return this.$store.state.account.initialCheckCompleted;
+            },
+        },
+
+        mounted() {
+            this.$store.dispatch('checkLogin');
         }
     };
 </script>

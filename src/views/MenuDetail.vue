@@ -13,7 +13,7 @@
                     <v-col cols="10">Total Helper Points</v-col>
                     <v-col cols="2"><v-text-field type="number"></v-text-field></v-col>
                 </v-row>
-                
+
                 <v-row class="gray" dense v-for="helper in menu.helpers" :key="helper.firstName + helper.lastName">
                     <v-col cols="8">{{helper.firstName}} {{helper.lastName}}</v-col>
                     <v-col cols="2"><v-btn color="error" icon><v-icon color="error">mdi-delete</v-icon></v-btn></v-col>
@@ -31,8 +31,9 @@
         name: "MenuDetail",
         components: {Participants},
         data() {
+            let id = parseInt(this.$route.params.id, 10);
             return {
-                menu: this.$store.getters.getMenuById(this.$route.params.id),
+                menu: this.$store.getters.getMenuById(id),
             }
         },
         computed: {

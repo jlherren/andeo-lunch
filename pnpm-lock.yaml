@@ -4,6 +4,7 @@ specifiers:
   '@vue/cli-plugin-babel': ^4.5.12
   '@vue/cli-plugin-vuex': ^4.5.12
   '@vue/cli-service': ^4.5.12
+  axios: ^0.19.2
   core-js: ^3.10.2
   node-sass: ^5.0.0
   sass: ^1.32.11
@@ -15,13 +16,16 @@ specifiers:
   vuetify: ^2.4.11
   vuetify-loader: ^1.7.2
   vuex: ^3.6.2
+  vuex-rest-api: ^2.13.0
 
 dependencies:
+  axios: 0.19.2
   core-js: 3.10.2
   vue: 2.6.12
   vue-router: 3.5.1
   vuetify: 2.4.11_vue@2.6.12
   vuex: 3.6.2_vue@2.6.12
+  vuex-rest-api: 2.13.0_axios@0.19.2
 
 devDependencies:
   '@vue/cli-plugin-babel': 4.5.12_08f6923167e8915a6e44610899c9e3f1
@@ -2012,6 +2016,13 @@ packages:
     resolution: {integrity: sha512-wMHVg2EOHaMRxbzgFJ9gtjOOCrI80OHLG14rxi28XwOW8ux6IiEbRCGGGqCtdAIg4FQCbW20k9RsT4y3gJlFug==}
     dev: true
 
+  /axios/0.19.2:
+    resolution: {integrity: sha512-fjgm5MvRHLhx+osE2xoekY70AhARk3a6hkN+3Io1jc00jtquGvxYlKlsFUhmUET0V5te6CcZI7lcv2Ym61mjHA==}
+    deprecated: Critical security vulnerability fixed in v0.21.1. For more information, see https://github.com/axios/axios/pull/3410
+    dependencies:
+      follow-redirects: 1.5.10
+    dev: false
+
   /babel-loader/8.2.2_06ed565f9fcc7f209d51d9bc2e9cca78:
     resolution: {integrity: sha512-JvTd0/D889PQBtUXJ2PXaKU/pjZDMtHA9V2ecm+eNRmmBCMR09a+fmpGTNwnJtFmFl5Ei7Vy47LjBb+L0wQ99g==}
     engines: {node: '>= 8.9'}
@@ -3114,6 +3125,12 @@ packages:
       ms: 2.0.0
     dev: true
 
+  /debug/3.1.0:
+    resolution: {integrity: sha512-OX8XqP7/1a9cqkxYw2yXss15f26NKWBpDXQd0/uK/KPqdQhxbPa994hnzjcE2VqQpDslf55723cKPUOGSmMY3g==}
+    dependencies:
+      ms: 2.0.0
+    dev: false
+
   /debug/3.2.6:
     resolution: {integrity: sha512-mel+jf7nrtEl5Pn1Qx46zARXKDpBbvzezse7p7LqINmdoIk8PYP5SySaxEmYv6TZ0JyEKA1hsCId6DIhgITtWQ==}
     deprecated: Debug versions >=3.2.0 <3.2.7 || >=4 <4.3.1 have a low-severity ReDos regression when used in a Node.js environment. It is recommended you upgrade to 3.2.7 or 4.3.1. (https://github.com/visionmedia/debug/issues/797)
@@ -3847,6 +3864,13 @@ packages:
     dependencies:
       debug: 3.2.6
     dev: true
+
+  /follow-redirects/1.5.10:
+    resolution: {integrity: sha512-0V5l4Cizzvqt5D44aTXbFZz+FtyXV1vrDN6qrelxtfYQKW0KO0W2T/hkE8xvGa/540LkZlkaUjO4ailYTFtHVQ==}
+    engines: {node: '>=4.0'}
+    dependencies:
+      debug: 3.1.0
+    dev: false
 
   /for-in/1.0.2:
     resolution: {integrity: sha1-gQaNKVqBQuwKxybG4iAMMPttXoA=}
@@ -5056,6 +5080,10 @@ packages:
       p-locate: 4.1.0
     dev: true
 
+  /lodash.clonedeep/4.5.0:
+    resolution: {integrity: sha1-4j8/nE+Pvd6HJSnBBxhXoIblzO8=}
+    dev: false
+
   /lodash.debounce/4.0.8:
     resolution: {integrity: sha1-gteb/zCmfEAF/9XiUVMArZyk168=}
     dev: true
@@ -5446,7 +5474,6 @@ packages:
 
   /ms/2.0.0:
     resolution: {integrity: sha1-VgiurfwAvmwpAd9fmGF4jeDVl8g=}
-    dev: true
 
   /ms/2.1.1:
     resolution: {integrity: sha512-tgp+dl5cGk28utYktBsrFqA7HKgrhgPsg6Z/EfhWI4gl1Hwq8B/GmY/0oXZ6nF8hDVesS/FpnYaD/kOWhYQvyg==}
@@ -8191,6 +8218,15 @@ packages:
       vue: ^2.6.4
     dependencies:
       vue: 2.6.12
+    dev: false
+
+  /vuex-rest-api/2.13.0_axios@0.19.2:
+    resolution: {integrity: sha512-lYJstD4fZUPWG0/P6TzmL1CCH3tmRwehqmtOT/Vfrpq6e2S0i77IJ7ZpUKwZ6Se6nX99ylwdw0iIhXSJB54SmQ==}
+    peerDependencies:
+      axios: ^0.19
+    dependencies:
+      axios: 0.19.2
+      lodash.clonedeep: 4.5.0
     dev: false
 
   /vuex/3.6.2_vue@2.6.12:
