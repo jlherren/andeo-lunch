@@ -29,7 +29,7 @@ async function login(ctx) {
         await AuthUtils.fakeCompare(requestBody.password);
     }
 
-    ctx.throw(401, 'Unauthorized');
+    ctx.throw(401, 'Invalid username or password');
 }
 
 /**

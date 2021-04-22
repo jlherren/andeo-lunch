@@ -64,6 +64,6 @@ exports.requireUser = async function requireUser(ctx) {
     if (user !== null) {
         ctx.user = user;
     } else {
-        ctx.throw(401, 'Unauthorized');
+        ctx.throw(401, 'No authentication token provided');
     }
 };
