@@ -2,11 +2,13 @@
     <div>
         <v-card flat>
             <v-card-subtitle class="center-text">{{subtitle}}</v-card-subtitle>
+
             <h2 class="center-text">{{menu.name}}</h2>
-            <v-row class="justify-center">
+
+            <div class="center-text participants-and-cost">
                 <participants class="justify-center" :participants="menu.participants"/>
                 <span class="cost">CHF 126</span>
-            </v-row>
+            </div>
 
             <v-container>
                 <v-row dense>
@@ -55,5 +57,9 @@
         margin-left: 30px;
         color: #C62828;
         font-size: 28pt;
+    }
+
+    .participants-and-cost {
+        text-align: center;
     }
 </style>

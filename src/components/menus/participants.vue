@@ -1,17 +1,12 @@
 <template>
-    <div class="custom-row">
-        <div class="total">
-            <span>{{ total }}</span>
-        </div>
-        <div class="custom-column">
-            <div class="custom-row">
-                <v-icon>mdi-food</v-icon>
-                <div class="vertically-center">{{ participants.meat }}</div>
-            </div>
-            <div class="custom-row">
-                <v-icon>mdi-food-apple</v-icon>
-                <div class="vertically-center">{{ participants.vegi }}</div>
-            </div>
+    <div class="participants">
+        <div class="total">{{ total }}</div>
+        <div class="participants-details">
+            <v-icon>mdi-food-steak</v-icon>
+            {{ participants.meat }}
+            <br>
+            <v-icon>mdi-food-apple</v-icon>
+            {{ participants.vegi }}
         </div>
     </div>
 </template>
@@ -34,28 +29,23 @@
 </script>
 
 <style lang="scss" scoped>
+    .participants {
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .participants-details {
+        font-size: 12pt;
+        line-height: 100%;
+
+        .v-icon {
+            font-size: inherit;
+        }
+    }
+
     .total {
-        display: flex;
-        align-items: center;
         font-size: 28pt;
-
-        color: #43A047;
-        text-align: center;
-        margin: 0 20px;
-    }
-
-    .custom-row {
-        display: flex;
-        flex-flow: row;
-    }
-
-    .custom-column {
-        display: flex;
-        flex-flow: column;
-    }
-
-    .vertically-center {
-        display: flex;
-        align-items: center;
+        color: #43a047;
+        margin: 0 0.25em;
     }
 </style>
