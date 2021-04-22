@@ -11,13 +11,13 @@ let lunchMoney = new LunchMoney({config: ConfigProvider.getMainConfig()});
 lunchMoney.sequelizePromise.then(async sequelize => {
     let cli = new Cli();
     try {
-        let username = await cli.question('User name: ');
+        let username = await cli.question('Username: ');
         if (username === '') {
             throw new Error('Username cannot be empty');
         }
         let user = await Models.User.findOne({where: {username}});
         if (user) {
-            throw new Error(`A user with username '${username}' exists already`);
+            throw new Error(`Username '${username}' exists already`);
         }
         let password1 = await cli.password('Password: ');
         if (password1 === '') {
