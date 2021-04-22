@@ -31,7 +31,16 @@
 
     <!-- If not logged in, show Login Page -->
     <v-app v-else>
-        <Login/>
+        <v-main>
+            <v-app-bar>
+                <v-toolbar-title>
+                    Lunch Money
+                </v-toolbar-title>
+            </v-app-bar>
+            <v-container>
+                <Login />
+            </v-container>
+        </v-main>
     </v-app>
 </template>
 
