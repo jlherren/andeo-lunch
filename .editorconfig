@@ -8,13 +8,15 @@ indent_style = space
 insert_final_newline = true
 max_line_length = 218
 tab_width = 4
-ij_continuation_indent_size = 8
-ij_smart_tabs = true
-ij_wrap_on_typing = false
-
-[{*.cjs, *.js}]
 ij_continuation_indent_size = 4
 ij_smart_tabs = false
+ij_formatter_off_tag = @formatter:off
+ij_formatter_on_tag = @formatter:on
+ij_formatter_tags_enabled = true
+ij_visual_guides = 120
+ij_wrap_on_typing = false
+
+[{*.cjs, *.js, .sequelizerc}]
 ij_javascript_align_imports = false
 ij_javascript_align_multiline_array_initializer_expression = true
 ij_javascript_align_multiline_binary_operation = false
@@ -49,7 +51,7 @@ ij_javascript_class_brace_style = end_of_line
 ij_javascript_comma_on_new_line = false
 ij_javascript_do_while_brace_force = always
 ij_javascript_else_on_new_line = false
-ij_javascript_enforce_trailing_comma = keep
+ij_javascript_enforce_trailing_comma = whenmultiline
 ij_javascript_extends_keyword_wrap = off
 ij_javascript_extends_list_wrap = off
 ij_javascript_field_prefix = _
@@ -91,6 +93,9 @@ ij_javascript_parentheses_expression_new_line_after_left_paren = false
 ij_javascript_parentheses_expression_right_paren_on_new_line = false
 ij_javascript_place_assignment_sign_on_next_line = false
 ij_javascript_prefer_as_type_cast = false
+ij_javascript_prefer_explicit_types_function_expression_returns = false
+ij_javascript_prefer_explicit_types_function_returns = false
+ij_javascript_prefer_explicit_types_vars_fields = false
 ij_javascript_prefer_parameters_wrap = false
 ij_javascript_reformat_c_style_comments = false
 ij_javascript_space_after_colon = true
@@ -176,9 +181,7 @@ ij_javascript_while_on_new_line = false
 ij_javascript_wrap_comments = false
 
 [{composer.lock, bowerrc, jest.config, .babelrc, .stylelintrc, .eslintrc, *.jsb3, *.jsb2, *.json}]
-indent_size = 2
-ij_smart_tabs = false
-ij_json_keep_blank_lines_in_code = 0
+ij_json_keep_blank_lines_in_code = 1
 ij_json_keep_indents_on_empty_lines = false
 ij_json_keep_line_breaks = true
 ij_json_space_after_colon = true
@@ -188,3 +191,26 @@ ij_json_space_before_comma = false
 ij_json_spaces_within_braces = false
 ij_json_spaces_within_brackets = false
 ij_json_wrap_long_lines = false
+
+[{*.markdown, *.md, todo}]
+ij_markdown_force_one_space_after_blockquote_symbol = true
+ij_markdown_force_one_space_after_header_symbol = true
+ij_markdown_force_one_space_after_list_bullet = true
+ij_markdown_force_one_space_between_words = true
+ij_markdown_keep_indents_on_empty_lines = false
+ij_markdown_max_lines_around_block_elements = 1
+ij_markdown_max_lines_around_header = 1
+ij_markdown_max_lines_between_paragraphs = 1
+ij_markdown_min_lines_around_block_elements = 1
+ij_markdown_min_lines_around_header = 1
+ij_markdown_min_lines_between_paragraphs = 1
+
+[.editorconfig]
+max_line_length = 2147483647
+ij_visual_guides = none
+ij_editorconfig_align_group_field_declarations = false
+ij_editorconfig_space_after_colon = false
+ij_editorconfig_space_after_comma = true
+ij_editorconfig_space_before_colon = false
+ij_editorconfig_space_before_comma = false
+ij_editorconfig_spaces_around_assignment_operators = true
