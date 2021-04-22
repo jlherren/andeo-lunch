@@ -6,9 +6,9 @@
   "private": true,
   "scripts": {
     "serve": "node src/lunchMoney.js",
-    "serve-watch": "nodemon src/lunchMoney.js",
+    "serve:watch": "nodemon src/lunchMoney.js",
     "test": "jest",
-    "test-watch": "jest --watchAll",
+    "test:watch": "jest --watchAll",
     "lint": "eslint src tests",
     "db:init": "node src/scripts/initDb.js",
     "db:createUser": "node src/scripts/createUser.js",

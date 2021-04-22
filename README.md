@@ -41,10 +41,10 @@ To create a new user:
 # Yarn scripts
 
 - `yarn serve` will launch the server.
-- `yarn serve-watch` will launch the server and relaunch it every time a file
+- `yarn serve:watch` will launch the server and relaunch it every time a file
   changes, which is useful during development.
 - `yarn test` runs the tests 
-- `yarn test-watch` runs the tests and re-runs them every time a file changes,
+- `yarn test:watch` runs the tests and re-runs them every time a file changes,
   useful during debugging.
 - `yarn lint` will run eslint and output all errors
 - `yarn lint --fix` will fix all errors that eslint can fix by itself.
