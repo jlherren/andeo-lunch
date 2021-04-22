@@ -16,9 +16,9 @@
             </v-btn>
         </v-app-bar>
 
-        <v-content class="margin-bottom">
+        <v-main class="margin-bottom">
             <router-view/>
-        </v-content>
+        </v-main>
 
         <!-- Navigation -->
         <v-bottom-navigation fixed>

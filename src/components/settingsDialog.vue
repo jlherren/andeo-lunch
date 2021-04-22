@@ -21,7 +21,7 @@
                     <v-btn color="success" @click="saveSettings">Save</v-btn>
                 </v-app-bar>
 
-                <v-content class="dialog-content">
+                <v-main class="dialog-content">
                     <v-form>
                         <v-container>
                             <h2>Default Opt-In</h2>
@@ -38,7 +38,7 @@
                             <v-textarea v-model="settings.generalInfo" dense filled label="Default note on Opt-In"/>
                         </v-container>
                     </v-form>
-                </v-content>
+                </v-main>
             </v-card>
         </v-dialog>
     </div>
