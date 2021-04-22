@@ -83,7 +83,7 @@ describe('account login route', () => {
 
 describe('account renew route', () => {
     it('returns a new token after renewing', async () => {
-        // Fake a valid token
+        // Create a valid token
         let config = lunchMoney.getConfig();
         let token = await user.generateToken(config.secret);
         let response = await request.post('/account/renew').set('Authorization', `Bearer ${token}`);
@@ -92,16 +92,57 @@ describe('account renew route', () => {
         expect(data.id).toEqual(user.id);
     });
 
-    it('returns an error when renewing without an invalid token', async () => {
+    it('returns an error when renewing an unparsable token', async () => {
         let response = await request.post('/account/renew').set('Authorization', 'Bearer WHATEVER');
         expect(response.status).toEqual(401);
     });
 
+    it('returns an error when renewing an expired token', async () => {
+        // Create an expired token
+        let config = lunchMoney.getConfig();
+        let token = await user.generateToken(config.secret, {expiresIn: '-1 day'});
+        let response = await request.post('/account/renew').set('Authorization', `Bearer ${token}`);
+        expect(response.status).toEqual(401);
+    });
+
     it('returns an error when renewing a newly inactive user', async () => {
-        // Fake a valid token
+        // Create a valid token
         let config = lunchMoney.getConfig();
         let token = await inactiveUser.generateToken(config.secret);
         let response = await request.post('/account/renew').set('Authorization', `Bearer ${token}`);
         expect(response.status).toEqual(401);
+    });
+});
+
+describe('account check route', () => {
+    it('works when not providing a token', async () => {
+        let response = await request.get('/account/check');
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual({loggedIn: false});
+    });
+
+    it('works when providing a non-parsable token', async () => {
+        let response = await request.get('/account/check').set('Authorization', 'Bearer WHATEVER');
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual({loggedIn: false});
+    });
+
+    it('works when providing an expired token', async () => {
+        // Create an expired token
+        let config = lunchMoney.getConfig();
+        let token = await user.generateToken(config.secret, {expiresIn: '-1 day'});
+        let response = await request.get('/account/check').set('Authorization', `Bearer ${token}`);
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual({loggedIn: false});
+    });
+
+    it('works when providing a valid token', async () => {
+        // Create a valid token
+        let config = lunchMoney.getConfig();
+        let token = await user.generateToken(config.secret);
+        let response = await request.get('/account/check').set('Authorization', `Bearer ${token}`);
+        expect(response.status).toEqual(200);
+        expect(response.body.loggedIn).toBe(true);
+        expect(response.body.user.name).toBe(user.name);
     });
 });

@@ -71,7 +71,7 @@ class LunchMoney {
         });
 
         this.app.use(async (ctx, next) => {
-            if (!['/account/login', '/version'].includes(ctx.request.url)) {
+            if (!['/account/login', '/account/check', '/version'].includes(ctx.request.url)) {
                 await RouteUtils.requireUser(ctx);
             }
             return next();

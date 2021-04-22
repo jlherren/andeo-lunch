@@ -43,9 +43,45 @@ async function renew(ctx) {
 }
 
 /**
+ * Map a user to an object suitable to return over the API
+ *
+ * @param {User} user
+ * @returns {ApiUser}
+ */
+function mapUser(user) {
+    return {
+        id:       user.id,
+        name:     user.name,
+        balances: {
+            points: user.points,
+            money:  user.money,
+        },
+    };
+}
+
+/**
+ * @param {Application.Context} ctx
+ * @returns {Promise<void>}
+ */
+async function check(ctx) {
+    let user = await RouteUtils.getUser(ctx);
+    if (user === null) {
+        ctx.body = {
+            loggedIn: false,
+        };
+        return;
+    }
+    ctx.body = {
+        loggedIn: true,
+        user:     mapUser(user),
+    };
+}
+
+/**
  * @param {Router} router
  */
 exports.register = function register(router) {
     router.post('/account/login', login);
     router.post('/account/renew', renew);
+    router.get('/account/check', check);
 };
