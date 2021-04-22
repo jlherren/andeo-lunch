@@ -56,7 +56,10 @@ async function check(ctx) {
     }
     ctx.body = {
         loggedIn: true,
-        user:     user.toApi(),
+        user:     {
+            ...user.toApi(),
+            username: user.username,
+        },
     };
 }
 
