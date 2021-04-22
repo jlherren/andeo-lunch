@@ -1,45 +1,7 @@
 'use strict';
 
-const Constants = require('../constants');
 const Models = require('../db/models');
 const Factory = require('./factory');
-
-/**
- * Map a user to an object suitable to return over the API
- *
- * @param {User} user
- * @returns {ApiUser}
- */
-function mapUser(user) {
-    return {
-        id:       user.id,
-        name:     user.name,
-        balances: {
-            points: user.points,
-            money:  user.money,
-        },
-    };
-}
-
-/**
- * Map a transaction to an object suitable to return over the API
- *
- * @param {Transaction} transaction
- *
- * @returns {ApiTransaction}
- */
-function mapTransaction(transaction) {
-    return {
-        id:         transaction.id,
-        date:       transaction.date,
-        user:       transaction.user,
-        contraUser: transaction.contraUser,
-        event:      transaction.event,
-        currency:   Constants.CURRENCY_NAMES[transaction.currency],
-        amount:     transaction.amount,
-        balance:    transaction.balance,
-    };
-}
 
 /**
  * @param {Application.Context} ctx
@@ -51,7 +13,7 @@ async function getUserTransactionLists(ctx) {
             user: ctx.params.user,
         },
     });
-    ctx.body = transactions.map(transaction => mapTransaction(transaction));
+    ctx.body = transactions.map(transaction => transaction.toApi());
 }
 
 /**
@@ -60,7 +22,7 @@ async function getUserTransactionLists(ctx) {
 exports.register = function register(router) {
     let opts = {
         model:  Models.User,
-        mapper: mapUser,
+        mapper: user => user.toApi(),
         where:  {
             hidden: 0,
         },

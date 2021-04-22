@@ -43,23 +43,6 @@ async function renew(ctx) {
 }
 
 /**
- * Map a user to an object suitable to return over the API
- *
- * @param {User} user
- * @returns {ApiUser}
- */
-function mapUser(user) {
-    return {
-        id:       user.id,
-        name:     user.name,
-        balances: {
-            points: user.points,
-            money:  user.money,
-        },
-    };
-}
-
-/**
  * @param {Application.Context} ctx
  * @returns {Promise<void>}
  */
@@ -73,7 +56,7 @@ async function check(ctx) {
     }
     ctx.body = {
         loggedIn: true,
-        user:     mapUser(user),
+        user:     user.toApi(),
     };
 }
 

@@ -54,50 +54,6 @@ const participationSchema = Joi.object({
 });
 
 /**
- * Map a user to an object suitable to return over the API
- *
- * @param {Event} event
- * @returns {ApiEvent}
- */
-function mapEvent(event) {
-    return {
-        id:      event.id,
-        type:    Constants.EVENT_TYPE_NAMES[event.type],
-        date:    event.date,
-        name:    event.name,
-        costs:   {
-            points: event.pointsCost,
-            money:  event.moneyCost,
-        },
-        factors: {
-            [vegetarianApiName]: {
-                [moneyApiName]: event.vegetarianMoneyFactor,
-            },
-        },
-    };
-}
-
-/**
- * Map an event participation to an object suitable to return over the API
- *
- * @param {Participation} participation
- * @returns {ApiParticipation}
- */
-function mapParticipation(participation) {
-    return {
-        user:     participation.user,
-        event:    participation.event,
-        type:     Constants.PARTICIPATION_TYPE_NAMES[participation.type],
-        credits:  {
-            points: participation.pointsCredited,
-        },
-        provides: {
-            money: !!participation.buyer,
-        },
-    };
-}
-
-/**
  * @param {Application.Context} ctx
  * @returns {Promise<void>}
  */
@@ -107,7 +63,7 @@ async function getParticipationList(ctx) {
             event: ctx.params.event,
         },
     });
-    ctx.body = participations.map(participation => mapParticipation(participation));
+    ctx.body = participations.map(participation => participation.toApi());
 }
 
 /**
@@ -124,7 +80,7 @@ async function getSingleParticipation(ctx) {
     if (!participation) {
         ctx.throw(404, 'No such participation');
     }
-    ctx.body = mapParticipation(participation);
+    ctx.body = participation.toApi();
 }
 
 /**
@@ -277,7 +233,7 @@ async function deleteParticipation(ctx) {
 exports.register = function register(router) {
     let opts = {
         model:  Models.Event,
-        mapper: mapEvent,
+        mapper: event => event.toApi(),
     };
     router.get('/events', Factory.makeObjectListController(opts));
     router.post('/events', createEvent);

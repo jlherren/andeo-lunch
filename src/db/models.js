@@ -2,6 +2,7 @@
 
 const jsonWebToken = require('jsonwebtoken');
 const {Model, DataTypes} = require('sequelize');
+const Constants = require('../constants');
 
 /**
  * @class Model
@@ -29,6 +30,24 @@ class User extends Model {
         // sign() is supposed to return a promise, but it doesn't
         return Promise.resolve(jsonWebToken.sign({id: this.id}, secret, options));
     }
+
+    /**
+     * Map a user to an object suitable to return over the API
+     *
+     * @returns {ApiUser}
+     */
+    toApi() {
+        // Note: The username is not returned on purpose, because it is considered part of the login credentials.
+
+        return {
+            id:       this.id,
+            name:     this.name,
+            balances: {
+                points: this.points,
+                money:  this.money,
+            },
+        };
+    }
 }
 
 /**
@@ -40,6 +59,28 @@ class User extends Model {
  * @property {number|null} vegetarianMoneyFactor
  */
 class Event extends Model {
+    /**
+     * Map a user to an object suitable to return over the API
+     *
+     * @returns {ApiEvent}
+     */
+    toApi() {
+        return {
+            id:      this.id,
+            type:    Constants.EVENT_TYPE_NAMES[this.type],
+            date:    this.date,
+            name:    this.name,
+            costs:   {
+                points: this.pointsCost,
+                money:  this.moneyCost,
+            },
+            factors: {
+                [Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.VEGETARIAN]]: {
+                    [Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY]]: this.vegetarianMoneyFactor,
+                },
+            },
+        };
+    }
 }
 
 /**
@@ -56,6 +97,24 @@ class ParticipationType extends Model {
  * @property {boolean} buyer
  */
 class Participation extends Model {
+    /**
+     * Map an event participation to an object suitable to return over the API
+     *
+     * @returns {ApiParticipation}
+     */
+    toApi() {
+        return {
+            user:     this.user,
+            event:    this.event,
+            type:     Constants.PARTICIPATION_TYPE_NAMES[this.type],
+            credits:  {
+                points: this.pointsCredited,
+            },
+            provides: {
+                money: !!this.buyer,
+            },
+        };
+    }
 }
 
 /**
@@ -68,6 +127,23 @@ class Participation extends Model {
  * @property {number} event
  */
 class Transaction extends Model {
+    /**
+     * Map a transaction to an object suitable to return over the API
+     *
+     * @returns {ApiTransaction}
+     */
+    toApi() {
+        return {
+            id:         this.id,
+            date:       this.date,
+            user:       this.user,
+            contraUser: this.contraUser,
+            event:      this.event,
+            currency:   Constants.CURRENCY_NAMES[this.currency],
+            amount:     this.amount,
+            balance:    this.balance,
+        };
+    }
 }
 
 /**
