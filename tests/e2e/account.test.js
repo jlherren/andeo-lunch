@@ -66,6 +66,19 @@ describe('account login route', () => {
             .send({username: 'inactiveuser', password: 'qwe456'});
         expect(response.status).toEqual(401);
     });
+
+    it('returns failure on missing fields', async () => {
+        let response = await request.post('/account/login')
+            .send({});
+        expect(response.status).toEqual(400);
+    });
+
+    it('returns failure on invalid content type', async () => {
+        let response = await request.post('/account/login')
+            .set('Content-Type', 'text/plain')
+            .send('Hi!');
+        expect(response.status).toEqual(400);
+    });
 });
 
 describe('account renew route', () => {

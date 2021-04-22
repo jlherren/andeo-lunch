@@ -10,6 +10,11 @@ const Models = require('../db/models');
  * @returns {object}
  */
 exports.validateBody = function validateBody(ctx, schema) {
+    let contentType = ctx.request.headers['content-type'];
+    if (contentType === undefined || contentType.split(';')[0].trim() !== 'application/json') {
+        ctx.throw(400, 'Content type should be application/json');
+    }
+
     let {value, error} = schema.validate(ctx.request.body);
     if (error) {
         ctx.throw(400, error.message);

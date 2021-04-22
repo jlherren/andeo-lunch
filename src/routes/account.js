@@ -7,8 +7,8 @@ const RouteUtils = require('./route-utils');
 const AuthUtils = require('../authUtils');
 
 const loginSchema = Joi.object({
-    username: Joi.string().min(1),
-    password: Joi.string().min(1),
+    username: Joi.string().required().min(1),
+    password: Joi.string().required().min(1),
 });
 
 /**
