@@ -2,7 +2,7 @@
     <div>
         <v-list-item @click="switchDialog">
             <v-list-item-icon>
-                <v-icon>mdi-settings</v-icon>
+                <v-icon>mdi-cog</v-icon>
             </v-list-item-icon>
 
             <v-list-item-content>

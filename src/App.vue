@@ -10,17 +10,15 @@
 
     <!-- If logged in, show app contents -->
     <v-app v-else-if="isLoggedIn">
-        <v-navigation-drawer v-model="drawer" app fixed temporary right>
-            <v-list dense>
-                <settings-dialog/>
-            </v-list>
+        <v-navigation-drawer v-model="drawerOpen" app fixed temporary right>
+            <navigation-drawer-content />
         </v-navigation-drawer>
 
         <!-- App Bar -->
         <v-app-bar app>
             <v-toolbar-title>{{ displayName }}</v-toolbar-title>
-            <v-spacer/>
-            <v-btn icon @click.stop="drawer = !drawer">
+            <v-spacer />
+            <v-btn icon @click.stop="drawerOpen = !drawerOpen">
                 <v-icon>mdi-menu</v-icon>
             </v-btn>
         </v-app-bar>
@@ -54,16 +52,16 @@
 </template>
 
 <script>
-    import Login from "./views/Login";
+    import Login from './views/Login';
     import {mapGetters} from 'vuex';
-    import SettingsDialog from "./components/settingsDialog";
+    import NavigationDrawerContent from './components/navigationDrawerContent';
 
     export default {
         name: 'App',
 
         components: {
-            SettingsDialog,
-            Login
+            NavigationDrawerContent,
+            Login,
         },
 
         data: () => ({
@@ -79,17 +77,17 @@
                     icon: 'mdi-calendar'
                 },
                 {
-                    url: '/menus',
+                    url:   '/menus',
                     title: 'Menus',
-                    icon: 'mdi-silverware'
+                    icon:  'mdi-silverware',
                 },
                 {
-                    url: '/cash',
+                    url:   '/cash',
                     title: 'Cash',
-                    icon: 'mdi-cash'
+                    icon:  'mdi-cash',
                 },
             ],
-            drawer: null
+            drawerOpen:      false,
         }),
 
         computed: {

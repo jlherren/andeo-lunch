@@ -19,6 +19,9 @@ const vapi = new Vapi({
     axios,
     baseURL: 'http://localhost:3000',
     state:   {
+        backendVersion: 'unknown',
+        frontendVersion: 'unknown',
+
         account: {
             initialCheckCompleted: false,
             error:                 null,
@@ -116,6 +119,18 @@ const vapi = new Vapi({
     },
 });
 
+vapi.get({
+    action: 'updateBackendVersion',
+    path:   '/version',
+    property: 'backendVersion',
+    onSuccess(state, payload) {
+        state.backendVersion = payload.data.version;
+    },
+    onError(state, error) {
+        state.backendVersion = 'unknown';
+    },
+});
+
 vapi.post({
     action: 'login',
     path:   '/account/login',
@@ -185,6 +200,12 @@ store.getters = {
     getSettings(state) {
         return state.user.settings;
     },
+    getFrontendVersion(state) {
+        return state.frontendVersion;
+    },
+    getBackendVersion(state) {
+        return state.backendVersion;
+    },
 };
 
 store.mutations = {
@@ -192,10 +213,18 @@ store.mutations = {
     updateSettings(state, newSettings) {
         state.account.user.settings = newSettings;
     },
+    removeUser(state) {
+        state.account.user = null;
+    },
 };
 
 store.actions = {
     ...store.actions,
+
+    logout(context) {
+        localStorage.removeItem('token');
+        context.commit('removeUser');
+    }
 };
 
 export default new Vuex.Store(store);
