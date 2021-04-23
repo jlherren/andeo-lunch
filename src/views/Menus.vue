@@ -1,15 +1,20 @@
 <template>
-    <div>
-        <h1>Menus</h1>
-    </div>
+    <v-main>
+        <custom-app-bar>Menus</custom-app-bar>
+
+        <v-container>
+        </v-container>
+    </v-main>
 </template>
 
 <script>
+    import CustomAppBar from '@/components/lmAppBar';
+
     export default {
-        name: "Menus"
-    }
+        name: 'Menus',
+
+        components: {
+            CustomAppBar,
+        },
+    };
 </script>
-
-<style scoped>
-
-</style>

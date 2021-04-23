@@ -1,32 +1,41 @@
 <template>
-    <div>
-        <v-progress-linear indeterminate absolute v-if="loading"></v-progress-linear>
-        <v-toolbar flat>
-            <v-btn icon @click="previousWeek">
-                <v-icon>mdi-chevron-left</v-icon>
-            </v-btn>
-            Week of {{ formattedDate }}
-            <v-spacer/>
-            <v-btn icon @click="nextWeek">
-                <v-icon>mdi-chevron-right</v-icon>
-            </v-btn>
-        </v-toolbar>
+    <v-main>
+        <lm-app-bar>
+            {{ title }}
+            <template v-slot:buttons>
+                <v-btn icon @click="previousWeek">
+                    <v-icon>mdi-chevron-left</v-icon>
+                </v-btn>
+                <v-btn icon @click="nextWeek">
+                    <v-icon>mdi-chevron-right</v-icon>
+                </v-btn>
+            </template>
+        </lm-app-bar>
 
-        <v-list>
+        <v-progress-linear indeterminate absolute v-if="loading"></v-progress-linear>
+
+        <v-list v-if="events.length > 0">
             <event-list-item v-for="event in events" :key="event.id" :event="event"/>
         </v-list>
 
-        <v-container>
-            <v-banner v-if="events.length === 0" elevation="2" single-line>
+        <v-container v-if="events.length === 0">
+            <v-banner elevation="2" single-line>
                 <v-icon slot="icon">mdi-information</v-icon>
                 No events in the selected week
             </v-banner>
         </v-container>
-    </div>
+
+        <v-fab-transition>
+            <v-btn color="primary" fab fixed bottom right>
+                <v-icon>mdi-plus</v-icon>
+            </v-btn>
+        </v-fab-transition>
+    </v-main>
 </template>
 
 <script>
-    import EventListItem from '../components/menus/eventListItem';
+    import EventListItem from '@/components/menus/eventListItem';
+    import LmAppBar from '@/components/lmAppBar';
 
     /**
      * Add a week to a date
@@ -46,6 +55,7 @@
         name: 'Calendar',
 
         components: {
+            LmAppBar,
             EventListItem,
         },
 
@@ -66,13 +76,13 @@
         },
 
         computed: {
-            formattedDate() {
-                return this.startDate.toDateString();
+            title() {
+                return 'Week of ' + this.startDate.toDateString();
             },
 
             events() {
                 // TODO: This is a bit cheap, since potentially many events may be loaded at the time
-                let toDate =addWeek(this.startDate);
+                let toDate = addWeek(this.startDate);
                 return this.$store.getters.getEvents.filter(event => {
                     return event.date >= this.startDate && event.date < toDate;
                 });
@@ -122,6 +132,9 @@
     };
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
+    .v-btn--fixed {
+        // Button is covered by the bottom navigation, see https://github.com/vuetifyjs/vuetify/issues/7407
+        bottom: 72px;
+    }
 </style>

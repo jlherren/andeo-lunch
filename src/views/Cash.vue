@@ -1,20 +1,23 @@
 <template>
-    <div>
+    <v-main>
+        <custom-app-bar>Cash</custom-app-bar>
+
         <user-stats/>
         <v-divider/>
         <div class="center-btn">
-            <v-btn>Überweisung erstellen</v-btn>
+            <v-btn>Create transaction</v-btn>
         </div>
-    </div>
+    </v-main>
 </template>
 
 <script>
-    import UserStats from "../components/userStats";
+    import UserStats from '../components/userStats';
+    import CustomAppBar from '@/components/lmAppBar';
 
     export default {
-        name: "Cash",
-        components: {UserStats}
-    }
+        name: 'Cash',
+        components: {CustomAppBar, UserStats},
+    };
 </script>
 
 <style scoped>
