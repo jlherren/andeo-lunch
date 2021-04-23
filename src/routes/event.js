@@ -7,6 +7,8 @@ const Factory = require('./factory');
 const RouteUtils = require('./route-utils');
 const Db = require('../db');
 const Constants = require('../constants');
+const Utils = require('../utils');
+const Sequelize = require('sequelize');
 const TransactionRebuilder = require('../transactionRebuilder');
 
 const nameSchema = Joi.string().normalize().min(1).regex(/\S/u);
@@ -228,6 +230,34 @@ async function deleteParticipation(ctx) {
 }
 
 /**
+ * @param {Application.Context} ctx
+ * @returns {Promise<void>}
+ */
+async function listEvents(ctx) {
+    let {Op} = Sequelize;
+    let from = Utils.parseDate(ctx.query.from);
+    let to = Utils.parseDate(ctx.query.to);
+
+    let conditions = [];
+    if (from !== null) {
+        conditions.push({date: {[Op.gte]: from}});
+    }
+    if (to !== null) {
+        conditions.push({date: {[Op.lt]: to}});
+    }
+
+    let where = {};
+    if (conditions.length) {
+        where[Op.and] = conditions;
+    }
+
+    let events = await Models.Event.findAll({where, limit: 100});
+    ctx.body = {
+        events: events.map(event => event.toApi()),
+    };
+}
+
+/**
  * @param {Router} router
  */
 exports.register = function register(router) {
@@ -235,7 +265,7 @@ exports.register = function register(router) {
         model:  Models.Event,
         mapper: event => event.toApi(),
     };
-    router.get('/events', Factory.makeObjectListController(opts));
+    router.get('/events', listEvents);
     router.post('/events', createEvent);
     router.get('/events/:event(\\d+)', Factory.makeSingleObjectController(opts));
     router.post('/events/:event(\\d+)', updateEvent);

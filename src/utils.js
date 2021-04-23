@@ -52,6 +52,19 @@ function objectFlip(object) {
     return ret;
 }
 
+/**
+ * Parse a string to a Date, returning null if it is invalid
+ *
+ * @param {string} str
+ *
+ * @returns {Date|null}
+ */
+function parseDate(str) {
+    let date = new Date(str);
+    return isNaN(date.getTime()) ? null : date;
+}
+
 exports.indexBy = indexBy;
 exports.groupBy = groupBy;
 exports.objectFlip = objectFlip;
+exports.parseDate = parseDate;
