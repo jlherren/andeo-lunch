@@ -4,26 +4,26 @@
 Create a file `config.json` and fill it with this for a MySQL database:
 
     {
-      "database": {
-        "dialect": "mysql",
-        "host": "localhost",
-        "database": "lunchmoney",
-        "username": "lunchmoney",
-        "password": "my-password"
-      },
-      "port": 3000,
-      "secret": "SOME_RANDOMLY_GENERATED_BASE_64_STRING_WITH_AT_LEAST_256_BITS"
+        "database": {
+            "dialect": "mysql",
+            "host": "localhost",
+            "database": "lunchmoney",
+            "username": "lunchmoney",
+            "password": "my-password"
+        },
+        "port": 3000,
+        "secret": "SOME_RANDOMLY_GENERATED_BASE_64_STRING_WITH_AT_LEAST_256_BITS"
     }
 
 Or if sqlite is preferred:
 
     {
-      "database": {
-        "dialect": "sqlite",
-        "storage": "lunchmoney.db"
-      },
-      "port": 3000,
-      "secret": "SOME_RANDOMLY_GENERATED_BASE_64_STRING_WITH_AT_LEAST_256_BITS"
+        "database": {
+            "dialect": "sqlite",
+            "storage": "lunchmoney.db"
+        },
+        "port": 3000,
+        "secret": "SOME_RANDOMLY_GENERATED_BASE_64_STRING_WITH_AT_LEAST_256_BITS"
     }
 
 ## Create tables
@@ -49,3 +49,16 @@ To create a new user:
 - `yarn lint` will run eslint and output all errors
 - `yarn lint --fix` will fix all errors that eslint can fix by itself.
 - `yarn db:rebuild` will rebuild all balances
+
+# Development
+
+## Database debugging
+
+To log all SQL queries, you can enable logging in the config:
+
+    {
+        "database": {
+            ...
+            logSql: true
+        }
+    }

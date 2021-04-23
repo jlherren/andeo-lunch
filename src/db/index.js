@@ -12,7 +12,7 @@ exports.sequelize = null;
  */
 exports.connect = async function connect(options) {
     options = {
-        logging: false,
+        logging: options.logSql ? console.log : false,
         define:  {
             freezeTableName: true,
             charset:         'utf8mb4',
