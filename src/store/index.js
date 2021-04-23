@@ -46,7 +46,12 @@ const vapi = new Vapi({
             },
         },
 
-        menus:   [
+        events: {
+            // Events by ID
+        },
+
+        // To be deprecated
+        menus: [
             {
                 id:           5,
                 name:         'Russischer Salat',
@@ -169,6 +174,18 @@ vapi.get({
     },
 });
 
+vapi.get({
+    action: 'updateEvents',
+    path:   '/events',
+    queryParams: true,
+    onSuccess(state, payload) {
+        for (let event of payload.data.events) {
+            event.date = new Date(event.date);
+            Vue.set(state.events, event.id, event);
+        }
+    },
+});
+
 let store = vapi.getStore();
 
 store.getters = {
@@ -206,6 +223,9 @@ store.getters = {
     getBackendVersion(state) {
         return state.backendVersion;
     },
+    getEvents(state) {
+        return Object.values(state.events);
+    }
 };
 
 store.mutations = {
