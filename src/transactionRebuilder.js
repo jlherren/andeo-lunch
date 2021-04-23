@@ -294,13 +294,13 @@ exports.rebuildUserBalances = async function rebuildUserBalances(dbTransaction) 
     let sql = `
         UPDATE user AS u
         SET points = COALESCE((SELECT t.balance
-                               FROM "transaction" AS t
+                               FROM transaction AS t
                                WHERE t.currency = :ttPoints
                                  AND t.user = u.id
                                ORDER BY t.date DESC, t.id DESC
                                LIMIT 1), 0),
             money  = COALESCE((SELECT t.balance
-                               FROM "transaction" AS t
+                               FROM transaction AS t
                                WHERE t.currency = :ttMoney
                                  AND t.user = u.id
                                ORDER BY t.date DESC, t.id DESC
