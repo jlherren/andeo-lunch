@@ -47,7 +47,11 @@ function groupBy(array, key) {
 function objectFlip(object) {
     let ret = {};
     for (let key in object) {
-        ret[object[key]] = key;
+        let value = object[key];
+        if (value in ret) {
+            throw new Error(`Value ${value} is duplicate`);
+        }
+        ret[value] = key;
     }
     return ret;
 }
