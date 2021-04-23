@@ -1,13 +1,12 @@
 <template>
     <v-container>
-        <v-row no-gutters>
-            <v-col cols="6">
-                <div class="center-text">Points</div>
-                <div :class="getValueClass(this.points)">{{ points }}</div>
+        <v-row>
+            <v-col cols="6" :class="getValueClass(this.points)">
+                {{ points }}
+                <v-icon>mdi-handshake</v-icon>
             </v-col>
-            <v-col cols="6">
-                <div class="center-text">Money</div>
-                <div :class="getValueClass(this.money)">{{ money }}</div>
+            <v-col cols="6" :class="getValueClass(this.money)">
+                {{ money }} CHF
             </v-col>
         </v-row>
     </v-container>
@@ -17,33 +16,37 @@
     import {mapGetters} from 'vuex';
 
     export default {
-        name: "userStats",
+        name:     'userStats',
         computed: {
             ...mapGetters({
                 points: 'getPoints',
-                money: 'getMoney'
-            })
+                money:  'getMoney',
+            }),
         },
-        methods: {
+        methods:  {
             getValueClass(value) {
                 let classString = 'center-text ';
-                classString += value > 0 ? 'positiveValue' : 'negativeValue';
+                classString += value >= 0 ? 'positive' : 'negative';
                 return classString;
-            }
-        }
-    }
+            },
+        },
+    };
 </script>
 
 <style scoped lang="scss">
-    $value-text-size: 16pt;
-
-    .positiveValue {
-        color: #43A047;
-        font-size: $value-text-size;
+    .container {
+        font-size: 16pt;
     }
 
-    .negativeValue {
-        color: #C62828;
-        font-size: $value-text-size;
+    .v-icon {
+        color: inherit;
+    }
+
+    .positive {
+        color: #43a047;
+    }
+
+    .negative {
+        color: #c62828;
     }
 </style>
