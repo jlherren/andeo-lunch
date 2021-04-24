@@ -41,7 +41,7 @@ afterEach(async () => {
 
 const sampleEvent = {
     name:    'Lunch',
-    type:    'meal',
+    type:    'lunch',
     date:    '2020-01-15T11:00:00.000Z',
     costs:   {
         points: 8,
@@ -69,7 +69,7 @@ const eventUpdates = {
 };
 
 const disallowedUpdate = {
-    type: Constants.EVENT_TYPES.MEAL,
+    type: Constants.EVENT_TYPES.LUNCH,
 };
 
 const invalidData = {

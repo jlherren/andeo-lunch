@@ -24,7 +24,7 @@ function getWeightsForParticipationType(event, participation) {
         case Constants.PARTICIPATION_TYPES.VEGETARIAN:
             return {
                 pointsWeight: 1,
-                moneyWeight:  event.type === Constants.EVENT_TYPES.MEAL ? event.vegetarianMoneyFactor : 1,
+                moneyWeight:  event.type === Constants.EVENT_TYPES.LUNCH ? event.vegetarianMoneyFactor : 1,
             };
         case Constants.PARTICIPATION_TYPES.NONE:
             return {

@@ -53,7 +53,7 @@ beforeEach(async () => {
     event = await Models.Event.create({
         name:                  'Test Event',
         date:                  '2020-01-01',
-        type:                  Constants.EVENT_TYPES.MEAL,
+        type:                  Constants.EVENT_TYPES.LUNCH,
         pointsCost:            8,
         moneyCost:             30,
         vegetarianMoneyFactor: 1,

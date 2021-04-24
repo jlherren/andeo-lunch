@@ -44,7 +44,7 @@ async function createUsers(n) {
  */
 function createLunch() {
     return /** @type {Promise<Event>} */ Models.Event.create({
-        type:                  Constants.EVENT_TYPES.MEAL,
+        type:                  Constants.EVENT_TYPES.LUNCH,
         date:                  new Date('2020-01-10 12:00'),
         name:                  'Test lunch',
         pointsCost:            12,

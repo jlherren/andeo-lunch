@@ -40,7 +40,10 @@ Overview of object structures used in this API
 ### Event type
 
 ```
-"meal"
+"lunch"
+"event"
+"label"
+"transaction"
 ```
 
 ### Participation

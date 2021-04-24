@@ -16,11 +16,15 @@ exports.CURRENCY_NAMES = Object.freeze({
 exports.CURRENCY_IDS = Object.freeze(Utils.objectFlip(exports.CURRENCY_NAMES));
 
 exports.EVENT_TYPES = Object.freeze({
-    MEAL:        1,
-    TRANSACTION: 2,
+    LUNCH:       1,
+    EVENT:       2,
+    LABEL:       3,
+    TRANSACTION: 10,
 });
 exports.EVENT_TYPE_NAMES = Object.freeze({
-    [exports.EVENT_TYPES.MEAL]:        'meal',
+    [exports.EVENT_TYPES.LUNCH]:       'lunch',
+    [exports.EVENT_TYPES.EVENT]:       'event',
+    [exports.EVENT_TYPES.LABEL]:       'label',
     [exports.EVENT_TYPES.TRANSACTION]: 'transaction',
 });
 exports.EVENT_TYPE_IDS = Object.freeze(Utils.objectFlip(exports.EVENT_TYPE_NAMES));
