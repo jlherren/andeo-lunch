@@ -186,6 +186,11 @@ vapi.get({
     },
 });
 
+vapi.post({
+    action: 'saveEvent',
+    path:'/events',
+})
+
 let store = vapi.getStore();
 
 store.getters = {

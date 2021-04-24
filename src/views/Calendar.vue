@@ -16,16 +16,16 @@
 
         <v-list v-if="entries.length > 0">
             <template v-for="event in entries">
-                <event-list-item :event="event" :key="event.id" v-if="event.type !== 'filler'"/>
+                <event-list-item :event="event" :key="event.id" v-if="event.type !== 'placeholder'"/>
 
-                <v-list-item :key="event.id" v-if="event.type === 'filler'">
+                <v-list-item :key="event.id" v-if="event.type === 'placeholder'">
                     <v-list-item-icon/>
                     <v-list-item-content>
-                        <v-list-item-title class="text--secondary">No lunch event</v-list-item-title>
+                        <v-list-item-title class="text--secondary">No event</v-list-item-title>
                         <v-list-item-subtitle>{{ event.date.toDateString() }}</v-list-item-subtitle>
                     </v-list-item-content>
                     <v-list-item-action>
-                        <v-btn icon @click="openCreateDialog(event.date)">
+                        <v-btn icon @click="openCreateDialog('lunch', event.date)">
                             <v-icon>mdi-plus</v-icon>
                         </v-btn>
                     </v-list-item-action>
@@ -40,14 +40,26 @@
             </v-banner>
         </v-container>
 
-        <v-fab-transition>
-            <v-btn fab fixed bottom right color="primary" @click="openCreateDialog(null)">
-                <v-icon>mdi-plus</v-icon>
+        <v-speed-dial v-model="speedDial" bottom right direction="top" transition="slide-y-reverse-transition">
+            <template slot="activator">
+                <v-btn fab v-model="speedDial" color="primary">
+                    <v-icon v-if="speedDial">mdi-close</v-icon>
+                    <v-icon v-else>mdi-plus</v-icon>
+                </v-btn>
+            </template>
+            <v-btn fab small color="primary" @click="openCreateDialog('lunch', null)">
+                <v-icon>mdi-food-variant</v-icon>
             </v-btn>
-        </v-fab-transition>
+            <v-btn fab small color="primary" @click="openCreateDialog('event', null)">
+                <v-icon>mdi-party-popper</v-icon>
+            </v-btn>
+            <v-btn fab small color="primary" @click="openCreateDialog('label', null)">
+                <v-icon>mdi-label</v-icon>
+            </v-btn>
+        </v-speed-dial>
 
         <v-dialog v-model="createDialog" persistent eager>
-            <create-event ref="createEvent" @cancel="createDialog=false"/>
+            <create-event ref="createEvent" @close="createDialog=false"/>
         </v-dialog>
     </v-main>
 </template>
@@ -73,6 +85,7 @@
                 endDate: null,
                 loading: false,
                 createDialog: false,
+                speedDial: false,
             };
         },
 
@@ -87,31 +100,28 @@
                     return event.date >= this.startDate && event.date < this.endDate;
                 });
 
-                // Add fillers for missing weekdays
-                let weekdaysWithMeal = new Array(7).fill(false);
+                // Add placeholders for missing weekdays
+                let weekdaysWithLunchOrLabel = new Array(7).fill(false);
                 let lastWeekDayWithEvent = 0;
                 for (let event of events) {
-                    if (event.type === 'lunch') {
-                        weekdaysWithMeal[event.date.getDay()] = true;
+                    if (['lunch', 'label'].includes(event.type)) {
+                        weekdaysWithLunchOrLabel[event.date.getDay()] = true;
                     }
                 }
                 for (let i = 1; i <= 5; i++) {
-                    if (!weekdaysWithMeal[i]) {
+                    if (!weekdaysWithLunchOrLabel[i]) {
                         let date = DateUtils.addDays(this.startDate, i - 1);
                         date.setHours(12, 0, 0, 0);
                         events.push({
-                            id: -i,
+                            id: `placeholder-${i}`,
                             date: date,
-                            name: 'Filler',
-                            type: 'filler',
+                            type: 'placeholder',
                         });
                     }
                 }
 
                 events.sort((a, b) => a.date.getTime() - b.date.getTime());
-
                 return events;
-
             },
         },
 
@@ -144,9 +154,9 @@
                 this.reload();
             },
 
-            openCreateDialog(date) {
+            openCreateDialog(type, date) {
                 this.createDialog = true;
-                this.$refs.createEvent.initialize(date, date ? 'lunch' : null);
+                this.$refs.createEvent.initialize(type, date);
             },
         },
 
@@ -157,8 +167,8 @@
 </script>
 
 <style scoped lang="scss">
-    .v-btn--fixed {
-        // Button is covered by the bottom navigation, see https://github.com/vuetifyjs/vuetify/issues/7407
-        bottom: 72px;
+    .v-speed-dial {
+        // Documentation says this is not necessary... but it is.
+        position: absolute;
     }
 </style>

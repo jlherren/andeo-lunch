@@ -27,6 +27,8 @@
                         return 'mdi-food-variant';
                     case 'event':
                         return 'mdi-party-popper';
+                    case 'label':
+                        return 'mdi-label';
                     default:
                         return 'mdi-help-circle';
                 }
