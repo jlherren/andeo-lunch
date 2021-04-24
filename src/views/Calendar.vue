@@ -14,27 +14,40 @@
 
         <v-progress-linear indeterminate absolute v-if="loading"></v-progress-linear>
 
-        <v-list v-if="events.length > 0">
-            <event-list-item v-for="event in events" :key="event.id" :event="event"/>
+        <v-list v-if="entries.length > 0">
+            <template v-for="event in entries">
+                <event-list-item :event="event" :key="event.id" v-if="event.type !== 'filler'"/>
+
+                <v-list-item :key="event.id" v-if="event.type === 'filler'">
+                    <v-list-item-icon/>
+                    <v-list-item-content>
+                        <v-list-item-title class="text--secondary">No lunch event</v-list-item-title>
+                        <v-list-item-subtitle>{{ event.date.toDateString() }}</v-list-item-subtitle>
+                    </v-list-item-content>
+                    <v-list-item-action>
+                        <v-btn icon @click="openCreateDialog(event.date)">
+                            <v-icon>mdi-plus</v-icon>
+                        </v-btn>
+                    </v-list-item-action>
+                </v-list-item>
+            </template>
         </v-list>
 
-        <v-container v-if="events.length === 0">
+        <v-container v-if="entries.length === 0">
             <v-banner elevation="2" single-line>
                 <v-icon slot="icon">mdi-information</v-icon>
                 No events in the selected week
             </v-banner>
         </v-container>
 
-        <v-dialog>
-            <template v-slot:activator="{ on, attrs }">
-                <v-fab-transition>
-                    <v-btn fab fixed bottom right color="primary" v-on="on" v-bind="attrs">
-                        <v-icon>mdi-plus</v-icon>
-                    </v-btn>
-                </v-fab-transition>
-            </template>
+        <v-fab-transition>
+            <v-btn fab fixed bottom right color="primary" @click="openCreateDialog(null)">
+                <v-icon>mdi-plus</v-icon>
+            </v-btn>
+        </v-fab-transition>
 
-            <create-event/>
+        <v-dialog v-model="createDialog" persistent eager>
+            <create-event ref="createEvent" @cancel="createDialog=false"/>
         </v-dialog>
     </v-main>
 </template>
@@ -43,20 +56,7 @@
     import EventListItem from '@/components/menus/eventListItem';
     import LmAppBar from '@/components/lmAppBar';
     import CreateEvent from '@/components/createEvent';
-
-    /**
-     * Add a week to a date
-     *
-     * @param {Date} date
-     * @return {Date}
-     */
-    function addWeek(date) {
-        return new Date(
-            date.getFullYear(),
-            date.getMonth(),
-            date.getDate() + 7,
-        );
-    }
+    import * as DateUtils from '@/utils/dateUtils';
 
     export default {
         name: 'Calendar',
@@ -68,18 +68,11 @@
         },
 
         data() {
-            let today = new Date();
-            today.setHours(0, 0, 0, 0);
-            while (today.getDay() !== 1) {
-                today = new Date(
-                    today.getFullYear(),
-                    today.getMonth(),
-                    today.getDate() - 1,
-                );
-            }
             return {
-                startDate: today,
+                startDate: DateUtils.getPreviousMonday(new Date()),
+                endDate: null,
                 loading: false,
+                createDialog: false,
             };
         },
 
@@ -88,12 +81,37 @@
                 return 'Week of ' + this.startDate.toDateString();
             },
 
-            events() {
+            entries() {
                 // TODO: This is a bit cheap, since potentially many events may be loaded at the time
-                let toDate = addWeek(this.startDate);
-                return this.$store.getters.getEvents.filter(event => {
-                    return event.date >= this.startDate && event.date < toDate;
+                let events = this.$store.getters.getEvents.filter(event => {
+                    return event.date >= this.startDate && event.date < this.endDate;
                 });
+
+                // Add fillers for missing weekdays
+                let weekdaysWithMeal = new Array(7).fill(false);
+                let lastWeekDayWithEvent = 0;
+                for (let event of events) {
+                    if (event.type === 'lunch') {
+                        weekdaysWithMeal[event.date.getDay()] = true;
+                    }
+                }
+                for (let i = 1; i <= 5; i++) {
+                    if (!weekdaysWithMeal[i]) {
+                        let date = DateUtils.addDays(this.startDate, i - 1);
+                        date.setHours(12, 0, 0, 0);
+                        events.push({
+                            id: -i,
+                            date: date,
+                            name: 'Filler',
+                            type: 'filler',
+                        });
+                    }
+                }
+
+                events.sort((a, b) => a.date.getTime() - b.date.getTime());
+
+                return events;
+
             },
         },
 
@@ -102,11 +120,12 @@
                 if (this.loading) {
                     return;
                 }
+                this.endDate = DateUtils.addDays(this.startDate, 7);
                 try {
                     this.loading = true;
                     let payload = {
                         from: this.startDate,
-                        to: addWeek(this.startDate),
+                        to: DateUtils.addDays(this.startDate, 7),
                     };
                     await this.$store.dispatch('updateEvents', {params: payload});
                 } finally {
@@ -116,21 +135,18 @@
             },
 
             previousWeek() {
-                this.startDate = new Date(
-                    this.startDate.getFullYear(),
-                    this.startDate.getMonth(),
-                    this.startDate.getDate() - 7,
-                );
+                this.startDate = DateUtils.addDays(this.startDate, -7);
                 this.reload();
             },
 
             nextWeek() {
-                this.startDate = new Date(
-                    this.startDate.getFullYear(),
-                    this.startDate.getMonth(),
-                    this.startDate.getDate() + 7,
-                );
+                this.startDate = DateUtils.addDays(this.startDate, 7);
                 this.reload();
+            },
+
+            openCreateDialog(date) {
+                this.createDialog = true;
+                this.$refs.createEvent.initialize(date, date ? 'lunch' : null);
             },
         },
 

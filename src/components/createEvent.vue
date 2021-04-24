@@ -6,7 +6,7 @@
 
         <v-card-text>
             <v-form>
-                <v-autocomplete label="Name" :items="names"/>
+                <v-autocomplete label="Name" :items="names" v-model="name"/>
                 <v-row>
                     <v-col>
                         <lm-date-picker v-model="date" label="Date"/>
@@ -19,7 +19,7 @@
         </v-card-text>
 
         <v-card-actions>
-            <v-btn text >Cancel</v-btn>
+            <v-btn text @click="cancel()">Cancel</v-btn>
             <v-spacer></v-spacer>
             <v-btn text color="primary">Save</v-btn>
         </v-card-actions>
@@ -40,16 +40,29 @@
 
         data() {
             return {
+                name: null,
                 names: [
                     'Pizza',
                 ],
                 types: [
-                    'Meal',
-                    'Other event',
+                    {value: 'lunch', text: 'Lunch'},
+                    {value: 'event', text: 'Other event'},
                 ],
                 date: new Date().toISOString().substr(0, 10),
-                type: 'Meal',
+                type: null,
             };
+        },
+
+        methods: {
+            cancel() {
+                this.$emit('cancel');
+            },
+
+            initialize(date, type) {
+                this.name = '';
+                this.date = date ? date.toISOString().substr(0, 10) : null;
+                this.type = type;
+            },
         },
     };
 </script>

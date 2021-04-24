@@ -18,6 +18,9 @@
 
         computed: {
             formatted() {
+                if (this.value === undefined || this.value === null) {
+                    return '';
+                }
                 return new Date(this.value).toDateString();
             },
         },

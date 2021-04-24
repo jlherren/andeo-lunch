@@ -8,7 +8,6 @@
             <v-list-item-subtitle>{{ formattedDate }}</v-list-item-subtitle>
         </v-list-item-content>
     </v-list-item>
-
 </template>
 
 <script>
@@ -24,8 +23,10 @@
         computed: {
             icon() {
                 switch (this.event.type) {
-                    case 'meal':
-                        return 'mdi-food';
+                    case 'lunch':
+                        return 'mdi-food-variant';
+                    case 'event':
+                        return 'mdi-party-popper';
                     default:
                         return 'mdi-help-circle';
                 }
