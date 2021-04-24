@@ -251,7 +251,7 @@ async function listEvents(ctx) {
         where[Op.and] = conditions;
     }
 
-    let events = await Models.Event.findAll({where, limit: 100});
+    let events = await Models.Event.findAll({where, limit: 100, order: [['date', 'ASC']]});
     ctx.body = {
         events: events.map(event => event.toApi()),
     };
