@@ -25,17 +25,24 @@
             </v-banner>
         </v-container>
 
-        <v-fab-transition>
-            <v-btn color="primary" fab fixed bottom right>
-                <v-icon>mdi-plus</v-icon>
-            </v-btn>
-        </v-fab-transition>
+        <v-dialog>
+            <template v-slot:activator="{ on, attrs }">
+                <v-fab-transition>
+                    <v-btn fab fixed bottom right color="primary" v-on="on" v-bind="attrs">
+                        <v-icon>mdi-plus</v-icon>
+                    </v-btn>
+                </v-fab-transition>
+            </template>
+
+            <create-event/>
+        </v-dialog>
     </v-main>
 </template>
 
 <script>
     import EventListItem from '@/components/menus/eventListItem';
     import LmAppBar from '@/components/lmAppBar';
+    import CreateEvent from '@/components/createEvent';
 
     /**
      * Add a week to a date
@@ -55,6 +62,7 @@
         name: 'Calendar',
 
         components: {
+            CreateEvent,
             LmAppBar,
             EventListItem,
         },
