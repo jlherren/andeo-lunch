@@ -39,7 +39,7 @@
 
         data() {
             return {
-                name: null,
+                name:  null,
                 names: [
                     'Pizza',
                 ],
@@ -47,16 +47,16 @@
                     {value: 'lunch', text: 'Lunch'},
                     {value: 'event', text: 'Other event'},
                 ],
-                date: new Date().toISOString().substr(0, 10),
-                time: null,
-                type: null,
+                date:  new Date().toISOString().substr(0, 10),
+                time:  null,
+                type:  null,
 
                 nameRules: [
                     v => !!v || 'A name is required',
                 ],
 
                 saving: false,
-                valid: false,
+                valid:  false,
             };
         },
 
@@ -84,22 +84,21 @@
                 try {
                     this.saving = true;
                     await this.$store.dispatch('saveEvent', {
-                        data: {
-                            name: this.name,
-                            date: this.date,
-                            type: this.type,
-                            costs: {
-                                points: 0,
-                                money: 0,
-                            },
-                            factors: {
-                                vegetarian: {
-                                    money: 1,
-                                },
+                        name:    this.name,
+                        date:    this.date,
+                        type:    this.type,
+                        costs:   {
+                            points: 0,
+                            money:  0,
+                        },
+                        factors: {
+                            vegetarian: {
+                                money: 1,
                             },
                         },
                     });
                     this.$emit('close');
+                    this.$emit('created');
                 } finally {
                     this.saving = false;
                 }

@@ -25,12 +25,23 @@
         <template v-else>
             <Login/>
         </template>
+
+        <v-snackbar v-model="errorSnackbarOpen" timeout="5000">
+            {{ errorSnackbarText }}
+
+            <template v-slot:action="{ attrs }">
+                <v-btn text v-bind="attrs" @click="errorSnackbarOpen = false">
+                    Close
+                </v-btn>
+            </template>
+        </v-snackbar>
     </v-app>
 </template>
 
 <script>
     import Login from './views/Login';
     import {mapGetters} from 'vuex';
+    import {ErrorService} from '@/services/errorService';
 
     export default {
         name: 'App',
@@ -63,6 +74,8 @@
                 },
             ],
             drawerOpen: false,
+            errorSnackbarOpen: false,
+            errorSnackbarText: null,
         }),
 
         computed: {
@@ -76,9 +89,21 @@
             },
         },
 
-        created() {
-            this.$store.dispatch('checkLogin');
+        methods: {
+            error(error) {
+                this.errorSnackbarOpen=true;
+                this.errorSnackbarText = error.message;
+            },
         },
+
+        mounted() {
+            this.$store.dispatch('checkLogin');
+            this.unregisterErrors = ErrorService.instance.register(this.error);
+        },
+
+        beforeDestroy() {
+            this.unregisterErrors();
+        }
     };
 </script>
 

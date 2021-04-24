@@ -59,7 +59,7 @@
         </v-speed-dial>
 
         <v-dialog v-model="createDialog" persistent eager>
-            <create-event ref="createEvent" @close="createDialog=false"/>
+            <create-event ref="createEvent" @close="createDialog=false" @created="reload()"/>
         </v-dialog>
     </v-main>
 </template>

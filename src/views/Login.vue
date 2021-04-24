@@ -20,10 +20,6 @@
                 <div class="text-center" v-if="isBusy">
                     <v-progress-circular indeterminate class="mt-4"/>
                 </div>
-
-                <v-alert type="error" class="mt-4" v-if="loginError !== null">
-                    {{ loginError }}
-                </v-alert>
             </v-form>
         </v-container>
     </v-main>
@@ -41,16 +37,12 @@
                 v => !!v,
             ],
         }),
-        computed: {
-            loginError() {
-                return this.$store.state.account.error;
-            },
-        },
+
         methods: {
-            async login(event) {
+            async login() {
                 this.isBusy = true;
                 try {
-                    await this.$store.dispatch('login', {data: {username: this.username, password: this.password}});
+                    await this.$store.dispatch('login', {username: this.username, password: this.password});
                     await this.$store.dispatch('checkLogin');
                 } finally {
                     this.isBusy = false;

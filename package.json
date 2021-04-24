@@ -12,8 +12,7 @@
     "vue": "^2.6.12",
     "vue-router": "^3.5.1",
     "vuetify": "^2.4.11",
-    "vuex": "^3.6.2",
-    "vuex-rest-api": "^2.13.0"
+    "vuex": "^3.6.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.5.12",
