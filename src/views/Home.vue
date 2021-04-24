@@ -23,9 +23,9 @@
         },
 
         computed: {
-            ...mapGetters({
-                displayName: 'getDisplayName',
-            }),
+            ...mapGetters([
+                'displayName',
+            ]),
         },
     };
 </script>

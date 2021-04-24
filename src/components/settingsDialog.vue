@@ -73,7 +73,7 @@
         },
         computed: {
             ...mapGetters({
-                storedSettings: 'getSettings'
+                storedSettings: 'settings'
             })
         },
         methods: {

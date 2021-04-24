@@ -19,10 +19,10 @@
         name: "menuList",
         components: {LargeMenuListItem, SmallMenuListItem},
         computed: {
-            ...mapGetters({
-                menus: 'getMenus'
-            })
-        }
+            ...mapGetters([
+                'menus',
+            ]),
+        },
     }
 </script>
 

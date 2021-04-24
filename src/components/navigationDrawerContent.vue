@@ -75,12 +75,12 @@
             };
         },
         computed: {
-            ...mapGetters({
-                displayName:     'getDisplayName',
-                username:        'getUsername',
-                backendVersion:  'getBackendVersion',
-                frontendVersion: 'getFrontendVersion',
-            }),
+            ...mapGetters([
+                'displayName',
+                'username',
+                'backendVersion',
+                'frontendVersion',
+            ]),
         },
         methods:  {
             logout() {

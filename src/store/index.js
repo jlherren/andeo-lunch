@@ -195,40 +195,37 @@ let store = vapi.getStore();
 
 store.getters = {
     ...store.getters,
-    getUser(state) {
+    user(state) {
         return state.account.user;
     },
-    getDisplayName(state) {
+    displayName(state) {
         return state.account.user.name;
     },
-    getUsername(state) {
+    username(state) {
         return state.account.user.username;
     },
-    getPoints(state) {
-        return state.account.user.balances.points;
-    },
-    getMoney(state) {
-        return state.account.user.balances.money;
+    balances(state) {
+        return state.account.user.balances;
     },
     isLoggedIn(state) {
         return state.account.user !== null;
     },
-    getMenus(state) {
+    menus(state) {
         return state.menus;
     },
-    getMenuById: (state) => (id) => {
+    menuById: (state) => (id) => {
         return state.menus.find(menu => menu.id === id);
     },
-    getSettings(state) {
+    settings(state) {
         return state.user.settings;
     },
-    getFrontendVersion(state) {
+    frontendVersion(state) {
         return state.frontendVersion;
     },
-    getBackendVersion(state) {
+    backendVersion(state) {
         return state.backendVersion;
     },
-    getEvents(state) {
+    events(state) {
         return Object.values(state.events);
     }
 };

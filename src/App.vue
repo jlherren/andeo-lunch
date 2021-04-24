@@ -66,10 +66,10 @@
         }),
 
         computed: {
-            ...mapGetters({
-                displayName: 'getDisplayName',
-                isLoggedIn: 'isLoggedIn',
-            }),
+            ...mapGetters([
+                'displayName',
+                'isLoggedIn',
+            ]),
 
             initialCheckCompleted() {
                 return this.$store.state.account.initialCheckCompleted;

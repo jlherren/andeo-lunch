@@ -45,7 +45,7 @@
         data() {
             let id = parseInt(this.$route.params.id, 10);
             return {
-                menu: this.$store.getters.getMenuById(id),
+                menu: this.$store.getters.menuById(id),
             };
         },
 
