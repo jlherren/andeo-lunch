@@ -234,9 +234,9 @@ export default new Vuex.Store({
             }
         },
 
-        async updateEvents(context) {
+        async updateEvents(context, params) {
             // queryParams: true,
-            let response = await get('/events');
+            let response = await get('/events', {params});
             for (let event of response.data.events) {
                 event.date = new Date(event.date);
                 Vue.set(context.state.events, event.id, event);

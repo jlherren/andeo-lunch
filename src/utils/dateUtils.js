@@ -1,4 +1,16 @@
 /**
+ * Get the midnight preceding (or on) the given date
+ *
+ * @param {Date} date
+ * @return {Date}
+ */
+export function getPreviousMidnight(date) {
+    date = new Date(date.getTime());
+    date.setHours(0, 0, 0, 0);
+    return date;
+}
+
+/**
  * Get the monday preceding (or on) the given date
  *
  * @param {Date} date

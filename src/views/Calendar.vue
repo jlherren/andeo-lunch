@@ -14,7 +14,7 @@
 
         <v-progress-linear indeterminate absolute v-if="loading"></v-progress-linear>
 
-        <v-list v-if="entries.length > 0">
+        <v-list>
             <template v-for="event in entries">
                 <event-list-item :event="event" :key="event.id" v-if="event.type !== 'placeholder'"/>
 
@@ -32,13 +32,6 @@
                 </v-list-item>
             </template>
         </v-list>
-
-        <v-container v-if="entries.length === 0">
-            <v-banner elevation="2" single-line>
-                <v-icon slot="icon">mdi-information</v-icon>
-                No events in the selected week
-            </v-banner>
-        </v-container>
 
         <v-speed-dial v-model="speedDial" bottom right direction="top" transition="slide-y-reverse-transition">
             <template slot="activator">
@@ -133,15 +126,14 @@
                 this.endDate = DateUtils.addDays(this.startDate, 7);
                 try {
                     this.loading = true;
-                    let payload = {
+                    let params = {
                         from: this.startDate,
-                        to: DateUtils.addDays(this.startDate, 7),
+                        to: this.endDate,
                     };
-                    await this.$store.dispatch('updateEvents', {params: payload});
+                    await this.$store.dispatch('updateEvents', params);
                 } finally {
                     this.loading = false;
                 }
-
             },
 
             previousWeek() {

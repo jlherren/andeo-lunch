@@ -3,7 +3,20 @@
         <custom-app-bar>{{ displayName }}</custom-app-bar>
         <user-stats/>
         <v-divider/>
-        <menu-list/>
+
+        <v-list v-if="entries.length > 0">
+            <template v-for="event in entries">
+                <event-list-item :event="event" :key="event.id"/>
+            </template>
+        </v-list>
+
+        <v-container v-if="entries.length === 0">
+            <v-banner elevation="2" single-line>
+                <v-icon slot="icon">mdi-information</v-icon>
+                No events for this week
+            </v-banner>
+        </v-container>
+
     </v-main>
 </template>
 
@@ -12,20 +25,65 @@
     import MenuList from '@/components/menuList';
     import CustomAppBar from '@/components/lmAppBar';
     import {mapGetters} from 'vuex';
+    import EventListItem from '@/components/menus/eventListItem';
+    import * as DateUtils from '@/utils/dateUtils';
 
     export default {
         name: 'Home',
 
         components: {
+            EventListItem,
             CustomAppBar,
             MenuList,
             UserStats,
+        },
+
+        data() {
+            let midnight = DateUtils.getPreviousMidnight(new Date());
+            let previousMonday = DateUtils.getPreviousMonday(new Date());
+            return {
+                startDate: midnight,
+                endDate:   DateUtils.addDays(previousMonday, 7),
+                loading: false,
+            };
         },
 
         computed: {
             ...mapGetters([
                 'displayName',
             ]),
+
+            entries() {
+                // TODO: This is a bit cheap, since potentially many events may be loaded at the time
+                let events = this.$store.getters.events.filter(event => {
+                    return event.date >= this.startDate && event.date < this.endDate;
+                });
+
+                events.sort((a, b) => a.date.getTime() - b.date.getTime());
+                return events;
+            },
+        },
+
+        methods: {
+            async reload() {
+                if (this.loading) {
+                    return;
+                }
+                try {
+                    this.loading = true;
+                    let params = {
+                        from: this.startDate,
+                        to: this.endDate,
+                    };
+                    await this.$store.dispatch('updateEvents', params);
+                } finally {
+                    this.loading = false;
+                }
+            },
+        },
+
+        created() {
+            this.reload();
         },
     };
 </script>
