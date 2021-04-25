@@ -111,7 +111,7 @@ class LunchMoney {
         // Insert participation types
         await Models.ParticipationType.bulkCreate([
             {
-                id:    Constants.PARTICIPATION_TYPES.CARNIVORE,
+                id:    Constants.PARTICIPATION_TYPES.OMNIVOROUS,
                 label: 'Carnivore opt-in',
             }, {
                 id:    Constants.PARTICIPATION_TYPES.VEGETARIAN,

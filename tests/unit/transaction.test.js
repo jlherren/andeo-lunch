@@ -68,7 +68,7 @@ async function createLunchWithParticipations(participants, cook, buyer) {
         await Models.Participation.create({
             user:           participant.id,
             event:          event.id,
-            type:           Constants.PARTICIPATION_TYPES.CARNIVORE,
+            type:           Constants.PARTICIPATION_TYPES.OMNIVOROUS,
             buyer:          buyer !== null && participant.id === buyer.id,
             pointsCredited: participant.id === cook.id ? 8 : 0,
         });
@@ -147,7 +147,7 @@ describe('transaction tests', () => {
             {
                 user:           user1.id,
                 event:          event.id,
-                type:           Constants.PARTICIPATION_TYPES.CARNIVORE,
+                type:           Constants.PARTICIPATION_TYPES.OMNIVOROUS,
                 buyer:          true,
                 pointsCredited: 8,
             }, {
@@ -177,19 +177,19 @@ describe('transaction tests', () => {
             {
                 user:           user1.id,
                 event:          event.id,
-                type:           Constants.PARTICIPATION_TYPES.CARNIVORE,
+                type:           Constants.PARTICIPATION_TYPES.OMNIVOROUS,
                 buyer:          false,
                 pointsCredited: 5,
             }, {
                 user:           user2.id,
                 event:          event.id,
-                type:           Constants.PARTICIPATION_TYPES.CARNIVORE,
+                type:           Constants.PARTICIPATION_TYPES.OMNIVOROUS,
                 buyer:          false,
                 pointsCredited: 0,
             }, {
                 user:           user3.id,
                 event:          event.id,
-                type:           Constants.PARTICIPATION_TYPES.CARNIVORE,
+                type:           Constants.PARTICIPATION_TYPES.OMNIVOROUS,
                 buyer:          true,
                 pointsCredited: 7,
             },
@@ -213,19 +213,19 @@ describe('transaction tests', () => {
             {
                 user:           user1.id,
                 event:          event.id,
-                type:           Constants.PARTICIPATION_TYPES.CARNIVORE,
+                type:           Constants.PARTICIPATION_TYPES.OMNIVOROUS,
                 buyer:          true,
                 pointsCredited: 0,
             }, {
                 user:           user2.id,
                 event:          event.id,
-                type:           Constants.PARTICIPATION_TYPES.CARNIVORE,
+                type:           Constants.PARTICIPATION_TYPES.OMNIVOROUS,
                 buyer:          true,
                 pointsCredited: 8,
             }, {
                 user:           user3.id,
                 event:          event.id,
-                type:           Constants.PARTICIPATION_TYPES.CARNIVORE,
+                type:           Constants.PARTICIPATION_TYPES.OMNIVOROUS,
                 buyer:          false,
                 pointsCredited: 0,
             },
@@ -259,19 +259,19 @@ describe('transaction tests', () => {
             {
                 user:           user1.id,
                 event:          event.id,
-                type:           Constants.PARTICIPATION_TYPES.CARNIVORE,
+                type:           Constants.PARTICIPATION_TYPES.OMNIVOROUS,
                 buyer:          true,
                 pointsCredited: 1,
             }, {
                 user:           user2.id,
                 event:          event.id,
-                type:           Constants.PARTICIPATION_TYPES.CARNIVORE,
+                type:           Constants.PARTICIPATION_TYPES.OMNIVOROUS,
                 buyer:          false,
                 pointsCredited: 3,
             }, {
                 user:           user3.id,
                 event:          event.id,
-                type:           Constants.PARTICIPATION_TYPES.CARNIVORE,
+                type:           Constants.PARTICIPATION_TYPES.OMNIVOROUS,
                 buyer:          false,
                 pointsCredited: 0,
             },

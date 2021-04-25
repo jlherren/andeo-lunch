@@ -24,7 +24,7 @@ let systemUser = null;
 let jwt = null;
 
 let participation1 = {
-    type:     Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.CARNIVORE],
+    type:     Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OMNIVOROUS],
     credits:  {
         points: 8,
     },
