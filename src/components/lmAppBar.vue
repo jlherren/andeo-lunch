@@ -1,12 +1,10 @@
 <template>
     <div>
         <v-app-bar app>
-            <v-btn icon @click="drawerOpen = !drawerOpen">
-                <v-icon>mdi-menu</v-icon>
-            </v-btn>
-            <v-toolbar-title>
+            <v-app-bar-nav-icon @click="drawerOpen = !drawerOpen"/>
+            <v-app-bar-title>
                 <slot/>
-            </v-toolbar-title>
+            </v-app-bar-title>
             <v-spacer/>
             <slot name="buttons"/>
         </v-app-bar>
