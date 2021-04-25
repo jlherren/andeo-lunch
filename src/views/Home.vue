@@ -1,8 +1,13 @@
 <template>
     <v-main>
-        <custom-app-bar>{{ ownUser.name }}</custom-app-bar>
-        <user-stats/>
-        <v-divider/>
+        <custom-app-bar>
+            {{ ownUser.name }}
+            <template v-slot:buttons>
+                <user-stats/>
+            </template>
+        </custom-app-bar>
+
+        <v-subheader>Upcoming events</v-subheader>
 
         <v-list v-if="entries.length > 0">
             <template v-for="event in entries">
@@ -13,8 +18,20 @@
         <v-container v-if="entries.length === 0">
             <v-banner elevation="2" single-line>
                 <v-icon slot="icon">mdi-information</v-icon>
-                No events for this week
+                No upcoming events
             </v-banner>
+        </v-container>
+
+        <v-divider/>
+
+        <v-subheader>Pending opt-in/-out</v-subheader>
+
+        <v-container>
+            <v-banner elevation="2" single-line>
+                <v-icon slot="icon">mdi-check</v-icon>
+                You're all set!
+            </v-banner>
+
         </v-container>
 
     </v-main>

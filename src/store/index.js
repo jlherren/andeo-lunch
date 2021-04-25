@@ -275,6 +275,11 @@ export default new Vuex.Store({
             }
         },
 
+        async saveParticipation(context, {eventId, userId, ...data}) {
+            await post(`/events/${eventId}/participations/${userId}`, data);
+            await context.dispatch('fetchParticipations', {eventId});
+        },
+
         async saveEvent(context, data) {
             await post('/events', data);
         },

@@ -1,15 +1,13 @@
 <template>
-    <v-container>
-        <v-row>
-            <v-col cols="6" :class="getValueClass(ownUser.balances.points)">
-                {{ ownUser.balances.points }}
-                <v-icon>mdi-handshake</v-icon>
-            </v-col>
-            <v-col cols="6" :class="getValueClass(ownUser.balances.money)">
-                {{ ownUser.balances.money }} CHF
-            </v-col>
-        </v-row>
-    </v-container>
+    <span class="stats">
+        <span :class="getValueClass(ownUser.balances.points)">
+            {{ ownUser.balances.points }}
+            <v-icon>mdi-handshake</v-icon>
+        </span>
+        <span :class="getValueClass(ownUser.balances.money)">
+            {{ ownUser.balances.money }} CHF
+        </span>
+    </span>
 </template>
 
 <script>
@@ -33,8 +31,12 @@
 </script>
 
 <style scoped lang="scss">
-    .container {
+    .stats {
         font-size: 16pt;
+
+        span + span {
+            margin-left: 1em;
+        }
     }
 
     .v-icon {
