@@ -30,12 +30,12 @@ exports.EVENT_TYPE_NAMES = Object.freeze({
 exports.EVENT_TYPE_IDS = Object.freeze(Utils.objectFlip(exports.EVENT_TYPE_NAMES));
 
 exports.PARTICIPATION_TYPES = Object.freeze({
-    NORMAL:     1,
+    CARNIVORE:  1,
     VEGETARIAN: 2,
     NONE:       9,
 });
 exports.PARTICIPATION_TYPE_NAMES = Object.freeze({
-    [exports.PARTICIPATION_TYPES.NORMAL]:     'normal',
+    [exports.PARTICIPATION_TYPES.CARNIVORE]:  'carnivore',
     [exports.PARTICIPATION_TYPES.VEGETARIAN]: 'vegetarian',
     [exports.PARTICIPATION_TYPES.NONE]:       'none',
 });

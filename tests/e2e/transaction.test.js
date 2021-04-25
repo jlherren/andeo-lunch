@@ -24,7 +24,7 @@ let systemUser = null;
 let jwt = null;
 
 let participation1 = {
-    type:     'normal',
+    type:     Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.CARNIVORE],
     credits:  {
         points: 8,
     },
@@ -34,7 +34,7 @@ let participation1 = {
 };
 
 let participation2 = {
-    type:     'vegetarian',
+    type:     Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.VEGETARIAN],
     credits:  {
         points: 0,
     },

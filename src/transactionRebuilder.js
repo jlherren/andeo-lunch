@@ -16,7 +16,7 @@ const Db = require('./db');
  */
 function getWeightsForParticipationType(event, participation) {
     switch (participation.type) {
-        case Constants.PARTICIPATION_TYPES.NORMAL:
+        case Constants.PARTICIPATION_TYPES.CARNIVORE:
             return {
                 pointsWeight: 1,
                 moneyWeight:  1,
