@@ -51,36 +51,35 @@
         },
 
         data: () => ({
-            navigationLinks: [
+            navigationLinks:   [
                 {
-                    url: '/',
+                    url:   '/',
                     title: 'Home',
-                    icon: 'mdi-home',
+                    icon:  'mdi-home',
                 },
                 {
-                    url: '/calendar',
+                    url:   '/calendar',
                     title: 'Calendar',
-                    icon: 'mdi-calendar',
+                    icon:  'mdi-calendar',
                 },
                 {
-                    url: '/menus',
+                    url:   '/menus',
                     title: 'Menus',
-                    icon: 'mdi-silverware',
+                    icon:  'mdi-silverware',
                 },
                 {
-                    url: '/cash',
+                    url:   '/cash',
                     title: 'Cash',
-                    icon: 'mdi-cash',
+                    icon:  'mdi-cash',
                 },
             ],
-            drawerOpen: false,
+            drawerOpen:        false,
             errorSnackbarOpen: false,
             errorSnackbarText: null,
         }),
 
         computed: {
             ...mapGetters([
-                'displayName',
                 'isLoggedIn',
             ]),
 
@@ -91,7 +90,7 @@
 
         methods: {
             error(error) {
-                this.errorSnackbarOpen=true;
+                this.errorSnackbarOpen = true;
                 this.errorSnackbarText = error.message;
             },
         },
@@ -103,7 +102,7 @@
 
         beforeDestroy() {
             this.unregisterErrors();
-        }
+        },
     };
 </script>
 

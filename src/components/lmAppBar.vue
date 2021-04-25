@@ -1,7 +1,10 @@
 <template>
     <div>
         <v-app-bar app>
-            <v-app-bar-nav-icon @click="drawerOpen = !drawerOpen"/>
+            <v-app-bar-nav-icon @click="toggleDrawer" v-if="!subPage"/>
+            <v-app-bar-nav-icon @click="goBack" v-if="subPage">
+                <v-icon>mdi-arrow-left</v-icon>
+            </v-app-bar-nav-icon>
             <v-app-bar-title>
                 <slot/>
             </v-app-bar-title>
@@ -21,6 +24,13 @@
     export default {
         name: 'lmAppBar',
 
+        props: {
+            subPage: {
+                type:    Boolean,
+                default: false,
+            },
+        },
+
         components: {
             NavigationDrawerContent,
         },
@@ -28,5 +38,15 @@
         data: () => ({
             drawerOpen: false,
         }),
+
+        methods: {
+            goBack() {
+                this.$router.go(-1);
+            },
+
+            toggleDrawer() {
+                this.drawerOpen = !this.drawerOpen;
+            },
+        },
     };
 </script>

@@ -6,8 +6,8 @@
             </v-list-item-avatar>
 
             <v-list-item-content>
-                <v-list-item-title class="title">{{ displayName }}</v-list-item-title>
-                <v-list-item-subtitle>{{ username }}</v-list-item-subtitle>
+                <v-list-item-title class="title">{{ ownUser.name }}</v-list-item-title>
+                <v-list-item-subtitle>{{ ownUser.username }}</v-list-item-subtitle>
             </v-list-item-content>
         </v-list-item>
 
@@ -76,8 +76,7 @@
         },
         computed: {
             ...mapGetters([
-                'displayName',
-                'username',
+                'ownUser',
                 'backendVersion',
                 'frontendVersion',
             ]),
@@ -89,7 +88,7 @@
             openAboutDialog() {
                 this.aboutDialog = true;
                 this.backendVersionLoading = true;
-                this.$store.dispatch('updateBackendVersion')
+                this.$store.dispatch('fetchBackendVersion')
                     .catch(() => null)
                     .then(() => this.backendVersionLoading = false);
             },

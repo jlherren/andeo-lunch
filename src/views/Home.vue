@@ -1,6 +1,6 @@
 <template>
     <v-main>
-        <custom-app-bar>{{ displayName }}</custom-app-bar>
+        <custom-app-bar>{{ ownUser.name }}</custom-app-bar>
         <user-stats/>
         <v-divider/>
 
@@ -50,7 +50,7 @@
 
         computed: {
             ...mapGetters([
-                'displayName',
+                'ownUser',
             ]),
 
             entries() {
@@ -75,7 +75,7 @@
                         from: this.startDate,
                         to: this.endDate,
                     };
-                    await this.$store.dispatch('updateEvents', params);
+                    await this.$store.dispatch('fetchEvents', params);
                 } finally {
                     this.loading = false;
                 }

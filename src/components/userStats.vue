@@ -1,12 +1,12 @@
 <template>
     <v-container>
         <v-row>
-            <v-col cols="6" :class="getValueClass(this.balances.points)">
-                {{ this.balances.points }}
+            <v-col cols="6" :class="getValueClass(ownUser.balances.points)">
+                {{ ownUser.balances.points }}
                 <v-icon>mdi-handshake</v-icon>
             </v-col>
-            <v-col cols="6" :class="getValueClass(this.balances.money)">
-                {{ this.balances.money }} CHF
+            <v-col cols="6" :class="getValueClass(ownUser.balances.money)">
+                {{ ownUser.balances.money }} CHF
             </v-col>
         </v-row>
     </v-container>
@@ -19,7 +19,7 @@
         name:     'userStats',
         computed: {
             ...mapGetters([
-                'balances',
+                'ownUser',
             ]),
         },
         methods:  {

@@ -43,7 +43,6 @@
                 this.isBusy = true;
                 try {
                     await this.$store.dispatch('login', {username: this.username, password: this.password});
-                    await this.$store.dispatch('checkLogin');
                 } finally {
                     this.isBusy = false;
                 }

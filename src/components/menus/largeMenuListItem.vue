@@ -13,7 +13,7 @@
 </template>
 
 <script>
-    import Participants from "./participants";
+    import Participants from "./participation-summary";
     export default {
         name: "largeMenuListItem",
         components: {Participants},

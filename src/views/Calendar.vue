@@ -130,7 +130,7 @@
                         from: this.startDate,
                         to: this.endDate,
                     };
-                    await this.$store.dispatch('updateEvents', params);
+                    await this.$store.dispatch('fetchEvents', params);
                 } finally {
                     this.loading = false;
                 }
