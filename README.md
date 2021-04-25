@@ -1,4 +1,4 @@
-# vue_lunch_money
+# Lunch money frontend
 
 ## Project setup
 ```
