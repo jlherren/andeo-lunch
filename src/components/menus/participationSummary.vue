@@ -13,7 +13,7 @@
 
 <script>
     export default {
-        name:     'participation-summary',
+        name:     'ParticipationSummary',
         props:    {
             participations: {
                 type:    Array,

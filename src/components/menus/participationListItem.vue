@@ -35,7 +35,7 @@
 
 <script>
     export default {
-        name: 'participation-list-item',
+        name: 'ParticipationListItem',
 
         props: {
             participation: Object,

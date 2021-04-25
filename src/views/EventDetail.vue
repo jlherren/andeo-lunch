@@ -58,8 +58,8 @@
 
 <script>
     import LmAppBar from '@/components/lmAppBar';
-    import ParticipationSummary from '@/components/menus/participation-summary';
-    import ParticipationListItem from '@/components/menus/participation-list-item';
+    import ParticipationSummary from '@/components/menus/participationSummary';
+    import ParticipationListItem from '@/components/menus/participationListItem';
 
     export default {
         name: 'EventDetail',
