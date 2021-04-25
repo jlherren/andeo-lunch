@@ -90,61 +90,61 @@ describe('transactions for event', () => {
         expect(response.status).toEqual(200);
         expect(response.body).toHaveLength(3);
         expect(response.body[0]).toEqual(expect.objectContaining({
-            event:      event.id,
-            user:       user1.id,
-            contraUser: systemUser.id,
-            date:       event.date.toISOString(),
-            currency:   Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
-            amount:     8,
-            balance:    8,
+            eventId:      event.id,
+            userId:       user1.id,
+            contraUserId: systemUser.id,
+            date:         event.date.toISOString(),
+            currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            amount:       8,
+            balance:      8,
         }));
         expect(response.body[1]).toEqual(expect.objectContaining({
-            event:      event.id,
-            user:       user1.id,
-            contraUser: systemUser.id,
-            date:       event.date.toISOString(),
-            currency:   Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
-            amount:     -4,
-            balance:    4,
+            eventId:      event.id,
+            userId:       user1.id,
+            contraUserId: systemUser.id,
+            date:         event.date.toISOString(),
+            currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            amount:       -4,
+            balance:      4,
         }));
         expect(response.body[2]).toEqual(expect.objectContaining({
-            event:      event.id,
-            user:       user1.id,
-            contraUser: systemUser.id,
-            date:       event.date.toISOString(),
-            currency:   Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
-            amount:     -20,
-            balance:    -20,
+            eventId:      event.id,
+            userId:       user1.id,
+            contraUserId: systemUser.id,
+            date:         event.date.toISOString(),
+            currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+            amount:       -20,
+            balance:      -20,
         }));
         response = await request.get(`/users/${user2.id}/transactions`);
         expect(response.status).toEqual(200);
         expect(response.body).toHaveLength(3);
         expect(response.body[0]).toEqual(expect.objectContaining({
-            event:      event.id,
-            user:       user2.id,
-            contraUser: systemUser.id,
-            date:       event.date.toISOString(),
-            currency:   Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
-            amount:     -4,
-            balance:    -4,
+            eventId:      event.id,
+            userId:       user2.id,
+            contraUserId: systemUser.id,
+            date:         event.date.toISOString(),
+            currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            amount:       -4,
+            balance:      -4,
         }));
         expect(response.body[1]).toEqual(expect.objectContaining({
-            event:      event.id,
-            user:       user2.id,
-            contraUser: systemUser.id,
-            date:       event.date.toISOString(),
-            currency:   Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
-            amount:     30,
-            balance:    30,
+            eventId:      event.id,
+            userId:       user2.id,
+            contraUserId: systemUser.id,
+            date:         event.date.toISOString(),
+            currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+            amount:       30,
+            balance:      30,
         }));
         expect(response.body[2]).toEqual(expect.objectContaining({
-            event:      event.id,
-            user:       user2.id,
-            contraUser: systemUser.id,
-            date:       event.date.toISOString(),
-            currency:   Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
-            amount:     -10,
-            balance:    20,
+            eventId:      event.id,
+            userId:       user2.id,
+            contraUserId: systemUser.id,
+            date:         event.date.toISOString(),
+            currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+            amount:       -10,
+            balance:      20,
         }));
     });
 });

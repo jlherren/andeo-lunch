@@ -18,11 +18,14 @@ const loginSchema = Joi.object({
 async function login(ctx) {
     let requestBody = RouteUtils.validateBody(ctx, loginSchema);
     let user = await Models.User.findOne({where: {username: requestBody.username}});
-    if (user && user.active) {
+    if (user !== null && user.active) {
         if (await AuthUtils.comparePassword(requestBody.password, user.password)) {
             let config = ctx.lunchMoney.getConfig();
             let token = await user.generateToken(config.secret, {expiresIn: config.tokenExpiry});
-            ctx.body = {token};
+            ctx.body = {
+                token,
+                userId: user.id,
+            };
             return;
         }
     } else {
@@ -48,18 +51,9 @@ async function renew(ctx) {
  */
 async function check(ctx) {
     let user = await RouteUtils.getUser(ctx);
-    if (user === null) {
-        ctx.body = {
-            loggedIn: false,
-        };
-        return;
-    }
+    let userId = user !== null ? user.id : null;
     ctx.body = {
-        loggedIn: true,
-        user:     {
-            ...user.toApi(),
-            username: user.username,
-        },
+        userId,
     };
 }
 

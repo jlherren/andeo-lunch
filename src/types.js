@@ -12,12 +12,12 @@
  * @typedef {Object} ApiTransaction
  * @property {number} id
  * @property {Date} date
- * @property {number} user
- * @property {number} contraUser
+ * @property {number} userId
+ * @property {number} contraUserId
  * @property {number} currency
  * @property {number} amount
  * @property {number} balance
- * @property {number} event
+ * @property {number} eventId
  */
 
 /**
@@ -32,8 +32,8 @@
 
 /**
  * @typedef {Object} ApiParticipation
- * @property {number} user
- * @property {number} event
+ * @property {number} userId
+ * @property {number} eventId
  * @property {string} type
  * @property {{points: number}} credits
  * @property {{money: boolean}} provides

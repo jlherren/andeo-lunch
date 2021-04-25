@@ -65,7 +65,9 @@ async function getParticipationList(ctx) {
             event: ctx.params.event,
         },
     });
-    ctx.body = participations.map(participation => participation.toApi());
+    ctx.body = {
+        participations: participations.map(participation => participation.toApi()),
+    };
 }
 
 /**
@@ -82,7 +84,9 @@ async function getSingleParticipation(ctx) {
     if (!participation) {
         ctx.throw(404, 'No such participation');
     }
-    ctx.body = participation.toApi();
+    ctx.body = {
+        participation: participation.toApi(),
+    };
 }
 
 /**

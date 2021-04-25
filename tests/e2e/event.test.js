@@ -94,7 +94,7 @@ describe('creating events', () => {
         let {location} = response.headers;
         expect(location).toMatch(/^\/events\/\d+$/u);
         response = await request.get(location);
-        expect(response.body).toMatchObject(sampleEvent);
+        expect(response.body.event).toMatchObject(sampleEvent);
     });
 
     it('rejects missing data', async () => {
@@ -123,7 +123,7 @@ describe('creating events', () => {
             expect(response.status).toEqual(204);
             expected[key] = eventUpdates[key];
             response = await request.get(location);
-            expect(response.body).toMatchObject(expected);
+            expect(response.body.event).toMatchObject(expected);
         }
     });
 

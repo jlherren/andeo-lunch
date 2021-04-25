@@ -37,10 +37,9 @@ class User extends Model {
      * @returns {ApiUser}
      */
     toApi() {
-        // Note: The username is not returned on purpose, because it is considered part of the login credentials.
-
         return {
             id:       this.id,
+            username: this.username,
             name:     this.name,
             balances: {
                 points: this.points,
@@ -104,8 +103,8 @@ class Participation extends Model {
      */
     toApi() {
         return {
-            user:     this.user,
-            event:    this.event,
+            userId:   this.user,
+            eventId:  this.event,
             type:     Constants.PARTICIPATION_TYPE_NAMES[this.type],
             credits:  {
                 points: this.pointsCredited,
@@ -134,14 +133,14 @@ class Transaction extends Model {
      */
     toApi() {
         return {
-            id:         this.id,
-            date:       this.date,
-            user:       this.user,
-            contraUser: this.contraUser,
-            event:      this.event,
-            currency:   Constants.CURRENCY_NAMES[this.currency],
-            amount:     this.amount,
-            balance:    this.balance,
+            id:           this.id,
+            date:         this.date,
+            userId:       this.user,
+            contraUserId: this.contraUser,
+            eventId:      this.event,
+            currency:     Constants.CURRENCY_NAMES[this.currency],
+            amount:       this.amount,
+            balance:      this.balance,
         };
     }
 }

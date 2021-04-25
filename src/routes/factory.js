@@ -20,7 +20,9 @@ exports.makeSingleObjectController = function makeSingleObjectController(options
         };
         let object = await options.model.findOne({where});
         if (object) {
-            ctx.body = options.mapper(object);
+            ctx.body = {
+                [singular]: options.mapper(object),
+            };
         } else {
             ctx.throw(404, `No such ${singular}`);
         }
@@ -37,8 +39,12 @@ exports.makeSingleObjectController = function makeSingleObjectController(options
  * @returns {Function}
  */
 exports.makeObjectListController = function makeObjectListController(options) {
+    let plural = `${options.model.name.toLowerCase()}s`;
+
     return async function (ctx) {
         let objects = await options.model.findAll({where: options.where});
-        ctx.body = objects.map(object => options.mapper(object));
+        ctx.body = {
+            [plural]: objects.map(object => options.mapper(object)),
+        };
     };
 };

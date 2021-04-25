@@ -74,7 +74,7 @@ describe('creating participations', () => {
     it('has initially no participations', async () => {
         let response = await request.get(`/events/${event.id}/participations`);
         expect(response.status).toEqual(200);
-        expect(response.body).toEqual([]);
+        expect(response.body.participations).toEqual([]);
     });
 
     it('allows saving a participations', async () => {
@@ -88,11 +88,11 @@ describe('creating participations', () => {
         await request.post(url).send(sampleParticipation1);
         let response = await request.get(url);
         expect(response.status).toEqual(200);
-        expect(response.body.user).toEqual(user.id);
-        expect(response.body.event).toEqual(event.id);
-        Reflect.deleteProperty(response.body, 'user');
-        Reflect.deleteProperty(response.body, 'event');
-        expect(response.body).toEqual(sampleParticipation1);
+        expect(response.body.participation.userId).toEqual(user.id);
+        expect(response.body.participation.eventId).toEqual(event.id);
+        Reflect.deleteProperty(response.body.participation, 'userId');
+        Reflect.deleteProperty(response.body.participation, 'eventId');
+        expect(response.body.participation).toEqual(sampleParticipation1);
     });
 
     it('allows updating a participations', async () => {
@@ -101,11 +101,11 @@ describe('creating participations', () => {
         await request.post(url).send(sampleParticipation2);
         let response = await request.get(url);
         expect(response.status).toEqual(200);
-        expect(response.body.user).toEqual(user.id);
-        expect(response.body.event).toEqual(event.id);
-        Reflect.deleteProperty(response.body, 'user');
-        Reflect.deleteProperty(response.body, 'event');
-        expect(response.body).toEqual(sampleParticipation2);
+        expect(response.body.participation.userId).toEqual(user.id);
+        expect(response.body.participation.eventId).toEqual(event.id);
+        Reflect.deleteProperty(response.body.participation, 'userId');
+        Reflect.deleteProperty(response.body.participation, 'eventId');
+        expect(response.body.participation).toEqual(sampleParticipation2);
     });
 
     it('allows to delete a participations', async () => {

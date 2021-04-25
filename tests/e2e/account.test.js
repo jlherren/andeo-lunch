@@ -118,13 +118,13 @@ describe('account check route', () => {
     it('works when not providing a token', async () => {
         let response = await request.get('/account/check');
         expect(response.status).toEqual(200);
-        expect(response.body).toEqual({loggedIn: false});
+        expect(response.body).toEqual({userId: null});
     });
 
     it('works when providing a non-parsable token', async () => {
         let response = await request.get('/account/check').set('Authorization', 'Bearer WHATEVER');
         expect(response.status).toEqual(200);
-        expect(response.body).toEqual({loggedIn: false});
+        expect(response.body).toEqual({userId: null});
     });
 
     it('works when providing an expired token', async () => {
@@ -133,7 +133,7 @@ describe('account check route', () => {
         let token = await user.generateToken(config.secret, {expiresIn: '-1 day'});
         let response = await request.get('/account/check').set('Authorization', `Bearer ${token}`);
         expect(response.status).toEqual(200);
-        expect(response.body).toEqual({loggedIn: false});
+        expect(response.body).toEqual({userId: null});
     });
 
     it('works when providing a valid token', async () => {
@@ -142,7 +142,6 @@ describe('account check route', () => {
         let token = await user.generateToken(config.secret);
         let response = await request.get('/account/check').set('Authorization', `Bearer ${token}`);
         expect(response.status).toEqual(200);
-        expect(response.body.loggedIn).toBe(true);
-        expect(response.body.user.name).toBe(user.name);
+        expect(response.body).toEqual({userId: user.id});
     });
 });
