@@ -32,11 +32,13 @@ exports.EVENT_TYPE_IDS = Object.freeze(Utils.objectFlip(exports.EVENT_TYPE_NAMES
 exports.PARTICIPATION_TYPES = Object.freeze({
     OMNIVOROUS: 1,
     VEGETARIAN: 2,
-    NONE:       9,
+    OPT_OUT:    8,
+    UNDECIDED:  9,
 });
 exports.PARTICIPATION_TYPE_NAMES = Object.freeze({
     [exports.PARTICIPATION_TYPES.OMNIVOROUS]: 'omnivorous',
     [exports.PARTICIPATION_TYPES.VEGETARIAN]: 'vegetarian',
-    [exports.PARTICIPATION_TYPES.NONE]:       'none',
+    [exports.PARTICIPATION_TYPES.OPT_OUT]:    'opt-out',
+    [exports.PARTICIPATION_TYPES.UNDECIDED]:  'undecided',
 });
 exports.PARTICIPATION_TYPE_IDS = Object.freeze(Utils.objectFlip(exports.PARTICIPATION_TYPE_NAMES));

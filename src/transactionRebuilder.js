@@ -26,7 +26,8 @@ function getWeightsForParticipationType(event, participation) {
                 pointsWeight: 1,
                 moneyWeight:  event.type === Constants.EVENT_TYPES.LUNCH ? event.vegetarianMoneyFactor : 1,
             };
-        case Constants.PARTICIPATION_TYPES.NONE:
+        case Constants.PARTICIPATION_TYPES.OPT_OUT:
+        case Constants.PARTICIPATION_TYPES.UNDECIDED:
             return {
                 pointsWeight: 0,
                 moneyWeight:  0,

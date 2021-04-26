@@ -65,7 +65,7 @@ Overview of object structures used in this API
 ### Participation type
 
 ```
-"omnivorous" | "vegetarian" | "none"
+"omnivorous" | "vegetarian" | "out-out" | "undecided"
 ```
 
 ### Transaction
