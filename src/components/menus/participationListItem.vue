@@ -1,5 +1,5 @@
 <template>
-    <v-list-item>
+    <v-list-item :class="itemClass">
         <v-list-item-avatar>
             <v-avatar :color="bigIconColor">
                 <v-icon dark>{{ bigIcon }}</v-icon>
@@ -8,34 +8,50 @@
 
         <v-list-item-content>
             <v-list-item-title>
-                <span :class="nameColor" class="mr-4">{{ user.name }}</span>
+                <span class="mr-4">{{ user.name }}</span>
 
-                <v-chip small v-if="participation.credits.points > 0" class="mr-1">
-                    {{ participation.credits.points }}
-                    <v-icon small>mdi-handshake</v-icon>
+                <v-chip small class="mr-1" v-if="participation.credits.points > 0">
+                    <balance :value="participation.credits.points" points small/>
                 </v-chip>
 
-                <v-chip small class="mr-1" v-if="participation.type !== 'none'">
-                    <v-icon small>{{ smallIcon }}</v-icon>
+                <v-chip small class="mr-1" v-if="participation.type === 'omnivorous'">
+                    <v-icon small>mdi-hamburger</v-icon>
                 </v-chip>
 
-                <v-chip small v-if="participation.provides.money" class="mr-1">
+                <v-chip small class="mr-1" v-if="participation.type === 'vegetarian'">
+                    <v-icon small>mdi-food-apple</v-icon>
+                </v-chip>
+
+                <v-chip small v-if="participation.credits.money > 0" class="mr-1">
                     <v-icon small>mdi-cash-multiple</v-icon>
                 </v-chip>
             </v-list-item-title>
         </v-list-item-content>
 
         <v-list-item-action>
-            <v-btn icon @click="toggle">
+            <v-btn icon @click="openDialog()">
                 <v-icon>mdi-pencil</v-icon>
             </v-btn>
         </v-list-item-action>
+
+        <v-dialog v-model="editDialog">
+            <participation-edit :participation="participation" @close="editDialog = false" ref="editForm"/>
+        </v-dialog>
     </v-list-item>
 </template>
 
 <script>
+    import ParticipationEdit from '@/components/menus/participationEdit';
+    import Balance from '@/components/balance';
+    import Vue from 'vue';
+
     export default {
         name: 'ParticipationListItem',
+
+        components: {
+            Balance,
+            ParticipationEdit,
+        },
 
         props: {
             participation: Object,
@@ -43,22 +59,23 @@
 
         data() {
             return {
-                expanded: false,
+                editDialog: false,
             };
         },
 
         computed: {
             user() {
-                return this.$store.getters.user(this.participation.userId);
+                return this.$store.getters.user(this.participation.userId) ?? {};
             },
 
             bigIcon() {
                 switch (this.participation.type) {
-                    case 'carnivore':
+                    case 'omnivorous':
                     case 'vegetarian':
                         return 'mdi-account-circle';
-                    case 'none':
+                    case 'opt-out':
                         return 'mdi-cancel';
+                    case 'undecided':
                     default:
                         return 'mdi-help-circle';
                 }
@@ -66,7 +83,7 @@
 
             bigIconColor() {
                 switch (this.participation.type) {
-                    case 'carnivore':
+                    case 'omnivorous':
                     case 'vegetarian':
                         return 'primary';
                     default:
@@ -74,31 +91,21 @@
                 }
             },
 
-            nameColor() {
+            itemClass() {
                 switch (this.participation.type) {
-                    case 'carnivore':
+                    case 'omnivorous':
                     case 'vegetarian':
-                        return '';
+                        return 'optIn';
                     default:
-                        return 'text--secondary';
-                }
-            },
-
-            smallIcon() {
-                switch (this.participation.type) {
-                    case 'carnivore':
-                        return 'mdi-food-steak';
-                    case 'vegetarian':
-                        return 'mdi-food-apple';
-                    default:
-                        return 'mdi-help-circle';
+                        return 'optOut';
                 }
             },
         },
 
         methods: {
-            toggle() {
-                this.expanded = !this.expanded;
+            openDialog() {
+                this.editDialog = true;
+                Vue.nextTick(() => this.$refs.editForm.reset());
             },
         },
     };
@@ -123,5 +130,22 @@
         font-size: 28pt;
         color: #43a047;
         margin: 0 0.25em;
+    }
+
+    .optIn {
+        .v-list-item__content, .v-chip {
+            color: black;
+        }
+    }
+
+    .optOut {
+        .v-list-item__content, .v-chip {
+            // TODO: use text--secondary mixin?
+            color: grey;
+        }
+    }
+
+    .v-chip .v-icon {
+        color: inherit;
     }
 </style>

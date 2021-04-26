@@ -27,11 +27,7 @@
         <v-subheader>Pending opt-in/-out</v-subheader>
 
         <v-container>
-            <v-banner elevation="2" single-line>
-                <v-icon slot="icon">mdi-check</v-icon>
-                You're all set!
-            </v-banner>
-
+            Not implemented yet.
         </v-container>
 
     </v-main>

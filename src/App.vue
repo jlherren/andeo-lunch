@@ -91,7 +91,7 @@
         methods: {
             error(error) {
                 this.errorSnackbarOpen = true;
-                this.errorSnackbarText = error.message;
+                this.errorSnackbarText = `Error: ${error.message}`;
             },
         },
 
@@ -109,5 +109,18 @@
 <style lang="scss">
     .center-text {
         text-align: center;
+    }
+
+    .v-input.no-spinner {
+        input {
+            // Firefox
+            -moz-appearance: textfield;
+
+            // Chrome, Edge, Safari
+            &::-webkit-outer-spin-button, &::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+        }
     }
 </style>

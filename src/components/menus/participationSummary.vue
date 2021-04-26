@@ -2,8 +2,8 @@
     <span class="participants">
         <span class="total">{{ total }}</span>
         <span class="participants-details">
-            <v-icon>mdi-food-steak</v-icon>
-            {{ carnivore }}
+            <v-icon>mdi-hamburger</v-icon>
+            {{ omnivorous }}
             <br>
             <v-icon>mdi-food-apple</v-icon>
             {{ vegetarian }}
@@ -22,15 +22,15 @@
         },
         computed: {
             optIns() {
-                return this.participations.filter(participation => participation.type !== 'none');
+                return this.participations.filter(p => !['opt-out', 'undecided'].includes(p.type));
             },
 
-            carnivore() {
-                return this.optIns.filter(participation => participation.type === 'carnivore').length;
+            omnivorous() {
+                return this.optIns.filter(p => p.type === 'omnivorous').length;
             },
 
             vegetarian() {
-                return this.optIns.filter(participation => participation.type === 'vegetarian').length;
+                return this.optIns.filter(p => p.type === 'vegetarian').length;
             },
 
             total() {

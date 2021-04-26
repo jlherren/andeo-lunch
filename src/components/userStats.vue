@@ -1,31 +1,25 @@
 <template>
     <span class="stats">
-        <span :class="getValueClass(ownUser.balances.points)">
-            {{ ownUser.balances.points }}
-            <v-icon>mdi-handshake</v-icon>
-        </span>
-        <span :class="getValueClass(ownUser.balances.money)">
-            {{ ownUser.balances.money }} CHF
-        </span>
+        <balance :value="ownUser.balances.points" color points precise/>
+        <balance :value="ownUser.balances.money" color money precise/>
     </span>
 </template>
 
 <script>
     import {mapGetters} from 'vuex';
+    import Balance from '@/components/balance';
 
     export default {
-        name:     'userStats',
-        computed: {
+        name:       'userStats',
+
+        components: {
+            Balance,
+        },
+
+        computed:   {
             ...mapGetters([
                 'ownUser',
             ]),
-        },
-        methods:  {
-            getValueClass(value) {
-                let classString = 'center-text ';
-                classString += value >= 0 ? 'positive' : 'negative';
-                return classString;
-            },
         },
     };
 </script>
@@ -37,17 +31,5 @@
         span + span {
             margin-left: 1em;
         }
-    }
-
-    .v-icon {
-        color: inherit;
-    }
-
-    .positive {
-        color: #43a047;
-    }
-
-    .negative {
-        color: #c62828;
     }
 </style>

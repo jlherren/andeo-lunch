@@ -2,7 +2,10 @@
     <v-main>
         <custom-app-bar>Cash</custom-app-bar>
 
-        <user-stats/>
+        <v-container class="center-text">
+            <user-stats/>
+        </v-container>
+
         <v-divider/>
         <div class="center-btn">
             <v-btn>Create transaction</v-btn>

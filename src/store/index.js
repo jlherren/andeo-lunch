@@ -22,6 +22,18 @@ function addAuthorizationHeader(config) {
 }
 
 /**
+ * Process an Axios thrown error to contain a better error message
+ * @param {Error} error
+ */
+function processError(error) {
+    let message = error?.response?.data;
+    if (message) {
+        // These error statuses are known to contain meaningful messages in the body
+        error.message = message;
+    }
+}
+
+/**
  * Send an authenticated (if possible) GET request
  *
  * @param {string} url
@@ -33,13 +45,14 @@ async function get(url, config = {}) {
     try {
         return await axios.get(BASE_URL + url, config);
     } catch (err) {
+        processError(err);
         ErrorService.instance.onError(err);
         throw err;
     }
 }
 
 /**
- * Send an authenticated (if possible) GET request
+ * Send an authenticated (if possible) POST request
  *
  * @param {string} url
  * @param {object} data
@@ -51,10 +64,25 @@ async function post(url, data, config = {}) {
     try {
         return await axios.post(BASE_URL + url, data, config);
     } catch (err) {
-        if (err.response && [400, 401].includes(err.response.status)) {
-            // These error statuses are known to contain meaningful messages in the body
-            err = new Error(err.response.data);
-        }
+        processError(err);
+        ErrorService.instance.onError(err);
+        throw err;
+    }
+}
+
+/**
+ * Send an authenticated (if possible) DELETE request
+ *
+ * @param {string} url
+ * @param {object} config
+ * @return {Promise<AxiosResponse<any>>}
+ */
+async function delete_(url, config = {}) {
+    addAuthorizationHeader(config);
+    try {
+        return await axios.delete(BASE_URL + url, config);
+    } catch (err) {
+        processError(err);
         ErrorService.instance.onError(err);
         throw err;
     }
@@ -179,7 +207,7 @@ export default new Vuex.Store({
         backendVersion:  state => state.backendVersion,
 
         // Users and account
-        user: state => id => state.users[id] ?? {id, name: null, username: null, balances: {}},
+        user: state => id => state.users[id],
 
         // Own user
         isLoggedIn: state => state.account.userId !== null,
@@ -189,8 +217,8 @@ export default new Vuex.Store({
 
         // Events
         events:         state => Object.values(state.events),
-        event:          state => id => state.events[id] ?? {name: null, date: null, costs: {}},
-        participations: state => id => state.participations[id] ?? [],
+        event:          state => id => state.events[id],
+        participations: state => id => state.participations[id],
 
         // Legacy
         menus(state) {
@@ -270,18 +298,38 @@ export default new Vuex.Store({
             let participations = response.data.participations;
             Vue.set(context.state.participations, eventId, participations);
 
-            for (let participation of participations) {
-                await context.dispatch('fetchUser', {userId: participation.userId});
-            }
+            let promises = participations.map(p => context.dispatch('fetchUser', {userId: p.userId}));
+            await Promise.all(promises);
         },
 
         async saveParticipation(context, {eventId, userId, ...data}) {
             await post(`/events/${eventId}/participations/${userId}`, data);
-            await context.dispatch('fetchParticipations', {eventId});
+            await Promise.all([
+                context.dispatch('fetchEvent', {eventId}),
+                context.dispatch('fetchParticipations', {eventId}),
+            ]);
         },
 
         async saveEvent(context, data) {
-            await post('/events', data);
+            let url = data.id ? `/events/${data.id}` : '/events';
+            let response = await post(url, {...data, id: undefined});
+
+            if (!data.id) {
+                let {location} = response.headers;
+                let match = location.match(/^\/events\/(\d+)$/);
+                if (match) {
+                    await context.dispatch('fetchEvent', {eventId: match[1]});
+                }
+            } else {
+                await context.dispatch('fetchEvent', {eventId: data.id});
+            }
+        },
+
+        async deleteEvent(context, {eventId}) {
+            let response = await delete_(`/events/${eventId}`);
+            if (response.status === 204) {
+                delete context.state.events[eventId];
+            }
         },
     },
 });

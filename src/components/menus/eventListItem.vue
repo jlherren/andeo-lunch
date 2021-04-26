@@ -5,21 +5,33 @@
         </v-list-item-icon>
         <v-list-item-content>
             <v-list-item-title>{{ event.name }}</v-list-item-title>
-            <v-list-item-subtitle>{{ formattedDate }}</v-list-item-subtitle>
+            <v-list-item-subtitle>
+                <span>{{ formattedDate }}</span>
+            </v-list-item-subtitle>
         </v-list-item-content>
+
+        <v-list-item-action>
+            <v-list-item-action-text>
+                <balance :value="event.costs.points" small points/>
+            </v-list-item-action-text>
+        </v-list-item-action>
     </v-list-item>
 </template>
 
 <script>
+    import Balance from '@/components/balance';
+
     export default {
         name: 'eventListItem',
-        props: {
-            event: {
-                date: null,
-                weekday: null,
-                name: null,
-            },
+
+        components: {
+            Balance,
         },
+
+        props: {
+            event: Object,
+        },
+
         computed: {
             icon() {
                 switch (this.event.type) {
@@ -37,9 +49,16 @@
             formattedDate() {
                 return this.event.date.toDateString();
             },
+
             link() {
                 return `/events/${this.event.id}`;
             },
         },
     };
 </script>
+
+<style scoped lang="scss">
+    span + span {
+        margin-left: 1em;
+    }
+</style>
