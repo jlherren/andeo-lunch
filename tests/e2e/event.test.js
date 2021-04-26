@@ -14,14 +14,16 @@ let lunchMoney = null;
 let request = null;
 /** @type {string|null} */
 let jwt = null;
+/** @type {User} */
+let user = null;
 
 beforeEach(async () => {
     lunchMoney = new LunchMoney({config: ConfigProvider.getTestConfig()});
     await lunchMoney.initDb();
     let username = 'test-user';
     let password = 'abc123';
-    await Models.User.create({
-        username: username,
+    user = await Models.User.create({
+        username,
         password: await AuthUtils.hashPassword(password),
         active:   true,
         name:     'Test User 1',
@@ -101,6 +103,7 @@ describe('creating events', () => {
         let response = await request.post('/events').send(sampleEvent);
         expect(response.status).toEqual(201);
         let {location} = response.headers;
+        expect(typeof location).toBe('string');
         expect(location).toMatch(/^\/events\/\d+$/u);
         response = await request.get(location);
         expect(response.body.event).toMatchObject(sampleEvent);
@@ -110,6 +113,7 @@ describe('creating events', () => {
         let response = await request.post('/events').send(minimalEvent);
         expect(response.status).toEqual(201);
         let {location} = response.headers;
+        expect(typeof location).toBe('string');
         expect(location).toMatch(/^\/events\/\d+$/u);
         response = await request.get(location);
         expect(response.body.event).toMatchObject({...minimalEvent, ...defaultValues});
@@ -130,40 +134,72 @@ describe('creating events', () => {
             }
         }
     });
+});
+
+describe('updating events', () => {
+    let eventUrl = null;
+
+    beforeEach(async () => {
+        let response = await request.post('/events').send(sampleEvent);
+        eventUrl = response.headers.location;
+    });
 
     it('allows to update an event', async () => {
-        let response = await request.post('/events').send(sampleEvent);
-        let {location} = response.headers;
-        expect(typeof location).toBe('string');
         let expected = {...sampleEvent};
         for (let key of Object.keys(eventUpdates)) {
-            response = await request.post(location).send({[key]: eventUpdates[key]});
+            let response = await request.post(eventUrl).send({[key]: eventUpdates[key]});
             expect(response.status).toEqual(204);
             expected[key] = eventUpdates[key];
-            response = await request.get(location);
+            response = await request.get(eventUrl);
             expect(response.body.event).toMatchObject(expected);
         }
     });
 
     it('rejects disallowed updates', async () => {
-        let response = await request.post('/events').send(sampleEvent);
-        let {location} = response.headers;
-        expect(typeof location).toBe('string');
         for (let key of Object.keys(disallowedUpdate)) {
-            response = await request.post(location).send({[key]: disallowedUpdate[key]});
+            let response = await request.post(eventUrl).send({[key]: disallowedUpdate[key]});
             expect(response.status).toEqual(400);
         }
     });
 
     it('rejects invalid updates', async () => {
-        let response = await request.post('/events').send(sampleEvent);
-        let {location} = response.headers;
-        expect(typeof location).toBe('string');
         for (let key of Object.keys(invalidData)) {
             for (let value of invalidData[key]) {
-                response = await request.post(location).send({[key]: value});
+                let response = await request.post(eventUrl).send({[key]: value});
                 expect(response.status).toEqual(400);
             }
         }
+    });
+});
+
+describe('deleting events', () => {
+    let eventUrl = null;
+
+    beforeEach(async () => {
+        let response = await request.post('/events').send(sampleEvent);
+        eventUrl = response.headers.location;
+    });
+
+    it('can no longer retrieve a deleted event', async () => {
+        let response = await request.delete(eventUrl);
+        expect(response.status).toEqual(204);
+
+        response = await request.get(eventUrl);
+        expect(response.status).toEqual(404);
+    });
+
+    it('deleting twice results in an error', async () => {
+        await request.delete(eventUrl);
+        let response = await request.delete(eventUrl);
+        expect(response.status).toEqual(404);
+    });
+
+    it('deleting an event with participations works', async () => {
+        let response = await request.post(`${eventUrl}/participations/${user.id}`)
+            .send({type: Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OMNIVOROUS]});
+        expect(response.status).toEqual(204);
+
+        response = await request.delete(eventUrl);
+        expect(response.status).toEqual(204);
     });
 });

@@ -261,6 +261,33 @@ async function listEvents(ctx) {
 }
 
 /**
+ * @param {Application.Context} ctx
+ * @returns {Promise<void>}
+ */
+async function deleteEvent(ctx) {
+    await Db.sequelize.transaction(async transaction => {
+        let event = await getEvent(ctx, transaction);
+        await Models.Transaction.destroy({
+            transaction,
+            where: {
+                event: event.id,
+            },
+        });
+        await Models.Participation.destroy({
+            transaction,
+            where: {
+                event: event.id,
+            },
+        });
+        await event.destroy({transaction});
+
+        await TransactionRebuilder.rebuildTransactionBalances(transaction, event.date);
+        await TransactionRebuilder.rebuildUserBalances(transaction);
+    });
+    ctx.status = 204;
+}
+
+/**
  * @param {Router} router
  */
 exports.register = function register(router) {
@@ -270,6 +297,7 @@ exports.register = function register(router) {
     };
     router.get('/events', listEvents);
     router.post('/events', createEvent);
+    router.delete('/events/:event(\\d+)', deleteEvent);
     router.get('/events/:event(\\d+)', Factory.makeSingleObjectController(opts));
     router.post('/events/:event(\\d+)', updateEvent);
     router.get('/events/:event(\\d+)/participations', getParticipationList);
