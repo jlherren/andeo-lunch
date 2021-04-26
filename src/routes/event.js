@@ -112,7 +112,7 @@ async function createEvent(ctx) {
 /**
  * @param {Application.Context} ctx
  * @param {Transaction} [transaction]
- * @returns {Event}
+ * @returns {Promise<Event>}
  */
 async function getEvent(ctx, transaction) {
     let options = {
@@ -129,7 +129,7 @@ async function getEvent(ctx, transaction) {
 /**
  * @param {Application.Context} ctx
  * @param {Transaction} [transaction]
- * @returns {User}
+ * @returns {Promise<User>}
  */
 async function getUser(ctx, transaction) {
     let options = {
@@ -176,9 +176,9 @@ async function updateEvent(ctx) {
 async function saveParticipation(ctx) {
     /** @type {ApiParticipation} */
     let apiParticipation = RouteUtils.validateBody(ctx, participationSchema);
-    let event = await getEvent(ctx);
-    let user = await getUser(ctx);
     await Db.sequelize.transaction(async transaction => {
+        let event = await getEvent(ctx, transaction);
+        let user = await getUser(ctx, transaction);
         let participation = await Models.Participation.findOne({
             where: {
                 event: event.id,
@@ -209,17 +209,20 @@ async function saveParticipation(ctx) {
  * @returns {Promise<void>}
  */
 async function deleteParticipation(ctx) {
-    let event = await getEvent(ctx);
-    let user = await getUser(ctx);
-
     let n = await Db.sequelize.transaction(async transaction => {
+        let event = await getEvent(ctx, transaction);
+        let user = await getUser(ctx, transaction);
+
         let nDestroyed = await Models.Participation.destroy({
             where: {
                 event: event.id,
                 user:  user.id,
             },
+            transaction,
         });
-        await TransactionRebuilder.rebuildEvent(transaction, event);
+        if (nDestroyed) {
+            await TransactionRebuilder.rebuildEvent(transaction, event);
+        }
         return nDestroyed;
     });
     if (n) {
