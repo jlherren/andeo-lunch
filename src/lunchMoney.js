@@ -36,7 +36,10 @@ class LunchMoney {
 
         this.app = new Koa();
         this.app.use(cors({
-            origin: '*',
+            origin:        '*',
+            exposeHeaders: '*',
+            allowHeaders:  '*',
+            maxAge:        600,
         }));
 
         if (this.options.logging) {
