@@ -106,6 +106,7 @@
     import Balance from '@/components/balance';
     import EditEvent from '@/components/editEvent';
     import Vue from 'vue';
+    import * as DateUtils from '@/utils/dateUtils';
 
     const PASSIVE_TYPES = ['opt-out', 'undecided'];
 
@@ -184,7 +185,7 @@
             },
 
             formattedDate() {
-                return this.event.date !== null ? this.event.date.toDateString() : null;
+                return this.event.date !== null ? DateUtils.format(this.event.date) : null;
             },
 
             ownParticipationMissing() {

@@ -11,7 +11,7 @@
 
         <!-- If logged in, show app contents -->
         <template v-else-if="isLoggedIn">
-            <router-view/>
+            <router-view :key="$route.path"/>
 
             <v-bottom-navigation app>
                 <v-btn v-for="link in navigationLinks" :to="link.url" :key="link.title">

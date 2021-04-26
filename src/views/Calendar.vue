@@ -22,7 +22,7 @@
                     <v-list-item-icon/>
                     <v-list-item-content>
                         <v-list-item-title class="text--secondary">No event</v-list-item-title>
-                        <v-list-item-subtitle>{{ event.date.toDateString() }}</v-list-item-subtitle>
+                        <v-list-item-subtitle>{{ formatDate(event.date) }}</v-list-item-subtitle>
                     </v-list-item-content>
                     <v-list-item-action>
                         <v-btn icon @click="openCreateDialog('lunch', event.date)">
@@ -68,14 +68,19 @@
         name: 'Calendar',
 
         components: {
-            CreateEvent,
             LmAppBar,
+            CreateEvent,
             EventListItem,
         },
 
         data() {
+            let date = new Date(this.$route.params?.date);
+            if (!date.getTime()) {
+                date = new Date();
+            }
+
             return {
-                startDate:    DateUtils.getPreviousMonday(new Date()),
+                startDate:    DateUtils.getPreviousMonday(date),
                 endDate:      null,
                 loading:      false,
                 createDialog: false,
@@ -86,7 +91,7 @@
 
         computed: {
             title() {
-                return 'Week of ' + this.startDate.toDateString();
+                return 'Week of ' + DateUtils.format(this.startDate);
             },
 
             entries() {
@@ -100,13 +105,13 @@
                 let lastWeekDayWithEvent = 0;
                 for (let event of events) {
                     if (['lunch', 'label'].includes(event.type)) {
-                        weekdaysWithLunchOrLabel[event.date.getDay()] = true;
+                        weekdaysWithLunchOrLabel[event.date.getUTCDay()] = true;
                     }
                 }
                 for (let i = 1; i <= 5; i++) {
                     if (!weekdaysWithLunchOrLabel[i]) {
                         let date = DateUtils.addDays(this.startDate, i - 1);
-                        date.setHours(12, 0, 0, 0);
+                        date.setUTCHours(12, 0, 0, 0);
                         events.push({
                             id: `placeholder-${i}`,
                             date: date,
@@ -139,13 +144,13 @@
             },
 
             previousWeek() {
-                this.startDate = DateUtils.addDays(this.startDate, -7);
-                this.reload();
+                let newDate = DateUtils.addDays(this.startDate, -7)
+                this.$router.push('/calendar/' + newDate.toISOString().substr(0, 10));
             },
 
             nextWeek() {
-                this.startDate = DateUtils.addDays(this.startDate, 7);
-                this.reload();
+                let newDate = DateUtils.addDays(this.startDate, 7)
+                this.$router.push('/calendar/' + newDate.toISOString().substr(0, 10));
             },
 
             openCreateDialog(type, date) {
@@ -155,6 +160,10 @@
                     date,
                 };
                 Vue.nextTick(() => this.$refs.createEvent.reset());
+            },
+
+            formatDate(date) {
+                return DateUtils.format(date);
             },
         },
 

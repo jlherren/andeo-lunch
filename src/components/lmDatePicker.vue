@@ -11,6 +11,8 @@
 </template>
 
 <script>
+    import * as DateUtils from '@/utils/dateUtils';
+
     export default {
         name: 'LmDatePicker',
 
@@ -40,7 +42,7 @@
                 if (this.value === undefined || this.value === null) {
                     return null;
                 }
-                return new Date(this.value).toDateString();
+                return DateUtils.format(new Date(this.value));
             },
 
 

@@ -6,7 +6,7 @@
  */
 export function getPreviousMidnight(date) {
     date = new Date(date.getTime());
-    date.setHours(0, 0, 0, 0);
+    date.setUTCHours(0, 0, 0, 0);
     return date;
 }
 
@@ -19,13 +19,13 @@ export function getPreviousMidnight(date) {
 export function getPreviousMonday(date) {
     // Clone date
     date = new Date(date.getTime());
-    date.setHours(0, 0, 0, 0);
-    while (date.getDay() !== 1) {
-        date = new Date(
-            date.getFullYear(),
-            date.getMonth(),
-            date.getDate() - 1,
-        );
+    date.setUTCHours(0, 0, 0, 0);
+    while (date.getUTCDay() !== 1) {
+        date = new Date(Date.UTC(
+            date.getUTCFullYear(),
+            date.getUTCMonth(),
+            date.getUTCDate() - 1,
+        ));
     }
     return date;
 }
@@ -40,13 +40,23 @@ export function getPreviousMonday(date) {
 export function addDays(date, days = 1) {
     // Note: It doesn't work to simply add 7 * 24 * 60 * 60, since that wouldn't be correct during daylight saving
     // time transitions.
-    return new Date(
-        date.getFullYear(),
-        date.getMonth(),
-        date.getDate() + days,
-        date.getHours(),
-        date.getMinutes(),
-        date.getSeconds(),
-        date.getMilliseconds(),
-    );
+    return new Date(Date.UTC(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate() + days,
+        date.getUTCHours(),
+        date.getUTCMinutes(),
+        date.getUTCSeconds(),
+        date.getUTCMilliseconds(),
+    ));
+}
+
+/**
+ * @param {Date} date
+ * @return {string}
+ */
+export function format(date) {
+    // For strange reasons it's not possible to have the weekday added directly
+    return date.toLocaleDateString('en-US', {timeZone: 'UTC', weekday: 'short'})
+           + ', ' + date.toLocaleDateString('en-US', {timeZone: 'UTC', dateStyle: 'medium'});
 }

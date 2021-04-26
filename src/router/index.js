@@ -15,7 +15,7 @@ const routes = [
         component: Home,
     },
     {
-        path:      '/calendar',
+        path:      '/calendar/:date([-0-9]{10})?',
         name:      'Calendar',
         component: Calendar,
     },
@@ -30,7 +30,7 @@ const routes = [
         component: Cash,
     },
     {
-        path:      '/events/:id',
+        path:      '/events/:id(\\d+)',
         name:      'EventDetail',
         component: EventDetail,
     },

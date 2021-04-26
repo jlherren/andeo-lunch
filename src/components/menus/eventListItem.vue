@@ -20,6 +20,7 @@
 
 <script>
     import Balance from '@/components/balance';
+    import * as DateUtils from '@/utils/dateUtils';
 
     export default {
         name: 'eventListItem',
@@ -47,7 +48,7 @@
             },
 
             formattedDate() {
-                return this.event.date.toDateString();
+                return DateUtils.format(this.event.date);
             },
 
             link() {
