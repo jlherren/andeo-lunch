@@ -22,25 +22,23 @@ const discountFactors = Joi.object({
         [moneyApiName]: factorSchema.required(),
     }).required(),
 });
-const currencySchema = Joi.number().min(0);
+const nonNegativeSchema = Joi.number().min(0);
 
 const eventCreateSchema = Joi.object({
     name:    nameSchema.required(),
     date:    Joi.date().required(),
     type:    eventTypeSchema.required(),
     costs:   Joi.object({
-        points: currencySchema.required(),
-        money:  currencySchema.required(),
-    }).required(),
-    factors: discountFactors.required(),
+        points: nonNegativeSchema,
+    }),
+    factors: discountFactors,
 });
 
 const eventUpdateSchema = Joi.object({
     name:    nameSchema,
     date:    Joi.date(),
     costs:   Joi.object({
-        points: currencySchema,
-        money:  currencySchema,
+        points: nonNegativeSchema,
     }),
     factors: discountFactors,
 });
@@ -48,10 +46,8 @@ const eventUpdateSchema = Joi.object({
 const participationSchema = Joi.object({
     type:     participationTypeSchema.required(),
     credits:  Joi.object({
-        points: currencySchema.required(),
-    }),
-    provides: Joi.object({
-        money: Joi.boolean().required(),
+        points: nonNegativeSchema,
+        money:  nonNegativeSchema,
     }),
 });
 
@@ -101,9 +97,9 @@ async function createEvent(ctx) {
             name:                  apiEvent.name,
             date:                  apiEvent.date,
             type:                  Constants.EVENT_TYPE_IDS[apiEvent.type],
-            pointsCost:            apiEvent.costs.points,
-            moneyCost:             apiEvent.costs.money,
-            vegetarianMoneyFactor: apiEvent.factors.vegetarian.money,
+            pointsCost:            apiEvent.costs && apiEvent.costs.points,
+            moneyCost:             apiEvent.costs && apiEvent.costs.money,
+            vegetarianMoneyFactor: apiEvent.factors && apiEvent.factors.vegetarian && apiEvent.factors.vegetarian.money,
         }, {transaction});
         await TransactionRebuilder.rebuildEvent(transaction, event);
         return event.id;
@@ -193,8 +189,8 @@ async function saveParticipation(ctx) {
         });
         let data = {
             type:           Constants.PARTICIPATION_TYPE_IDS[apiParticipation.type],
-            pointsCredited: apiParticipation.credits.points,
-            buyer:          apiParticipation.provides.money,
+            pointsCredited: apiParticipation.credits && apiParticipation.credits.points,
+            moneyCredited:  apiParticipation.credits && apiParticipation.credits.money,
         };
         if (!participation) {
             data.event = event.id;

@@ -39,13 +39,27 @@ afterEach(async () => {
     await lunchMoney.close();
 });
 
+const minimalEvent = {
+    name: 'Lunch',
+    type: 'lunch',
+    date: '2020-01-15T11:00:00.000Z',
+};
+
+const defaultValues = {
+    costs:   {
+        points: 0,
+    },
+    factors: {
+        vegetarian: {
+            money: 1,
+        },
+    },
+};
+
 const sampleEvent = {
-    name:    'Lunch',
-    type:    'lunch',
-    date:    '2020-01-15T11:00:00.000Z',
+    ...minimalEvent,
     costs:   {
         points: 8,
-        money:  32,
     },
     factors: {
         vegetarian: {
@@ -59,7 +73,6 @@ const eventUpdates = {
     date:    '2020-01-20T13:00:00.000Z',
     costs:   {
         points: 6,
-        money:  25,
     },
     factors: {
         vegetarian: {
@@ -79,10 +92,6 @@ const invalidData = {
     costs: [
         {
             points: -1,
-            money:  32,
-        }, {
-            points: 8,
-            money:  -1,
         },
     ],
 };
@@ -97,8 +106,17 @@ describe('creating events', () => {
         expect(response.body.event).toMatchObject(sampleEvent);
     });
 
+    it('accepts an event with minimal data', async () => {
+        let response = await request.post('/events').send(minimalEvent);
+        expect(response.status).toEqual(201);
+        let {location} = response.headers;
+        expect(location).toMatch(/^\/events\/\d+$/u);
+        response = await request.get(location);
+        expect(response.body.event).toMatchObject({...minimalEvent, ...defaultValues});
+    });
+
     it('rejects missing data', async () => {
-        for (let key of Object.keys(sampleEvent)) {
+        for (let key of ['name', 'type', 'date']) {
             let response = await request.post('/events').send({...sampleEvent, [key]: undefined});
             expect(response.status).toEqual(400);
         }

@@ -93,7 +93,7 @@ class ParticipationType extends Model {
  * @property {number} event
  * @property {number} type
  * @property {number} pointsCredited
- * @property {boolean} buyer
+ * @property {number} moneyCredited
  */
 class Participation extends Model {
     /**
@@ -103,14 +103,12 @@ class Participation extends Model {
      */
     toApi() {
         return {
-            userId:   this.user,
-            eventId:  this.event,
-            type:     Constants.PARTICIPATION_TYPE_NAMES[this.type],
-            credits:  {
+            userId:  this.user,
+            eventId: this.event,
+            type:    Constants.PARTICIPATION_TYPE_NAMES[this.type],
+            credits: {
                 points: this.pointsCredited,
-            },
-            provides: {
-                money: !!this.buyer,
+                money:  this.moneyCredited,
             },
         };
     }
@@ -191,8 +189,10 @@ exports.initModels = function initModels(sequelize) {
         type:                  {type: DataTypes.TINYINT, allowNull: false},
         date:                  {type: DataTypes.DATE, allowNull: false},
         name:                  {type: DataTypes.STRING(255), allowNull: false},
-        pointsCost:            {type: DataTypes.DOUBLE, allowNull: false},
-        moneyCost:             {type: DataTypes.DOUBLE, allowNull: false},
+        pointsCost:            {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
+        // Note: moneyCost is purely informational and won't affect calculations!  The moneyCredited field
+        // of participations is what will actually be used for calculations.
+        moneyCost:             {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
         vegetarianMoneyFactor: {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 1},
     }, {sequelize, modelName: 'event'});
 
@@ -204,8 +204,8 @@ exports.initModels = function initModels(sequelize) {
         user:           {type: DataTypes.INTEGER, allowNull: false, unique: 'userEvent', references: {model: User}},
         event:          {type: DataTypes.INTEGER, allowNull: false, unique: 'userEvent', references: {model: Event}},
         type:           {type: DataTypes.INTEGER, allowNull: false, references: {model: ParticipationType}},
-        pointsCredited: {type: DataTypes.DOUBLE, allowNull: false},
-        buyer:          {type: DataTypes.BOOLEAN, allowNull: false},
+        pointsCredited: {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
+        moneyCredited:  {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
     }, {sequelize, modelName: 'participation'});
 
     Transaction.init({

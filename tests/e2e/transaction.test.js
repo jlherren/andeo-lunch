@@ -27,9 +27,7 @@ let participation1 = {
     type:     Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OMNIVOROUS],
     credits:  {
         points: 8,
-    },
-    provides: {
-        money: false,
+        money:  0,
     },
 };
 
@@ -37,9 +35,7 @@ let participation2 = {
     type:     Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.VEGETARIAN],
     credits:  {
         points: 0,
-    },
-    provides: {
-        money: true,
+        money:  30,
     },
 };
 

@@ -69,8 +69,8 @@ async function createLunchWithParticipations(participants, cook, buyer) {
             user:           participant.id,
             event:          event.id,
             type:           Constants.PARTICIPATION_TYPES.OMNIVOROUS,
-            buyer:          buyer !== null && participant.id === buyer.id,
             pointsCredited: participant.id === cook.id ? 8 : 0,
+            moneyCredited:  buyer !== null && participant.id === buyer.id ? event.moneyCost : 0,
         });
     }
 
@@ -148,14 +148,14 @@ describe('transaction tests', () => {
                 user:           user1.id,
                 event:          event.id,
                 type:           Constants.PARTICIPATION_TYPES.OMNIVOROUS,
-                buyer:          true,
                 pointsCredited: 8,
+                moneyCredited:  event.moneyCost,
             }, {
                 user:           user2.id,
                 event:          event.id,
                 type:           Constants.PARTICIPATION_TYPES.VEGETARIAN,
-                buyer:          false,
                 pointsCredited: 0,
+                moneyCredited:  0,
             },
         ]);
 
@@ -178,20 +178,20 @@ describe('transaction tests', () => {
                 user:           user1.id,
                 event:          event.id,
                 type:           Constants.PARTICIPATION_TYPES.OMNIVOROUS,
-                buyer:          false,
                 pointsCredited: 5,
+                moneyCredited:  0,
             }, {
                 user:           user2.id,
                 event:          event.id,
                 type:           Constants.PARTICIPATION_TYPES.OMNIVOROUS,
-                buyer:          false,
                 pointsCredited: 0,
+                moneyCredited:  0,
             }, {
                 user:           user3.id,
                 event:          event.id,
                 type:           Constants.PARTICIPATION_TYPES.OMNIVOROUS,
-                buyer:          true,
                 pointsCredited: 7,
+                moneyCredited:  event.moneyCost,
             },
         ]);
 
@@ -214,20 +214,20 @@ describe('transaction tests', () => {
                 user:           user1.id,
                 event:          event.id,
                 type:           Constants.PARTICIPATION_TYPES.OMNIVOROUS,
-                buyer:          true,
                 pointsCredited: 0,
+                moneyCredited:  25,
             }, {
                 user:           user2.id,
                 event:          event.id,
                 type:           Constants.PARTICIPATION_TYPES.OMNIVOROUS,
-                buyer:          true,
                 pointsCredited: 8,
+                moneyCredited:  35,
             }, {
                 user:           user3.id,
                 event:          event.id,
                 type:           Constants.PARTICIPATION_TYPES.OMNIVOROUS,
-                buyer:          false,
                 pointsCredited: 0,
+                moneyCredited:  0,
             },
         ]);
 
@@ -236,8 +236,8 @@ describe('transaction tests', () => {
         await user2.reload();
         await user3.reload();
 
-        expect(user1.money).toEqual(10);
-        expect(user2.money).toEqual(10);
+        expect(user1.money).toEqual(5);
+        expect(user2.money).toEqual(15);
         expect(user3.money).toEqual(-20);
     });
 
@@ -260,20 +260,20 @@ describe('transaction tests', () => {
                 user:           user1.id,
                 event:          event.id,
                 type:           Constants.PARTICIPATION_TYPES.OMNIVOROUS,
-                buyer:          true,
                 pointsCredited: 1,
+                moneyCredited:  event.moneyCost,
             }, {
                 user:           user2.id,
                 event:          event.id,
                 type:           Constants.PARTICIPATION_TYPES.OMNIVOROUS,
-                buyer:          false,
                 pointsCredited: 3,
+                moneyCredited:  0,
             }, {
                 user:           user3.id,
                 event:          event.id,
                 type:           Constants.PARTICIPATION_TYPES.OMNIVOROUS,
-                buyer:          false,
                 pointsCredited: 0,
+                moneyCredited:  0,
             },
         ]);
 

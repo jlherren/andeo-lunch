@@ -35,6 +35,5 @@
  * @property {number} userId
  * @property {number} eventId
  * @property {string} type
- * @property {{points: number}} credits
- * @property {{money: boolean}} provides
+ * @property {{points: number, money: number}} credits
  */

@@ -38,6 +38,35 @@ function getWeightsForParticipationType(event, participation) {
 }
 
 /**
+ * Rebuild convenience fields on the event entity.
+ *
+ * @param {Transaction} dbTransaction
+ * @param {Event|number} event
+ * @returns {Promise<void>}
+ */
+exports.rebuildEventDetails = async function rebuildEventDetails(dbTransaction, event) {
+    let eventId = event instanceof Models.Event ? event.id : event;
+
+    // Careful: This query must work with MySQL and also SQLite
+    let sql = `
+        UPDATE event AS e
+        SET moneyCost = (
+            SELECT COALESCE(SUM(p.moneyCredited), 0)
+            FROM participation AS p
+            WHERE p.event = e.id
+        )
+        WHERE e.id = :eventId
+    `;
+
+    await dbTransaction.sequelize.query(sql, {
+        replacements: {
+            eventId,
+        },
+        transaction:  dbTransaction,
+    });
+};
+
+/**
  * Re-inserts the transactions related to a specific event.  This does not recalculate the balances, so you
  * may want to run recalculateBalances() and rebuildUserBalances() afterwards.
  *
@@ -83,19 +112,17 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
         transaction => `${transaction.user}/${transaction.contraUser}/${transaction.currency}`,
     );
 
-    let nBuyers = 0;
     let totalPointsWeight = 0;
     let totalMoneyWeight = 0;
     let totalPointsCredited = 0;
+    let totalMoneyCredited = 0;
 
     for (let participation of participations) {
-        if (participation.buyer) {
-            nBuyers++;
-        }
         let {pointsWeight, moneyWeight} = getWeightsForParticipationType(event, participation);
         totalPointsWeight += pointsWeight;
         totalMoneyWeight += moneyWeight;
         totalPointsCredited += participation.pointsCredited;
+        totalMoneyCredited += participation.moneyCredited;
     }
 
     let inserts = [];
@@ -141,10 +168,9 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
         addInsert(systemUser.id, user, -amount, currency);
     }
 
-    let moneyPerBuyer = nBuyers > 0 ? event.moneyCost / nBuyers : 0;
     let pointsCostPerWeightUnit = event.pointsCost / totalPointsWeight;
-    let moneyCostPerWeightUnit = event.moneyCost / totalMoneyWeight;
     let pointsCostPerPointsCredited = event.pointsCost / totalPointsCredited;
+    let moneyCostPerWeightUnit = totalMoneyCredited / totalMoneyWeight;
     // Note: pointsCostPerPointsCredited *should* usually be equal to 1, but let's not trust it anyway
 
     for (let participation of participations) {
@@ -162,10 +188,10 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
             addTransaction(participation.user, points, Constants.CURRENCIES.POINTS);
         }
 
-        if (nBuyers > 0 && Math.abs(moneyPerBuyer) > Constants.EPSILON) {
+        if (totalMoneyCredited > Constants.EPSILON) {
             // credit money for financing the event
-            if (participation.buyer) {
-                addTransaction(participation.user, moneyPerBuyer, Constants.CURRENCIES.MONEY);
+            if (participation.moneyCredited > Constants.EPSILON) {
+                addTransaction(participation.user, participation.moneyCredited, Constants.CURRENCIES.MONEY);
             }
 
             // debit money for participating in the event
@@ -328,6 +354,7 @@ exports.rebuildEvent = async function rebuildEvent(dbTransaction, event) {
      * @returns {Promise<void>}
      */
     async function execute() {
+        await exports.rebuildEventDetails(dbTransaction, event);
         let {earliestDate} = await exports.rebuildEventTransactions(dbTransaction, event);
         await exports.rebuildTransactionBalances(dbTransaction, earliestDate);
         await exports.rebuildUserBalances(dbTransaction);

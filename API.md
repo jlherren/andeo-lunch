@@ -55,9 +55,7 @@ Overview of object structures used in this API
     "type": "<participation-type>",
     "credits": {
         "points": <number>
-    },
-    "provides": {
-        "money": <boolean>
+        "money": <number>
     }
 }
 ```
