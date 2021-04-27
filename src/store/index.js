@@ -291,6 +291,7 @@ export default new Vuex.Store({
             let event = response.data.event;
             event.date = new Date(event.date);
             Vue.set(context.state.events, event.id, event);
+            return event;
         },
 
         async fetchParticipations(context, {eventId}) {

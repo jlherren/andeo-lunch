@@ -16,14 +16,14 @@
             <h2>{{ event.name }}</h2>
             <div class="text--secondary">{{ formattedDate }}</div>
 
-            <div class="costs">
+            <div class="costs" v-if="event.type !== 'label'">
                 <participation-summary :participations="participations"/>
                 <balance :value="event.costs.points" points large/>
                 <balance :value="event.costs.money" money large/>
             </div>
         </v-container>
 
-        <v-container>
+        <v-container v-if="event.type !== 'label'">
             <v-banner v-if="ownParticipationMissing" elevation="4" single-line icon="mdi-information">
                 Make up your mind!
                 <template v-slot:actions>
@@ -39,7 +39,7 @@
             </v-banner>
         </v-container>
 
-        <v-tabs fixed-tabs v-model="tab">
+        <v-tabs fixed-tabs v-model="tab" v-if="event.type !== 'label'">
             <v-tab key="participations">
                 <v-icon>mdi-food-variant</v-icon>
             </v-tab>
@@ -48,7 +48,7 @@
             </v-tab>
         </v-tabs>
 
-        <v-tabs-items v-model="tab">
+        <v-tabs-items v-model="tab" v-if="event.type !== 'label'">
             <v-tab-item key="participations">
                 <v-list>
                     <participation-list-item :participation="myParticipation"/>
@@ -123,8 +123,10 @@
 
         async created() {
             try {
-                await this.$store.dispatch('fetchEvent', {eventId: this.eventId});
-                await this.$store.dispatch('fetchParticipations', {eventId: this.eventId});
+                let event = await this.$store.dispatch('fetchEvent', {eventId: this.eventId});
+                if (event.type !== 'label') {
+                    await this.$store.dispatch('fetchParticipations', {eventId: this.eventId});
+                }
             } catch (err) {
                 if (err?.response?.status === 404) {
                     await this.$router.push('/');

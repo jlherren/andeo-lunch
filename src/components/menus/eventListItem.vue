@@ -3,6 +3,7 @@
         <v-list-item-icon>
             <v-icon>{{ icon }}</v-icon>
         </v-list-item-icon>
+
         <v-list-item-content>
             <v-list-item-title>{{ event.name }}</v-list-item-title>
             <v-list-item-subtitle>
@@ -10,7 +11,7 @@
             </v-list-item-subtitle>
         </v-list-item-content>
 
-        <v-list-item-action>
+        <v-list-item-action v-if="event.type !== 'label'">
             <v-list-item-action-text>
                 <balance :value="event.costs.points" small points/>
             </v-list-item-action-text>
