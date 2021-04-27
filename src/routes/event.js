@@ -93,13 +93,25 @@ async function createEvent(ctx) {
     /** @type {ApiEvent} */
     let apiEvent = RouteUtils.validateBody(ctx, eventCreateSchema);
     let eventId = await Db.sequelize.transaction(async transaction => {
+        let type = Constants.EVENT_TYPE_IDS[apiEvent.type];
+        let pointsCost = apiEvent.costs && apiEvent.costs.points;
+        let vegetarianMoneyFactor = apiEvent.factors && apiEvent.factors.vegetarian && apiEvent.factors.vegetarian.money;
+
+        if (type === Constants.EVENT_TYPES.LABEL) {
+            if (pointsCost !== undefined) {
+                ctx.throw(400, 'Label events cannot have point costs');
+            }
+            if (vegetarianMoneyFactor !== undefined) {
+                ctx.throw(400, 'Label events cannot have a vegetarian money factor');
+            }
+        }
+
         let event = await Models.Event.create({
-            name:                  apiEvent.name,
-            date:                  apiEvent.date,
-            type:                  Constants.EVENT_TYPE_IDS[apiEvent.type],
-            pointsCost:            apiEvent.costs && apiEvent.costs.points,
-            moneyCost:             apiEvent.costs && apiEvent.costs.money,
-            vegetarianMoneyFactor: apiEvent.factors && apiEvent.factors.vegetarian && apiEvent.factors.vegetarian.money,
+            name: apiEvent.name,
+            date: apiEvent.date,
+            type,
+            pointsCost,
+            vegetarianMoneyFactor,
         }, {transaction});
         await TransactionRebuilder.rebuildEvent(transaction, event);
         return event.id;
@@ -155,13 +167,23 @@ async function updateEvent(ctx) {
     let apiEvent = RouteUtils.validateBody(ctx, eventUpdateSchema);
     await Db.sequelize.transaction(async transaction => {
         let event = await getEvent(ctx, transaction);
+        let pointsCost = apiEvent.costs && apiEvent.costs.points;
+        let vegetarianMoneyFactor = apiEvent.factors && apiEvent.factors.vegetarian && apiEvent.factors.vegetarian.money;
+
+        if (event.type === Constants.EVENT_TYPES.LABEL) {
+            if (pointsCost !== undefined) {
+                ctx.throw(400, 'Label events cannot have point costs');
+            }
+            if (vegetarianMoneyFactor !== undefined) {
+                ctx.throw(400, 'Label events cannot have a vegetarian money factor');
+            }
+        }
+
         let update = {
-            name:                  apiEvent.name,
-            date:                  apiEvent.date,
-            type:                  apiEvent.type,
-            pointsCost:            apiEvent.costs && apiEvent.costs.points,
-            moneyCost:             apiEvent.costs && apiEvent.costs.money,
-            vegetarianMoneyFactor: apiEvent.factors && apiEvent.factors.vegetarian && apiEvent.factors.vegetarian.money,
+            name: apiEvent.name,
+            date: apiEvent.date,
+            pointsCost,
+            vegetarianMoneyFactor,
         };
         await event.update(update, {transaction});
         await TransactionRebuilder.rebuildEvent(transaction, event);

@@ -13,7 +13,7 @@ exports.CURRENCY_NAMES = Object.freeze({
     [exports.CURRENCIES.POINTS]: 'points',
     [exports.CURRENCIES.MONEY]:  'money',
 });
-exports.CURRENCY_IDS = Object.freeze(Utils.objectFlip(exports.CURRENCY_NAMES));
+exports.CURRENCY_IDS = Object.freeze(Utils.objectFlip(exports.CURRENCY_NAMES, true));
 
 exports.EVENT_TYPES = Object.freeze({
     LUNCH:       1,
@@ -27,7 +27,7 @@ exports.EVENT_TYPE_NAMES = Object.freeze({
     [exports.EVENT_TYPES.LABEL]:       'label',
     [exports.EVENT_TYPES.TRANSACTION]: 'transaction',
 });
-exports.EVENT_TYPE_IDS = Object.freeze(Utils.objectFlip(exports.EVENT_TYPE_NAMES));
+exports.EVENT_TYPE_IDS = Object.freeze(Utils.objectFlip(exports.EVENT_TYPE_NAMES, true));
 
 exports.PARTICIPATION_TYPES = Object.freeze({
     OMNIVOROUS: 1,
@@ -41,4 +41,4 @@ exports.PARTICIPATION_TYPE_NAMES = Object.freeze({
     [exports.PARTICIPATION_TYPES.OPT_OUT]:    'opt-out',
     [exports.PARTICIPATION_TYPES.UNDECIDED]:  'undecided',
 });
-exports.PARTICIPATION_TYPE_IDS = Object.freeze(Utils.objectFlip(exports.PARTICIPATION_TYPE_NAMES));
+exports.PARTICIPATION_TYPE_IDS = Object.freeze(Utils.objectFlip(exports.PARTICIPATION_TYPE_NAMES, true));

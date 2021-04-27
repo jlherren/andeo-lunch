@@ -42,14 +42,22 @@ function groupBy(array, key) {
 
 /**
  * @param {object} object
+ * @param {boolean} numericKey
  * @returns {object}
  */
-function objectFlip(object) {
+function objectFlip(object, numericKey) {
     let ret = {};
     for (let key in object) {
         let value = object[key];
         if (value in ret) {
             throw new Error(`Value ${value} is duplicate`);
+        }
+        if (numericKey) {
+            let intKey = parseInt(key, 10);
+            if (isNaN(intKey)) {
+                throw new Error(`Key is not numeric: ${key}`);
+            }
+            key = intKey;
         }
         ret[value] = key;
     }

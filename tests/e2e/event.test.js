@@ -83,6 +83,12 @@ const eventUpdates = {
     },
 };
 
+const labelEvent = {
+    name: 'National holiday',
+    type: 'label',
+    date: '2020-01-15T11:00:00.000Z',
+};
+
 const disallowedUpdate = {
     type: Constants.EVENT_TYPES.LUNCH,
 };
@@ -134,9 +140,38 @@ describe('creating events', () => {
             }
         }
     });
+
+    it('accepts a label event', async () => {
+        let response = await request.post('/events').send(labelEvent);
+        expect(response.status).toEqual(201);
+    });
+
+    it('rejects label event with point costs', async () => {
+        let event = {
+            ...labelEvent,
+            costs: {
+                points: 10,
+            },
+        };
+        let response = await request.post('/events').send(event);
+        expect(response.status).toEqual(400);
+    });
+
+    it('rejects label vegetarian money factor', async () => {
+        let event = {
+            ...labelEvent,
+            factors: {
+                vegetarian: {
+                    money: 1,
+                },
+            },
+        };
+        let response = await request.post('/events').send(event);
+        expect(response.status).toEqual(400);
+    });
 });
 
-describe('updating events', () => {
+describe('Updating lunch event', () => {
     let eventUrl = null;
 
     beforeEach(async () => {
@@ -169,6 +204,35 @@ describe('updating events', () => {
                 expect(response.status).toEqual(400);
             }
         }
+    });
+});
+
+describe('Updating label events', () => {
+    let eventUrl = null;
+
+    beforeEach(async () => {
+        let response = await request.post('/events').send(labelEvent);
+        eventUrl = response.headers.location;
+    });
+
+    it('Can update without anychanges', async () => {
+        let response = await request.post(eventUrl).send({});
+        expect(response.status).toEqual(204);
+    });
+
+    it('Cannot update point costs', async () => {
+        let response = await request.post(eventUrl).send({costs: {points: 1}});
+        expect(response.status).toEqual(400);
+    });
+
+    it('Cannot update money costs', async () => {
+        let response = await request.post(eventUrl).send({costs: {money: 1}});
+        expect(response.status).toEqual(400);
+    });
+
+    it('Cannot update vegetarian money factor', async () => {
+        let response = await request.post(eventUrl).send({factors: {vegetarian: {money: 1}}});
+        expect(response.status).toEqual(400);
     });
 });
 
