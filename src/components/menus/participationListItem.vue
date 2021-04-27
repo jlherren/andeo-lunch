@@ -14,14 +14,6 @@
                     <balance :value="participation.credits.points" points small/>
                 </v-chip>
 
-                <v-chip small class="mr-1" v-if="participation.type === 'omnivorous'">
-                    <v-icon small>mdi-hamburger</v-icon>
-                </v-chip>
-
-                <v-chip small class="mr-1" v-if="participation.type === 'vegetarian'">
-                    <v-icon small>mdi-food-apple</v-icon>
-                </v-chip>
-
                 <v-chip small v-if="participation.credits.money > 0" class="mr-1">
                     <v-icon small>mdi-cash-multiple</v-icon>
                 </v-chip>
@@ -71,13 +63,15 @@
             bigIcon() {
                 switch (this.participation.type) {
                     case 'omnivorous':
+                        return 'mdi-hamburger';
                     case 'vegetarian':
-                        return 'mdi-account-circle';
+                        return 'mdi-apple';
                     case 'opt-out':
                         return 'mdi-cancel';
                     case 'undecided':
-                    default:
                         return 'mdi-help-circle';
+                    default:
+                        return 'mdi-alert-circle';
                 }
             },
 
