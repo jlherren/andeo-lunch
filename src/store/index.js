@@ -128,6 +128,10 @@ export default new Vuex.Store({
             // Participations by event ID
         },
 
+        singleParticipations: {
+            // Single participations by event ID and user ID.  Key format `${eventId}/${userId}`
+        },
+
         // To be deprecated
         menus: [
             {
@@ -207,7 +211,7 @@ export default new Vuex.Store({
         backendVersion:  state => state.backendVersion,
 
         // Users and account
-        user: state => id => state.users[id],
+        user: state => userId => state.users[userId],
 
         // Own user
         isLoggedIn: state => state.account.userId !== null,
@@ -217,8 +221,9 @@ export default new Vuex.Store({
 
         // Events
         events:         state => Object.values(state.events),
-        event:          state => id => state.events[id],
-        participations: state => id => state.participations[id],
+        event:          state => eventId => state.events[eventId],
+        participations: state => eventId => state.participations[eventId],
+        participation:  state => (eventId, userId) => state.singleParticipations[`${eventId}/${userId}`],
 
         // Legacy
         menus(state) {
@@ -299,8 +304,24 @@ export default new Vuex.Store({
             let participations = response.data.participations;
             Vue.set(context.state.participations, eventId, participations);
 
+            for (let participation of participations) {
+                Vue.set(context.state.singleParticipations, `${eventId}/${participation.userId}`, participation);
+            }
+
             let promises = participations.map(p => context.dispatch('fetchUser', {userId: p.userId}));
             await Promise.all(promises);
+        },
+
+        async fetchSingleParticipation(context, {eventId, userId}) {
+            // Don't show an error if there is no participation
+            let config = {validateStatus: status => status >= 200 && status < 300 || status === 404};
+            let response = await get(`/events/${eventId}/participations/${userId}`, config);
+            if (response.status === 404) {
+                return null;
+            }
+            let participation = response.data.participation;
+            Vue.set(context.state.singleParticipations, `${eventId}/${userId}`, participation);
+            await context.dispatch('fetchUser', {userId});
         },
 
         async saveParticipation(context, {eventId, userId, ...data}) {

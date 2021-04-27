@@ -21,21 +21,11 @@
                 No upcoming events
             </v-banner>
         </v-container>
-
-        <v-divider/>
-
-        <v-subheader>Pending opt-in/-out</v-subheader>
-
-        <v-container>
-            Not implemented yet.
-        </v-container>
-
     </v-main>
 </template>
 
 <script>
     import UserStats from '@/components/userStats';
-    import MenuList from '@/components/menuList';
     import CustomAppBar from '@/components/lmAppBar';
     import {mapGetters} from 'vuex';
     import EventListItem from '@/components/menus/eventListItem';
@@ -47,7 +37,6 @@
         components: {
             EventListItem,
             CustomAppBar,
-            MenuList,
             UserStats,
         },
 

@@ -5,16 +5,20 @@
         </v-list-item-icon>
 
         <v-list-item-content>
-            <v-list-item-title>{{ event.name }}</v-list-item-title>
+            <v-list-item-title>
+                {{ event.name }}
+            </v-list-item-title>
             <v-list-item-subtitle>
                 <span>{{ formattedDate }}</span>
+
+
             </v-list-item-subtitle>
         </v-list-item-content>
 
-        <v-list-item-action v-if="event.type !== 'label'">
-            <v-list-item-action-text>
-                <balance :value="event.costs.points" small points/>
-            </v-list-item-action-text>
+        <v-list-item-action v-if="undecidedParticipation">
+            <v-icon>
+                mdi-alert
+            </v-icon>
         </v-list-item-action>
     </v-list-item>
 </template>
@@ -34,7 +38,29 @@
             event: Object,
         },
 
+        data() {
+            return {
+                ownUserId: this.$store.getters.ownUserId,
+            };
+        },
+
+        created() {
+            let params = {
+                eventId: this.event.id,
+                userId:  this.ownUserId,
+            };
+            this.$store.dispatch('fetchSingleParticipation', params);
+        },
+
         computed: {
+            undecidedParticipation() {
+                if (this.event.type === 'label') {
+                    return false;
+                }
+                let ownParticipation = this.$store.getters.participation(this.event.id, this.ownUserId);
+                return !ownParticipation || ownParticipation.type === 'undecided';
+            },
+
             icon() {
                 switch (this.event.type) {
                     case 'lunch':
