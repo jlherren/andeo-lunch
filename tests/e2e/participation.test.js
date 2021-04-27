@@ -46,19 +46,9 @@ beforeEach(async () => {
         active:   true,
         name:     'Test User',
     });
-    event = await Models.Event.create({
-        name:                  'Test Event',
-        date:                  '2020-01-01',
-        type:                  Constants.EVENT_TYPES.LUNCH,
-        pointsCost:            8,
-        moneyCost:             30,
-        vegetarianMoneyFactor: 1,
-    });
     request = supertest.agent(lunchMoney.listen());
-    if (jwt === null) {
-        let response = await request.post('/account/login').send({username, password});
-        jwt = response.body.token;
-    }
+    let response = await request.post('/account/login').send({username, password});
+    jwt = response.body.token;
     request.set('Authorization', `Bearer ${jwt}`);
 });
 
@@ -66,23 +56,28 @@ afterEach(async () => {
     await lunchMoney.close();
 });
 
-describe('creating participations', () => {
-    it('has initially no participations', async () => {
+describe('A simple event', () => {
+    beforeEach(async () => {
+        event = await Models.Event.create({
+            name: 'Test Event',
+            date: '2020-01-01',
+            type: Constants.EVENT_TYPES.LUNCH,
+        });
+    });
+
+    it('initially has no participations', async () => {
         let response = await request.get(`/events/${event.id}/participations`);
         expect(response.status).toEqual(200);
         expect(response.body.participations).toEqual([]);
     });
 
-    it('allows saving a participations', async () => {
+    it('can create a participations', async () => {
         let url = `/events/${event.id}/participations/${user.id}`;
         let response = await request.post(url).send(sampleParticipation1);
         expect(response.status).toEqual(204);
-    });
 
-    it('retrieves the same participation after saving', async () => {
-        let url = `/events/${event.id}/participations/${user.id}`;
-        await request.post(url).send(sampleParticipation1);
-        let response = await request.get(url);
+        // retrieve again
+        response = await request.get(url);
         expect(response.status).toEqual(200);
         expect(response.body.participation.userId).toEqual(user.id);
         expect(response.body.participation.eventId).toEqual(event.id);
@@ -91,11 +86,18 @@ describe('creating participations', () => {
         expect(response.body.participation).toEqual(sampleParticipation1);
     });
 
-    it('allows updating a participations', async () => {
+    it('can update a participations', async () => {
+        // Create
         let url = `/events/${event.id}/participations/${user.id}`;
-        await request.post(url).send(sampleParticipation1);
-        await request.post(url).send(sampleParticipation2);
-        let response = await request.get(url);
+        let response = await request.post(url).send(sampleParticipation1);
+        expect(response.status).toEqual(204);
+
+        // update it
+        response = await request.post(url).send(sampleParticipation2);
+        expect(response.status).toEqual(204);
+
+        // retrieve again
+        response = await request.get(url);
         expect(response.status).toEqual(200);
         expect(response.body.participation.userId).toEqual(user.id);
         expect(response.body.participation.eventId).toEqual(event.id);
@@ -104,18 +106,46 @@ describe('creating participations', () => {
         expect(response.body.participation).toEqual(sampleParticipation2);
     });
 
-    it('allows to delete a participations', async () => {
+    it('can delete a participations', async () => {
         let url = `/events/${event.id}/participations/${user.id}`;
-        await request.post(url).send(sampleParticipation1);
-        let response = await request.delete(url);
+        let response = await request.post(url).send(sampleParticipation1);
         expect(response.status).toEqual(204);
+
+        // delete
+        response = await request.delete(url);
+        expect(response.status).toEqual(204);
+
+        // retrieve again
+        await request.delete(url);
+        response = await request.get(url);
+        expect(response.status).toEqual(404);
     });
 
-    it('does not return a deleted participation', async () => {
+    it('cannot delete a non-existing participation', async () => {
         let url = `/events/${event.id}/participations/${user.id}`;
-        await request.post(url).send(sampleParticipation1);
-        await request.delete(url);
-        let response = await request.get(url);
+        let response = await request.delete(url);
         expect(response.status).toEqual(404);
+    });
+});
+
+describe('A label event', () => {
+    beforeEach(async () => {
+        event = await Models.Event.create({
+            name: 'Test Event',
+            date: '2020-01-01',
+            type: Constants.EVENT_TYPES.LABEL,
+        });
+    });
+
+    it('initially has no participations', async () => {
+        let response = await request.get(`/events/${event.id}/participations`);
+        expect(response.status).toEqual(200);
+        expect(response.body.participations).toEqual([]);
+    });
+
+    it('cannot create a participations', async () => {
+        let url = `/events/${event.id}/participations/${user.id}`;
+        let response = await request.post(url).send(sampleParticipation1);
+        expect(response.status).toEqual(400);
     });
 });

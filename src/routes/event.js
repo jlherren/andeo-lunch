@@ -178,6 +178,11 @@ async function saveParticipation(ctx) {
     let apiParticipation = RouteUtils.validateBody(ctx, participationSchema);
     await Db.sequelize.transaction(async transaction => {
         let event = await getEvent(ctx, transaction);
+
+        if (event.type === Constants.EVENT_TYPES.LABEL) {
+            ctx.throw(400, 'Label events cannot have participations');
+        }
+
         let user = await getUser(ctx, transaction);
         let participation = await Models.Participation.findOne({
             where: {
