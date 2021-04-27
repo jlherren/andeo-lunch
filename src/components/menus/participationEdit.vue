@@ -5,14 +5,35 @@
         </v-card-title>
 
         <v-card-text>
-            <v-select label="Participation type" :items="participationTypes" v-model="type"/>
+            <v-row>
+                <v-col>
+                    <v-btn-toggle v-model="type" mandatory dense>
+                        <v-btn value="omnivorous">
+                            <v-icon left>mdi-hamburger</v-icon>
+                            <span>Omni</span>
+                        </v-btn>
+                        <v-btn value="vegetarian">
+                            <v-icon left>mdi-apple</v-icon>
+                            <span>Vegi</span>
+                        </v-btn>
+                        <v-btn value="opt-out">
+                            <v-icon left>mdi-cancel</v-icon>
+                            <span>Opt-out</span>
+                        </v-btn>
+                        <v-btn value="undecided">
+                            <v-icon left>mdi-help-circle</v-icon>
+                            <span>Undecided</span>
+                        </v-btn>
+                    </v-btn-toggle>
+                </v-col>
+            </v-row>
 
             <v-row>
                 <v-col cols="6">
                     <points-field label="Points credited" v-model="points"/>
                 </v-col>
                 <v-col cols="6">
-                    <v-text-field type="number" label="Money spent" v-model="money"/>
+                    <v-text-field type="number" label="Money credited" v-model="money"/>
                 </v-col>
             </v-row>
 
@@ -48,13 +69,6 @@
 
         data() {
             return {
-                participationTypes: [
-                    {value: 'omnivorous', text: 'Omnivorous'},
-                    {value: 'vegetarian', text: 'Vegetarian'},
-                    {value: 'opt-out', text: 'Opt-out'},
-                    {value: 'undecided', text: 'Undecided'},
-                ],
-
                 points: this.participation.credits.points,
                 money:  this.participation.credits.money,
                 type:   this.participation.type,
