@@ -7,13 +7,14 @@ const ConfigProvider = require('../../src/configProvider');
 const Constants = require('../../src/constants');
 const Models = require('../../src/db/models');
 const AuthUtils = require('../../src/authUtils');
+const Helper = require('./helper');
+
+const EVENT_DATE = '2020-01-01T12:30:00.000Z';
 
 /** @type {LunchMoney|null} */
 let lunchMoney = null;
 /** @type {supertest.SuperTest|null} */
 let request = null;
-/** @type {Event|null} */
-let event = null;
 /** @type {User|null} */
 let user1 = null;
 /** @type {User|null} */
@@ -57,14 +58,6 @@ beforeEach(async () => {
         active:   true,
         name:     'Test User 2',
     });
-    event = await Models.Event.create({
-        name:                  'Test Event',
-        date:                  '2020-01-01T12:30:00Z',
-        type:                  Constants.EVENT_TYPES.LUNCH,
-        pointsCost:            8,
-        moneyCost:             30,
-        vegetarianMoneyFactor: 0.5,
-    });
     request = supertest.agent(lunchMoney.listen());
     if (jwt === null) {
         let response = await request.post('/account/login')
@@ -79,68 +72,184 @@ afterEach(async () => {
 });
 
 describe('transactions for event', () => {
-    it('transactions for event look correct', async () => {
-        await request.post(`/events/${event.id}/participations/${user1.id}`).send(participation1);
-        await request.post(`/events/${event.id}/participations/${user2.id}`).send(participation2);
+    let eventId = null;
+
+    beforeEach(async () => {
+        eventId = await Helper.createEvent(request, {
+            name:    'Test event',
+            date:    EVENT_DATE,
+            type:    Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.LUNCH],
+            costs:   {
+                points: 8,
+            },
+            factors: {
+                vegetarian: {
+                    money: 0.5,
+                },
+            },
+        });
+    });
+
+    it('Transactions and balances for event look correct', async () => {
+        await request.post(`/events/${eventId}/participations/${user1.id}`).send(participation1);
+        await request.post(`/events/${eventId}/participations/${user2.id}`).send(participation2);
+
+        // Check user 1
         let response = await request.get(`/users/${user1.id}/transactions`);
         expect(response.status).toEqual(200);
         expect(response.body).toHaveLength(3);
         expect(response.body[0]).toEqual(expect.objectContaining({
-            eventId:      event.id,
+            eventId:      eventId,
             userId:       user1.id,
             contraUserId: systemUser.id,
-            date:         event.date.toISOString(),
+            date:         EVENT_DATE,
             currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
             amount:       8,
             balance:      8,
         }));
         expect(response.body[1]).toEqual(expect.objectContaining({
-            eventId:      event.id,
+            eventId:      eventId,
             userId:       user1.id,
             contraUserId: systemUser.id,
-            date:         event.date.toISOString(),
+            date:         EVENT_DATE,
             currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
             amount:       -4,
             balance:      4,
         }));
         expect(response.body[2]).toEqual(expect.objectContaining({
-            eventId:      event.id,
+            eventId:      eventId,
             userId:       user1.id,
             contraUserId: systemUser.id,
-            date:         event.date.toISOString(),
+            date:         EVENT_DATE,
             currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
             amount:       -20,
             balance:      -20,
         }));
+        response = await request.get(`/users/${user1.id}`);
+        expect(response.status).toEqual(200);
+        expect(response.body.user.balances).toEqual({points: 4, money: -20});
+
+        // Check user 2
         response = await request.get(`/users/${user2.id}/transactions`);
         expect(response.status).toEqual(200);
         expect(response.body).toHaveLength(3);
         expect(response.body[0]).toEqual(expect.objectContaining({
-            eventId:      event.id,
+            eventId:      eventId,
             userId:       user2.id,
             contraUserId: systemUser.id,
-            date:         event.date.toISOString(),
+            date:         EVENT_DATE,
             currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
             amount:       -4,
             balance:      -4,
         }));
         expect(response.body[1]).toEqual(expect.objectContaining({
-            eventId:      event.id,
+            eventId:      eventId,
             userId:       user2.id,
             contraUserId: systemUser.id,
-            date:         event.date.toISOString(),
+            date:         EVENT_DATE,
             currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
             amount:       30,
             balance:      30,
         }));
         expect(response.body[2]).toEqual(expect.objectContaining({
-            eventId:      event.id,
+            eventId:      eventId,
             userId:       user2.id,
             contraUserId: systemUser.id,
-            date:         event.date.toISOString(),
+            date:         EVENT_DATE,
             currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
             amount:       -10,
             balance:      20,
         }));
+        response = await request.get(`/users/${user2.id}`);
+        expect(response.status).toEqual(200);
+        expect(response.body.user.balances).toEqual({points: -4, money: 20});
+    });
+
+    it('Recalculates transactions and balances after event changes', async () => {
+        await request.post(`/events/${eventId}/participations/${user1.id}`).send(participation1);
+        await request.post(`/events/${eventId}/participations/${user2.id}`).send(participation2);
+
+        // Lower the points cost (note that participation points remain the same!), and increase the vegetarian
+        // factor
+        await request.post(`/events/${eventId}`).send({
+            costs:   {
+                points: 6,
+            },
+            factors: {
+                vegetarian: {
+                    money: 0.6,
+                },
+            },
+        });
+
+        // Check user 1
+        let response = await request.get(`/users/${user1.id}/transactions`);
+        expect(response.status).toEqual(200);
+        expect(response.body).toHaveLength(3);
+        expect(response.body[0]).toEqual(expect.objectContaining({
+            eventId:      eventId,
+            userId:       user1.id,
+            contraUserId: systemUser.id,
+            date:         EVENT_DATE,
+            currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            amount:       6,
+            balance:      6,
+        }));
+        expect(response.body[1]).toEqual(expect.objectContaining({
+            eventId:      eventId,
+            userId:       user1.id,
+            contraUserId: systemUser.id,
+            date:         EVENT_DATE,
+            currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            amount:       -3,
+            balance:      3,
+        }));
+        expect(response.body[2]).toEqual(expect.objectContaining({
+            eventId:      eventId,
+            userId:       user1.id,
+            contraUserId: systemUser.id,
+            date:         EVENT_DATE,
+            currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+            amount:       -18.75,
+            balance:      -18.75,
+        }));
+        response = await request.get(`/users/${user1.id}`);
+        expect(response.status).toEqual(200);
+        expect(response.body.user.balances).toEqual({points: 3, money: -18.75});
+
+        // Check user 2
+        response = await request.get(`/users/${user2.id}/transactions`);
+        expect(response.status).toEqual(200);
+        expect(response.body).toHaveLength(3);
+        expect(response.body[0]).toEqual(expect.objectContaining({
+            eventId:      eventId,
+            userId:       user2.id,
+            contraUserId: systemUser.id,
+            date:         EVENT_DATE,
+            currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            amount:       -3,
+            balance:      -3,
+        }));
+        expect(response.body[1]).toEqual(expect.objectContaining({
+            eventId:      eventId,
+            userId:       user2.id,
+            contraUserId: systemUser.id,
+            date:         EVENT_DATE,
+            currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+            amount:       30,
+            balance:      30,
+        }));
+        expect(response.body[2]).toEqual(expect.objectContaining({
+            eventId:      eventId,
+            userId:       user2.id,
+            contraUserId: systemUser.id,
+            date:         EVENT_DATE,
+            currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+            amount:       -11.25,
+            balance:      18.75,
+        }));
+        response = await request.get(`/users/${user2.id}`);
+        expect(response.status).toEqual(200);
+        expect(response.body.user.balances).toEqual({points: -3, money: 18.75});
     });
 });
