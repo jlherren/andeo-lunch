@@ -77,7 +77,7 @@
         </v-tabs-items>
 
         <v-dialog v-model="edit">
-            <edit-event :event="event" ref="editDialog" @close="edit = false"/>
+            <event-edit :event="event" ref="editDialog" @close="edit = false"/>
         </v-dialog>
 
         <v-dialog v-model="confirmDelete">
@@ -101,10 +101,10 @@
 
 <script>
     import LmAppBar from '@/components/lmAppBar';
-    import ParticipationSummary from '@/components/menus/participationSummary';
-    import ParticipationListItem from '@/components/menus/participationListItem';
+    import ParticipationSummary from '@/components/event/participationSummary';
+    import ParticipationListItem from '@/components/event/participationListItem';
     import Balance from '@/components/balance';
-    import EditEvent from '@/components/editEvent';
+    import EventEdit from '@/components/event/eventEdit';
     import Vue from 'vue';
     import * as DateUtils from '@/utils/dateUtils';
 
@@ -118,7 +118,7 @@
             Balance,
             ParticipationListItem,
             ParticipationSummary,
-            EditEvent,
+            EventEdit,
         },
 
         async created() {

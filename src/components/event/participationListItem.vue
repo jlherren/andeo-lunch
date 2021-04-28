@@ -33,7 +33,7 @@
 </template>
 
 <script>
-    import ParticipationEdit from '@/components/menus/participationEdit';
+    import ParticipationEdit from '@/components/event/participationEdit';
     import Balance from '@/components/balance';
     import Vue from 'vue';
 

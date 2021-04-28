@@ -52,15 +52,15 @@
         </v-speed-dial>
 
         <v-dialog v-model="createDialog">
-            <create-event :event="newEvent" ref="createEvent" @close="createDialog = false"/>
+            <event-edit :event="newEvent" ref="createEvent" @close="createDialog = false"/>
         </v-dialog>
     </v-main>
 </template>
 
 <script>
-    import EventListItem from '@/components/menus/eventListItem';
     import LmAppBar from '@/components/lmAppBar';
-    import CreateEvent from '@/components/editEvent';
+    import EventListItem from '@/components/event/eventListItem';
+    import EventEdit from '@/components/event/eventEdit';
     import * as DateUtils from '@/utils/dateUtils';
     import Vue from 'vue';
 
@@ -69,8 +69,8 @@
 
         components: {
             LmAppBar,
-            CreateEvent,
             EventListItem,
+            EventEdit,
         },
 
         created() {

@@ -44,7 +44,7 @@
 <script>
     import Balance from '@/components/balance';
     import * as DateUtils from '@/utils/dateUtils';
-    import ParticipationSummary from '@/components/menus/participationSummary';
+    import ParticipationSummary from '@/components/event/participationSummary';
 
     export default {
         name: 'eventListItem',

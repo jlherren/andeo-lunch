@@ -27,7 +27,7 @@
     import UserStats from '@/components/userStats';
     import CustomAppBar from '@/components/lmAppBar';
     import {mapGetters} from 'vuex';
-    import EventListItem from '@/components/menus/eventListItem';
+    import EventListItem from '@/components/event/eventListItem';
     import * as DateUtils from '@/utils/dateUtils';
 
     export default {

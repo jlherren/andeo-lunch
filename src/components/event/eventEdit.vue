@@ -40,7 +40,7 @@
     import * as DateUtils from '@/utils/dateUtils';
 
     export default {
-        name: 'EditEvent',
+        name: 'EventEdit',
 
         components: {
             LmAppBar,
