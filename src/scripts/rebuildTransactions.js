@@ -23,8 +23,7 @@ lunchMoney.waitReady()
 
             for (let event of events) {
                 console.log(`Rebuilding transactions for event ${event.id}`);
-                let newVar = await Transaction.rebuildEventTransactions(transaction, event);
-                let {earliestDate, nUpdates} = newVar;
+                let {earliestDate, nUpdates} = await Transaction.rebuildEventTransactions(transaction, event);
                 if (overAllEarliestDate === null || earliestDate < overAllEarliestDate) {
                     overAllEarliestDate = earliestDate;
                 }

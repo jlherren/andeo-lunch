@@ -139,9 +139,11 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
 
         if (existingTransactionKey in existingTransactions && existingTransactions[existingTransactionKey].length) {
             let transaction = existingTransactions[existingTransactionKey].shift();
-            transaction.date = event.date;
-            transaction.amount = amount;
-            updates.push(transaction);
+            if (transaction.date.getTime() !== event.date.getTime() || Math.abs(transaction.amount - amount) > Constants.EPSILON) {
+                transaction.date = event.date;
+                transaction.amount = amount;
+                updates.push(transaction);
+            }
         } else {
             let transaction = {
                 date:       event.date,
