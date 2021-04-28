@@ -33,7 +33,7 @@
             </template>
         </v-list>
 
-        <v-speed-dial v-model="speedDial" bottom right direction="top" transition="slide-y-reverse-transition">
+        <v-speed-dial v-model="speedDial" fixed bottom right direction="top" transition="slide-y-reverse-transition">
             <template slot="activator">
                 <v-btn fab v-model="speedDial" color="primary">
                     <v-icon v-if="speedDial">mdi-close</v-icon>
@@ -175,7 +175,7 @@
 
 <style scoped lang="scss">
     .v-speed-dial {
-        // Documentation says this is not necessary... but it is.
-        position: absolute;
+        // This is a known issue, it doesn't account for the bottom navigation
+        bottom: 16px + 56px;
     }
 </style>

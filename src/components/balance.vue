@@ -36,6 +36,9 @@
                 if (!this.precise) {
                     str = str.replace(/\.0*$/, '');
                 }
+                if (this.value >= 0) {
+                    str = `+${str}`;
+                }
                 return str;
             },
 

@@ -1,12 +1,12 @@
 <template>
     <v-main>
-        <custom-app-bar>Cash</custom-app-bar>
+        <custom-app-bar>
+            Cash and transactions
+            <template v-slot:buttons>
+                <user-stats/>
+            </template>
+        </custom-app-bar>
 
-        <v-container class="center-text">
-            <user-stats/>
-        </v-container>
-
-        <v-divider/>
         <div class="center-btn">
             <v-btn>Create transaction</v-btn>
         </div>

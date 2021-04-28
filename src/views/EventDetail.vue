@@ -24,7 +24,7 @@
         </v-container>
 
         <v-container v-if="event.type !== 'label'">
-            <v-banner v-if="ownParticipationMissing" elevation="4" single-line icon="mdi-information">
+            <v-banner v-if="ownParticipationMissing" elevation="2" single-line icon="mdi-information">
                 Make up your mind!
                 <template v-slot:actions>
                     <v-btn text color="error" class="ml-1" @click="optOut">
