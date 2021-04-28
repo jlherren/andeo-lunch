@@ -11,7 +11,8 @@
 
         <v-list v-if="entries.length > 0">
             <template v-for="event in entries">
-                <event-list-item :event="event" :key="event.id"/>
+                <v-divider v-if="event.hasGap"/>
+                <event-list-item :event="event" :key="event.id" />
             </template>
         </v-list>
 
@@ -61,6 +62,14 @@
                 });
 
                 events.sort((a, b) => a.date.getTime() - b.date.getTime());
+
+                // Add information about divider lines
+                let prev = null;
+                for (let event of events) {
+                    event.hasGap = prev !== null && !DateUtils.isSuccessiveDays(prev.date, event.date)
+                    prev = event;
+                }
+
                 return events;
             },
         },

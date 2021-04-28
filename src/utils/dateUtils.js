@@ -74,3 +74,15 @@ export function isoDate(date) {
     let day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 }
+
+/**
+ * Test if dates are on two successive days in the local time zone.
+ *
+ * @param {Date} date1
+ * @param {Date} date2
+ *
+ * @return {boolean}
+ */
+export function isSuccessiveDays(date1, date2) {
+    return addDays(date1, 1).getTime() === previousMidnight(date2).getTime();
+}
