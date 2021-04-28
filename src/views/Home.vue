@@ -7,12 +7,10 @@
             </template>
         </custom-app-bar>
 
-        <v-subheader>Upcoming events</v-subheader>
-
         <v-list v-if="entries.length > 0">
             <template v-for="event in entries">
                 <v-divider v-if="event.hasGap"/>
-                <event-list-item :event="event" :key="event.id" />
+                <event-list-item :event="event" :key="event.id" :prominent="isToday(event)"/>
             </template>
         </v-list>
 
@@ -46,8 +44,12 @@
             return {
                 startDate: midnight,
                 endDate:   DateUtils.addDays(midnight, 7),
-                loading: false,
+                loading:   false,
             };
+        },
+
+        created() {
+            this.reload();
         },
 
         computed: {
@@ -83,17 +85,17 @@
                     this.loading = true;
                     let params = {
                         from: this.startDate,
-                        to: this.endDate,
+                        to:   this.endDate,
                     };
                     await this.$store.dispatch('fetchEvents', params);
                 } finally {
                     this.loading = false;
                 }
             },
-        },
 
-        created() {
-            this.reload();
-        },
+            isToday(event) {
+                return DateUtils.isToday(event.date);
+            },
+        }
     };
 </script>

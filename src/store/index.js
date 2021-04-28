@@ -131,78 +131,6 @@ export default new Vuex.Store({
         singleParticipations: {
             // Single participations by event ID and user ID.  Key format `${eventId}/${userId}`
         },
-
-        // To be deprecated
-        menus: [
-            {
-                id:           5,
-                name:         'Russischer Salat',
-                date:         '23.02.20',
-                weekday:      'Friday',
-                isToday:      true,
-                participants: {
-                    meat: 9,
-                    vegi: 3,
-                },
-                helpers:      [
-                    {
-                        firstName: 'Michael',
-                        lastName:  'Kunst',
-                        points:    4,
-                    },
-                    {
-                        firstName: 'Jean-Luc',
-                        lastName:  'Herren',
-                        points:    4,
-                    },
-
-                ],
-            },
-            {
-                id:           10,
-                name:         'Pastaplausch',
-                date:         '24.02.20',
-                weekday:      'Monday',
-                isToday:      false,
-                participants: {
-                    meat: 9,
-                    vegi: 3,
-                },
-            },
-            {
-                id:           11,
-                name:         'Griechischer Salat',
-                date:         '25.02.20',
-                weekday:      'Tuesday',
-                isToday:      false,
-                participants: {
-                    meat: 9,
-                    vegi: 3,
-                },
-            },
-            {
-                id:           12,
-                name:         'Pizza',
-                date:         '26.02.20',
-                weekday:      'Wednesday',
-                isToday:      false,
-                participants: {
-                    meat: 9,
-                    vegi: 3,
-                },
-            },
-            {
-                id:           13,
-                name:         'Sandwich Action',
-                date:         '27.02.20',
-                weekday:      'Thursday',
-                isToday:      false,
-                participants: {
-                    meat: 9,
-                    vegi: 3,
-                },
-            },
-        ],
     },
 
     getters: {
@@ -224,14 +152,6 @@ export default new Vuex.Store({
         event:          state => eventId => state.events[eventId],
         participations: state => eventId => state.participations[eventId],
         participation:  state => (eventId, userId) => state.singleParticipations[`${eventId}/${userId}`],
-
-        // Legacy
-        menus(state) {
-            return state.menus;
-        },
-        menuById: (state) => (id) => {
-            return state.menus.find(menu => menu.id === id);
-        },
     },
 
     mutations: {

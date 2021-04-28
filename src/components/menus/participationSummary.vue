@@ -17,7 +17,7 @@
         props:    {
             participations: {
                 type:    Array,
-                default: [],
+                default: () => [],
             },
         },
         computed: {

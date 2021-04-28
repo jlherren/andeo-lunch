@@ -86,3 +86,11 @@ export function isoDate(date) {
 export function isSuccessiveDays(date1, date2) {
     return addDays(date1, 1).getTime() === previousMidnight(date2).getTime();
 }
+
+/**
+ * @param {Date} date
+ * @return {boolean}
+ */
+export function isToday(date) {
+    return previousMidnight(date).getTime() === previousMidnight(new Date()).getTime();
+}
