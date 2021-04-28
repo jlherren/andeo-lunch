@@ -1,12 +1,20 @@
+/*
+ * Note: To avoid having to load huge date/time libraries like Luxon (or even the heavy-ass moment.js) for the very
+ * few date and time calculation we need, this file will attempt to wrap everything we need.  Assumption made:
+ * - modern browser is available
+ * - locale is set up to the time zone the user wants to see
+ * - all time calculations done in local time
+ */
+
 /**
  * Get the midnight preceding (or on) the given date
  *
  * @param {Date} date
  * @return {Date}
  */
-export function getPreviousMidnight(date) {
+export function previousMidnight(date) {
     date = new Date(date.getTime());
-    date.setUTCHours(0, 0, 0, 0);
+    date.setHours(0, 0, 0, 0);
     return date;
 }
 
@@ -16,47 +24,53 @@ export function getPreviousMidnight(date) {
  * @param {Date} date
  * @returns {Date}
  */
-export function getPreviousMonday(date) {
-    // Clone date
-    date = new Date(date.getTime());
-    date.setUTCHours(0, 0, 0, 0);
-    while (date.getUTCDay() !== 1) {
-        date = new Date(Date.UTC(
-            date.getUTCFullYear(),
-            date.getUTCMonth(),
-            date.getUTCDate() - 1,
-        ));
+export function previousMonday(date) {
+    date = previousMidnight(date);
+    while (date.getDay() !== 1) {
+        date = addDays(date, -1);
     }
     return date;
 }
 
 /**
- * Add/subtract days to/from a date
+ * Add/subtract days to/from a date.  Note that the time of day is NOT preserved, because this may not be possible
+ * to do during daylight saving changes.  The time will be reset to midnight.
  *
  * @param {Date} date
  * @param {number} days
  * @return {Date}
  */
-export function addDays(date, days = 1) {
-    // Note: It doesn't work to simply add 7 * 24 * 60 * 60, since that wouldn't be correct during daylight saving
-    // time transitions.
-    return new Date(Date.UTC(
-        date.getUTCFullYear(),
-        date.getUTCMonth(),
-        date.getUTCDate() + days,
-        date.getUTCHours(),
-        date.getUTCMinutes(),
-        date.getUTCSeconds(),
-        date.getUTCMilliseconds(),
-    ));
+export function addDays(date, days) {
+    // Note: It doesn't work to simply add 7 * 24 * 60 * 60 to the timestamp, since that wouldn't be correct during
+    // daylight saving time transitions.
+    return new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        // This always works due to the smart rollover behavior
+        date.getDate() + days,
+    );
 }
 
 /**
+ * Format a date in a sensible displayFormat for disaypling
+ *
  * @param {Date} date
  * @return {string}
  */
-export function format(date) {
-    // For strange reasons it's not possible to have the weekday added directly
-    return date.toLocaleDateString('en-US', {timeZone: 'UTC', weekday: 'short'})
-           + ', ' + date.toLocaleDateString('en-US', {timeZone: 'UTC', dateStyle: 'medium'});
+export function displayFormat(date) {
+    return date.toLocaleDateString(undefined, {weekday: 'short'})
+           + ', ' + date.toLocaleDateString(undefined, {dateStyle: 'medium'});
+}
+
+/**
+ * Format as ISO date string in local time zone
+ *
+ * @param {Date} date
+ * @return {string}
+ */
+export function isoDate(date) {
+    let year = date.getUTCFullYear();
+    let month = String(date.getMonth() + 1).padStart(2, '0');
+    let day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
 }

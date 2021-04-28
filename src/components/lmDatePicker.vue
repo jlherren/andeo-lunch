@@ -42,7 +42,7 @@
                 if (this.value === undefined || this.value === null) {
                     return null;
                 }
-                return DateUtils.format(new Date(this.value));
+                return DateUtils.displayFormat(new Date(this.value));
             },
 
 

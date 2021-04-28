@@ -187,7 +187,7 @@
             },
 
             formattedDate() {
-                return this.event.date !== null ? DateUtils.format(this.event.date) : null;
+                return this.event.date !== null ? DateUtils.displayFormat(this.event.date) : null;
             },
 
             ownParticipationMissing() {

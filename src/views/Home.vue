@@ -41,11 +41,10 @@
         },
 
         data() {
-            let midnight = DateUtils.getPreviousMidnight(new Date());
-            let previousMonday = DateUtils.getPreviousMonday(new Date());
+            let midnight = DateUtils.previousMidnight(new Date());
             return {
                 startDate: midnight,
-                endDate:   DateUtils.addDays(previousMonday, 7),
+                endDate:   DateUtils.addDays(midnight, 7),
                 loading: false,
             };
         },

@@ -75,7 +75,7 @@
             },
 
             formattedDate() {
-                return DateUtils.format(this.event.date);
+                return DateUtils.displayFormat(this.event.date);
             },
 
             link() {

@@ -73,6 +73,10 @@
             EventListItem,
         },
 
+        created() {
+            this.reload();
+        },
+
         data() {
             let date = new Date(this.$route.params?.date);
             if (!date.getTime()) {
@@ -80,7 +84,7 @@
             }
 
             return {
-                startDate:    DateUtils.getPreviousMonday(date),
+                startDate:    DateUtils.previousMonday(date),
                 endDate:      null,
                 loading:      false,
                 createDialog: false,
@@ -91,7 +95,7 @@
 
         computed: {
             title() {
-                return 'Week of ' + DateUtils.format(this.startDate);
+                return 'Week of ' + DateUtils.displayFormat(this.startDate);
             },
 
             entries() {
@@ -105,13 +109,13 @@
                 let lastWeekDayWithEvent = 0;
                 for (let event of events) {
                     if (['lunch', 'label'].includes(event.type)) {
-                        weekdaysWithLunchOrLabel[event.date.getUTCDay()] = true;
+                        weekdaysWithLunchOrLabel[event.date.getDay()] = true;
                     }
                 }
                 for (let i = 1; i <= 5; i++) {
                     if (!weekdaysWithLunchOrLabel[i]) {
                         let date = DateUtils.addDays(this.startDate, i - 1);
-                        date.setUTCHours(12, 0, 0, 0);
+                        date.setHours(12, 0, 0, 0);
                         events.push({
                             id: `placeholder-${i}`,
                             date: date,
@@ -145,12 +149,12 @@
 
             previousWeek() {
                 let newDate = DateUtils.addDays(this.startDate, -7)
-                this.$router.push('/calendar/' + newDate.toISOString().substr(0, 10));
+                this.$router.push('/calendar/' + DateUtils.isoDate(newDate));
             },
 
             nextWeek() {
                 let newDate = DateUtils.addDays(this.startDate, 7)
-                this.$router.push('/calendar/' + newDate.toISOString().substr(0, 10));
+                this.$router.push('/calendar/' + DateUtils.isoDate(newDate));
             },
 
             openCreateDialog(type, date) {
@@ -163,12 +167,8 @@
             },
 
             formatDate(date) {
-                return DateUtils.format(date);
+                return DateUtils.displayFormat(date);
             },
-        },
-
-        created() {
-            this.reload();
         },
     };
 </script>

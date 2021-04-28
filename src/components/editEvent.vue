@@ -37,6 +37,7 @@
     import LmAppBar from '@/components/lmAppBar';
     import LmDatePicker from '@/components/lmDatePicker';
     import PointsField from '@/components/pointsField';
+    import * as DateUtils from '@/utils/dateUtils';
 
     export default {
         name: 'EditEvent',
@@ -55,7 +56,7 @@
             return {
                 type:   this.event?.type,
                 name:   this.event?.name,
-                date:   this.event?.date ? this.event.date.toISOString().substr(0, 10) : null,
+                date:   this.event?.date ? DateUtils.isoDate(this.event.date) : null,
                 points: this.event?.costs?.points,
 
                 nameRules: [
