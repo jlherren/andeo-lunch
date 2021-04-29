@@ -12,8 +12,14 @@ async function getUserTransactionLists(ctx) {
         where: {
             user: ctx.params.user,
         },
+        order: [
+            ['date', 'ASC'],
+            ['id', 'ASC'],
+        ],
     });
-    ctx.body = transactions.map(transaction => transaction.toApi());
+    ctx.body = {
+        transactions: transactions.map(transaction => transaction.toApi()),
+    };
 }
 
 /**

@@ -101,8 +101,8 @@ describe('transactions for event', () => {
         // Check user 1
         let response = await request.get(`/users/${user1.id}/transactions`);
         expect(response.status).toEqual(200);
-        expect(response.body).toHaveLength(3);
-        expect(response.body[0]).toEqual(expect.objectContaining({
+        expect(response.body.transactions).toHaveLength(3);
+        expect(response.body.transactions[0]).toEqual(expect.objectContaining({
             eventId:      eventId,
             userId:       user1.id,
             contraUserId: systemUser.id,
@@ -111,7 +111,7 @@ describe('transactions for event', () => {
             amount:       8,
             balance:      8,
         }));
-        expect(response.body[1]).toEqual(expect.objectContaining({
+        expect(response.body.transactions[1]).toEqual(expect.objectContaining({
             eventId:      eventId,
             userId:       user1.id,
             contraUserId: systemUser.id,
@@ -120,7 +120,7 @@ describe('transactions for event', () => {
             amount:       -4,
             balance:      4,
         }));
-        expect(response.body[2]).toEqual(expect.objectContaining({
+        expect(response.body.transactions[2]).toEqual(expect.objectContaining({
             eventId:      eventId,
             userId:       user1.id,
             contraUserId: systemUser.id,
@@ -136,8 +136,8 @@ describe('transactions for event', () => {
         // Check user 2
         response = await request.get(`/users/${user2.id}/transactions`);
         expect(response.status).toEqual(200);
-        expect(response.body).toHaveLength(3);
-        expect(response.body[0]).toEqual(expect.objectContaining({
+        expect(response.body.transactions).toHaveLength(3);
+        expect(response.body.transactions[0]).toEqual(expect.objectContaining({
             eventId:      eventId,
             userId:       user2.id,
             contraUserId: systemUser.id,
@@ -146,7 +146,7 @@ describe('transactions for event', () => {
             amount:       -4,
             balance:      -4,
         }));
-        expect(response.body[1]).toEqual(expect.objectContaining({
+        expect(response.body.transactions[1]).toEqual(expect.objectContaining({
             eventId:      eventId,
             userId:       user2.id,
             contraUserId: systemUser.id,
@@ -155,7 +155,7 @@ describe('transactions for event', () => {
             amount:       30,
             balance:      30,
         }));
-        expect(response.body[2]).toEqual(expect.objectContaining({
+        expect(response.body.transactions[2]).toEqual(expect.objectContaining({
             eventId:      eventId,
             userId:       user2.id,
             contraUserId: systemUser.id,
@@ -189,8 +189,8 @@ describe('transactions for event', () => {
         // Check user 1
         let response = await request.get(`/users/${user1.id}/transactions`);
         expect(response.status).toEqual(200);
-        expect(response.body).toHaveLength(3);
-        expect(response.body[0]).toEqual(expect.objectContaining({
+        expect(response.body.transactions).toHaveLength(3);
+        expect(response.body.transactions[0]).toEqual(expect.objectContaining({
             eventId:      eventId,
             userId:       user1.id,
             contraUserId: systemUser.id,
@@ -199,7 +199,7 @@ describe('transactions for event', () => {
             amount:       6,
             balance:      6,
         }));
-        expect(response.body[1]).toEqual(expect.objectContaining({
+        expect(response.body.transactions[1]).toEqual(expect.objectContaining({
             eventId:      eventId,
             userId:       user1.id,
             contraUserId: systemUser.id,
@@ -208,7 +208,7 @@ describe('transactions for event', () => {
             amount:       -3,
             balance:      3,
         }));
-        expect(response.body[2]).toEqual(expect.objectContaining({
+        expect(response.body.transactions[2]).toEqual(expect.objectContaining({
             eventId:      eventId,
             userId:       user1.id,
             contraUserId: systemUser.id,
@@ -224,8 +224,8 @@ describe('transactions for event', () => {
         // Check user 2
         response = await request.get(`/users/${user2.id}/transactions`);
         expect(response.status).toEqual(200);
-        expect(response.body).toHaveLength(3);
-        expect(response.body[0]).toEqual(expect.objectContaining({
+        expect(response.body.transactions).toHaveLength(3);
+        expect(response.body.transactions[0]).toEqual(expect.objectContaining({
             eventId:      eventId,
             userId:       user2.id,
             contraUserId: systemUser.id,
@@ -234,7 +234,7 @@ describe('transactions for event', () => {
             amount:       -3,
             balance:      -3,
         }));
-        expect(response.body[1]).toEqual(expect.objectContaining({
+        expect(response.body.transactions[1]).toEqual(expect.objectContaining({
             eventId:      eventId,
             userId:       user2.id,
             contraUserId: systemUser.id,
@@ -243,7 +243,7 @@ describe('transactions for event', () => {
             amount:       30,
             balance:      30,
         }));
-        expect(response.body[2]).toEqual(expect.objectContaining({
+        expect(response.body.transactions[2]).toEqual(expect.objectContaining({
             eventId:      eventId,
             userId:       user2.id,
             contraUserId: systemUser.id,
@@ -268,7 +268,7 @@ describe('transactions for event', () => {
         // Check user 1
         let response = await request.get(`/users/${user1.id}/transactions`);
         expect(response.status).toEqual(200);
-        expect(response.body).toHaveLength(0);
+        expect(response.body.transactions).toHaveLength(0);
         response = await request.get(`/users/${user1.id}`);
         expect(response.status).toEqual(200);
         expect(response.body.user.balances).toEqual({points: 0, money: 0});
@@ -276,7 +276,7 @@ describe('transactions for event', () => {
         // Check user 2
         response = await request.get(`/users/${user2.id}/transactions`);
         expect(response.status).toEqual(200);
-        expect(response.body).toHaveLength(0);
+        expect(response.body.transactions).toHaveLength(0);
         response = await request.get(`/users/${user2.id}`);
         expect(response.status).toEqual(200);
         expect(response.body.user.balances).toEqual({points: 0, money: 0});
