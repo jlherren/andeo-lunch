@@ -1,7 +1,7 @@
 <template>
     <span :class="valueClass">
         {{ formatted }}
-        <v-icon :small="small" :large="large">{{ actualIcon }}</v-icon>
+        <v-icon :small="small" :large="large" v-if="actualIcon !== null">{{ actualIcon }}</v-icon>
     </span>
 </template>
 
@@ -30,12 +30,15 @@
         computed: {
             formatted() {
                 if (this.value === undefined || this.value === null) {
-                    return '\u2013';
+                    return '\u2013';  // n-dash
                 }
                 let str = this.value.toFixed(this.digits);
                 if (!this.precise) {
                     str = str.replace(/\.0*$/, '');
                 }
+                // Use a proper minus sign instead of a hyphen, it aligns much better with the plus symbol
+                // and is also the same width
+                str = str.replace('-', '\u2212');
                 if (this.value >= 0) {
                     str = `+${str}`;
                 }
@@ -59,7 +62,7 @@
                 if (this.money) {
                     return 'mdi-cash-multiple';
                 }
-                return 'mdi-help-circle';
+                return null;
             },
         },
     };

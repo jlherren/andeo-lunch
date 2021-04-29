@@ -68,7 +68,9 @@
                 // Add information about divider lines
                 let prev = null;
                 for (let event of events) {
-                    event.hasGap = prev !== null && !DateUtils.isSuccessiveDays(prev.date, event.date)
+                    event.hasGap = prev !== null
+                                   && !DateUtils.isSameDays(prev.date, event.date)
+                                   && !DateUtils.isSuccessiveDays(prev.date, event.date);
                     prev = event;
                 }
 

@@ -27,9 +27,10 @@
 <style scoped lang="scss">
     .stats {
         font-size: 16pt;
+        white-space: nowrap;
 
         span + span {
-            margin-left: 1em;
+            margin-left: 0.5em;
         }
     }
 </style>

@@ -88,6 +88,18 @@ export function isSuccessiveDays(date1, date2) {
 }
 
 /**
+ * Test if dates are on the same day in the local time zone.
+ *
+ * @param {Date} date1
+ * @param {Date} date2
+ *
+ * @return {boolean}
+ */
+export function isSameDays(date1, date2) {
+    return previousMidnight(date1).getTime() === previousMidnight(date2).getTime();
+}
+
+/**
  * @param {Date} date
  * @return {boolean}
  */
