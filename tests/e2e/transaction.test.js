@@ -9,7 +9,11 @@ const Models = require('../../src/db/models');
 const AuthUtils = require('../../src/authUtils');
 const Helper = require('./helper');
 
-const EVENT_DATE = '2020-01-01T12:30:00.000Z';
+// These must be in chronological order!
+const EVENT_DATE_0 = '2020-01-01T12:30:00.000Z';
+const EVENT_DATE_1 = '2020-02-01T12:30:00.000Z';
+const EVENT_DATE_2 = '2020-03-01T12:30:00.000Z';
+const EVENT_DATE_3 = '2020-04-01T12:30:00.000Z';
 
 /** @type {LunchMoney|null} */
 let lunchMoney = null;
@@ -77,7 +81,7 @@ describe('transactions for event', () => {
     beforeEach(async () => {
         eventId = await Helper.createEvent(request, {
             name:    'Test event',
-            date:    EVENT_DATE,
+            date:    EVENT_DATE_1,
             type:    Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.LUNCH],
             costs:   {
                 points: 8,
@@ -102,7 +106,7 @@ describe('transactions for event', () => {
             eventId:      eventId,
             userId:       user1.id,
             contraUserId: systemUser.id,
-            date:         EVENT_DATE,
+            date:         EVENT_DATE_1,
             currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
             amount:       8,
             balance:      8,
@@ -111,7 +115,7 @@ describe('transactions for event', () => {
             eventId:      eventId,
             userId:       user1.id,
             contraUserId: systemUser.id,
-            date:         EVENT_DATE,
+            date:         EVENT_DATE_1,
             currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
             amount:       -4,
             balance:      4,
@@ -120,7 +124,7 @@ describe('transactions for event', () => {
             eventId:      eventId,
             userId:       user1.id,
             contraUserId: systemUser.id,
-            date:         EVENT_DATE,
+            date:         EVENT_DATE_1,
             currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
             amount:       -20,
             balance:      -20,
@@ -137,7 +141,7 @@ describe('transactions for event', () => {
             eventId:      eventId,
             userId:       user2.id,
             contraUserId: systemUser.id,
-            date:         EVENT_DATE,
+            date:         EVENT_DATE_1,
             currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
             amount:       -4,
             balance:      -4,
@@ -146,7 +150,7 @@ describe('transactions for event', () => {
             eventId:      eventId,
             userId:       user2.id,
             contraUserId: systemUser.id,
-            date:         EVENT_DATE,
+            date:         EVENT_DATE_1,
             currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
             amount:       30,
             balance:      30,
@@ -155,7 +159,7 @@ describe('transactions for event', () => {
             eventId:      eventId,
             userId:       user2.id,
             contraUserId: systemUser.id,
-            date:         EVENT_DATE,
+            date:         EVENT_DATE_1,
             currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
             amount:       -10,
             balance:      20,
@@ -165,7 +169,7 @@ describe('transactions for event', () => {
         expect(response.body.user.balances).toEqual({points: -4, money: 20});
     });
 
-    it('Recalculates transactions and balances after event changes', async () => {
+    it('Recalculates transactions and balances after event costs change', async () => {
         await request.post(`/events/${eventId}/participations/${user1.id}`).send(participation1);
         await request.post(`/events/${eventId}/participations/${user2.id}`).send(participation2);
 
@@ -190,7 +194,7 @@ describe('transactions for event', () => {
             eventId:      eventId,
             userId:       user1.id,
             contraUserId: systemUser.id,
-            date:         EVENT_DATE,
+            date:         EVENT_DATE_1,
             currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
             amount:       6,
             balance:      6,
@@ -199,7 +203,7 @@ describe('transactions for event', () => {
             eventId:      eventId,
             userId:       user1.id,
             contraUserId: systemUser.id,
-            date:         EVENT_DATE,
+            date:         EVENT_DATE_1,
             currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
             amount:       -3,
             balance:      3,
@@ -208,7 +212,7 @@ describe('transactions for event', () => {
             eventId:      eventId,
             userId:       user1.id,
             contraUserId: systemUser.id,
-            date:         EVENT_DATE,
+            date:         EVENT_DATE_1,
             currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
             amount:       -18.75,
             balance:      -18.75,
@@ -225,7 +229,7 @@ describe('transactions for event', () => {
             eventId:      eventId,
             userId:       user2.id,
             contraUserId: systemUser.id,
-            date:         EVENT_DATE,
+            date:         EVENT_DATE_1,
             currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
             amount:       -3,
             balance:      -3,
@@ -234,7 +238,7 @@ describe('transactions for event', () => {
             eventId:      eventId,
             userId:       user2.id,
             contraUserId: systemUser.id,
-            date:         EVENT_DATE,
+            date:         EVENT_DATE_1,
             currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
             amount:       30,
             balance:      30,
@@ -243,7 +247,7 @@ describe('transactions for event', () => {
             eventId:      eventId,
             userId:       user2.id,
             contraUserId: systemUser.id,
-            date:         EVENT_DATE,
+            date:         EVENT_DATE_1,
             currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
             amount:       -11.25,
             balance:      18.75,
@@ -251,5 +255,106 @@ describe('transactions for event', () => {
         response = await request.get(`/users/${user2.id}`);
         expect(response.status).toEqual(200);
         expect(response.body.user.balances).toEqual({points: -3, money: 18.75});
+    });
+
+    it('Recalculates transactions and balances after event is deleted', async () => {
+        // Add participations
+        await request.post(`/events/${eventId}/participations/${user1.id}`).send(participation1);
+        await request.post(`/events/${eventId}/participations/${user2.id}`).send(participation2);
+
+        // Delete event
+        await request.delete(`/events/${eventId}`);
+
+        // Check user 1
+        let response = await request.get(`/users/${user1.id}/transactions`);
+        expect(response.status).toEqual(200);
+        expect(response.body).toHaveLength(0);
+        response = await request.get(`/users/${user1.id}`);
+        expect(response.status).toEqual(200);
+        expect(response.body.user.balances).toEqual({points: 0, money: 0});
+
+        // Check user 2
+        response = await request.get(`/users/${user2.id}/transactions`);
+        expect(response.status).toEqual(200);
+        expect(response.body).toHaveLength(0);
+        response = await request.get(`/users/${user2.id}`);
+        expect(response.status).toEqual(200);
+        expect(response.body.user.balances).toEqual({points: 0, money: 0});
+    });
+});
+
+describe('Recalculates transactions and balances after event date change', () => {
+    let event1Id = null;
+    let event2Id = null;
+
+    beforeEach(async () => {
+        event1Id = await Helper.createEvent(request, {
+            name:    'Test event 1',
+            date:    EVENT_DATE_1,
+            type:    Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.LUNCH],
+            costs:   {
+                points: 8,
+            },
+        });
+        event2Id = await Helper.createEvent(request, {
+            name:    'Test event 2',
+            date:    EVENT_DATE_2,
+            type:    Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.LUNCH],
+            costs:   {
+                points: 6,
+            },
+        });
+    });
+
+    it('Recalculates balances after event date moves to be earlier', async () => {
+        await request.post(`/events/${event1Id}/participations/${user1.id}`).send(participation1);
+        await request.post(`/events/${event1Id}/participations/${user2.id}`).send(participation2);
+        await request.post(`/events/${event2Id}/participations/${user1.id}`).send(participation1);
+        await request.post(`/events/${event2Id}/participations/${user2.id}`).send(participation2);
+
+        // Get user balances
+        let response = await request.get(`/users/${user1.id}`);
+        expect(response.status).toEqual(200);
+        let userBalances1 = response.body.user.balances;
+        response = await request.get(`/users/${user2.id}`);
+        expect(response.status).toEqual(200);
+        let userBalances2 = response.body.user.balances;
+
+        // Move event 2 to be before event 1
+        await request.post(`/events/${event2Id}`).send({date: EVENT_DATE_0});
+
+        // Final balances must remain the same
+        response = await request.get(`/users/${user1.id}`);
+        expect(response.status).toEqual(200);
+        expect(response.body.user.balances).toEqual(userBalances1);
+        response = await request.get(`/users/${user2.id}`);
+        expect(response.status).toEqual(200);
+        expect(response.body.user.balances).toEqual(userBalances2);
+    });
+
+    it('Recalculates balances after event date moves to be later', async () => {
+        await request.post(`/events/${event1Id}/participations/${user1.id}`).send(participation1);
+        await request.post(`/events/${event1Id}/participations/${user2.id}`).send(participation2);
+        await request.post(`/events/${event2Id}/participations/${user1.id}`).send(participation1);
+        await request.post(`/events/${event2Id}/participations/${user2.id}`).send(participation2);
+
+        // Get user balances
+        let response = await request.get(`/users/${user1.id}`);
+        expect(response.status).toEqual(200);
+        let userBalances1 = response.body.user.balances;
+        response = await request.get(`/users/${user2.id}`);
+        expect(response.status).toEqual(200);
+        let userBalances2 = response.body.user.balances;
+
+        // Move event 1 to be after event 2
+        await request.post(`/events/${event2Id}`).send({date: EVENT_DATE_3});
+
+        // Final balances must remain the same
+        response = await request.get(`/users/${user1.id}`);
+        expect(response.status).toEqual(200);
+        expect(response.body.user.balances).toEqual(userBalances1);
+        response = await request.get(`/users/${user2.id}`);
+        expect(response.status).toEqual(200);
+        expect(response.body.user.balances).toEqual(userBalances2);
     });
 });
