@@ -206,7 +206,7 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
 
     await Models.Transaction.bulkCreate(inserts, {transaction: dbTransaction});
     for (let update of updates) {
-        await update.save();
+        await update.save({transaction: dbTransaction});
     }
 
     // remove superfluous transactions
