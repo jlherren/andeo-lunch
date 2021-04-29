@@ -12,7 +12,7 @@ lunchMoney.waitReady()
     .then(async () => {
         await Db.sequelize.transaction(async transaction => {
             let events = await Models.Event.findAll({transaction});
-            let overAllEarliestDate = null;
+            let overallEarliestDate = null;
             let nUpdatesTotal = 0;
 
             if (events.length === 0) {
@@ -24,15 +24,15 @@ lunchMoney.waitReady()
             for (let event of events) {
                 console.log(`Rebuilding transactions for event ${event.id}`);
                 let {earliestDate, nUpdates} = await Transaction.rebuildEventTransactions(transaction, event);
-                if (overAllEarliestDate === null || earliestDate < overAllEarliestDate) {
-                    overAllEarliestDate = earliestDate;
+                if (earliestDate !== null && (overallEarliestDate === null || earliestDate < overallEarliestDate)) {
+                    overallEarliestDate = earliestDate;
                 }
                 nUpdatesTotal += nUpdates;
             }
 
             console.log(`Updated ${nUpdatesTotal} transactions`);
             console.log('Rebuilding transaction balances');
-            let n = await Transaction.rebuildTransactionBalances(transaction, overAllEarliestDate);
+            let n = await Transaction.rebuildTransactionBalances(transaction, overallEarliestDate);
             console.log(`Updated ${n} transaction balances`);
             console.log('Rebuilding final balances');
             await Transaction.rebuildUserBalances(transaction);

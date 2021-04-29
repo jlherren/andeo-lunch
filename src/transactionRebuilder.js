@@ -72,8 +72,8 @@ exports.rebuildEventDetails = async function rebuildEventDetails(dbTransaction, 
  *
  * @param {Transaction} dbTransaction
  * @param {Event|number} event
- * @returns {Promise<{earliestDate: Date, nUpdates: number}>} Earliest date that was affected, useful for
- *                                                            recalculateBalances() and number of update
+ * @returns {Promise<{earliestDate: Date|null, nUpdates: number}>} Earliest date that was affected, useful for
+ *                                                                 recalculateBalances() and number of update
  */
 exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTransaction, event) {
     if (!(event instanceof Models.Event)) {
@@ -88,17 +88,6 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
         order:       [['id', 'ASC']],
         transaction: dbTransaction,
     });
-
-    let {earliestDate} = await Models.Transaction.findOne({
-        where:       {event: event.id},
-        attributes:  [[Sequelize.fn('MIN', Sequelize.col('date')), 'earliestDate']],
-        transaction: dbTransaction,
-        raw:         true,
-    });
-    earliestDate = earliestDate ? new Date(earliestDate) : null;
-    if (earliestDate === null || event.date < earliestDate) {
-        earliestDate = event.date;
-    }
 
     // get all existing transactions for that event
     /** @type {Object<string, Array<Transaction>>} */
@@ -125,8 +114,8 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
         totalMoneyCredited += participation.moneyCredited;
     }
 
-    let inserts = [];
-    let updates = [];
+    let transactionInserts = [];
+    let transactionUpdates = [];
 
     /**
      * @param {number} user
@@ -140,9 +129,9 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
         if (existingTransactionKey in existingTransactions && existingTransactions[existingTransactionKey].length) {
             let transaction = existingTransactions[existingTransactionKey].shift();
             if (transaction.date.getTime() !== event.date.getTime() || Math.abs(transaction.amount - amount) > Constants.EPSILON) {
-                transaction.date = event.date;
+                transaction.date = new Date(event.date);
                 transaction.amount = amount;
-                updates.push(transaction);
+                transactionUpdates.push(transaction);
             }
         } else {
             let transaction = {
@@ -154,7 +143,7 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
                 balance:    0,
                 event:      event.id,
             };
-            inserts.push(transaction);
+            transactionInserts.push(transaction);
         }
     }
 
@@ -204,23 +193,46 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
         }
     }
 
-    await Models.Transaction.bulkCreate(inserts, {transaction: dbTransaction});
-    for (let update of updates) {
-        await update.save({transaction: dbTransaction});
+    /** @type {number|null} */
+    let earliestTimestamp = null;
+
+    /**
+     * Mark a date as being affected
+     *
+     * @param {Date} date
+     */
+    function dateIsAffected(date) {
+        let timestamp = date.getTime();
+        if (earliestTimestamp === null || timestamp < earliestTimestamp) {
+            earliestTimestamp = timestamp;
+        }
     }
 
-    // remove superfluous transactions
+    // Insert new transactions
+    for (let transaction of transactionInserts) {
+        dateIsAffected(transaction.date);
+    }
+    await Models.Transaction.bulkCreate(transactionInserts, {transaction: dbTransaction});
+
+    // Update existing transactions
+    for (let transaction of transactionUpdates) {
+        dateIsAffected(transaction.date);
+        await transaction.save({transaction: dbTransaction});
+    }
+
+    // Delete superfluous transactions
     let deleteIds = [];
     for (let key in existingTransactions) {
         for (let transaction of existingTransactions[key]) {
+            dateIsAffected(transaction.date);
             deleteIds.push(transaction.id);
         }
     }
     await Models.Transaction.destroy({where: {id: deleteIds}, transaction: dbTransaction});
 
     return {
-        earliestDate,
-        nUpdates: inserts.length + updates.length,
+        earliestDate: earliestTimestamp !== null ? new Date(earliestTimestamp) : null,
+        nUpdates:     transactionInserts.length + transactionUpdates.length,
     };
 };
 
@@ -358,8 +370,10 @@ exports.rebuildEvent = async function rebuildEvent(dbTransaction, event) {
     async function execute() {
         await exports.rebuildEventDetails(dbTransaction, event);
         let {earliestDate} = await exports.rebuildEventTransactions(dbTransaction, event);
-        await exports.rebuildTransactionBalances(dbTransaction, earliestDate);
-        await exports.rebuildUserBalances(dbTransaction);
+        if (earliestDate !== null) {
+            await exports.rebuildTransactionBalances(dbTransaction, earliestDate);
+            await exports.rebuildUserBalances(dbTransaction);
+        }
     }
 
     if (dbTransaction !== null) {
