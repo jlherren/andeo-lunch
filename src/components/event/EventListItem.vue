@@ -42,9 +42,9 @@
 </template>
 
 <script>
-    import Balance from '@/components/balance';
+    import Balance from '@/components/Balance';
     import * as DateUtils from '@/utils/dateUtils';
-    import ParticipationSummary from '@/components/event/participationSummary';
+    import ParticipationSummary from '@/components/event/ParticipationSummary';
 
     export default {
         name: 'eventListItem',
@@ -55,7 +55,10 @@
         },
 
         props: {
-            event:     Object,
+            event:     {
+                type:     Object,
+                required: true,
+            },
             prominent: Boolean,
         },
 

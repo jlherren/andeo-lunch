@@ -34,22 +34,24 @@
 </template>
 
 <script>
-    import LmAppBar from '@/components/lmAppBar';
-    import LmDatePicker from '@/components/lmDatePicker';
-    import PointsField from '@/components/pointsField';
+    import TheAppBar from '@/components/TheAppBar';
+    import LmDatePicker from '@/components/LmDatePicker';
+    import PointsField from '@/components/PointsField';
     import * as DateUtils from '@/utils/dateUtils';
 
     export default {
         name: 'EventEdit',
 
         components: {
-            LmAppBar,
+            TheAppBar,
             LmDatePicker,
             PointsField,
         },
 
         props: {
-            event: Object,
+            event: {
+                type:     Object,
+            },
         },
 
         data() {

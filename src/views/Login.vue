@@ -51,7 +51,7 @@
     };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
     .v-form {
         max-width: 30em;
         margin: 0 auto;

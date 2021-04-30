@@ -1,11 +1,11 @@
 <template>
     <v-main>
-        <custom-app-bar>
+        <the-app-bar>
             {{ ownUser.name }}
             <template v-slot:buttons>
                 <user-stats/>
             </template>
-        </custom-app-bar>
+        </the-app-bar>
 
         <v-list v-if="entries.length > 0">
             <template v-for="(event, index) of entries">
@@ -24,18 +24,18 @@
 </template>
 
 <script>
-    import UserStats from '@/components/userStats';
-    import CustomAppBar from '@/components/lmAppBar';
+    import UserStats from '@/components/UserStats';
+    import TheAppBar from '@/components/TheAppBar';
     import {mapGetters} from 'vuex';
-    import EventListItem from '@/components/event/eventListItem';
+    import EventListItem from '@/components/event/EventListItem';
     import * as DateUtils from '@/utils/dateUtils';
 
     export default {
         name: 'Home',
 
         components: {
+            TheAppBar,
             EventListItem,
-            CustomAppBar,
             UserStats,
         },
 

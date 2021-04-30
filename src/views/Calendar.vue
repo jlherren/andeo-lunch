@@ -1,6 +1,6 @@
 <template>
     <v-main>
-        <lm-app-bar>
+        <the-app-bar>
             {{ title }}
             <template v-slot:buttons>
                 <v-btn icon @click="previousWeek">
@@ -10,7 +10,7 @@
                     <v-icon>mdi-chevron-right</v-icon>
                 </v-btn>
             </template>
-        </lm-app-bar>
+        </the-app-bar>
 
         <v-progress-linear indeterminate absolute v-if="loading"></v-progress-linear>
 
@@ -58,9 +58,9 @@
 </template>
 
 <script>
-    import LmAppBar from '@/components/lmAppBar';
-    import EventListItem from '@/components/event/eventListItem';
-    import EventEdit from '@/components/event/eventEdit';
+    import TheAppBar from '@/components/TheAppBar';
+    import EventListItem from '@/components/event/EventListItem';
+    import EventEdit from '@/components/event/EventEdit';
     import * as DateUtils from '@/utils/dateUtils';
     import Vue from 'vue';
 
@@ -68,7 +68,7 @@
         name: 'Calendar',
 
         components: {
-            LmAppBar,
+            TheAppBar,
             EventListItem,
             EventEdit,
         },

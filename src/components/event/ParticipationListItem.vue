@@ -33,8 +33,8 @@
 </template>
 
 <script>
-    import ParticipationEdit from '@/components/event/participationEdit';
-    import Balance from '@/components/balance';
+    import ParticipationEdit from '@/components/event/ParticipationEdit';
+    import Balance from '@/components/Balance';
     import Vue from 'vue';
 
     export default {
@@ -46,7 +46,10 @@
         },
 
         props: {
-            participation: Object,
+            participation: {
+                type:     Object,
+                required: true,
+            },
         },
 
         data() {
@@ -105,7 +108,7 @@
     };
 </script>
 
-<style lang="scss" scoped>
+<style scoped lang="scss">
     .participants {
         display: inline-flex;
         align-items: center;

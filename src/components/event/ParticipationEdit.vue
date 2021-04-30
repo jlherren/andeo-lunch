@@ -54,7 +54,7 @@
 </template>
 
 <script>
-    import PointsField from '@/components/pointsField';
+    import PointsField from '@/components/PointsField';
 
     export default {
         name: 'ParticipationEdit',
@@ -64,7 +64,10 @@
         },
 
         props: {
-            participation: Object,
+            participation: {
+                type:     Object,
+                required: true,
+            },
         },
 
         data() {

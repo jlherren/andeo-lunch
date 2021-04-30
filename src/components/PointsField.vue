@@ -16,7 +16,9 @@
         name: 'PointsField',
 
         props: {
-            value: Number,
+            value: {
+                type:     Number,
+            },
         },
 
         methods: {

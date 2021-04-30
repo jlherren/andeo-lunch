@@ -48,10 +48,11 @@
     import {mapGetters} from 'vuex';
 
     export default {
-        name: "settingsDialog",
-        props: {
+        name: "SettingsDialog",
 
+        props: {
         },
+
         data() {
             return {
                 open: false,
@@ -105,7 +106,7 @@
     }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
     .dialog-content {
         margin-top: 10px;
     }

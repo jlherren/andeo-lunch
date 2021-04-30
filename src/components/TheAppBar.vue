@@ -22,10 +22,14 @@
 </template>
 
 <script>
-    import NavigationDrawerContent from '@/components/navigationDrawerContent';
+    import NavigationDrawerContent from '@/components/NavigationDrawerContent';
 
     export default {
-        name: 'lmAppBar',
+        name: 'TheAppBar',
+
+        components: {
+            NavigationDrawerContent,
+        },
 
         props: {
             subPage:         {
@@ -35,10 +39,6 @@
             extensionHeight: {
                 type: [Number, String],
             },
-        },
-
-        components: {
-            NavigationDrawerContent,
         },
 
         data: () => ({

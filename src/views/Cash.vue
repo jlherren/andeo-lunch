@@ -1,6 +1,6 @@
 <template>
     <v-main>
-        <lm-app-bar extension-height="30">
+        <the-app-bar extension-height="30">
             Transactions
             <template v-slot:buttons>
                 <user-stats/>
@@ -16,7 +16,7 @@
                 </v-tabs>
 
             </template>
-        </lm-app-bar>
+        </the-app-bar>
 
         <v-virtual-scroll item-height="25" :items="transactions" ref="scroll">
             <template v-slot:default="{item: transaction}">
@@ -32,9 +32,9 @@
 </template>
 
 <script>
-    import UserStats from '../components/userStats';
-    import LmAppBar from '@/components/lmAppBar';
-    import Balance from '@/components/balance';
+    import UserStats from '../components/UserStats';
+    import TheAppBar from '@/components/TheAppBar';
+    import Balance from '@/components/Balance';
     import * as DateUtils from '@/utils/dateUtils';
     import Vue from 'vue';
 
@@ -43,7 +43,7 @@
 
         components: {
             Balance,
-            LmAppBar,
+            TheAppBar,
             UserStats,
         },
 

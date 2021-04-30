@@ -16,8 +16,9 @@
         name:     'ParticipationSummary',
         props:    {
             participations: {
-                type:    Array,
-                default: () => [],
+                type:     Array,
+                required: true,
+                default:  () => [],
             },
         },
         computed: {
@@ -40,7 +41,7 @@
     }
 </script>
 
-<style lang="scss" scoped>
+<style scoped lang="scss">
     .participants {
         display: inline-flex;
         align-items: center;

@@ -1,6 +1,6 @@
 <template>
     <v-main v-if="event">
-        <lm-app-bar sub-page>
+        <the-app-bar sub-page>
             {{ event.name }}
             <template slot="buttons">
                 <v-btn icon @click="openEditDialog">
@@ -10,7 +10,7 @@
                     <v-icon>mdi-delete</v-icon>
                 </v-btn>
             </template>
-        </lm-app-bar>
+        </the-app-bar>
 
         <v-container class="center-text">
             <h2>{{ event.name }}</h2>
@@ -100,11 +100,11 @@
 </template>
 
 <script>
-    import LmAppBar from '@/components/lmAppBar';
-    import ParticipationSummary from '@/components/event/participationSummary';
-    import ParticipationListItem from '@/components/event/participationListItem';
-    import Balance from '@/components/balance';
-    import EventEdit from '@/components/event/eventEdit';
+    import TheAppBar from '@/components/TheAppBar';
+    import ParticipationSummary from '@/components/event/ParticipationSummary';
+    import ParticipationListItem from '@/components/event/ParticipationListItem';
+    import Balance from '@/components/Balance';
+    import EventEdit from '@/components/event/EventEdit';
     import Vue from 'vue';
     import * as DateUtils from '@/utils/dateUtils';
 
@@ -114,7 +114,7 @@
         name: 'EventDetail',
 
         components: {
-            LmAppBar,
+            TheAppBar,
             Balance,
             ParticipationListItem,
             ParticipationSummary,
@@ -232,7 +232,7 @@
     };
 </script>
 
-<style lang="scss" scoped>
+<style scoped lang="scss">
     .costs {
         //margin-left: 30px;
         color: #C62828;

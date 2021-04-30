@@ -61,7 +61,7 @@
 
 <script>
     import {mapGetters} from 'vuex';
-    import SettingsDialog from './settingsDialog';
+    import SettingsDialog from './SettingsDialog';
 
     export default {
         name:       'navigationDrawerContent',

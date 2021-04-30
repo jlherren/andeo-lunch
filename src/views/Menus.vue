@@ -1,6 +1,6 @@
 <template>
     <v-main>
-        <custom-app-bar>Menus</custom-app-bar>
+        <the-app-bar>Menus</the-app-bar>
 
         <v-container>
             <v-banner single-line elevation="2">
@@ -12,13 +12,13 @@
 </template>
 
 <script>
-    import CustomAppBar from '@/components/lmAppBar';
+    import TheAppBar from '@/components/TheAppBar';
 
     export default {
         name: 'Menus',
 
         components: {
-            CustomAppBar,
+            TheAppBar,
         },
     };
 </script>

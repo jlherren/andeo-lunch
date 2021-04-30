@@ -10,7 +10,10 @@
         name: 'balance',
 
         props: {
-            value: Number,
+            value: {
+                type:     Number,
+                required: true,
+            },
 
             small: Boolean,
             large: Boolean,
@@ -20,7 +23,7 @@
             money:  Boolean,
             icon:   String,
 
-            digits: {
+            digits:   {
                 type:    Number,
                 default: 2,
             },
