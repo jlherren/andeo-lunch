@@ -14,7 +14,7 @@
             <router-view :key="$route.path"/>
 
             <v-bottom-navigation app>
-                <v-btn v-for="link in navigationLinks" :to="link.url" :key="link.title">
+                <v-btn v-for="link of navigationLinks" :to="link.url" :key="link.title">
                     <span>{{ link.title }}</span>
                     <v-icon>{{ link.icon }}</v-icon>
                 </v-btn>

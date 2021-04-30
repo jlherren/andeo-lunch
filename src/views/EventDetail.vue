@@ -53,7 +53,7 @@
                 <v-list>
                     <participation-list-item :participation="myParticipation"/>
 
-                    <participation-list-item v-for="participation in activeParticipations"
+                    <participation-list-item v-for="participation of activeParticipations"
                                              :key="participation.userId"
                                              :participation="participation"/>
                 </v-list>
@@ -61,7 +61,7 @@
 
             <v-tab-item key="money">
                 <v-list>
-                    <participation-list-item v-for="participation in moneyProviders"
+                    <participation-list-item v-for="participation of moneyProviders"
                                              :key="participation.userId"
                                              :participation="participation"/>
 

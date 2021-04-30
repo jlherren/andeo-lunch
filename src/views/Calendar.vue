@@ -15,7 +15,7 @@
         <v-progress-linear indeterminate absolute v-if="loading"></v-progress-linear>
 
         <v-list>
-            <template v-for="event in entries">
+            <template v-for="event of entries">
                 <event-list-item :event="event" :key="event.id" v-if="event.type !== 'placeholder'"/>
 
                 <v-list-item :key="event.id" v-if="event.type === 'placeholder'">

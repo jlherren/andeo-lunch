@@ -8,7 +8,7 @@
         </custom-app-bar>
 
         <v-list v-if="entries.length > 0">
-            <template v-for="event in entries">
+            <template v-for="event of entries">
                 <v-divider v-if="event.hasGap"/>
                 <event-list-item :event="event" :key="event.id" :prominent="isToday(event)"/>
             </template>
