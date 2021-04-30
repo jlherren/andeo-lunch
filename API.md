@@ -167,10 +167,12 @@ GET /users
 Response:
 ```
 200 OK
-[
-    <user-object>,
-    ...
-]
+{
+    "users: [
+        <user-object>,
+        ...
+    ]
+}
 ```
 
 ### Get single user
@@ -183,7 +185,9 @@ GET /users/<user-id>
 Response:
 ```
 200 OK
-<user-object>
+{
+    "user": <user-object>
+}
 ```
 
 ### Get user's transaction history
@@ -196,11 +200,15 @@ GET /users/<user-id>/transactions
 Response:
 ```
 200 OK
-[
-    <transaction-object>,
-    ...
-]
+{
+    "transactions": [
+        <transaction-object>,
+        ...
+    ]
+}
 ```
+
+*Note*: At most the 1000 most recent transactions will be returned.
 
 ## Events
 
@@ -214,11 +222,18 @@ GET /events
 Response:
 ```
 200 OK
-[
-    <event-object>,
-    ...
-]
+{
+    "events": [
+        <event-object>,
+        ...
+    ]
+}
 ```
+
+*Note*: At most 100 events will be returned.
+
+*TODO*: Query parameters `from` and `to` may be specified with dates to limit the events returned.
+        The DB query condition will be "date >= from AND date < to".
 
 ### Get single event
 
@@ -230,7 +245,9 @@ GET /events/<event-id>
 Response:
 ```
 200 OK
-<event-object>
+{
+    "event": <event-object>
+}
 ```
 
 ### Create an event
@@ -279,10 +296,12 @@ GET /events/<event-id>/participations
 Response:
 ```
 200 OK
-[
-    <participation>,
-    ...
-]
+{
+    "participations": [
+        <participation>,
+        ...
+    ]
+}
 ```
 
 ### Save/update participation

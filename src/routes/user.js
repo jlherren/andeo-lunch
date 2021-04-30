@@ -13,10 +13,12 @@ async function getUserTransactionLists(ctx) {
             user: ctx.params.user,
         },
         order: [
-            ['date', 'ASC'],
-            ['id', 'ASC'],
+            ['date', 'DESC'],
+            ['id', 'DESC'],
         ],
+        limit: 1000,
     });
+    transactions.reverse();
     ctx.body = {
         transactions: transactions.map(transaction => transaction.toApi()),
     };
