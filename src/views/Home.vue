@@ -8,9 +8,9 @@
         </custom-app-bar>
 
         <v-list v-if="entries.length > 0">
-            <template v-for="event of entries">
+            <template v-for="(event, index) of entries">
                 <v-divider v-if="event.hasGap"/>
-                <event-list-item :event="event" :key="event.id" :prominent="isToday(event)"/>
+                <event-list-item :event="event" :key="event.id" :prominent="index === 0"/>
             </template>
         </v-list>
 
@@ -93,10 +93,6 @@
                 } finally {
                     this.loading = false;
                 }
-            },
-
-            isToday(event) {
-                return DateUtils.isToday(event.date);
             },
         }
     };
