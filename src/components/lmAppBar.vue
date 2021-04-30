@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-app-bar app>
+        <v-app-bar app :extension-height="extensionHeight">
             <v-app-bar-nav-icon @click="toggleDrawer" v-if="!subPage"/>
             <v-app-bar-nav-icon @click="goBack" v-if="subPage">
                 <v-icon>mdi-arrow-left</v-icon>
@@ -10,6 +10,9 @@
             </v-app-bar-title>
             <v-spacer/>
             <slot name="buttons"/>
+            <template v-slot:extension v-if="$slots.extension">
+                <slot name="extension"/>
+            </template>
         </v-app-bar>
 
         <v-navigation-drawer v-model="drawerOpen" app fixed temporary>
@@ -25,9 +28,12 @@
         name: 'lmAppBar',
 
         props: {
-            subPage: {
+            subPage:         {
                 type:    Boolean,
                 default: false,
+            },
+            extensionHeight: {
+                type: [Number, String],
             },
         },
 

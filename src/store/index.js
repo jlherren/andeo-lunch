@@ -131,6 +131,12 @@ export default new Vuex.Store({
         singleParticipations: {
             // Single participations by event ID and user ID.  Key format `${eventId}/${userId}`
         },
+
+        transactions: {
+            // Transactions by user ID
+
+            // TODO: Unload these again when not needed?  How to handle very old history to avoid memory pressure?
+        },
     },
 
     getters: {
@@ -152,6 +158,9 @@ export default new Vuex.Store({
         event:          state => eventId => state.events[eventId],
         participations: state => eventId => state.participations[eventId],
         participation:  state => (eventId, userId) => state.singleParticipations[`${eventId}/${userId}`],
+
+        // Transactions
+        transactions: state => userId => state.transactions[userId],
     },
 
     mutations: {
@@ -272,6 +281,15 @@ export default new Vuex.Store({
             if (response.status === 204) {
                 delete context.state.events[eventId];
             }
+        },
+
+        async fetchTransactions(context, {userId}) {
+            let response = await get(`/users/${userId}/transactions?with=eventName`);
+            let transactions = response.data.transactions;
+            for (let transactions of transactions) {
+                transactions.date = new Date(transactions.date);
+            }
+            Vue.set(context.state.transactions, userId, transactions);
         },
     },
 });
