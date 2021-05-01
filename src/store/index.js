@@ -2,6 +2,8 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import Axios from 'axios';
 import {ErrorService} from '@/services/errorService';
+import {setupCache} from 'axios-cache-adapter';
+import {serializeQuery} from 'axios-cache-adapter/src/cache';
 
 Vue.use(Vuex);
 
@@ -11,7 +13,21 @@ if (BACKEND_URL === undefined) {
     throw new Error('Missing backend URL, please create a .env.local file!');
 }
 
-let axios = Axios.create();
+const cache = setupCache({
+    maxAge:  15 * 1000,
+    exclude: {
+        query: false,
+    },
+    key(req) {
+        // For weird reasons, the default also serializes the post data, cause a POST to an url to not invalidate
+        // the GET for the same URL
+        return req.url + serializeQuery(req);
+    },
+});
+
+let axios = Axios.create({
+    adapter: cache.adapter,
+});
 
 /**
  * @param {object} config
