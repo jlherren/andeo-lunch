@@ -1,5 +1,6 @@
 dependencies:
   '@fontsource/roboto': 4.2.3
+  '@mdi/js': 5.9.55
   axios: 0.21.1
   core-js: 3.11.1
   vue: 2.6.12
@@ -1216,6 +1217,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-OfTtjoqB2doov5aTJxkyAMK8dXoo7CjCUQSYUEtiY34jbWduOGV7+168tmCT8COMsUEd5DMSFg/0iAOPCBTNAQ==
+  /@mdi/js/5.9.55:
+    dev: false
+    resolution:
+      integrity: sha512-BbeHMgeK2/vjdJIRnx12wvQ6s8xAYfvMmEAVsUx9b+7GiQGQ9Za8jpwp17dMKr9CgKRvemlAM4S7S3QOtEbp4A==
   /@mrmlnc/readdir-enhanced/2.2.1:
     dependencies:
       call-me-maybe: 1.0.1
@@ -11423,6 +11428,7 @@ packages:
       integrity: sha512-PQ2PC7R9rslx84ndNBZB/Dkv8V8fZEpk83RLgXtYd0fwUgEjseMn1Dgajh2x6S8QbZAFa9p2qVCEuYZNgve0dQ==
 specifiers:
   '@fontsource/roboto': ^4.2.3
+  '@mdi/js': ^5.9.55
   '@vue/cli': ^4.5.12
   '@vue/cli-plugin-babel': ^4.5.12
   '@vue/cli-plugin-vuex': ^4.5.12

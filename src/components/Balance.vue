@@ -61,10 +61,10 @@
                     return this.icon;
                 }
                 if (this.points) {
-                    return 'mdi-handshake';
+                    return this.$icons.points;
                 }
                 if (this.money) {
-                    return 'mdi-cash-multiple';
+                    return this.$icons.money;
                 }
                 return null;
             },

@@ -16,7 +16,7 @@
 
         <v-container v-if="entries.length === 0">
             <v-banner elevation="2" single-line>
-                <v-icon slot="icon">mdi-information</v-icon>
+                <v-icon slot="icon">{{ $icons.information }}</v-icon>
                 No upcoming events
             </v-banner>
         </v-container>

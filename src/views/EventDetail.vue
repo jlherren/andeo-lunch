@@ -4,10 +4,10 @@
             {{ event.name }}
             <template slot="buttons">
                 <v-btn icon @click="openEditDialog">
-                    <v-icon>mdi-pencil</v-icon>
+                    <v-icon>{{ $icons.edit }}</v-icon>
                 </v-btn>
                 <v-btn icon @click="openConfirmDelete">
-                    <v-icon>mdi-delete</v-icon>
+                    <v-icon>{{ $icons.delete }}</v-icon>
                 </v-btn>
             </template>
         </the-app-bar>
@@ -24,15 +24,15 @@
         </v-container>
 
         <v-container v-if="event.type !== 'label'">
-            <v-banner v-if="ownParticipationMissing" elevation="2" icon="mdi-alert-circle">
+            <v-banner v-if="ownParticipationMissing" elevation="2" :icon="$icons.alertCircle">
                 Make up your mind!
                 <template v-slot:actions>
                     <v-btn text color="error" class="ml-1" @click="optOut">
-                        <v-icon small left>mdi-cancel</v-icon>
+                        <v-icon small left>{{ $icons.optOut }}</v-icon>
                         Opt-out
                     </v-btn>
                     <v-btn text color="primary" @click="optIn">
-                        <v-icon small left>mdi-hamburger</v-icon>
+                        <v-icon small left>{{ $icons.omnivorous }}</v-icon>
                         Opt-in
                     </v-btn>
                 </template>
@@ -41,10 +41,10 @@
 
         <v-tabs fixed-tabs v-model="tab" v-if="event.type !== 'label'">
             <v-tab key="participations">
-                <v-icon>mdi-food-variant</v-icon>
+                <v-icon>{{ $icons.lunch }}</v-icon>
             </v-tab>
             <v-tab key="money">
-                <v-icon>mdi-cash-multiple</v-icon>
+                <v-icon>{{ $icons.money }}</v-icon>
             </v-tab>
         </v-tabs>
 
@@ -69,7 +69,7 @@
 
                 <v-container v-if="moneyProviders.length === 0">
                     <v-banner single-line>
-                        <v-icon slot="icon">mdi-information</v-icon>
+                        <v-icon slot="icon">{{ $icons.information }}</v-icon>
                         No buyers have been set.
                     </v-banner>
                 </v-container>

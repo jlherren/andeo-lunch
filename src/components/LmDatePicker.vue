@@ -2,7 +2,7 @@
     <v-dialog v-model="open" width="290px">
         <template v-slot:activator="{ on, attrs }">
             <v-text-field :label="label" :value="formatted" readonly
-                          append-icon="mdi-calendar"
+                          :append-icon="$icons.calendar"
                           v-bind="attrs" v-on="on" :rules="rules"
             />
         </template>

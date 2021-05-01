@@ -2,7 +2,7 @@
     <v-list>
         <v-list-item>
             <v-list-item-avatar color="primary">
-                <v-icon dark>mdi-account-circle</v-icon>
+                <v-icon dark>{{ $icons.accountCircle }}</v-icon>
             </v-list-item-avatar>
 
             <v-list-item-content>
@@ -17,7 +17,7 @@
 
         <v-list-item @click="openAboutDialog">
             <v-list-item-icon>
-                <v-icon>mdi-information</v-icon>
+                <v-icon>{{ $icons.information }}</v-icon>
             </v-list-item-icon>
             <v-list-item-content>
                 <v-list-item-title>About</v-list-item-title>
@@ -26,7 +26,7 @@
 
         <v-list-item @click.stop="logout">
             <v-list-item-icon>
-                <v-icon>mdi-logout</v-icon>
+                <v-icon>{{ $icons.logout }}</v-icon>
             </v-list-item-icon>
             <v-list-item-content>
                 <v-list-item-title>Logout</v-list-item-title>

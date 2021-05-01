@@ -28,15 +28,18 @@
 <script>
     export default {
         name: 'Login',
-        data: () => ({
-            formValid: false,
-            isBusy: false,
-            username: '',
-            password: '',
-            requiredRule: [
-                v => !!v,
-            ],
-        }),
+
+        data() {
+            return {
+                formValid:    false,
+                isBusy:       false,
+                username:     '',
+                password:     '',
+                requiredRule: [
+                    v => !!v,
+                ],
+            };
+        },
 
         methods: {
             async login() {

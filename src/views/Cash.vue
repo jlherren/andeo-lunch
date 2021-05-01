@@ -8,10 +8,10 @@
             <template v-slot:extension>
                 <v-tabs v-model="tab" align-with-title>
                     <v-tab>
-                        <v-icon size="18">mdi-handshake</v-icon>
+                        <v-icon size="18">{{ $icons.points }}</v-icon>
                     </v-tab>
                     <v-tab>
-                        <v-icon size="18">mdi-cash-multiple</v-icon>
+                        <v-icon size="18">{{ $icons.money }}</v-icon>
                     </v-tab>
                 </v-tabs>
             </template>

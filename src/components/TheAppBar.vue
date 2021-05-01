@@ -3,7 +3,7 @@
         <v-app-bar app :extension-height="extensionHeight">
             <v-app-bar-nav-icon @click="toggleDrawer" v-if="!subPage"/>
             <v-app-bar-nav-icon @click="goBack" v-if="subPage">
-                <v-icon>mdi-arrow-left</v-icon>
+                <v-icon>{{ $icons.arrowLeft }}</v-icon>
             </v-app-bar-nav-icon>
             <v-app-bar-title>
                 <slot/>
@@ -41,9 +41,11 @@
             },
         },
 
-        data: () => ({
-            drawerOpen: false,
-        }),
+        data() {
+            return {
+                drawerOpen: false,
+            };
+        },
 
         methods: {
             goBack() {

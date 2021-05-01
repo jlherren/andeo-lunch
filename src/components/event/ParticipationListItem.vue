@@ -15,14 +15,14 @@
                 </v-chip>
 
                 <v-chip small v-if="participation.credits.money > 0" class="mr-1">
-                    <v-icon small>mdi-cash-multiple</v-icon>
+                    <v-icon small>{{ $icons.money }}</v-icon>
                 </v-chip>
             </v-list-item-title>
         </v-list-item-content>
 
         <v-list-item-action>
             <v-btn icon @click="openDialog()">
-                <v-icon>mdi-pencil</v-icon>
+                <v-icon>{{ $icons.edit }}</v-icon>
             </v-btn>
         </v-list-item-action>
 
@@ -66,13 +66,13 @@
             bigIcon() {
                 switch (this.participation.type) {
                     case 'omnivorous':
-                        return 'mdi-hamburger';
+                        return this.$icons.omnivorous;
                     case 'vegetarian':
-                        return 'mdi-apple';
+                        return this.$icons.vegetarian;
                     case 'opt-out':
-                        return 'mdi-cancel';
+                        return this.$icons.optOut;
                     case 'undecided':
-                        return 'mdi-help-circle';
+                        return this.$icons.undecided;
                     default:
                         return null;
                 }

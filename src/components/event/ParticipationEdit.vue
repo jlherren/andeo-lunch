@@ -9,19 +9,19 @@
                 <v-col>
                     <v-btn-toggle v-model="type" mandatory :dense="breakpointSmall">
                         <v-btn value="omnivorous">
-                            <v-icon left>mdi-hamburger</v-icon>
+                            <v-icon left>{{ $icons.omnivorous }}</v-icon>
                             <span>Omni</span>
                         </v-btn>
                         <v-btn value="vegetarian">
-                            <v-icon left>mdi-apple</v-icon>
+                            <v-icon left>{{ $icons.vegetarian }}</v-icon>
                             <span>Vegi</span>
                         </v-btn>
                         <v-btn value="opt-out">
-                            <v-icon left>mdi-cancel</v-icon>
+                            <v-icon left>{{ $icons.optOut }}</v-icon>
                             <span>Out</span>
                         </v-btn>
                         <v-btn value="undecided">
-                            <v-icon left>mdi-help-circle</v-icon>
+                            <v-icon left>{{ $icons.undecided }}</v-icon>
                             <span>Undecided</span>
                         </v-btn>
                     </v-btn-toggle>

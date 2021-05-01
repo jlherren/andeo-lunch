@@ -2,7 +2,7 @@
     <div>
         <v-list-item @click="switchDialog">
             <v-list-item-icon>
-                <v-icon>mdi-cog</v-icon>
+                <v-icon>{{ $icons.cog }}</v-icon>
             </v-list-item-icon>
 
             <v-list-item-content>
@@ -14,7 +14,7 @@
             <v-card>
                 <v-app-bar fixed>
                     <v-btn color="error" @click="cancel" icon>
-                        <v-icon color="error">mdi-close</v-icon>
+                        <v-icon color="error">{{ $icons.close }}</v-icon>
                     </v-btn>
                     <v-toolbar-title>Einstellungen</v-toolbar-title>
                     <v-spacer/>

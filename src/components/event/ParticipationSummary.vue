@@ -2,10 +2,10 @@
     <span class="participants">
         <span class="total">{{ total }}</span>
         <span class="participants-details">
-            <v-icon>mdi-hamburger</v-icon>
+            <v-icon>{{ $icons.omnivorous }}</v-icon>
             {{ omnivorous }}
             <br>
-            <v-icon>mdi-food-apple</v-icon>
+            <v-icon>{{ $icons.vegetarian }}</v-icon>
             {{ vegetarian }}
         </span>
     </span>
@@ -48,11 +48,12 @@
     }
 
     .participants-details {
-        font-size: 12pt;
+        font-size: 16px;
         line-height: 100%;
 
         .v-icon {
-            font-size: inherit;
+            width: 16px;
+            height: 16px;
         }
     }
 

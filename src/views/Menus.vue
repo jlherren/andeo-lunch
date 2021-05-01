@@ -4,7 +4,7 @@
 
         <v-container>
             <v-banner elevation="2">
-                <v-icon slot="icon">mdi-alert</v-icon>
+                <v-icon slot="icon">{{ $icons.alert }}</v-icon>
                 Not implemented.  Recurring menus will appear here.
             </v-banner>
         </v-container>

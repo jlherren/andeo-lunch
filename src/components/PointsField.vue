@@ -2,10 +2,10 @@
     <v-text-field type="number" label="Points credited" :value="value" @input="input($event)" class="no-spinner">
         <template v-slot:append>
             <v-btn small icon @click="addPoints(-1)" :disabled="value <= 0">
-                <v-icon small>mdi-minus</v-icon>
+                <v-icon small>{{ $icons.minus }}</v-icon>
             </v-btn>
             <v-btn small icon @click="addPoints(1)">
-                <v-icon small>mdi-plus</v-icon>
+                <v-icon small>{{ $icons.plus }}</v-icon>
             </v-btn>
         </template>
     </v-text-field>

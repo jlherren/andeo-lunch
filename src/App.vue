@@ -50,31 +50,31 @@
             Login,
         },
 
-        data: () => ({
-            navigationLinks: [
-                {
-                    url:   '/',
-                    title: 'Home',
-                    icon:  'mdi-home',
-                },
-                {
-                    url:   '/calendar',
-                    title: 'Calendar',
-                    icon:  'mdi-calendar',
-                },
-                {
-                    url:   '/menus',
-                    title: 'Menus',
-                    icon:  'mdi-silverware',
-                },
-                {
-                    url:   '/cash',
-                    title: 'Cash',
-                    icon:  'mdi-cash',
-                },
-            ],
-            drawerOpen:      false,
-        }),
+        data() {
+            return {
+                navigationLinks: [
+                    {
+                        url:   '/',
+                        title: 'Home',
+                        icon:  this.$icons.home,
+                    }, {
+                        url:   '/calendar',
+                        title: 'Calendar',
+                        icon:  this.$icons.calendar,
+                    }, {
+                        url:   '/menus',
+                        title: 'Menus',
+                        icon:  this.$icons.silverware,
+                    },
+                    {
+                        url:   '/cash',
+                        title: 'Cash',
+                        icon:  this.$icons.cash,
+                    },
+                ],
+                drawerOpen:      false,
+            };
+        },
 
         computed: {
             ...mapGetters([
@@ -129,6 +129,12 @@
                 margin: 0;
             }
         }
+    }
+
+    // There is a rule ".v-avatar svg" that sets these to "inherit" for some reason
+    .v-avatar .v-icon__svg {
+        width: 24px;
+        height: 24px;
     }
 
     html {

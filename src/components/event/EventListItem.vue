@@ -12,9 +12,7 @@
             </v-list-item-content>
 
             <v-list-item-action v-if="undecidedParticipation">
-                <v-icon>
-                    mdi-alert-circle
-                </v-icon>
+                <v-icon>{{ $icons.alertCircle }}</v-icon>
             </v-list-item-action>
         </template>
 
@@ -33,9 +31,7 @@
             </v-list-item-content>
 
             <v-list-item-action v-if="undecidedParticipation">
-                <v-icon title="You have not decided yet!">
-                    mdi-alert-circle
-                </v-icon>
+                <v-icon title="You have not decided yet!">{{ $icons.alertCircle }}</v-icon>
             </v-list-item-action>
         </template>
     </v-list-item>
@@ -90,13 +86,13 @@
             icon() {
                 switch (this.event.type) {
                     case 'lunch':
-                        return 'mdi-food-variant';
+                        return this.$icons.lunch;
                     case 'event':
-                        return 'mdi-party-popper';
+                        return this.$icons.event;
                     case 'label':
-                        return 'mdi-label';
+                        return this.$icons.label;
                     default:
-                        return 'mdi-help-circle';
+                        return this.$icons.missingIcon;
                 }
             },
 

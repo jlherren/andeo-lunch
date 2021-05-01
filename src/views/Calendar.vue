@@ -4,10 +4,10 @@
             {{ title }}
             <template v-slot:buttons>
                 <v-btn icon @click="previousWeek">
-                    <v-icon>mdi-chevron-left</v-icon>
+                    <v-icon>{{ $icons.chevronLeft }}</v-icon>
                 </v-btn>
                 <v-btn icon @click="nextWeek">
-                    <v-icon>mdi-chevron-right</v-icon>
+                    <v-icon>{{ $icons.chevronRight }}</v-icon>
                 </v-btn>
             </template>
         </the-app-bar>
@@ -26,7 +26,7 @@
                     </v-list-item-content>
                     <v-list-item-action>
                         <v-btn icon @click="openCreateDialog('lunch', event.date)">
-                            <v-icon>mdi-plus</v-icon>
+                            <v-icon>{{ $icons.plus }}</v-icon>
                         </v-btn>
                     </v-list-item-action>
                 </v-list-item>
@@ -36,18 +36,18 @@
         <v-speed-dial v-model="speedDial" fixed bottom right direction="top" transition="slide-y-reverse-transition">
             <template slot="activator">
                 <v-btn fab v-model="speedDial" color="primary">
-                    <v-icon v-if="speedDial">mdi-close</v-icon>
-                    <v-icon v-else>mdi-plus</v-icon>
+                    <v-icon v-if="speedDial">{{ $icons.close }}</v-icon>
+                    <v-icon v-else>{{ $icons.plus }}</v-icon>
                 </v-btn>
             </template>
             <v-btn fab small color="primary" @click="openCreateDialog('lunch', null)">
-                <v-icon>mdi-food-variant</v-icon>
+                <v-icon>{{ $icons.lunch }}</v-icon>
             </v-btn>
             <v-btn fab small color="primary" @click="openCreateDialog('event', null)">
-                <v-icon>mdi-party-popper</v-icon>
+                <v-icon>{{ $icons.event }}</v-icon>
             </v-btn>
             <v-btn fab small color="primary" @click="openCreateDialog('label', null)">
-                <v-icon>mdi-label</v-icon>
+                <v-icon>{{ $icons.label }}</v-icon>
             </v-btn>
         </v-speed-dial>
 
