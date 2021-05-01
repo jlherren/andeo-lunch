@@ -53,7 +53,7 @@
                 if (!this.color) {
                     return '';
                 }
-                return this.value >= 0 ? 'positive' : 'negative';
+                return this.value >= 0 ? 'green--text' : 'red--text';
             },
 
             actualIcon() {
@@ -75,13 +75,5 @@
 <style scoped lang="scss">
     .v-icon {
         color: inherit;
-    }
-
-    .positive {
-        color: #43a047;
-    }
-
-    .negative {
-        color: #c62828;
     }
 </style>

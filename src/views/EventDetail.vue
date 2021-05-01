@@ -234,8 +234,7 @@
 
 <style scoped lang="scss">
     .costs {
-        //margin-left: 30px;
-        color: #C62828;
+        margin-top: 0.5ex;
         font-size: 28pt;
 
         .v-icon {

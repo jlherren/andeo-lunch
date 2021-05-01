@@ -94,6 +94,9 @@
         },
 
         mounted() {
+            // Restore dark mode setting
+            this.$vuetify.theme.dark = localStorage.getItem('dark-mode') === 'true';
+
             this.unregisterErrors = ErrorService.instance.register(error => {
                 this.$store.commit('globalSnackbar', `Error: ${error.message}`);
             });

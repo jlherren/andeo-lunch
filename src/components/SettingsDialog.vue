@@ -36,6 +36,7 @@
                             <h2>Sonstige </h2>
                             <v-checkbox v-model="settings.isVegetarian" dense label="Vegetarian"/>
                             <v-textarea v-model="settings.generalInfo" dense filled label="Default note on Opt-In"/>
+                            <v-switch :value="$vuetify.theme.dark" @change="toggleDarkMode" label="Use dark mode"/>
                         </v-container>
                     </v-form>
                 </v-main>
@@ -55,54 +56,65 @@
 
         data() {
             return {
-                open: false,
+                open:     false,
                 settings: {
-                    weekdays: {
-                        monday: false,
-                        tuesday: false,
+                    weekdays:     {
+                        monday:    false,
+                        tuesday:   false,
                         wednesday: false,
-                        thursday: false,
-                        friday: false
+                        thursday:  false,
+                        friday:    false,
                     },
                     isVegetarian: false,
-                    generalInfo: null
-                }
+                    generalInfo:  null,
+                },
             }
         },
+
         mounted() {
             this.setDialogSettingsToStoredSettings();
         },
+
         computed: {
             ...mapGetters({
-                storedSettings: 'settings'
-            })
+                storedSettings: 'settings',
+            }),
         },
+
         methods: {
             switchDialog() {
                 this.open = !this.open;
             },
+
             cancel() {
                 this.setDialogSettingsToStoredSettings();
                 this.switchDialog();
             },
+
             async saveSettings() {
                 await this.$store.commit('updateSettings', this.settings);
                 this.switchDialog();
             },
+
             setDialogSettingsToStoredSettings() {
                 this.settings = {
-                    weekdays: {
-                        monday: this.storedSettings.weekdays.monday,
-                        tuesday: this.storedSettings.weekdays.tuesday,
+                    weekdays:     {
+                        monday:    this.storedSettings.weekdays.monday,
+                        tuesday:   this.storedSettings.weekdays.tuesday,
                         wednesday: this.storedSettings.weekdays.wednesday,
-                        thursday: this.storedSettings.weekdays.thursday,
-                        friday: this.storedSettings.weekdays.friday
+                        thursday:  this.storedSettings.weekdays.thursday,
+                        friday:    this.storedSettings.weekdays.friday,
                     },
                     isVegetarian: this.storedSettings.isVegetarian,
-                    generalInfo: this.storedSettings.generalInfo
-                }
-            }
-        }
+                    generalInfo:  this.storedSettings.generalInfo,
+                };
+            },
+
+            toggleDarkMode() {
+                this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
+                localStorage.setItem('dark-mode', this.$vuetify.theme.dark ? 'true' : 'false');
+            },
+        },
     }
 </script>
 

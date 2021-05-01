@@ -123,18 +123,6 @@
         }
     }
 
-    .total {
-        font-size: 28pt;
-        color: #43a047;
-        margin: 0 0.25em;
-    }
-
-    .optIn {
-        .v-list-item__content, .v-chip {
-            color: black;
-        }
-    }
-
     .optOut {
         .v-list-item__content, .v-chip {
             // TODO: use text--secondary mixin?

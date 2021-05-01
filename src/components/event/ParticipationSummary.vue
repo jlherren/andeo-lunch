@@ -59,7 +59,10 @@
 
     .total {
         font-size: 28pt;
-        color: #43a047;
         margin: 0 0.25em;
+    }
+
+    .v-icon {
+        color: inherit;
     }
 </style>
