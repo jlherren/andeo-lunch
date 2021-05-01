@@ -23,11 +23,12 @@
             money:  Boolean,
             icon:   String,
 
-            digits:   {
+            digits:  {
                 type:    Number,
                 default: 2,
             },
-            precise:  Boolean,
+            precise: Boolean,
+            noSign:  Boolean,
         },
 
         computed: {
@@ -42,7 +43,7 @@
                 // Use a proper minus sign instead of a hyphen, it aligns much better with the plus symbol
                 // and is also the same width
                 str = str.replace('-', '\u2212');
-                if (this.value >= 0) {
+                if (!this.noSign && this.value >= 0) {
                     str = `+${str}`;
                 }
                 return str;

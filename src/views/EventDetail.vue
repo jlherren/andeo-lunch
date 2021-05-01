@@ -18,13 +18,13 @@
 
             <div class="costs" v-if="event.type !== 'label'">
                 <participation-summary :participations="participations"/>
-                <balance :value="event.costs.points" points large/>
-                <balance :value="event.costs.money" money large/>
+                <balance :value="event.costs.points" points large no-sign/>
+                <balance :value="event.costs.money" money large no-sign/>
             </div>
         </v-container>
 
         <v-container v-if="event.type !== 'label'">
-            <v-banner v-if="ownParticipationMissing" elevation="2" single-line icon="mdi-information">
+            <v-banner v-if="ownParticipationMissing" elevation="2" icon="mdi-alert-circle">
                 Make up your mind!
                 <template v-slot:actions>
                     <v-btn text color="error" class="ml-1" @click="optOut">
@@ -32,7 +32,7 @@
                         Opt-out
                     </v-btn>
                     <v-btn text color="primary" @click="optIn">
-                        <v-icon small left>mdi-check</v-icon>
+                        <v-icon small left>mdi-hamburger</v-icon>
                         Opt-in
                     </v-btn>
                 </template>

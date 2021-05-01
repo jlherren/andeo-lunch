@@ -1,7 +1,7 @@
 <template>
     <v-list-item :class="itemClass">
         <v-list-item-avatar>
-            <v-avatar :color="bigIconColor">
+            <v-avatar :color="bigIconColor" v-if="bigIcon !== null">
                 <v-icon dark>{{ bigIcon }}</v-icon>
             </v-avatar>
         </v-list-item-avatar>
@@ -74,7 +74,7 @@
                     case 'undecided':
                         return 'mdi-help-circle';
                     default:
-                        return 'mdi-alert-circle';
+                        return null;
                 }
             },
 

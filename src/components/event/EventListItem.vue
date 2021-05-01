@@ -13,7 +13,7 @@
 
             <v-list-item-action v-if="undecidedParticipation">
                 <v-icon>
-                    mdi-alert
+                    mdi-alert-circle
                 </v-icon>
             </v-list-item-action>
         </template>
@@ -34,7 +34,7 @@
 
             <v-list-item-action v-if="undecidedParticipation">
                 <v-icon title="You have not decided yet!">
-                    mdi-alert
+                    mdi-alert-circle
                 </v-icon>
             </v-list-item-action>
         </template>

@@ -50,7 +50,7 @@
 
                 <v-card-actions>
                     <v-spacer />
-                    <v-btn @click="aboutDialog = false">
+                    <v-btn text @click="aboutDialog = false">
                         Close
                     </v-btn>
                 </v-card-actions>

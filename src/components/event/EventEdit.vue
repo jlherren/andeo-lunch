@@ -1,15 +1,7 @@
 <template>
     <v-card>
         <v-form v-model="valid" :disabled="saving" @submit.prevent="save()" ref="form">
-            <v-card-title v-if="type === 'lunch'">
-                New lunch
-            </v-card-title>
-            <v-card-title v-else-if="type === 'label'">
-                New label
-            </v-card-title>
-            <v-card-title v-else>
-                New event
-            </v-card-title>
+            <v-card-title>{{ title }}</v-card-title>
 
             <v-card-text>
                 <v-text-field label="Name" v-model="name" :rules="nameRules" autofocus required/>
@@ -68,6 +60,21 @@
                 saving: false,
                 valid:  false,
             };
+        },
+
+        computed: {
+            title() {
+                return this.titlePrefix + ' ' + this.eventTypeName;
+            },
+
+            titlePrefix() {
+                return this.event?.id ? 'Edit' : 'New';
+            },
+
+            eventTypeName() {
+                // Internal types happen to coincide with english words
+                return this.event.type;
+            },
         },
 
         methods: {
