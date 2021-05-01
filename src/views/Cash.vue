@@ -17,7 +17,9 @@
             </template>
         </the-app-bar>
 
-        <v-virtual-scroll item-height="30" :items="transactions" ref="scroll">
+        <shy-progress v-if="loading"/>
+
+        <v-virtual-scroll item-height="30" :items="transactions" ref="scroll" v-if="!loading">
             <template v-slot:default="{item: transaction}">
                 <v-list-item :to="'/events/' + transaction.eventId" :key="transaction.id" :class="transaction.class">
                     <span>{{ formatDate(transaction.date) }}</span>
@@ -36,11 +38,13 @@
     import Balance from '@/components/Balance';
     import * as DateUtils from '@/utils/dateUtils';
     import Vue from 'vue';
+    import ShyProgress from '@/components/ShyProgress';
 
     export default {
         name: 'Cash',
 
         components: {
+            ShyProgress,
             Balance,
             TheAppBar,
             UserStats,
@@ -50,11 +54,13 @@
             return {
                 ownUserId: this.$store.getters.ownUserId,
                 tab:       0,
+                loading:   true,
             };
         },
 
         async created() {
             await this.$store.dispatch('fetchTransactions', {userId: this.ownUserId});
+            this.loading = false;
             this.scrollToBottom();
         },
 

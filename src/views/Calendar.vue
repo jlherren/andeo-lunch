@@ -12,9 +12,9 @@
             </template>
         </the-app-bar>
 
-        <v-progress-linear indeterminate absolute v-if="loading"></v-progress-linear>
+        <shy-progress v-if="loading"/>
 
-        <v-list>
+        <v-list v-if="!loading">
             <template v-for="event of entries">
                 <event-list-item :event="event" :key="event.id" v-if="event.type !== 'placeholder'"/>
 
@@ -63,6 +63,7 @@
     import EventEdit from '@/components/event/EventEdit';
     import * as DateUtils from '@/utils/dateUtils';
     import Vue from 'vue';
+    import ShyProgress from '@/components/ShyProgress';
 
     export default {
         name: 'Calendar',
@@ -71,6 +72,7 @@
             TheAppBar,
             EventListItem,
             EventEdit,
+            ShyProgress,
         },
 
         created() {

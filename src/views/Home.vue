@@ -7,14 +7,16 @@
             </template>
         </the-app-bar>
 
-        <v-list v-if="entries.length > 0">
+        <shy-progress v-if="loading"/>
+
+        <v-list v-if="!loading && entries.length > 0">
             <template v-for="(event, index) of entries">
                 <v-divider v-if="event.hasGap"/>
                 <event-list-item :event="event" :key="event.id" :prominent="index === 0"/>
             </template>
         </v-list>
 
-        <v-container v-if="entries.length === 0">
+        <v-container v-if="!loading && entries.length === 0">
             <v-banner elevation="2" single-line>
                 <v-icon slot="icon">{{ $icons.information }}</v-icon>
                 No upcoming events
@@ -29,6 +31,7 @@
     import {mapGetters} from 'vuex';
     import EventListItem from '@/components/event/EventListItem';
     import * as DateUtils from '@/utils/dateUtils';
+    import ShyProgress from '@/components/ShyProgress';
 
     export default {
         name: 'Home',
@@ -37,6 +40,7 @@
             TheAppBar,
             EventListItem,
             UserStats,
+            ShyProgress,
         },
 
         data() {
