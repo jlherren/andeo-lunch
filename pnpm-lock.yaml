@@ -1,4 +1,5 @@
 dependencies:
+  '@fontsource/roboto': 4.2.3
   axios: 0.21.1
   core-js: 3.11.1
   vue: 2.6.12
@@ -1164,6 +1165,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-RawydLgxbOPDlTLJNtoIypwdmAy//uQIzlKt2+iBiJaRlVuI6QLUxVAyWGNfOzp8Yu4L4lLIacoCyTNtpb4wiA==
+  /@fontsource/roboto/4.2.3:
+    dev: false
+    resolution:
+      integrity: sha512-lEnB089GcK3uU3d0MPjwYTUPZBhpKQ2HxvgC+0ib2ElJNISBoS3fHE2sKuZIcCeghWW0fX58OJrZiPgZ3essBg==
   /@hapi/address/2.1.4:
     deprecated: Moved to 'npm install @sideway/address'
     dev: true
@@ -11417,6 +11422,7 @@ packages:
     resolution:
       integrity: sha512-PQ2PC7R9rslx84ndNBZB/Dkv8V8fZEpk83RLgXtYd0fwUgEjseMn1Dgajh2x6S8QbZAFa9p2qVCEuYZNgve0dQ==
 specifiers:
+  '@fontsource/roboto': ^4.2.3
   '@vue/cli': ^4.5.12
   '@vue/cli-plugin-babel': ^4.5.12
   '@vue/cli-plugin-vuex': ^4.5.12

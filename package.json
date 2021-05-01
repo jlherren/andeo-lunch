@@ -9,6 +9,7 @@
         "ui": "vue ui"
     },
     "dependencies": {
+        "@fontsource/roboto": "^4.2.3",
         "axios": "^0.21.1",
         "core-js": "^3.11.1",
         "vue": "^2.6.12",
