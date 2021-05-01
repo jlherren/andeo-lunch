@@ -15,6 +15,7 @@ const configSchema = Joi.object({
         dialect: Joi.string().required(),
     }).unknown(true),
     port:        Joi.number().required().allow(null),
+    host:        Joi.string().allow(null),
     secret:      Joi.string().required().min(44).base64(),
     tokenExpiry: Joi.string().min(1).default('30 days'),
 }).unknown(true);

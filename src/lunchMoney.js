@@ -176,9 +176,9 @@ class LunchMoney {
      * @returns {Server}
      */
     listen() {
-        let {port} = this.options.config;
+        let {port, host} = this.options.config;
         // The port can be null to chose automatically
-        this.server = this.app.listen(port);
+        this.server = this.app.listen(port, host);
         return this.server;
     }
 
