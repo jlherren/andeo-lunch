@@ -5,7 +5,11 @@ import {ErrorService} from '@/services/errorService';
 
 Vue.use(Vuex);
 
-const BASE_URL = 'http://localhost:4000';
+const BACKEND_URL = process.env.VUE_APP_BACKEND_URL;
+
+if (BACKEND_URL === undefined) {
+    throw new Error('Missing backend URL, please create a .env.local file!');
+}
 
 let axios = Axios.create();
 
@@ -43,7 +47,7 @@ function processError(error) {
 async function get(url, config = {}) {
     addAuthorizationHeader(config);
     try {
-        return await axios.get(BASE_URL + url, config);
+        return await axios.get(BACKEND_URL + url, config);
     } catch (err) {
         processError(err);
         ErrorService.instance.onError(err);
@@ -62,7 +66,7 @@ async function get(url, config = {}) {
 async function post(url, data, config = {}) {
     addAuthorizationHeader(config);
     try {
-        return await axios.post(BASE_URL + url, data, config);
+        return await axios.post(BACKEND_URL + url, data, config);
     } catch (err) {
         processError(err);
         ErrorService.instance.onError(err);
@@ -80,7 +84,7 @@ async function post(url, data, config = {}) {
 async function delete_(url, config = {}) {
     addAuthorizationHeader(config);
     try {
-        return await axios.delete(BASE_URL + url, config);
+        return await axios.delete(BACKEND_URL + url, config);
     } catch (err) {
         processError(err);
         ErrorService.instance.onError(err);

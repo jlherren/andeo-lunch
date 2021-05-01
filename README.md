@@ -1,29 +1,34 @@
 # Lunch money frontend
 
-## Project setup
+## Install dependencies
 ```
 pnpm install
 ```
 
-### Compiles and hot-reloads for development
+## Configuration
+
+Create a file `.env.local` with this content:
+
+    VUE_APP_BACKEND_URL=http://127.0.0.1:3000
+
+Set it to wherever your backend is running.
+
+## Serve the app with hot-reloads for development
 ```
 pnpm run serve
 ```
 
-### Compiles and minifies for production
+## Compile for production
 ```
 pnpm run build
 ```
 
-### Run your tests
+## Run tests
 ```
 pnpm run test
 ```
 
-### Lints and fixes files
+## Lints and fixes files
 ```
 pnpm run lint
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
