@@ -136,6 +136,7 @@ class Transaction extends Model {
             userId:       this.user,
             contraUserId: this.contraUser,
             eventId:      this.event,
+            eventName:    this.Event && this.Event.name,
             currency:     Constants.CURRENCY_NAMES[this.currency],
             amount:       this.amount,
             balance:      this.balance,
@@ -215,7 +216,6 @@ exports.initModels = function initModels(sequelize) {
         currency:   {type: DataTypes.TINYINT, allowNull: false},
         amount:     {type: DataTypes.DOUBLE, allowNull: false},
         balance:    {type: DataTypes.DOUBLE, allowNull: false},
-        event:      {type: DataTypes.INTEGER, allowNull: false, references: {model: Event}},
     }, {
         sequelize,
         modelName: 'transaction',
@@ -226,6 +226,7 @@ exports.initModels = function initModels(sequelize) {
             },
         ],
     });
+    Transaction.belongsTo(Event, {foreignKey: 'event', as: 'Event'});
 
     Presence.init({
         user:  {type: DataTypes.INTEGER, allowNull: false, references: {model: User}},

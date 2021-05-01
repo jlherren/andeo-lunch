@@ -9,14 +9,15 @@ const Factory = require('./factory');
  */
 async function getUserTransactionLists(ctx) {
     let transactions = await Models.Transaction.findAll({
-        where: {
+        include: ctx.query.with === 'eventName' ? ['Event'] : [],
+        where:   {
             user: ctx.params.user,
         },
-        order: [
+        order:   [
             ['date', 'DESC'],
             ['id', 'DESC'],
         ],
-        limit: 1000,
+        limit:   1000,
     });
     transactions.reverse();
     ctx.body = {
