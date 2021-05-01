@@ -14,18 +14,17 @@
                         <v-icon size="18">mdi-cash-multiple</v-icon>
                     </v-tab>
                 </v-tabs>
-
             </template>
         </the-app-bar>
 
         <v-virtual-scroll item-height="25" :items="transactions" ref="scroll">
             <template v-slot:default="{item: transaction}">
-                <div :key="transaction.id" class="transaction" :class="transaction.class">
+                <v-list-item :to="'/events/' + transaction.eventId" :key="transaction.id" :class="transaction.class">
                     <span>{{ formatDate(transaction.date) }}</span>
                     <span>{{ transaction.eventName }}</span>
                     <balance :value="transaction.amount" precise small color/>
                     <balance :value="transaction.balance" precise small color/>
-                </div>
+                </v-list-item>
             </template>
         </v-virtual-scroll>
     </v-main>
@@ -97,9 +96,10 @@
         height: auto;
     }
 
-    .transaction {
+    .v-list-item {
         padding: 0.5ex 1em;
         height: 25px;
+        min-height: auto;
         display: flex;
         max-width: 800px;
         font-size: smaller;
@@ -122,6 +122,9 @@
         & > span:nth-child(3), & > span:nth-child(4) {
             flex: 0 0 20%;
             text-align: right;
+        }
+        & > span:nth-child(4) {
+            font-weight: bold;
         }
     }
 
