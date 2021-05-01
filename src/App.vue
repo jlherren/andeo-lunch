@@ -26,11 +26,11 @@
             <Login/>
         </template>
 
-        <v-snackbar v-model="errorSnackbarOpen" timeout="5000">
-            {{ errorSnackbarText }}
+        <v-snackbar :value="globalSnackbar !== null" @input="closeSnackbar" timeout="5000">
+            {{ globalSnackbar }}
 
             <template v-slot:action="{ attrs }">
-                <v-btn text v-bind="attrs" @click="errorSnackbarOpen = false">
+                <v-btn text v-bind="attrs" @click="closeSnackbar">
                     Close
                 </v-btn>
             </template>
@@ -51,7 +51,7 @@
         },
 
         data: () => ({
-            navigationLinks:   [
+            navigationLinks: [
                 {
                     url:   '/',
                     title: 'Home',
@@ -73,14 +73,13 @@
                     icon:  'mdi-cash',
                 },
             ],
-            drawerOpen:        false,
-            errorSnackbarOpen: false,
-            errorSnackbarText: null,
+            drawerOpen:      false,
         }),
 
         computed: {
             ...mapGetters([
                 'isLoggedIn',
+                'globalSnackbar',
             ]),
 
             initialCheckCompleted() {
@@ -89,15 +88,16 @@
         },
 
         methods: {
-            error(error) {
-                this.errorSnackbarOpen = true;
-                this.errorSnackbarText = `Error: ${error.message}`;
+            closeSnackbar() {
+                this.$store.commit('globalSnackbar', null);
             },
         },
 
         mounted() {
+            this.unregisterErrors = ErrorService.instance.register(error => {
+                this.$store.commit('globalSnackbar', `Error: ${error.message}`);
+            });
             this.$store.dispatch('checkLogin');
-            this.unregisterErrors = ErrorService.instance.register(this.error);
         },
 
         beforeDestroy() {

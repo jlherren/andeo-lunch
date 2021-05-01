@@ -94,6 +94,8 @@ async function delete_(url, config = {}) {
 
 export default new Vuex.Store({
     state: {
+        globalSnackbar: null,
+
         backendVersion:  'unknown',
         frontendVersion: 'unknown',
 
@@ -165,11 +167,17 @@ export default new Vuex.Store({
 
         // Transactions
         transactions: state => userId => state.transactions[userId],
+
+        globalSnackbar: state => state.globalSnackbar,
     },
 
     mutations: {
         updateSettings(state, newSettings) {
             state.account.user.settings = newSettings;
+        },
+
+        globalSnackbar(state, text) {
+            state.globalSnackbar = text;
         },
     },
 
@@ -192,6 +200,7 @@ export default new Vuex.Store({
         logout(context) {
             localStorage.removeItem('token');
             context.state.account.userId = null;
+            context.commit('globalSnackbar', 'You have been logged out');
         },
 
         async checkLogin(context) {
