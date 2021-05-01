@@ -113,7 +113,7 @@ export default new Vuex.Store({
         globalSnackbar: null,
 
         backendVersion:  'unknown',
-        frontendVersion: 'unknown',
+        frontendVersion: process.env.VUE_APP_VERSION,
 
         account: {
             initialCheckCompleted: false,
