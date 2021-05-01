@@ -7,7 +7,7 @@
         <v-card-text>
             <v-row>
                 <v-col>
-                    <v-btn-toggle v-model="type" mandatory dense>
+                    <v-btn-toggle v-model="type" mandatory :dense="breakpointSmall">
                         <v-btn value="omnivorous">
                             <v-icon left>mdi-hamburger</v-icon>
                             <span>Omni</span>
@@ -18,7 +18,7 @@
                         </v-btn>
                         <v-btn value="opt-out">
                             <v-icon left>mdi-cancel</v-icon>
-                            <span>Opt-out</span>
+                            <span>Out</span>
                         </v-btn>
                         <v-btn value="undecided">
                             <v-icon left>mdi-help-circle</v-icon>
@@ -76,6 +76,12 @@
             };
         },
 
+        computed: {
+            breakpointSmall() {
+                return this.$vuetify.breakpoint.name === 'xs';
+            },
+        },
+
         methods: {
             reset() {
                 Object.assign(this.$data, this.$options.data.apply(this))
@@ -110,3 +116,14 @@
         },
     };
 </script>
+
+<style scoped lang="scss">
+    .v-btn-toggle {
+        display: flex;
+        width: 100%;
+
+        .v-btn {
+            flex: 1 1 auto;
+        }
+    }
+</style>

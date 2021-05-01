@@ -17,7 +17,7 @@
             </template>
         </the-app-bar>
 
-        <v-virtual-scroll item-height="25" :items="transactions" ref="scroll">
+        <v-virtual-scroll item-height="30" :items="transactions" ref="scroll">
             <template v-slot:default="{item: transaction}">
                 <v-list-item :to="'/events/' + transaction.eventId" :key="transaction.id" :class="transaction.class">
                     <span>{{ formatDate(transaction.date) }}</span>
@@ -98,11 +98,10 @@
 
     .v-list-item {
         padding: 0.5ex 1em;
-        height: 25px;
+        height: 30px;
         min-height: auto;
         display: flex;
         max-width: 800px;
-        font-size: smaller;
 
         & > span {
             display: block;

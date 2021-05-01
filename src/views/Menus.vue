@@ -3,7 +3,7 @@
         <the-app-bar>Menus</the-app-bar>
 
         <v-container>
-            <v-banner single-line elevation="2">
+            <v-banner elevation="2">
                 <v-icon slot="icon">mdi-alert</v-icon>
                 Not implemented.  Recurring menus will appear here.
             </v-banner>
