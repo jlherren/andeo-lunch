@@ -1,2 +1,1 @@
-User-agent: *
-Disallow:
+# Avoid 404 errors.  Indexing is controlled by meta tags
