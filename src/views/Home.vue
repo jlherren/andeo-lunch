@@ -17,8 +17,7 @@
         </v-list>
 
         <v-container v-if="!loading && entries.length === 0">
-            <v-banner elevation="2" single-line>
-                <v-icon slot="icon">{{ $icons.information }}</v-icon>
+            <v-banner elevation="2" single-line :icon="$icons.information">
                 No upcoming events
             </v-banner>
         </v-container>

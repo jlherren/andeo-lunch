@@ -68,8 +68,7 @@
                 </v-list>
 
                 <v-container v-if="moneyProviders.length === 0">
-                    <v-banner single-line>
-                        <v-icon slot="icon">{{ $icons.information }}</v-icon>
+                    <v-banner single-line :icon="$icons.information">
                         No buyers have been set.
                     </v-banner>
                 </v-container>

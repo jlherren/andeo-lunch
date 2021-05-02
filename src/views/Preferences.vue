@@ -1,16 +1,16 @@
 <template>
     <div>
-        <v-list-item @click="switchDialog">
-            <v-list-item-icon>
-                <v-icon>{{ $icons.cog }}</v-icon>
-            </v-list-item-icon>
+<!--        <v-list-item @click="switchDialog">-->
+<!--            <v-list-item-icon>-->
+<!--                <v-icon>{{ $icons.cog }}</v-icon>-->
+<!--            </v-list-item-icon>-->
 
-            <v-list-item-content>
-                <v-list-item-title>Settings</v-list-item-title>
-            </v-list-item-content>
-        </v-list-item>
+<!--            <v-list-item-content>-->
+<!--                <v-list-item-title>Preferences</v-list-item-title>-->
+<!--            </v-list-item-content>-->
+<!--        </v-list-item>-->
 
-        <v-dialog v-model="open" fullscreen transition="scroll-x-transition">
+<!--        <v-dialog v-model="open" fullscreen transition="scroll-x-transition">-->
             <v-card>
                 <v-app-bar fixed>
                     <v-btn color="error" @click="cancel" icon>
@@ -41,7 +41,7 @@
                     </v-form>
                 </v-main>
             </v-card>
-        </v-dialog>
+<!--        </v-dialog>-->
     </div>
 </template>
 
@@ -49,7 +49,7 @@
     import {mapGetters} from 'vuex';
 
     export default {
-        name: 'SettingsDialog',
+        name: 'Preferences',
 
         props: {
         },

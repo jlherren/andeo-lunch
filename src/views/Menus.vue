@@ -3,8 +3,7 @@
         <the-app-bar>Menus</the-app-bar>
 
         <v-container>
-            <v-banner elevation="2">
-                <v-icon slot="icon">{{ $icons.alert }}</v-icon>
+            <v-banner elevation="2" :icon="$icons.alert">
                 Not implemented.  Recurring menus will appear here.
             </v-banner>
         </v-container>
