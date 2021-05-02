@@ -19,8 +19,8 @@
 
         <shy-progress v-if="loading"/>
 
-        <v-virtual-scroll item-height="30" :items="transactions" ref="scroll" v-if="!loading">
-            <template v-slot:default="{item: transaction}">
+        <v-virtual-scroll item-height="30" :items="transactions" ref="scroll">
+            <template v-slot:default="{item: transaction}" v-if="!loading">
                 <v-list-item :to="'/events/' + transaction.eventId" :key="transaction.id" :class="transaction.class">
                     <span>{{ formatDate(transaction.date) }}</span>
                     <span>{{ transaction.eventName }}</span>
@@ -61,7 +61,7 @@
         async created() {
             await this.$store.dispatch('fetchTransactions', {userId: this.ownUserId});
             this.loading = false;
-            this.scrollToBottom();
+            Vue.nextTick(() => this.scrollToBottom());
         },
 
         computed: {

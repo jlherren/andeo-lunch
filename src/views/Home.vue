@@ -11,7 +11,7 @@
 
         <v-list v-if="!loading && events.length > 0">
             <template v-for="event of events">
-                <v-divider v-if="event.hasGap" :key="event.id"/>
+                <v-divider v-if="event.hasGap" :key="event.id + '-divider'"/>
                 <event-list-item :event="event" :key="event.id" :prominent="event.prominent"/>
             </template>
         </v-list>
