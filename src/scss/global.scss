@@ -1,0 +1,10 @@
+// Since we disable the color pack, add back the only two colors we actually need
+.green--text {
+    color: #4CAF50 !important;
+    caret-color: #4CAF50 !important;
+}
+
+.red--text {
+    color: #F44336 !important;
+    caret-color: #F44336 !important;
+}
