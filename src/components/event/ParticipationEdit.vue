@@ -84,11 +84,11 @@
 
         methods: {
             reset() {
-                Object.assign(this.$data, this.$options.data.apply(this))
+                Object.assign(this.$data, this.$options.data.apply(this));
             },
 
             addPoints(increment) {
-                let points = parseInt(this.points) || 0;
+                let points = parseInt(`${this.points}`, 10) || 0;
                 points += increment;
                 if (points < 0) {
                     points = 0;
@@ -107,7 +107,7 @@
                     type:     this.type,
                     credits:  {
                         points: this.points,
-                        money: this.money,
+                        money:  this.money,
                     },
                 });
 

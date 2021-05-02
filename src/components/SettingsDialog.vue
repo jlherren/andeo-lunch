@@ -49,7 +49,7 @@
     import {mapGetters} from 'vuex';
 
     export default {
-        name: "SettingsDialog",
+        name: 'SettingsDialog',
 
         props: {
         },
@@ -68,7 +68,7 @@
                     isVegetarian: false,
                     generalInfo:  null,
                 },
-            }
+            };
         },
 
         mounted() {
@@ -115,7 +115,7 @@
                 localStorage.setItem('dark-mode', this.$vuetify.theme.dark ? 'true' : 'false');
             },
         },
-    }
+    };
 </script>
 
 <style scoped lang="scss">

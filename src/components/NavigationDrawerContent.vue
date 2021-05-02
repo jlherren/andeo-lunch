@@ -60,8 +60,8 @@
 </template>
 
 <script>
+    import SettingsDialog from '@/components/SettingsDialog';
     import {mapGetters} from 'vuex';
-    import SettingsDialog from './SettingsDialog';
 
     export default {
         name:       'navigationDrawerContent',
@@ -90,7 +90,9 @@
                 this.backendVersionLoading = true;
                 this.$store.dispatch('fetchBackendVersion')
                     .catch(() => null)
-                    .then(() => this.backendVersionLoading = false);
+                    .then(() => {
+                        this.backendVersionLoading = false;
+                    });
             },
         },
     };

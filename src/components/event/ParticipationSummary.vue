@@ -38,7 +38,7 @@
                 return this.optIns.length;
             },
         },
-    }
+    };
 </script>
 
 <style scoped lang="scss">

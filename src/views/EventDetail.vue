@@ -100,13 +100,13 @@
 </template>
 
 <script>
-    import TheAppBar from '@/components/TheAppBar';
-    import ParticipationSummary from '@/components/event/ParticipationSummary';
-    import ParticipationListItem from '@/components/event/ParticipationListItem';
+    import * as DateUtils from '@/utils/dateUtils';
     import Balance from '@/components/Balance';
     import EventEdit from '@/components/event/EventEdit';
+    import ParticipationListItem from '@/components/event/ParticipationListItem';
+    import ParticipationSummary from '@/components/event/ParticipationSummary';
+    import TheAppBar from '@/components/TheAppBar';
     import Vue from 'vue';
-    import * as DateUtils from '@/utils/dateUtils';
 
     const PASSIVE_TYPES = ['opt-out', 'undecided'];
 
@@ -166,9 +166,9 @@
 
             myParticipation() {
                 // User's own opt-out/undecided
-                let p = this.participations.filter(p => p.userId === this.ownUserId);
-                if (p.length > 0) {
-                    return p[0];
+                let participations = this.participations.filter(p => p.userId === this.ownUserId);
+                if (participations.length > 0) {
+                    return participations[0];
                 }
                 // Participation is missing, fake it
                 return {

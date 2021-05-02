@@ -58,12 +58,12 @@
 </template>
 
 <script>
-    import TheAppBar from '@/components/TheAppBar';
-    import EventListItem from '@/components/event/EventListItem';
-    import EventEdit from '@/components/event/EventEdit';
     import * as DateUtils from '@/utils/dateUtils';
-    import Vue from 'vue';
+    import EventEdit from '@/components/event/EventEdit';
+    import EventListItem from '@/components/event/EventListItem';
     import ShyProgress from '@/components/ShyProgress';
+    import TheAppBar from '@/components/TheAppBar';
+    import Vue from 'vue';
 
     export default {
         name: 'Calendar',
@@ -97,7 +97,8 @@
 
         computed: {
             title() {
-                return 'Week of ' + DateUtils.displayFormat(this.startDate);
+                let formatted = DateUtils.displayFormat(this.startDate);
+                return `Week of ${formatted}`;
             },
 
             entries() {
@@ -108,7 +109,6 @@
 
                 // Add placeholders for missing weekdays
                 let weekdaysWithLunchOrLabel = new Array(7).fill(false);
-                let lastWeekDayWithEvent = 0;
                 for (let event of events) {
                     if (['lunch', 'label'].includes(event.type)) {
                         weekdaysWithLunchOrLabel[event.date.getDay()] = true;
@@ -119,7 +119,7 @@
                         let date = DateUtils.addDays(this.startDate, i - 1);
                         date.setHours(12, 0, 0, 0);
                         events.push({
-                            id: `placeholder-${i}`,
+                            id:   `placeholder-${i}`,
                             date: date,
                             type: 'placeholder',
                         });
@@ -141,7 +141,7 @@
                     this.loading = true;
                     let params = {
                         from: this.startDate,
-                        to: this.endDate,
+                        to:   this.endDate,
                     };
                     await this.$store.dispatch('fetchEvents', params);
                 } finally {
@@ -150,13 +150,13 @@
             },
 
             previousWeek() {
-                let newDate = DateUtils.addDays(this.startDate, -7)
-                this.$router.push('/calendar/' + DateUtils.isoDate(newDate));
+                let newDate = DateUtils.addDays(this.startDate, -7);
+                this.$router.push(`/calendar/${DateUtils.isoDate(newDate)}`);
             },
 
             nextWeek() {
-                let newDate = DateUtils.addDays(this.startDate, 7)
-                this.$router.push('/calendar/' + DateUtils.isoDate(newDate));
+                let newDate = DateUtils.addDays(this.startDate, 7);
+                this.$router.push(`/calendar/${DateUtils.isoDate(newDate)}`);
             },
 
             openCreateDialog(type, date) {

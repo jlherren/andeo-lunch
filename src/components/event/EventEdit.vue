@@ -26,16 +26,14 @@
 </template>
 
 <script>
-    import TheAppBar from '@/components/TheAppBar';
+    import * as DateUtils from '@/utils/dateUtils';
     import LmDatePicker from '@/components/LmDatePicker';
     import PointsField from '@/components/PointsField';
-    import * as DateUtils from '@/utils/dateUtils';
 
     export default {
         name: 'EventEdit',
 
         components: {
-            TheAppBar,
             LmDatePicker,
             PointsField,
         },
@@ -64,7 +62,7 @@
 
         computed: {
             title() {
-                return this.titlePrefix + ' ' + this.eventTypeName;
+                return `${this.titlePrefix} ${this.eventTypeName}`;
             },
 
             titlePrefix() {
@@ -100,7 +98,7 @@
                     };
                     if (this.event?.id) {
                         data.id = this.event?.id;
-                    }else {
+                    } else {
                         data.type = this.type;
                     }
                     if (this.type !== 'label') {

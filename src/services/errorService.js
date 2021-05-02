@@ -17,7 +17,7 @@ export class ErrorService {
      * Register an error handler.  Returns a function to unregister again.
      *
      * @param {function(error: Error)} callback
-     * @return {function()}
+     * @returns {function()}
      */
     register(callback) {
         let id = this.nextId++;

@@ -23,7 +23,7 @@
 
         methods: {
             validate(value) {
-                return parseInt('' + value) || 0;
+                return parseInt(`${value}`, 10) || 0;
             },
 
             addPoints(increment) {

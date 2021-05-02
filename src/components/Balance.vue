@@ -34,11 +34,12 @@
         computed: {
             formatted() {
                 if (this.value === undefined || this.value === null) {
-                    return '\u2013';  // n-dash
+                    // n-dash
+                    return '\u2013';
                 }
                 let str = this.value.toFixed(this.digits);
                 if (!this.precise) {
-                    str = str.replace(/\.0*$/, '');
+                    str = str.replace(/\.0*$/u, '');
                 }
                 // Use a proper minus sign instead of a hyphen, it aligns much better with the plus symbol
                 // and is also the same width

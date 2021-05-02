@@ -38,7 +38,6 @@
 </template>
 
 <script>
-    import Balance from '@/components/Balance';
     import * as DateUtils from '@/utils/dateUtils';
     import ParticipationSummary from '@/components/event/ParticipationSummary';
 
@@ -47,7 +46,6 @@
 
         components: {
             ParticipationSummary,
-            Balance,
         },
 
         props: {
@@ -69,7 +67,7 @@
         },
 
         watch: {
-            prominent(value, old) {
+            prominent() {
                 this.reload();
             },
         },

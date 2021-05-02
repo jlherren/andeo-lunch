@@ -19,18 +19,18 @@
         props: {
             value: String,
             label: {
-                type: String,
+                type:    String,
                 default: 'Date',
             },
             required: {
-                type: Boolean,
+                type:    Boolean,
                 default: false,
             },
         },
 
         data() {
             return {
-                open: false,
+                open:  false,
                 rules: [
                     v => this.required && !!v || 'A date is required',
                 ],
@@ -52,7 +52,7 @@
             update(value) {
                 this.open = false;
                 this.$emit('input', value);
-            }
-        }
+            },
+        },
     };
 </script>

@@ -39,9 +39,9 @@
 </template>
 
 <script>
-    import Login from './views/Login';
-    import {mapGetters} from 'vuex';
     import {ErrorService} from '@/services/errorService';
+    import Login from '@/views/Login';
+    import {mapGetters} from 'vuex';
 
     export default {
         name: 'App',
@@ -57,11 +57,13 @@
                         url:   '/',
                         title: 'Home',
                         icon:  this.$icons.home,
-                    }, {
+                    },
+                    {
                         url:   '/calendar',
                         title: 'Calendar',
                         icon:  this.$icons.calendar,
-                    }, {
+                    },
+                    {
                         url:   '/menus',
                         title: 'Menus',
                         icon:  this.$icons.silverware,

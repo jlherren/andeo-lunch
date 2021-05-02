@@ -33,8 +33,8 @@
 </template>
 
 <script>
-    import ParticipationEdit from '@/components/event/ParticipationEdit';
     import Balance from '@/components/Balance';
+    import ParticipationEdit from '@/components/event/ParticipationEdit';
     import Vue from 'vue';
 
     export default {

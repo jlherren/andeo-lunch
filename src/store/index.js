@@ -1,9 +1,9 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
 import Axios from 'axios';
 import {ErrorService} from '@/services/errorService';
-import {setupCache} from 'axios-cache-adapter';
+import Vue from 'vue';
+import Vuex from 'vuex';
 import {serializeQuery} from 'axios-cache-adapter/src/cache';
+import {setupCache} from 'axios-cache-adapter';
 
 Vue.use(Vuex);
 
@@ -43,6 +43,7 @@ function addAuthorizationHeader(config) {
 
 /**
  * Process an Axios thrown error to contain a better error message
+ *
  * @param {Error} error
  */
 function processError(error) {
@@ -58,7 +59,7 @@ function processError(error) {
  *
  * @param {string} url
  * @param {object} config
- * @return {Promise<AxiosResponse<any>>}
+ * @returns {Promise<AxiosResponse<any>>}
  */
 async function get(url, config = {}) {
     addAuthorizationHeader(config);
@@ -77,7 +78,7 @@ async function get(url, config = {}) {
  * @param {string} url
  * @param {object} data
  * @param {object} config
- * @return {Promise<AxiosResponse<any>>}
+ * @returns {Promise<AxiosResponse<any>>}
  */
 async function post(url, data, config = {}) {
     addAuthorizationHeader(config);
@@ -95,9 +96,9 @@ async function post(url, data, config = {}) {
  *
  * @param {string} url
  * @param {object} config
- * @return {Promise<AxiosResponse<any>>}
+ * @returns {Promise<AxiosResponse<any>>}
  */
-async function delete_(url, config = {}) {
+async function delete0(url, config = {}) {
     addAuthorizationHeader(config);
     try {
         return await axios.delete(BACKEND_URL + url, config);
@@ -275,7 +276,7 @@ export default new Vuex.Store({
             let config = {validateStatus: status => status >= 200 && status < 300 || status === 404};
             let response = await get(`/events/${eventId}/participations/${userId}`, config);
             if (response.status === 404) {
-                return null;
+                return;
             }
             let participation = response.data.participation;
             Vue.set(context.state.singleParticipations, `${eventId}/${userId}`, participation);
@@ -296,9 +297,9 @@ export default new Vuex.Store({
 
             if (!data.id) {
                 let {location} = response.headers;
-                let match = location.match(/^\/events\/(\d+)$/);
+                let match = location.match(/^\/events\/(?<id>\d+)$/u);
                 if (match) {
-                    await context.dispatch('fetchEvent', {eventId: match[1]});
+                    await context.dispatch('fetchEvent', {eventId: match.groups.id});
                 }
             } else {
                 await context.dispatch('fetchEvent', {eventId: data.id});
@@ -306,7 +307,7 @@ export default new Vuex.Store({
         },
 
         async deleteEvent(context, {eventId}) {
-            let response = await delete_(`/events/${eventId}`);
+            let response = await delete0(`/events/${eventId}`);
             if (response.status === 204) {
                 delete context.state.events[eventId];
             }
@@ -315,8 +316,8 @@ export default new Vuex.Store({
         async fetchTransactions(context, {userId}) {
             let response = await get(`/users/${userId}/transactions?with=eventName`);
             let transactions = response.data.transactions;
-            for (let transactions of transactions) {
-                transactions.date = new Date(transactions.date);
+            for (let transaction of transactions) {
+                transaction.date = new Date(transaction.date);
             }
             Vue.set(context.state.transactions, userId, transactions);
         },

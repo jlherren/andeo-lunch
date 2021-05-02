@@ -11,7 +11,7 @@
 
         <v-list v-if="!loading && entries.length > 0">
             <template v-for="(event, index) of entries">
-                <v-divider v-if="event.hasGap"/>
+                <v-divider v-if="event.hasGap" :key="event.id"/>
                 <event-list-item :event="event" :key="event.id" :prominent="index === 0"/>
             </template>
         </v-list>
@@ -26,12 +26,12 @@
 </template>
 
 <script>
-    import UserStats from '@/components/UserStats';
-    import TheAppBar from '@/components/TheAppBar';
-    import {mapGetters} from 'vuex';
-    import EventListItem from '@/components/event/EventListItem';
     import * as DateUtils from '@/utils/dateUtils';
+    import EventListItem from '@/components/event/EventListItem';
     import ShyProgress from '@/components/ShyProgress';
+    import TheAppBar from '@/components/TheAppBar';
+    import UserStats from '@/components/UserStats';
+    import {mapGetters} from 'vuex';
 
     export default {
         name: 'Home',
@@ -72,9 +72,9 @@
                 // Add information about divider lines
                 let prev = null;
                 for (let event of events) {
-                    event.hasGap = prev !== null
-                                   && !DateUtils.isSameDays(prev.date, event.date)
-                                   && !DateUtils.isSuccessiveDays(prev.date, event.date);
+                    event.hasGap = prev !== null &&
+                        !DateUtils.isSameDays(prev.date, event.date) &&
+                        !DateUtils.isSuccessiveDays(prev.date, event.date);
                     prev = event;
                 }
 
@@ -98,6 +98,6 @@
                     this.loading = false;
                 }
             },
-        }
+        },
     };
 </script>

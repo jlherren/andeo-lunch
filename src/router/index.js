@@ -1,10 +1,10 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
-import Home from '@/views/Home.vue';
 import Calendar from '@/views/Calendar.vue';
-import Menus from '@/views/Menus.vue';
 import Cash from '@/views/Cash.vue';
 import EventDetail from '@/views/EventDetail';
+import Home from '@/views/Home.vue';
+import Menus from '@/views/Menus.vue';
+import Vue from 'vue';
+import VueRouter from 'vue-router';
 
 Vue.use(VueRouter);
 

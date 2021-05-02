@@ -6,8 +6,8 @@
 </template>
 
 <script>
-    import {mapGetters} from 'vuex';
     import Balance from '@/components/Balance';
+    import {mapGetters} from 'vuex';
 
     export default {
         name:       'userStats',

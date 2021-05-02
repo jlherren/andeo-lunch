@@ -10,7 +10,7 @@
  * Get the midnight preceding (or on) the given date
  *
  * @param {Date} date
- * @return {Date}
+ * @returns {Date}
  */
 export function previousMidnight(date) {
     date = new Date(date.getTime());
@@ -38,7 +38,7 @@ export function previousMonday(date) {
  *
  * @param {Date} date
  * @param {number} days
- * @return {Date}
+ * @returns {Date}
  */
 export function addDays(date, days) {
     // Note: It doesn't work to simply add 7 * 24 * 60 * 60 to the timestamp, since that wouldn't be correct during
@@ -55,18 +55,19 @@ export function addDays(date, days) {
  * Format a date in a sensible displayFormat for disaypling
  *
  * @param {Date} date
- * @return {string}
+ * @returns {string}
  */
 export function displayFormat(date) {
-    return date.toLocaleDateString(undefined, {weekday: 'short'})
-           + ', ' + date.toLocaleDateString(undefined, {dateStyle: 'medium'});
+    let weekday = date.toLocaleDateString(undefined, {weekday: 'short'});
+    let formattedDate = date.toLocaleDateString(undefined, {dateStyle: 'medium'});
+    return `${weekday}, ${formattedDate}`;
 }
 
 /**
  * Format as ISO date string in local time zone
  *
  * @param {Date} date
- * @return {string}
+ * @returns {string}
  */
 export function isoDate(date) {
     let year = date.getUTCFullYear();
@@ -81,7 +82,7 @@ export function isoDate(date) {
  * @param {Date} date1
  * @param {Date} date2
  *
- * @return {boolean}
+ * @returns {boolean}
  */
 export function isSuccessiveDays(date1, date2) {
     return addDays(date1, 1).getTime() === previousMidnight(date2).getTime();
@@ -93,7 +94,7 @@ export function isSuccessiveDays(date1, date2) {
  * @param {Date} date1
  * @param {Date} date2
  *
- * @return {boolean}
+ * @returns {boolean}
  */
 export function isSameDays(date1, date2) {
     return previousMidnight(date1).getTime() === previousMidnight(date2).getTime();
@@ -101,7 +102,7 @@ export function isSameDays(date1, date2) {
 
 /**
  * @param {Date} date
- * @return {boolean}
+ * @returns {boolean}
  */
 export function isToday(date) {
     return previousMidnight(date).getTime() === previousMidnight(new Date()).getTime();

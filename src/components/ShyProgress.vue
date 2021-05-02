@@ -19,7 +19,9 @@
         },
 
         mounted() {
-            setTimeout(() => this.show = true, 50);
+            setTimeout(() => {
+                this.show = true;
+            }, 50);
         },
     };
 </script>

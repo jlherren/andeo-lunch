@@ -33,12 +33,12 @@
 </template>
 
 <script>
-    import UserStats from '../components/UserStats';
-    import TheAppBar from '@/components/TheAppBar';
-    import Balance from '@/components/Balance';
     import * as DateUtils from '@/utils/dateUtils';
-    import Vue from 'vue';
+    import Balance from '@/components/Balance';
     import ShyProgress from '@/components/ShyProgress';
+    import TheAppBar from '@/components/TheAppBar';
+    import UserStats from '@/components/UserStats';
+    import Vue from 'vue';
 
     export default {
         name: 'Cash',
@@ -69,7 +69,12 @@
                 let currency = ['points', 'money'][this.tab];
                 let transactions = this.$store.getters.transactions(this.ownUserId) || [];
                 return transactions.filter(t => t.currency === currency)
-                                   .map((t, i) => ({...t, class: i % 2 ? 'odd' : null}));
+                    .map((t, i) => {
+                        return {
+                            ...t,
+                            class: i % 2 ? 'odd' : null,
+                        };
+                    });
             },
         },
 
