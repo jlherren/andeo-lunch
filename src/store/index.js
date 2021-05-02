@@ -1,113 +1,9 @@
-import Axios from 'axios';
-import {ErrorService} from '@/services/errorService';
+import Backend from '@/store/backend';
+import Cache from '@/store/cache';
 import Vue from 'vue';
 import Vuex from 'vuex';
-import {serializeQuery} from 'axios-cache-adapter/src/cache';
-import {setupCache} from 'axios-cache-adapter';
 
 Vue.use(Vuex);
-
-const BACKEND_URL = process.env.VUE_APP_BACKEND_URL;
-
-if (BACKEND_URL === undefined) {
-    throw new Error('Missing backend URL, please create a .env.local file!');
-}
-
-const cache = setupCache({
-    maxAge:  15 * 1000,
-    exclude: {
-        query: false,
-    },
-    key(req) {
-        // For weird reasons, the default also serializes the post data, cause a POST to an url to not invalidate
-        // the GET for the same URL
-        return req.url + serializeQuery(req);
-    },
-});
-
-let axios = Axios.create({
-    adapter: cache.adapter,
-});
-
-/**
- * @param {object} config
- */
-function addAuthorizationHeader(config) {
-    let token = localStorage.getItem('token');
-    // TODO: Validate the token locally before sending it?
-    if (token !== null) {
-        config.headers ??= {};
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-}
-
-/**
- * Process an Axios thrown error to contain a better error message
- *
- * @param {Error} error
- */
-function processError(error) {
-    let message = error?.response?.data;
-    if (message) {
-        // These error statuses are known to contain meaningful messages in the body
-        error.message = message;
-    }
-}
-
-/**
- * Send an authenticated (if possible) GET request
- *
- * @param {string} url
- * @param {object} config
- * @returns {Promise<AxiosResponse<any>>}
- */
-async function get(url, config = {}) {
-    addAuthorizationHeader(config);
-    try {
-        return await axios.get(BACKEND_URL + url, config);
-    } catch (err) {
-        processError(err);
-        ErrorService.instance.onError(err);
-        throw err;
-    }
-}
-
-/**
- * Send an authenticated (if possible) POST request
- *
- * @param {string} url
- * @param {object} data
- * @param {object} config
- * @returns {Promise<AxiosResponse<any>>}
- */
-async function post(url, data, config = {}) {
-    addAuthorizationHeader(config);
-    try {
-        return await axios.post(BACKEND_URL + url, data, config);
-    } catch (err) {
-        processError(err);
-        ErrorService.instance.onError(err);
-        throw err;
-    }
-}
-
-/**
- * Send an authenticated (if possible) DELETE request
- *
- * @param {string} url
- * @param {object} config
- * @returns {Promise<AxiosResponse<any>>}
- */
-async function delete0(url, config = {}) {
-    addAuthorizationHeader(config);
-    try {
-        return await axios.delete(BACKEND_URL + url, config);
-    } catch (err) {
-        processError(err);
-        ErrorService.instance.onError(err);
-        throw err;
-    }
-}
 
 export default new Vuex.Store({
     state: {
@@ -200,15 +96,17 @@ export default new Vuex.Store({
 
     actions: {
         // System information
-        async fetchBackendVersion(context) {
-            context.state.backendVersion = 'unknown';
-            let response = await get('/version');
-            context.state.backendVersion = response.data.version;
+        fetchBackendVersion(context) {
+            return Cache.ifNotFresh('system', 'version', 60000, async () => {
+                context.state.backendVersion = 'unknown';
+                let response = await Backend.get('/version');
+                context.state.backendVersion = response.data.version;
+            });
         },
 
         // Account
         async login(context, data) {
-            let response = await post('/account/login', data);
+            let response = await Backend.post('/account/login', data);
             localStorage.setItem('token', response.data.token);
             context.state.account.userId = response.data.userId;
             await context.dispatch('fetchUser', {userId: response.data.userId});
@@ -221,7 +119,7 @@ export default new Vuex.Store({
         },
 
         async checkLogin(context) {
-            let response = await get('/account/check');
+            let response = await Backend.get('/account/check');
             let userId = response.data.userId;
 
             if (userId !== null) {
@@ -235,56 +133,75 @@ export default new Vuex.Store({
         },
 
         // Users
-        async fetchUser(context, {userId}) {
-            let response = await get(`/users/${userId}`);
-            let user = response.data.user;
-            Vue.set(context.state.users, user.id, user);
+        fetchUser(context, {userId}) {
+            return Cache.ifNotFresh('user', userId, 10000, async () => {
+                let response = await Backend.get(`/users/${userId}`);
+                let user = response.data.user;
+                Vue.set(context.state.users, user.id, user);
+            });
         },
 
         // Events
-        async fetchEvents(context, params) {
-            let response = await get('/events', {params});
-            for (let event of response.data.events) {
-                event.date = new Date(event.date);
-                Vue.set(context.state.events, event.id, event);
-            }
+        fetchEvents(context, params) {
+            return Cache.ifNotFresh('events', JSON.stringify(params), 10000, async () => {
+                let response = await Backend.get('/events', {params});
+                for (let event of response.data.events) {
+                    event.date = new Date(event.date);
+                    Vue.set(context.state.events, event.id, event);
+                }
+            });
         },
 
-        async fetchEvent(context, {eventId}) {
-            let response = await get(`/events/${eventId}`);
-            let event = response.data.event;
-            event.date = new Date(event.date);
-            Vue.set(context.state.events, event.id, event);
-            return event;
+        fetchEvent(context, {eventId}) {
+            return Cache.ifNotFresh('event', eventId, 10000, async () => {
+                let response = await Backend.get(`/events/${eventId}`);
+                let event = response.data.event;
+                event.date = new Date(event.date);
+                Vue.set(context.state.events, event.id, event);
+            });
         },
 
         async fetchParticipations(context, {eventId}) {
-            let response = await get(`/events/${eventId}/participations`);
-            let participations = response.data.participations;
-            Vue.set(context.state.participations, eventId, participations);
+            await Cache.ifNotFresh('participations', eventId, 10000, async () => {
+                let response = await Backend.get(`/events/${eventId}/participations`);
+                let participations = response.data.participations;
+                Vue.set(context.state.participations, eventId, participations);
 
-            for (let participation of participations) {
-                Vue.set(context.state.singleParticipations, `${eventId}/${participation.userId}`, participation);
-            }
+                for (let participation of participations) {
+                    let key = `${eventId}/${participation.userId}`;
+                    Cache.validate('participation', key);
+                    Vue.set(context.state.singleParticipations, key, participation);
+                }
+            });
 
-            let promises = participations.map(p => context.dispatch('fetchUser', {userId: p.userId}));
+            let promises = context.state.participations[eventId].map(p => context.dispatch('fetchUser', {userId: p.userId}));
             await Promise.all(promises);
         },
 
         async fetchSingleParticipation(context, {eventId, userId}) {
-            // Don't show an error if there is no participation
-            let config = {validateStatus: status => status >= 200 && status < 300 || status === 404};
-            let response = await get(`/events/${eventId}/participations/${userId}`, config);
-            if (response.status === 404) {
-                return;
-            }
-            let participation = response.data.participation;
-            Vue.set(context.state.singleParticipations, `${eventId}/${userId}`, participation);
+            let key = `${eventId}/${userId}`;
+            await Cache.ifNotFresh('participation', key, 10000, async () => {
+                // Don't show an error if there is no participation
+                let config = {
+                    validateStatus: status => status >= 200 && status < 300 || status === 404,
+                };
+                let response = await Backend.get(`/events/${eventId}/participations/${userId}`, config);
+                if (response.status === 404) {
+                    // Note that negative answers will also be cached
+                    return;
+                }
+                let participation = response.data.participation;
+                Vue.set(context.state.singleParticipations, `${eventId}/${userId}`, participation);
+            });
+
             await context.dispatch('fetchUser', {userId});
         },
 
         async saveParticipation(context, {eventId, userId, ...data}) {
-            await post(`/events/${eventId}/participations/${userId}`, data);
+            await Backend.post(`/events/${eventId}/participations/${userId}`, data);
+            Cache.invalidate('event', eventId);
+            Cache.invalidate('participations', eventId);
+            Cache.invalidate('participation', `${eventId}/${userId}`);
             await Promise.all([
                 context.dispatch('fetchEvent', {eventId}),
                 context.dispatch('fetchParticipations', {eventId}),
@@ -293,33 +210,41 @@ export default new Vuex.Store({
 
         async saveEvent(context, data) {
             let url = data.id ? `/events/${data.id}` : '/events';
-            let response = await post(url, {...data, id: undefined});
+            let response = await Backend.post(url, {...data, id: undefined});
 
             if (!data.id) {
                 let {location} = response.headers;
                 let match = location.match(/^\/events\/(?<id>\d+)$/u);
                 if (match) {
+                    Cache.invalidate('event', match.groups.id);
                     await context.dispatch('fetchEvent', {eventId: match.groups.id});
                 }
             } else {
+                Cache.invalidate('event', data.id);
                 await context.dispatch('fetchEvent', {eventId: data.id});
             }
+
+            Cache.invalidate('events');
         },
 
         async deleteEvent(context, {eventId}) {
-            let response = await delete0(`/events/${eventId}`);
+            let response = await Backend.delete(`/events/${eventId}`);
             if (response.status === 204) {
                 delete context.state.events[eventId];
+                Cache.invalidate('event', eventId);
+                Cache.invalidate('events');
             }
         },
 
-        async fetchTransactions(context, {userId}) {
-            let response = await get(`/users/${userId}/transactions?with=eventName`);
-            let transactions = response.data.transactions;
-            for (let transaction of transactions) {
-                transaction.date = new Date(transaction.date);
-            }
-            Vue.set(context.state.transactions, userId, transactions);
+        fetchTransactions(context, {userId}) {
+            return Cache.ifNotFresh('transactions', userId, 10000, async () => {
+                let response = await Backend.get(`/users/${userId}/transactions?with=eventName`);
+                let transactions = response.data.transactions;
+                for (let transaction of transactions) {
+                    transaction.date = new Date(transaction.date);
+                }
+                Vue.set(context.state.transactions, userId, transactions);
+            });
         },
     },
 });

@@ -14,7 +14,6 @@
         "@fontsource/roboto": "^4.2.3",
         "@mdi/js": "^5.9.55",
         "axios": "^0.21.1",
-        "axios-cache-adapter": "^2.7.3",
         "core-js": "^3.11.1",
         "register-service-worker": "^1.7.1",
         "vue": "^2.6.12",

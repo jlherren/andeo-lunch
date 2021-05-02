@@ -2,7 +2,6 @@ dependencies:
   '@fontsource/roboto': 4.2.3
   '@mdi/js': 5.9.55
   axios: 0.21.1
-  axios-cache-adapter: 2.7.3_axios@0.21.1
   core-js: 3.11.1
   register-service-worker: 1.7.2
   vue: 2.6.12
@@ -3015,16 +3014,6 @@ packages:
     dev: true
     resolution:
       integrity: sha512-wMHVg2EOHaMRxbzgFJ9gtjOOCrI80OHLG14rxi28XwOW8ux6IiEbRCGGGqCtdAIg4FQCbW20k9RsT4y3gJlFug==
-  /axios-cache-adapter/2.7.3_axios@0.21.1:
-    dependencies:
-      axios: 0.21.1
-      cache-control-esm: 1.0.0
-      md5: 2.3.0
-    dev: false
-    peerDependencies:
-      axios: ~0.21.1
-    resolution:
-      integrity: sha512-A+ZKJ9lhpjthOEp4Z3QR/a9xC4du1ALaAsejgRGrH9ef6kSDxdFrhRpulqsh9khsEnwXxGfgpUuDp1YXMNMEiQ==
   /axios/0.21.1:
     dependencies:
       follow-redirects: 1.10.0
@@ -3536,10 +3525,6 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha512-AKcdTnFSWATd5/GCPRxr2ChwIJ85CeyrEyjRHlKxQ56d4XJMGym0uAiKn0xbLOGOl3+yRpOTi484dVCEc5AUzQ==
-  /cache-control-esm/1.0.0:
-    dev: false
-    resolution:
-      integrity: sha512-Fa3UV4+eIk4EOih8FTV6EEsVKO0W5XWtNs6FC3InTfVz+EjurjPfDXY5wZDo/lxjDxg5RjNcurLyxEJBcEUx9g==
   /cache-loader/4.1.0_webpack@4.41.6:
     dependencies:
       buffer-json: 2.0.0
@@ -3723,10 +3708,6 @@ packages:
     dev: true
     resolution:
       integrity: sha512-mT8iDcrh03qDGRRmoA2hmBJnxpllMR+0/0qlzjqZES6NdiWDcZkCNAk4rPFZ9Q85r27unkiNNg8ZOiwZXBHwcA==
-  /charenc/0.0.2:
-    dev: false
-    resolution:
-      integrity: sha1-wKHS86cJLgN3S/qD8UwPxXkKhmc=
   /check-types/8.0.3:
     dev: true
     resolution:
@@ -4314,10 +4295,6 @@ packages:
       node: '>= 8'
     resolution:
       integrity: sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==
-  /crypt/0.0.2:
-    dev: false
-    resolution:
-      integrity: sha1-iNf/fsDfuG9xPch7u0LQRNPmxBs=
   /crypto-browserify/3.12.0:
     dependencies:
       browserify-cipher: 1.0.1
@@ -7216,6 +7193,7 @@ packages:
     resolution:
       integrity: sha512-a7Uprx8UtD+HWdyYwnD1+ExtTgqQtD2k/1yJgtXP6wnMm8byhkoTZRl+95LLThpzNZJ5aEvi46cdH+ayMFRwmA==
   /is-buffer/1.1.6:
+    dev: true
     resolution:
       integrity: sha512-NcdALwpXkTm5Zvvbk7owOUSvVvBKDgKP5/ewfXEznmQFfs4ZRmanOeKBTjRVjka3QFoN6XJ+9F3USqfHqTaU5w==
   /is-callable/1.1.5:
@@ -8152,14 +8130,6 @@ packages:
     dev: true
     resolution:
       integrity: sha512-xitP+WxNPcTTOgnTJcrhM0xvdPepipPSf3I8EIpGKeFLjt3PlJLIDG3u8EX53ZIubkb+5U2+3rELYpEhHhzdkg==
-  /md5/2.3.0:
-    dependencies:
-      charenc: 0.0.2
-      crypt: 0.0.2
-      is-buffer: 1.1.6
-    dev: false
-    resolution:
-      integrity: sha512-T1GITYmFaKuO91vxyoQMFETst+O71VUPEU3ze5GNzDm0OWdP8v1ziTaAEPUr/3kLsY3Sftgz242A1SetQiDL7g==
   /mdn-data/2.0.4:
     dev: true
     resolution:
@@ -13053,7 +13023,6 @@ specifiers:
   '@vue/cli-service': ^4.5.12
   '@vue/eslint-config-standard': ^5.1.2
   axios: ^0.21.1
-  axios-cache-adapter: ^2.7.3
   babel-eslint: ^10.1.0
   core-js: ^3.11.1
   eslint: ^6.7.2
