@@ -96,7 +96,7 @@ export function isSuccessiveDays(date1, date2) {
  *
  * @returns {boolean}
  */
-export function isSameDays(date1, date2) {
+export function isSameDay(date1, date2) {
     return previousMidnight(date1).getTime() === previousMidnight(date2).getTime();
 }
 
