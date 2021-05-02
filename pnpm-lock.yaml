@@ -4,6 +4,7 @@ dependencies:
   axios: 0.21.1
   axios-cache-adapter: 2.7.3_axios@0.21.1
   core-js: 3.11.1
+  register-service-worker: 1.7.2
   vue: 2.6.12
   vue-router: 3.5.1
   vuetify: 2.4.11_vue@2.6.12
@@ -12,6 +13,7 @@ devDependencies:
   '@vue/cli': 4.5.12
   '@vue/cli-plugin-babel': 4.5.12_08f6923167e8915a6e44610899c9e3f1
   '@vue/cli-plugin-eslint': 4.5.12_a4e2821700611585788803bb4b60ff1c
+  '@vue/cli-plugin-pwa': 4.5.12_@vue+cli-service@4.5.12
   '@vue/cli-plugin-vuex': 4.5.12_@vue+cli-service@4.5.12
   '@vue/cli-service': 4.5.12_2b5375fc995d0c06aae5598768556701
   '@vue/eslint-config-standard': 5.1.2_6a05f004e3f105138d422c6167aece92
@@ -1149,6 +1151,12 @@ packages:
     dev: true
     resolution:
       integrity: sha512-NCdgJEelPTSh+FEFylhnP1ylq848l1z9t9N0j1Lfbcw0+KXGjsTvUmkxy+voLLXB5SOKMbLLx4jxYliGrYQseA==
+  /@babel/runtime/7.14.0:
+    dependencies:
+      regenerator-runtime: 0.13.7
+    dev: true
+    resolution:
+      integrity: sha512-JELkvo/DlpNdJ7dlyw/eY7E0suy5i5GQH+Vlxaq1nsNJ+H7f4Vtv3jMeCEgRhZZQFXTjldYfQgv2qmM6M1v5wA==
   /@babel/template/7.12.13:
     dependencies:
       '@babel/code-frame': 7.12.13
@@ -1801,6 +1809,17 @@ packages:
       eslint: '>= 1.6.0 < 7.0.0'
     resolution:
       integrity: sha512-nbjGJkWxo/xdD32DwvnEAUwkWYsObpqNk9NuU7T62ehdzHPzz58o3j03YZ7a7T7Le8bYyOWMYsdNfz63F+XiZQ==
+  /@vue/cli-plugin-pwa/4.5.12_@vue+cli-service@4.5.12:
+    dependencies:
+      '@vue/cli-service': 4.5.12_2b5375fc995d0c06aae5598768556701
+      '@vue/cli-shared-utils': 4.5.12
+      webpack: 4.46.0_webpack@4.46.0
+      workbox-webpack-plugin: 4.3.1_webpack@4.46.0
+    dev: true
+    peerDependencies:
+      '@vue/cli-service': ^3.0.0 || ^4.0.0-0
+    resolution:
+      integrity: sha512-B8da8oHaBZHtt44skmwFRzYTqclyD4tk9JaZp9uV4J26fsz+hzbSbB1araUPkSP3eql4LBD1TTadvyY4jfo8jQ==
   /@vue/cli-plugin-router/4.5.12_@vue+cli-service@4.5.12:
     dependencies:
       '@vue/cli-service': 4.5.12_2b5375fc995d0c06aae5598768556701
@@ -3037,6 +3056,14 @@ packages:
       eslint: '>= 4.12.1'
     resolution:
       integrity: sha512-ifWaTHQ0ce+448CYop8AdrQiBsGrnC+bMgfyKFdi6EsPLTAWG+QfyDeM6OH+FmWnKvEq5NnBMLvlBUPKQZoDSg==
+  /babel-extract-comments/1.0.0:
+    dependencies:
+      babylon: 6.18.0
+    dev: true
+    engines:
+      node: '>=4'
+    resolution:
+      integrity: sha512-qWWzi4TlddohA91bFwgt6zO/J0X+io7Qp184Fw0m2JYRSTZnJbFR8+07KmzudHCZgOiKRCrjhylwv9Xd8gfhVQ==
   /babel-loader/8.2.2_06ed565f9fcc7f209d51d9bc2e9cca78:
     dependencies:
       '@babel/core': 7.13.16_@babel+core@7.13.16
@@ -3089,6 +3116,29 @@ packages:
       '@babel/core': ^7.0.0-0
     resolution:
       integrity: sha512-J7vKbCuD2Xi/eEHxquHN14bXAW9CXtecwuLrOIDJtcZzTaPzV1VdEfoUf9AzcRBMolKUQKM9/GVojeh0hFiqMg==
+  /babel-plugin-syntax-object-rest-spread/6.13.0:
+    dev: true
+    resolution:
+      integrity: sha1-/WU28rzhODb/o6VFjEkDpZe7O/U=
+  /babel-plugin-transform-object-rest-spread/6.26.0:
+    dependencies:
+      babel-plugin-syntax-object-rest-spread: 6.13.0
+      babel-runtime: 6.26.0
+    dev: true
+    resolution:
+      integrity: sha1-DzZpLVD+9rfi1LOsFHgTepY7ewY=
+  /babel-runtime/6.26.0:
+    dependencies:
+      core-js: 2.6.12
+      regenerator-runtime: 0.11.1
+    dev: true
+    resolution:
+      integrity: sha1-llxwWGaOgrVde/4E/yM3vItWR/4=
+  /babylon/6.18.0:
+    dev: true
+    hasBin: true
+    resolution:
+      integrity: sha512-q/UEjfGJ2Cm3oKV71DJz9d25TPnq5rhBVL2Q4fA5wcC3jcrdn7+SssEybFIxwAvvP+YCsCYNKughoF33GxgycQ==
   /backo2/1.0.2:
     dev: true
     resolution:
@@ -4006,6 +4056,12 @@ packages:
       node: '>= 10.0.0'
     resolution:
       integrity: sha512-RePCE4leIhBlmrqiYTvaqEeGYg7qpSl4etaIabKtdOQVi+mSTIBBklGUwIr79GXYnl3LpMwmDw4KeR2stNc6FA==
+  /common-tags/1.8.0:
+    dev: true
+    engines:
+      node: '>=4.0.0'
+    resolution:
+      integrity: sha512-6P6g0uetGpW/sdyUy/iQQCbFF0kWVMSIVSyYz7Zgjcgh8mgw8PQzDNZeyZ5DQ2gM7LBoZPHmnjz8rUthkBG5tw==
   /commondir/1.0.1:
     dev: true
     resolution:
@@ -4166,6 +4222,12 @@ packages:
     dev: true
     resolution:
       integrity: sha512-IGHnpuaM1N++gLSPI1F1wu3WXICPxSyj/Q++clcwsIOnUVp5uKUIPl/+6h0TQ112KU3fMiSxqJuM+OrCyKj5+A==
+  /core-js/2.6.12:
+    deprecated: 'core-js@<3.3 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Please, upgrade your dependencies to the actual version of core-js.'
+    dev: true
+    requiresBuild: true
+    resolution:
+      integrity: sha512-Kb2wC0fvsWfQrgk8HU5lW6U/Lcs8+9aaYcy4ZFc6DDlo4nZ7n70dEgE5rtR0oG6ufKDUnrwfWL1mXR5ljDatrQ==
   /core-js/3.11.1:
     requiresBuild: true
     resolution:
@@ -6076,6 +6138,14 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha1-mC1ok6+RjnLQjeyehnP/K1qNat0=
+  /fs-extra/4.0.3:
+    dependencies:
+      graceful-fs: 4.2.6
+      jsonfile: 4.0.0
+      universalify: 0.1.2
+    dev: true
+    resolution:
+      integrity: sha512-q6rbdDd1o2mAnQreO7YADIxf/Whx4AHBiRf6d+/cVT8h44ss+lHgxf1FemcqDnQt9X3ct4McHr+JMGlYSsK7Cg==
   /fs-extra/7.0.1:
     dependencies:
       graceful-fs: 4.2.6
@@ -6195,6 +6265,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-kWZrnVM42QCiEA2Ig1bG8zjoIMOgxWwYCEeNdwY6Tv/cOSeGpcoX4pXHfKUxNKVoArnrEr2e9srnAxxGIraS9Q==
+  /get-own-enumerable-property-symbols/3.0.2:
+    dev: true
+    resolution:
+      integrity: sha512-I0UBV/XOz1XkIJHEUDMZAbzCThU/H8DxmSfmdGcKPnVhu2VfFqr34jr9777IyaTYvxjedWhqVIilEDsCdP5G6g==
   /get-proxy/2.1.0:
     dependencies:
       npm-conf: 1.1.3
@@ -7327,6 +7401,12 @@ packages:
       node: '>=0.12.0'
     resolution:
       integrity: sha512-41Cifkg6e8TylSpdtTpeLVMqvSBEVzTttHvERD741+pnZ8ANv0004MRL43QKPDlK9cGvNp6NZWZUBlbGXYxxng==
+  /is-obj/1.0.1:
+    dev: true
+    engines:
+      node: '>=0.10.0'
+    resolution:
+      integrity: sha1-PkcprB9f3gJc19g6iW2rn09n2w8=
   /is-obj/2.0.0:
     dev: true
     engines:
@@ -7404,6 +7484,12 @@ packages:
       node: '>= 0.4'
     resolution:
       integrity: sha512-axvdhb5pdhEVThqJzYXwMlVuZwC+FF2DpcOhTS+y/8jVq4trxyPgfcwIxIKiyeuLlSQYKkmUaPQJ8ZE4yNKXDg==
+  /is-regexp/1.0.0:
+    dev: true
+    engines:
+      node: '>=0.10.0'
+    resolution:
+      integrity: sha1-/S2INUXEa6xaYz57mgnof6LLUGk=
   /is-resolvable/1.1.0:
     dev: true
     resolution:
@@ -7645,6 +7731,12 @@ packages:
     dev: true
     resolution:
       integrity: sha1-nbe1lJatPzz+8wp1FC0tkwrXJlE=
+  /json-stable-stringify/1.0.1:
+    dependencies:
+      jsonify: 0.0.0
+    dev: true
+    resolution:
+      integrity: sha1-mnWdOcXy/1A/1TAGRu1EX4jE+a8=
   /json-stringify-safe/5.0.1:
     dev: true
     resolution:
@@ -7680,6 +7772,10 @@ packages:
       graceful-fs: 4.2.6
     resolution:
       integrity: sha1-h3Gq4HmbZAdrdmQPygWPnBDjPss=
+  /jsonify/0.0.0:
+    dev: true
+    resolution:
+      integrity: sha1-LHS27kHZPKUbe1qu6PUDYx0lKnM=
   /jsprim/1.4.1:
     dependencies:
       assert-plus: 1.0.0
@@ -7858,6 +7954,10 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-t7hw9pI+WvuwNJXwk5zVHpyhIqzg2qTlklJOf0mVxGSbe3Fp2VieZcduNYjaLDoy6p9uGpQEGWG87WpMKlNq8g==
+  /lodash._reinterpolate/3.0.0:
+    dev: true
+    resolution:
+      integrity: sha1-DM8tiRZq8Ds2Y8eWU4t1rG4RTZ0=
   /lodash.clonedeep/4.5.0:
     dev: true
     resolution:
@@ -7890,6 +7990,19 @@ packages:
     dev: true
     resolution:
       integrity: sha1-7dFMgk4sycHgsKG0K7UhBRakJDg=
+  /lodash.template/4.5.0:
+    dependencies:
+      lodash._reinterpolate: 3.0.0
+      lodash.templatesettings: 4.2.0
+    dev: true
+    resolution:
+      integrity: sha512-84vYFxIkmidUiFxidA/KjjH9pAycqW+h980j7Fuz5qxRtO9pgB7MDFTdys1N7A5mcucRiDyEq4fusljItR1T/A==
+  /lodash.templatesettings/4.2.0:
+    dependencies:
+      lodash._reinterpolate: 3.0.0
+    dev: true
+    resolution:
+      integrity: sha512-stgLz+i3Aa9mZgnjr/O+v9ruKZsPsndy7qPZOchbqk2cnTU1ZaldKK+v7m54WoKIyxiuMZTKT2H81F8BeAc3ZQ==
   /lodash.transform/4.6.0:
     dev: true
     resolution:
@@ -9784,6 +9897,12 @@ packages:
     optional: true
     resolution:
       integrity: sha512-s7PoyDv/II1ObgQunCbB9PdLmUcBZcnWOcxDh7O0N/UwDEsHyqkW+Qh28jW+mVuCdx7gLB0BotYI1Y6uI9iyew==
+  /pretty-bytes/5.6.0:
+    dev: true
+    engines:
+      node: '>=6'
+    resolution:
+      integrity: sha512-FFw039TmrBqFK8ma/7OL3sDz/VytdtJr044/QUJtH0wK9lb9jLq9tJyIxUwtQJHwar2BqtiA4iCWSwo9JLkzFg==
   /pretty-error/2.1.1:
     dependencies:
       renderkid: 2.0.3
@@ -10151,6 +10270,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-1G6jJVDWrt0rK99kBjvEtziZNCICAuvIPkSiUFIQxVP06RCVpq3dmDo2oi6ABpYaDYaTRr67BEhL8r1wgEZZKg==
+  /regenerator-runtime/0.11.1:
+    dev: true
+    resolution:
+      integrity: sha512-MguG95oij0fC3QV3URf4V2SDYGJhJnJGqvIIgdECeODCT98wSWDAJ94SSuVpYQUoTcGUIL6L4yNB7j1DFFHSBg==
   /regenerator-runtime/0.13.7:
     dev: true
     resolution:
@@ -10210,6 +10333,10 @@ packages:
       node: '>=0.1.14'
     resolution:
       integrity: sha512-9YXf6xtW+qzQ+hcMQXx95MOvfqXFgsKDZodX3qZB0x2n5Z94ioetIITsBtvJbiOyxa/6s9AtyweBLCdPmPko/w==
+  /register-service-worker/1.7.2:
+    dev: false
+    resolution:
+      integrity: sha512-CiD3ZSanZqcMPRhtfct5K9f7i3OLCcBBWsJjLh1gW9RO/nS94sVzY59iS+fgYBOBqaBpf4EzfqUF3j9IG+xo8A==
   /regjsgen/0.5.1:
     dev: true
     resolution:
@@ -11225,6 +11352,16 @@ packages:
     dev: true
     resolution:
       integrity: sha512-hkRX8U1WjJFd8LsDJ2yQ/wWWxaopEsABU1XfkM8A+j0+85JAGppt16cr1Whg6KIbb4okU6Mql6BOj+uup/wKeA==
+  /stringify-object/3.3.0:
+    dependencies:
+      get-own-enumerable-property-symbols: 3.0.2
+      is-obj: 1.0.1
+      is-regexp: 1.0.0
+    dev: true
+    engines:
+      node: '>=4'
+    resolution:
+      integrity: sha512-rHqiFh1elqCQ9WPLIC8I0Q/g/wj5J1eMkyoiD6eoQApWHP0FtlK7rqnhmabL5VUY9JQCcqwwvlOaSuutekgyrw==
   /strip-ansi/3.0.1:
     dependencies:
       ansi-regex: 2.1.1
@@ -11271,6 +11408,15 @@ packages:
       node: '>=4'
     resolution:
       integrity: sha1-IzTBjpx1n3vdVv3vfprj1YjmjtM=
+  /strip-comments/1.0.2:
+    dependencies:
+      babel-extract-comments: 1.0.0
+      babel-plugin-transform-object-rest-spread: 6.26.0
+    dev: true
+    engines:
+      node: '>=4'
+    resolution:
+      integrity: sha512-kL97alc47hoyIQSV165tTt9rG5dn4w1dNnBhOQ3bOU1Nc1hel09jnXANaHJ7vzHLd4Ju8kseDGzlev96pghLFw==
   /strip-dirs/2.1.0:
     dependencies:
       is-natural-number: 4.0.1
@@ -12540,6 +12686,132 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha512-Hz/mrNwitNRh/HUAtM/VT/5VH+ygD6DV7mYKZAtHOrbs8U7lvPS6xf7EJKMF0uW1KJCl0H701g3ZGus+muE5vQ==
+  /workbox-background-sync/4.3.1:
+    dependencies:
+      workbox-core: 4.3.1
+    dev: true
+    resolution:
+      integrity: sha512-1uFkvU8JXi7L7fCHVBEEnc3asPpiAL33kO495UMcD5+arew9IbKW2rV5lpzhoWcm/qhGB89YfO4PmB/0hQwPRg==
+  /workbox-broadcast-update/4.3.1:
+    dependencies:
+      workbox-core: 4.3.1
+    dev: true
+    resolution:
+      integrity: sha512-MTSfgzIljpKLTBPROo4IpKjESD86pPFlZwlvVG32Kb70hW+aob4Jxpblud8EhNb1/L5m43DUM4q7C+W6eQMMbA==
+  /workbox-build/4.3.1:
+    dependencies:
+      '@babel/runtime': 7.14.0
+      '@hapi/joi': 15.1.1
+      common-tags: 1.8.0
+      fs-extra: 4.0.3
+      glob: 7.1.6
+      lodash.template: 4.5.0
+      pretty-bytes: 5.6.0
+      stringify-object: 3.3.0
+      strip-comments: 1.0.2
+      workbox-background-sync: 4.3.1
+      workbox-broadcast-update: 4.3.1
+      workbox-cacheable-response: 4.3.1
+      workbox-core: 4.3.1
+      workbox-expiration: 4.3.1
+      workbox-google-analytics: 4.3.1
+      workbox-navigation-preload: 4.3.1
+      workbox-precaching: 4.3.1
+      workbox-range-requests: 4.3.1
+      workbox-routing: 4.3.1
+      workbox-strategies: 4.3.1
+      workbox-streams: 4.3.1
+      workbox-sw: 4.3.1
+      workbox-window: 4.3.1
+    dev: true
+    engines:
+      node: '>=4.0.0'
+    resolution:
+      integrity: sha512-UHdwrN3FrDvicM3AqJS/J07X0KXj67R8Cg0waq1MKEOqzo89ap6zh6LmaLnRAjpB+bDIz+7OlPye9iii9KBnxw==
+  /workbox-cacheable-response/4.3.1:
+    dependencies:
+      workbox-core: 4.3.1
+    dev: true
+    resolution:
+      integrity: sha512-Rp5qlzm6z8IOvnQNkCdO9qrDgDpoPNguovs0H8C+wswLuPgSzSp9p2afb5maUt9R1uTIwOXrVQMmPfPypv+npw==
+  /workbox-core/4.3.1:
+    dev: true
+    resolution:
+      integrity: sha512-I3C9jlLmMKPxAC1t0ExCq+QoAMd0vAAHULEgRZ7kieCdUd919n53WC0AfvokHNwqRhGn+tIIj7vcb5duCjs2Kg==
+  /workbox-expiration/4.3.1:
+    dependencies:
+      workbox-core: 4.3.1
+    dev: true
+    resolution:
+      integrity: sha512-vsJLhgQsQouv9m0rpbXubT5jw0jMQdjpkum0uT+d9tTwhXcEZks7qLfQ9dGSaufTD2eimxbUOJfWLbNQpIDMPw==
+  /workbox-google-analytics/4.3.1:
+    dependencies:
+      workbox-background-sync: 4.3.1
+      workbox-core: 4.3.1
+      workbox-routing: 4.3.1
+      workbox-strategies: 4.3.1
+    dev: true
+    resolution:
+      integrity: sha512-xzCjAoKuOb55CBSwQrbyWBKqp35yg1vw9ohIlU2wTy06ZrYfJ8rKochb1MSGlnoBfXGWss3UPzxR5QL5guIFdg==
+  /workbox-navigation-preload/4.3.1:
+    dependencies:
+      workbox-core: 4.3.1
+    dev: true
+    resolution:
+      integrity: sha512-K076n3oFHYp16/C+F8CwrRqD25GitA6Rkd6+qAmLmMv1QHPI2jfDwYqrytOfKfYq42bYtW8Pr21ejZX7GvALOw==
+  /workbox-precaching/4.3.1:
+    dependencies:
+      workbox-core: 4.3.1
+    dev: true
+    resolution:
+      integrity: sha512-piSg/2csPoIi/vPpp48t1q5JLYjMkmg5gsXBQkh/QYapCdVwwmKlU9mHdmy52KsDGIjVaqEUMFvEzn2LRaigqQ==
+  /workbox-range-requests/4.3.1:
+    dependencies:
+      workbox-core: 4.3.1
+    dev: true
+    resolution:
+      integrity: sha512-S+HhL9+iTFypJZ/yQSl/x2Bf5pWnbXdd3j57xnb0V60FW1LVn9LRZkPtneODklzYuFZv7qK6riZ5BNyc0R0jZA==
+  /workbox-routing/4.3.1:
+    dependencies:
+      workbox-core: 4.3.1
+    dev: true
+    resolution:
+      integrity: sha512-FkbtrODA4Imsi0p7TW9u9MXuQ5P4pVs1sWHK4dJMMChVROsbEltuE79fBoIk/BCztvOJ7yUpErMKa4z3uQLX+g==
+  /workbox-strategies/4.3.1:
+    dependencies:
+      workbox-core: 4.3.1
+    dev: true
+    resolution:
+      integrity: sha512-F/+E57BmVG8dX6dCCopBlkDvvhg/zj6VDs0PigYwSN23L8hseSRwljrceU2WzTvk/+BSYICsWmRq5qHS2UYzhw==
+  /workbox-streams/4.3.1:
+    dependencies:
+      workbox-core: 4.3.1
+    dev: true
+    resolution:
+      integrity: sha512-4Kisis1f/y0ihf4l3u/+ndMkJkIT4/6UOacU3A4BwZSAC9pQ9vSvJpIi/WFGQRH/uPXvuVjF5c2RfIPQFSS2uA==
+  /workbox-sw/4.3.1:
+    dev: true
+    resolution:
+      integrity: sha512-0jXdusCL2uC5gM3yYFT6QMBzKfBr2XTk0g5TPAV4y8IZDyVNDyj1a8uSXy3/XrvkVTmQvLN4O5k3JawGReXr9w==
+  /workbox-webpack-plugin/4.3.1_webpack@4.46.0:
+    dependencies:
+      '@babel/runtime': 7.14.0
+      json-stable-stringify: 1.0.1
+      webpack: 4.46.0_webpack@4.46.0
+      workbox-build: 4.3.1
+    dev: true
+    engines:
+      node: '>=4.0.0'
+    peerDependencies:
+      webpack: ^2.0.0 || ^3.0.0 || ^4.0.0
+    resolution:
+      integrity: sha512-gJ9jd8Mb8wHLbRz9ZvGN57IAmknOipD3W4XNE/Lk/4lqs5Htw4WOQgakQy/o/4CoXQlMCYldaqUg+EJ35l9MEQ==
+  /workbox-window/4.3.1:
+    dependencies:
+      workbox-core: 4.3.1
+    dev: true
+    resolution:
+      integrity: sha512-C5gWKh6I58w3GeSc0wp2Ne+rqVw8qwcmZnQGpjiek8A2wpbxSJb1FdCoQVO+jDJs35bFgo/WETgl1fqgsxN0Hg==
   /worker-farm/1.7.0:
     dependencies:
       errno: 0.1.8
@@ -12776,6 +13048,7 @@ specifiers:
   '@vue/cli': ^4.5.12
   '@vue/cli-plugin-babel': ^4.5.12
   '@vue/cli-plugin-eslint': ~4.5.0
+  '@vue/cli-plugin-pwa': ~4.5.0
   '@vue/cli-plugin-vuex': ^4.5.12
   '@vue/cli-service': ^4.5.12
   '@vue/eslint-config-standard': ^5.1.2
@@ -12791,6 +13064,7 @@ specifiers:
   eslint-plugin-standard: ^4.0.0
   eslint-plugin-vue: ^6.2.2
   node-sass: ^5.0.0
+  register-service-worker: ^1.7.1
   sass: ^1.32.12
   sass-loader: ^10.1.1
   vue: ^2.6.12

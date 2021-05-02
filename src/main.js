@@ -1,3 +1,4 @@
+import '@/registerServiceWorker';
 import App from '@/App.vue';
 import Vue from 'vue';
 import icons from '@/plugins/icons';
