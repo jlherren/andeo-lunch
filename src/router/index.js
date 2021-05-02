@@ -3,6 +3,7 @@ import Cash from '@/views/Cash.vue';
 import EventDetail from '@/views/EventDetail';
 import Home from '@/views/Home.vue';
 import Menus from '@/views/Menus.vue';
+import Preferences from '@/views/Preferences';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
@@ -33,6 +34,11 @@ const routes = [
         path:      '/events/:id(\\d+)',
         name:      'EventDetail',
         component: EventDetail,
+    },
+    {
+        path:      '/preferences',
+        name:      'Preferences',
+        component: Preferences,
     },
 
 ];

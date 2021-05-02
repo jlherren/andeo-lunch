@@ -13,7 +13,16 @@
 
         <v-divider />
 
-        <settings-dialog />
+        <v-list-item to="/preferences">
+            <v-list-item-icon>
+                <v-icon>{{ $icons.cog }}</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+                <v-list-item-title>
+                    Preferences
+                </v-list-item-title>
+            </v-list-item-content>
+        </v-list-item>
 
         <v-list-item @click="openAboutDialog">
             <v-list-item-icon>
@@ -60,20 +69,18 @@
 </template>
 
 <script>
-    import SettingsDialog from '@/components/SettingsDialog';
     import {mapGetters} from 'vuex';
 
     export default {
         name:       'navigationDrawerContent',
-        components: {
-            SettingsDialog,
-        },
+
         data() {
             return {
                 aboutDialog:           false,
                 backendVersionLoading: false,
             };
         },
+
         computed: {
             ...mapGetters([
                 'ownUser',
@@ -81,6 +88,7 @@
                 'frontendVersion',
             ]),
         },
+
         methods:  {
             logout() {
                 this.$store.dispatch('logout');
