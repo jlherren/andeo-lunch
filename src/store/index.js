@@ -149,6 +149,12 @@ export default new Vuex.Store({
                     event.date = new Date(event.date);
                     Vue.set(context.state.events, event.id, event);
                 }
+                if (response.data.participations) {
+                    for (let participation of response.data.participations) {
+                        let key = `${participation.eventId}/${participation.userId}`;
+                        Vue.set(context.state.singleParticipations, key, participation);
+                    }
+                }
             });
         },
 

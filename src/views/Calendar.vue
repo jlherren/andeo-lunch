@@ -142,6 +142,7 @@
                     let params = {
                         from: this.startDate,
                         to:   this.endDate,
+                        with: 'ownParticipations',
                     };
                     await this.$store.dispatch('fetchEvents', params);
                 } finally {

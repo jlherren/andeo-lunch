@@ -111,12 +111,6 @@
             reload() {
                 if (this.prominent) {
                     this.$store.dispatch('fetchParticipations', {eventId: this.event.id});
-                } else {
-                    let params = {
-                        eventId: this.event.id,
-                        userId:  this.ownUserId,
-                    };
-                    this.$store.dispatch('fetchSingleParticipation', params);
                 }
             },
         },
