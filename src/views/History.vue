@@ -113,6 +113,7 @@
         min-height: auto;
         display: flex;
         max-width: 800px;
+        font-size: 11pt;
 
         & > span {
             display: block;
@@ -139,7 +140,7 @@
     }
 
     .v-virtual-scroll__item {
-        .transaction.odd {
+        .odd {
             background: #f5f5f5;
         }
     }
