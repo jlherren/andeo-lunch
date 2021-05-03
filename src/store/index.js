@@ -202,15 +202,16 @@ export default new Vuex.Store({
             Cache.invalidate('event', eventId);
             Cache.invalidate('participations', eventId);
             Cache.invalidate('participation', `${eventId}/${userId}`);
-            await Promise.all([
-                context.dispatch('fetchEvent', {eventId}),
-                context.dispatch('fetchParticipations', {eventId}),
-            ]);
+            Cache.invalidate('user');
+            await context.dispatch('fetchParticipations', {eventId});
         },
 
         async saveEvent(context, data) {
             let url = data.id ? `/events/${data.id}` : '/events';
             let response = await Backend.post(url, {...data, id: undefined});
+
+            Cache.invalidate('user');
+            Cache.invalidate('events');
 
             if (!data.id) {
                 let {location} = response.headers;
@@ -223,8 +224,6 @@ export default new Vuex.Store({
                 Cache.invalidate('event', data.id);
                 await context.dispatch('fetchEvent', {eventId: data.id});
             }
-
-            Cache.invalidate('events');
         },
 
         async deleteEvent(context, {eventId}) {
@@ -233,6 +232,7 @@ export default new Vuex.Store({
                 delete context.state.events[eventId];
                 Cache.invalidate('event', eventId);
                 Cache.invalidate('events');
+                Cache.invalidate('user');
             }
         },
 

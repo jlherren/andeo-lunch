@@ -110,7 +110,7 @@
                         money:  this.money,
                     },
                 });
-
+                this.$emit('saved');
                 this.$emit('close');
             },
         },

@@ -27,7 +27,7 @@
         </v-list-item-action>
 
         <v-dialog v-model="editDialog">
-            <participation-edit :participation="participation" @close="editDialog = false" ref="editForm"/>
+            <participation-edit :participation="participation" @close="editDialog = false" @saved="saved()" ref="editForm"/>
         </v-dialog>
     </v-list-item>
 </template>
@@ -103,6 +103,11 @@
             openDialog() {
                 this.editDialog = true;
                 Vue.nextTick(() => this.$refs.editForm.reset());
+            },
+
+            saved() {
+                // Notify parent
+                this.$emit('saved');
             },
         },
     };

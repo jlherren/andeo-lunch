@@ -51,11 +51,12 @@
         <v-tabs-items v-model="tab" v-if="event.type !== 'label'">
             <v-tab-item key="participations">
                 <v-list>
-                    <participation-list-item :participation="myParticipation"/>
+                    <participation-list-item :participation="myParticipation" @saved="refreshEvent()"/>
 
                     <participation-list-item v-for="participation of activeParticipations"
                                              :key="participation.userId"
-                                             :participation="participation"/>
+                                             :participation="participation"
+                                             @saved="refreshEvent()"/>
                 </v-list>
             </v-tab-item>
 
@@ -63,7 +64,8 @@
                 <v-list>
                     <participation-list-item v-for="participation of moneyProviders"
                                              :key="participation.userId"
-                                             :participation="participation"/>
+                                             :participation="participation"
+                                             @saved="refreshEvent()"/>
 
                 </v-list>
 
@@ -197,21 +199,25 @@
         },
 
         methods: {
-            optIn() {
-                this.$store.dispatch('saveParticipation', {
+            async optIn() {
+                await this.$store.dispatch('saveParticipation', {
                     userId:  this.ownUserId,
                     eventId: this.eventId,
                     // TODO: Change default type based on user preferences
                     type:    'omnivorous',
                 });
+                // Not refetching the event here, because opt-in will never cause the event to change
+                await this.$store.dispatch('fetchUser', {userId: this.$store.getters.ownUserId});
             },
 
-            optOut() {
-                this.$store.dispatch('saveParticipation', {
+            async optOut() {
+                await this.$store.dispatch('saveParticipation', {
                     userId:  this.ownUserId,
                     eventId: this.eventId,
                     type:    'opt-out',
                 });
+                // Not refetching the event here, because opt-out will never cause it to change
+                // Not refetching the user here, because opt-out from undecided will never cause it to change
             },
 
             openEditDialog() {
@@ -227,6 +233,10 @@
                 await this.$store.dispatch('deleteEvent', {eventId: this.eventId});
                 this.confirmDelete = false;
                 this.$router.go(-1);
+            },
+
+            async refreshEvent() {
+                await this.$store.dispatch('fetchEvent', {eventId: this.eventId});
             },
         },
     };
