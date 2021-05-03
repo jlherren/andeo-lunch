@@ -6,4 +6,9 @@ module.exports = {
     ],
 
     productionSourceMap: false,
+
+    pwa: {
+        name:         'Lunch Money',
+        assetVersion: '1',
+    },
 };
