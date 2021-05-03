@@ -18,6 +18,7 @@ const configSchema = Joi.object({
     host:        Joi.string().allow(null),
     secret:      Joi.string().required().min(44).base64(),
     tokenExpiry: Joi.string().min(1).default('30 days'),
+    lag:         Joi.number(),
 }).unknown(true);
 
 /**

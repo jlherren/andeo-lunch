@@ -46,6 +46,14 @@ class LunchMoney {
             this.app.use(Logger());
         }
 
+        if (this.options.config.lag) {
+            console.warn('Warning: Artificial lag is enabled!');
+            this.app.use(async (ctx, next) => {
+                await new Promise(resolve => setTimeout(resolve, this.options.config.lag));
+                return next();
+            });
+        }
+
         this.app.use(BodyParser({
             enableTypes: ['json'],
             strict:      true,
