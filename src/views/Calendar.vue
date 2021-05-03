@@ -1,5 +1,5 @@
 <template>
-    <v-main>
+    <v-main v-touch="touch">
         <the-app-bar>
             {{ title }}
             <template v-slot:buttons>
@@ -92,6 +92,10 @@
                 createDialog: false,
                 speedDial:    false,
                 newEvent:     {},
+                touch:        {
+                    left:  () => this.previousWeek(),
+                    right: () => this.nextWeek(),
+                },
             };
         },
 
