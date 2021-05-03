@@ -226,7 +226,9 @@ exports.initModels = function initModels(sequelize) {
             },
         ],
     });
+
     Transaction.belongsTo(Event, {foreignKey: 'event', as: 'Event'});
+    Event.hasMany(Participation, {foreignKey: 'event', as: 'Participations'});
 
     Presence.init({
         user:  {type: DataTypes.INTEGER, allowNull: false, references: {model: User}},

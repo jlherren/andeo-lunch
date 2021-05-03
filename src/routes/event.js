@@ -267,6 +267,7 @@ async function listEvents(ctx) {
     let {Op} = Sequelize;
     let from = Utils.parseDate(ctx.query.from);
     let to = Utils.parseDate(ctx.query.to);
+    let ownParticipations = ctx.query.with === 'ownParticipations';
 
     let conditions = [];
     if (from !== null) {
@@ -281,7 +282,22 @@ async function listEvents(ctx) {
         where[Op.and] = conditions;
     }
 
+    let include = [];
+
+    if (ownParticipations) {
+        include.push({
+            model:    Models.Participation,
+            as:       'Participations',
+            where:    {
+                user: ctx.user.id,
+            },
+            required: false,
+        });
+    }
+
+    /** @type {Array<Event>} */
     let events = await Models.Event.findAll({
+        include,
         where,
         order: [['date', 'ASC']],
         limit: 100,
@@ -289,6 +305,11 @@ async function listEvents(ctx) {
     ctx.body = {
         events: events.map(event => event.toApi()),
     };
+    if (ownParticipations) {
+        ctx.body.participations = events.map(event => {
+            return event.Participations.map(p => p.toApi());
+        }).flat();
+    }
 }
 
 /**

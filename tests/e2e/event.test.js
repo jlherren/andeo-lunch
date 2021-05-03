@@ -265,3 +265,39 @@ describe('deleting events', () => {
         expect(response.status).toEqual(204);
     });
 });
+
+describe('Event lists', () => {
+    // let eventId = null;
+
+    beforeEach(async () => {
+        // eventId =
+        await Helper.createEvent(request, sampleEvent);
+    });
+
+    it('Lists the event when querying by date', async () => {
+        let response = await request.get('/events?from=2020-01-14T11:00:00.000Z&to=2020-01-16T11:00:00.000Z');
+        expect(response.status).toEqual(200);
+        expect(response.body.events).toHaveLength(1);
+        expect(response.body.events[0]).toMatchObject(sampleEvent);
+    });
+
+    it('Lists the event including empty participations when querying by date', async () => {
+        let response = await request.get('/events?from=2020-01-14T11:00:00.000Z&to=2020-01-16T11:00:00.000Z&with=ownParticipations');
+        expect(response.status).toEqual(200);
+        expect(response.body.events).toHaveLength(1);
+        expect(response.body.events[0]).toMatchObject(sampleEvent);
+        expect(response.body.participations).toHaveLength(0);
+    });
+
+    it('Does not list the event when querying by date before', async () => {
+        let response = await request.get('/events?from=2020-01-13T11:00:00.000Z&to=2020-01-14T11:00:00.000Z');
+        expect(response.status).toEqual(200);
+        expect(response.body.events).toHaveLength(0);
+    });
+
+    it('Does not list the event when querying by date after', async () => {
+        let response = await request.get('/events?from=2020-01-16T11:00:00.000Z&to=2020-01-17T11:00:00.000Z');
+        expect(response.status).toEqual(200);
+        expect(response.body.events).toHaveLength(0);
+    });
+});
