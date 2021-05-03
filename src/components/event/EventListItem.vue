@@ -1,14 +1,13 @@
 <template>
     <v-list-item :to="link">
         <template v-if="prominent">
-            <v-list-item-content>
-                <v-list-item-subtitle class="center-text">{{ formattedDate }}</v-list-item-subtitle>
-                <v-list-item-title class="center-text">{{ event.name }}</v-list-item-title>
+            <v-list-item-content class="center-text">
+                <v-list-item-title class="headline">{{ event.name }}</v-list-item-title>
+                <v-list-item-subtitle>{{ formattedDate }}</v-list-item-subtitle>
 
                 <v-list-item-content>
                     <participation-summary class="justify-center" :participations="participations"/>
                 </v-list-item-content>
-
             </v-list-item-content>
 
             <v-list-item-action v-if="undecidedParticipation">

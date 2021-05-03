@@ -13,7 +13,7 @@
         </the-app-bar>
 
         <v-container class="center-text">
-            <h2>{{ event.name }}</h2>
+            <div class="headline">{{ event.name }}</div>
             <div class="text--secondary">{{ formattedDate }}</div>
 
             <div class="costs" v-if="event.type !== 'label'">
