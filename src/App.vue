@@ -66,12 +66,17 @@
                     {
                         url:   '/menus',
                         title: 'Menus',
-                        icon:  this.$icons.silverware,
+                        icon:  this.$icons.menu,
                     },
                     {
-                        url:   '/cash',
-                        title: 'Cash',
-                        icon:  this.$icons.cash,
+                        url:   '/transfer',
+                        title: 'Transfer',
+                        icon:  this.$icons.transfer,
+                    },
+                    {
+                        url:   '/history',
+                        title: 'History',
+                        icon:  this.$icons.history,
                     },
                 ],
                 drawerOpen:      false,

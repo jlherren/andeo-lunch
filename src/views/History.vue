@@ -1,7 +1,7 @@
 <template>
     <v-main>
         <the-app-bar extension-height="30">
-            Transactions
+            History
             <template v-slot:buttons>
                 <user-stats/>
             </template>
@@ -41,7 +41,7 @@
     import Vue from 'vue';
 
     export default {
-        name: 'Cash',
+        name: 'History',
 
         components: {
             ShyProgress,

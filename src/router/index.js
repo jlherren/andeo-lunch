@@ -1,9 +1,10 @@
 import Calendar from '@/views/Calendar.vue';
-import Cash from '@/views/Cash.vue';
 import EventDetail from '@/views/EventDetail';
+import History from '@/views/History.vue';
 import Home from '@/views/Home.vue';
 import Menus from '@/views/Menus.vue';
 import Preferences from '@/views/Preferences';
+import Transfer from '@/views/Transfer.vue';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
@@ -26,9 +27,14 @@ const routes = [
         component: Menus,
     },
     {
-        path:      '/cash',
-        name:      'Cash',
-        component: Cash,
+        path:      '/transfer',
+        name:      'Transfer',
+        component: Transfer,
+    },
+    {
+        path:      '/history',
+        name:      'History',
+        component: History,
     },
     {
         path:      '/events/:id(\\d+)',
