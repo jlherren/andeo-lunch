@@ -7,21 +7,21 @@
         <v-card-text>
             <v-row>
                 <v-col>
-                    <v-btn-toggle v-model="type" mandatory :dense="breakpointSmall">
+                    <v-btn-toggle v-model="type" mandatory :dense="$vuetify.breakpoint.xs">
                         <v-btn value="omnivorous">
-                            <v-icon left>{{ $icons.omnivorous }}</v-icon>
+                            <v-icon left :large="mdAndUp">{{ $icons.omnivorous }}</v-icon>
                             <span>Omni</span>
                         </v-btn>
                         <v-btn value="vegetarian">
-                            <v-icon left>{{ $icons.vegetarian }}</v-icon>
+                            <v-icon left :large="mdAndUp">{{ $icons.vegetarian }}</v-icon>
                             <span>Vegi</span>
                         </v-btn>
                         <v-btn value="opt-out">
-                            <v-icon left>{{ $icons.optOut }}</v-icon>
+                            <v-icon left :large="mdAndUp">{{ $icons.optOut }}</v-icon>
                             <span>Out</span>
                         </v-btn>
                         <v-btn value="undecided">
-                            <v-icon left>{{ $icons.undecided }}</v-icon>
+                            <v-icon left :large="mdAndUp">{{ $icons.undecided }}</v-icon>
                             <span>Undecided</span>
                         </v-btn>
                     </v-btn-toggle>
@@ -77,8 +77,8 @@
         },
 
         computed: {
-            breakpointSmall() {
-                return this.$vuetify.breakpoint.name === 'xs';
+            mdAndUp() {
+                return this.$vuetify.breakpoint.mdAndUp;
             },
         },
 
