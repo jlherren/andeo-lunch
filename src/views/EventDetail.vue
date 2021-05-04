@@ -1,8 +1,8 @@
 <template>
-    <v-main v-if="event">
+    <v-main>
         <the-app-bar sub-page>
-            {{ event.name }}
-            <template slot="buttons">
+            {{ name }}
+            <template slot="buttons" v-if="event">
                 <v-btn icon @click="openEditDialog">
                     <v-icon>{{ $icons.edit }}</v-icon>
                 </v-btn>
@@ -12,91 +12,98 @@
             </template>
         </the-app-bar>
 
-        <v-container class="center-text">
-            <div class="headline">{{ event.name }}</div>
-            <div class="text--secondary">{{ formattedDate }}</div>
+        <div v-if="event">
+            <v-container class="center-text">
+                <div class="headline">{{ name }}</div>
+                <div class="text--secondary">{{ formattedDate }}</div>
 
-            <div class="costs" v-if="event.type !== 'label'">
-                <participation-summary :participations="participations"/>
-                <balance :value="event.costs.points" points large no-sign/>
-                <balance :value="event.costs.money" money large no-sign/>
-            </div>
-        </v-container>
+                <div class="costs" v-if="event.type !== 'label'">
+                    <participation-summary :participations="participations"/>
+                    <balance :value="event.costs.points" points large no-sign/>
+                    <balance :value="event.costs.money" money large no-sign/>
+                </div>
+            </v-container>
 
-        <v-container v-if="event.type !== 'label'">
-            <v-banner v-if="ownParticipationMissing" elevation="2" :icon="$icons.alertCircle">
-                Make up your mind!
-                <template v-slot:actions>
-                    <v-btn text color="error" class="ml-1" @click="optOut">
-                        <v-icon small left>{{ $icons.optOut }}</v-icon>
-                        Opt-out
-                    </v-btn>
-                    <v-btn text color="primary" @click="optIn">
-                        <v-icon small left>{{ $icons.omnivorous }}</v-icon>
-                        Opt-in
-                    </v-btn>
-                </template>
-            </v-banner>
-        </v-container>
+            <v-container v-if="!participationsLoading && event.type !== 'label' && ownParticipationMissing">
+                <v-banner elevation="2" :icon="$icons.alertCircle">
+                    Make up your mind!
+                    <template v-slot:actions>
+                        <v-btn text color="error" class="ml-1" @click="optOut">
+                            <v-icon small left>{{ $icons.optOut }}</v-icon>
+                            Opt-out
+                        </v-btn>
+                        <v-btn text color="primary" @click="optIn">
+                            <v-icon small left>{{ $icons.omnivorous }}</v-icon>
+                            Opt-in
+                        </v-btn>
+                    </template>
+                </v-banner>
+            </v-container>
 
-        <v-tabs fixed-tabs v-model="tab" v-if="event.type !== 'label'">
-            <v-tab key="participations">
-                <v-icon>{{ $icons.lunch }}</v-icon>
-            </v-tab>
-            <v-tab key="money">
-                <v-icon>{{ $icons.money }}</v-icon>
-            </v-tab>
-        </v-tabs>
+            <v-tabs fixed-tabs v-model="tab" v-if="event.type !== 'label'">
+                <v-tab key="participations">
+                    <v-icon>{{ $icons.lunch }}</v-icon>
+                </v-tab>
+                <v-tab key="money">
+                    <v-icon>{{ $icons.money }}</v-icon>
+                </v-tab>
+            </v-tabs>
 
-        <v-tabs-items v-model="tab" v-if="event.type !== 'label'">
-            <v-tab-item key="participations">
-                <v-list>
-                    <participation-list-item :participation="myParticipation" @saved="refreshEvent()"/>
+            <v-tabs-items v-model="tab" v-if="event.type !== 'label'">
+                <v-tab-item key="participations">
+                    <v-list>
+                        <v-skeleton-loader type="list-item-avatar" v-if="participationsLoading"/>
 
-                    <participation-list-item v-for="participation of activeParticipations"
-                                             :key="participation.userId"
-                                             :participation="participation"
-                                             @saved="refreshEvent()"/>
-                </v-list>
-            </v-tab-item>
+                        <participation-list-item :participation="myParticipation" @saved="refreshEvent()"
+                                                 v-if="!participationsLoading"/>
 
-            <v-tab-item key="money">
-                <v-list>
-                    <participation-list-item v-for="participation of moneyProviders"
-                                             :key="participation.userId"
-                                             :participation="participation"
-                                             @saved="refreshEvent()"/>
+                        <participation-list-item v-for="participation of activeParticipations"
+                                                 :key="participation.userId"
+                                                 :participation="participation"
+                                                 @saved="refreshEvent()"/>
+                    </v-list>
+                </v-tab-item>
 
-                </v-list>
+                <v-tab-item key="money">
+                    <v-list>
+                        <v-skeleton-loader type="list-item-avatar" v-if="participationsLoading"/>
 
-                <v-container v-if="moneyProviders.length === 0">
-                    <v-banner single-line :icon="$icons.information">
-                        No buyers have been set.
-                    </v-banner>
-                </v-container>
-            </v-tab-item>
-        </v-tabs-items>
+                        <participation-list-item v-for="participation of moneyProviders"
+                                                 :key="participation.userId"
+                                                 :participation="participation"
+                                                 @saved="refreshEvent()"/>
 
-        <v-dialog v-model="edit">
-            <event-edit :event="event" ref="editDialog" @close="edit = false"/>
-        </v-dialog>
+                    </v-list>
 
-        <v-dialog v-model="confirmDelete">
-            <v-card>
-                <v-card-title>
-                    Confirm
-                </v-card-title>
-                <v-card-text>
-                    Really delete this event? All event and participation data will be deleted, this cannot
-                    be undone.
-                </v-card-text>
-                <v-card-actions>
-                    <v-btn text @click="confirmDelete = false">Cancel</v-btn>
-                    <v-spacer/>
-                    <v-btn text @click="deleteEvent" color="error">Delete</v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
+                    <v-container v-if="!participationsLoading && moneyProviders.length === 0">
+                        <v-banner single-line :icon="$icons.information">
+                            No buyers have been set.
+                        </v-banner>
+                    </v-container>
+                </v-tab-item>
+            </v-tabs-items>
+
+            <v-dialog v-model="edit">
+                <event-edit :event="event" ref="editDialog" @close="edit = false"/>
+            </v-dialog>
+
+            <v-dialog v-model="confirmDelete">
+                <v-card>
+                    <v-card-title>
+                        Confirm
+                    </v-card-title>
+                    <v-card-text>
+                        Really delete this event? All event and participation data will be deleted, this cannot
+                        be undone.
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-btn text @click="confirmDelete = false">Cancel</v-btn>
+                        <v-spacer/>
+                        <v-btn text @click="deleteEvent" color="error">Delete</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+        </div>
     </v-main>
 </template>
 
@@ -122,6 +129,17 @@
             EventEdit,
         },
 
+        data() {
+            let eventId = parseInt(this.$route.params.id, 10);
+            return {
+                eventId,
+                tab:           'participations',
+                ownUserId:     this.$store.getters.ownUserId,
+                edit:          false,
+                confirmDelete: false,
+            };
+        },
+
         async created() {
             try {
                 await this.$store.dispatch('fetchEvent', {eventId: this.eventId});
@@ -136,24 +154,21 @@
             }
         },
 
-        data() {
-            let eventId = parseInt(this.$route.params.id, 10);
-            return {
-                eventId,
-                tab:           'participations',
-                ownUserId:     this.$store.getters.ownUserId,
-                edit:          false,
-                confirmDelete: false,
-            };
-        },
-
         computed: {
             event() {
                 return this.$store.getters.event(this.eventId);
             },
 
+            name() {
+                return this.event?.name || 'Loading...';
+            },
+
             participations() {
                 return this.$store.getters.participations(this.eventId) ?? [];
+            },
+
+            participationsLoading() {
+                return !this.$store.getters.participations(this.eventId);
             },
 
             activeParticipations() {
