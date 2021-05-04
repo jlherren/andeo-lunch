@@ -2,6 +2,7 @@
 
 const Models = require('../db/models');
 const Factory = require('./factory');
+const Constants = require('../constants');
 
 /**
  * @param {Application.Context} ctx
@@ -26,6 +27,21 @@ async function getUserTransactionLists(ctx) {
 }
 
 /**
+ * @param {Application.Context} ctx
+ * @returns {Promise<void>}
+ */
+async function getSystemUser(ctx) {
+    let user = await Models.User.findOne({
+        where: {
+            username: Constants.SYSTEM_USER_USERNAME,
+        },
+    });
+    ctx.body = {
+        user: user.toApi(),
+    };
+}
+
+/**
  * @param {Router} router
  */
 exports.register = function register(router) {
@@ -39,4 +55,5 @@ exports.register = function register(router) {
     router.get('/users', Factory.makeObjectListController(opts));
     router.get('/users/:user(\\d+)', Factory.makeSingleObjectController(opts));
     router.get('/users/:user(\\d+)/transactions', getUserTransactionLists);
+    router.get('/users/system', getSystemUser);
 };

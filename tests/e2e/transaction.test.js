@@ -167,6 +167,11 @@ describe('transactions for event', () => {
         response = await request.get(`/users/${user2.id}`);
         expect(response.status).toEqual(200);
         expect(response.body.user.balances).toEqual({points: -4, money: 20});
+
+        // Check system user (balance only)
+        response = await request.get('/users/system');
+        expect(response.status).toEqual(200);
+        expect(response.body.user.balances).toEqual({points: 0, money: 0});
     });
 
     it('Recalculates transactions and balances after event costs change', async () => {
@@ -255,6 +260,11 @@ describe('transactions for event', () => {
         response = await request.get(`/users/${user2.id}`);
         expect(response.status).toEqual(200);
         expect(response.body.user.balances).toEqual({points: -3, money: 18.75});
+
+        // Check system user (balance only)
+        response = await request.get('/users/system');
+        expect(response.status).toEqual(200);
+        expect(response.body.user.balances).toEqual({points: 0, money: 0});
     });
 
     it('Recalculates transactions and balances after event is deleted', async () => {
@@ -278,6 +288,11 @@ describe('transactions for event', () => {
         expect(response.status).toEqual(200);
         expect(response.body.transactions).toHaveLength(0);
         response = await request.get(`/users/${user2.id}`);
+        expect(response.status).toEqual(200);
+        expect(response.body.user.balances).toEqual({points: 0, money: 0});
+
+        // Check system user (balance only)
+        response = await request.get('/users/system');
         expect(response.status).toEqual(200);
         expect(response.body.user.balances).toEqual({points: 0, money: 0});
     });
@@ -330,6 +345,11 @@ describe('Recalculates transactions and balances after event date change', () =>
         response = await request.get(`/users/${user2.id}`);
         expect(response.status).toEqual(200);
         expect(response.body.user.balances).toEqual(userBalances2);
+
+        // Check system user (balance only)
+        response = await request.get('/users/system');
+        expect(response.status).toEqual(200);
+        expect(response.body.user.balances).toEqual({points: 0, money: 0});
     });
 
     it('Recalculates balances after event date moves to be later', async () => {
@@ -356,5 +376,10 @@ describe('Recalculates transactions and balances after event date change', () =>
         response = await request.get(`/users/${user2.id}`);
         expect(response.status).toEqual(200);
         expect(response.body.user.balances).toEqual(userBalances2);
+
+        // Check system user (balance only)
+        response = await request.get('/users/system');
+        expect(response.status).toEqual(200);
+        expect(response.body.user.balances).toEqual({points: 0, money: 0});
     });
 });

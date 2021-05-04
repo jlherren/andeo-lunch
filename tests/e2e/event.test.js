@@ -106,7 +106,7 @@ const invalidData = {
 };
 
 describe('creating events', () => {
-    it('accepts a simple event', async () => {
+    it('Accepts a simple event', async () => {
         let response = await request.post('/events').send(sampleEvent);
         expect(response.status).toEqual(201);
         let {location} = response.headers;
@@ -116,7 +116,7 @@ describe('creating events', () => {
         expect(response.body.event).toMatchObject(sampleEvent);
     });
 
-    it('accepts an event with minimal data', async () => {
+    it('Accepts an event with minimal data', async () => {
         let response = await request.post('/events').send(minimalEvent);
         expect(response.status).toEqual(201);
         let {location} = response.headers;
@@ -126,14 +126,28 @@ describe('creating events', () => {
         expect(response.body.event).toMatchObject({...minimalEvent, ...defaultValues});
     });
 
-    it('rejects missing data', async () => {
+    it('Accepts a special event', async () => {
+        let specialEvent = {
+            ...sampleEvent,
+            type: 'event',
+        };
+        let response = await request.post('/events').send(specialEvent);
+        expect(response.status).toEqual(201);
+        let {location} = response.headers;
+        expect(typeof location).toBe('string');
+        expect(location).toMatch(/^\/events\/\d+$/u);
+        response = await request.get(location);
+        expect(response.body.event).toMatchObject(specialEvent);
+    });
+
+    it('Rejects missing data', async () => {
         for (let key of ['name', 'type', 'date']) {
             let response = await request.post('/events').send({...sampleEvent, [key]: undefined});
             expect(response.status).toEqual(400);
         }
     });
 
-    it('rejects invalid data', async () => {
+    it('Rejects invalid data', async () => {
         for (let key of Object.keys(invalidData)) {
             for (let value of invalidData[key]) {
                 let response = await request.post('/events').send({...sampleEvent, [key]: value});
@@ -142,12 +156,12 @@ describe('creating events', () => {
         }
     });
 
-    it('accepts a label event', async () => {
+    it('Accepts a label event', async () => {
         let response = await request.post('/events').send(labelEvent);
         expect(response.status).toEqual(201);
     });
 
-    it('rejects label event with point costs', async () => {
+    it('Rejects label event with point costs', async () => {
         let event = {
             ...labelEvent,
             costs: {
@@ -158,7 +172,7 @@ describe('creating events', () => {
         expect(response.status).toEqual(400);
     });
 
-    it('rejects label vegetarian money factor', async () => {
+    it('Rejects label vegetarian money factor', async () => {
         let event = {
             ...labelEvent,
             factors: {

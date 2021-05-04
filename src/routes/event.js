@@ -3,7 +3,6 @@
 const Joi = require('joi');
 
 const Models = require('../db/models');
-const Factory = require('./factory');
 const RouteUtils = require('./route-utils');
 const Db = require('../db');
 const Constants = require('../constants');
@@ -110,9 +109,14 @@ async function createEvent(ctx) {
             name: apiEvent.name,
             date: apiEvent.date,
             type,
+        }, {transaction});
+
+        await Models.Lunch.create({
+            event: event.id,
             pointsCost,
             vegetarianMoneyFactor,
         }, {transaction});
+
         await TransactionRebuilder.rebuildEvent(transaction, event);
         return event.id;
     });
@@ -126,10 +130,11 @@ async function createEvent(ctx) {
  * @param {Transaction} [transaction]
  * @returns {Promise<Event>}
  */
-async function getEvent(ctx, transaction) {
+async function loadEvent(ctx, transaction) {
     let options = {
+        include: ['Lunch'],
         transaction,
-        lock: transaction ? transaction.LOCK.UPDATE : undefined,
+        lock:    transaction ? transaction.LOCK.UPDATE : undefined,
     };
     let event = await Models.Event.findByPk(parseInt(ctx.params.event, 10), options);
     if (!event) {
@@ -166,7 +171,7 @@ async function updateEvent(ctx) {
     /** @type {ApiEvent} */
     let apiEvent = RouteUtils.validateBody(ctx, eventUpdateSchema);
     await Db.sequelize.transaction(async transaction => {
-        let event = await getEvent(ctx, transaction);
+        let event = await loadEvent(ctx, transaction);
         let pointsCost = apiEvent.costs && apiEvent.costs.points;
         let vegetarianMoneyFactor = apiEvent.factors && apiEvent.factors.vegetarian && apiEvent.factors.vegetarian.money;
 
@@ -179,13 +184,22 @@ async function updateEvent(ctx) {
             }
         }
 
-        let update = {
-            name: apiEvent.name,
-            date: apiEvent.date,
-            pointsCost,
-            vegetarianMoneyFactor,
-        };
-        await event.update(update, {transaction});
+        await event.update(
+            {
+                name: apiEvent.name,
+                date: apiEvent.date,
+            },
+            {transaction},
+        );
+
+        await event.Lunch.update(
+            {
+                pointsCost,
+                vegetarianMoneyFactor,
+            },
+            {transaction},
+        );
+
         await TransactionRebuilder.rebuildEvent(transaction, event);
     });
     ctx.status = 204;
@@ -199,7 +213,7 @@ async function saveParticipation(ctx) {
     /** @type {ApiParticipation} */
     let apiParticipation = RouteUtils.validateBody(ctx, participationSchema);
     await Db.sequelize.transaction(async transaction => {
-        let event = await getEvent(ctx, transaction);
+        let event = await loadEvent(ctx, transaction);
 
         if (event.type === Constants.EVENT_TYPES.LABEL) {
             ctx.throw(400, 'Label events cannot have participations');
@@ -237,7 +251,7 @@ async function saveParticipation(ctx) {
  */
 async function deleteParticipation(ctx) {
     let n = await Db.sequelize.transaction(async transaction => {
-        let event = await getEvent(ctx, transaction);
+        let event = await loadEvent(ctx, transaction);
         let user = await getUser(ctx, transaction);
 
         let nDestroyed = await Models.Participation.destroy({
@@ -263,6 +277,20 @@ async function deleteParticipation(ctx) {
  * @param {Application.Context} ctx
  * @returns {Promise<void>}
  */
+async function getEvent(ctx) {
+    let event = await loadEvent(ctx);
+    if (!event) {
+        ctx.throw(404, 'No such event');
+    }
+    ctx.body = {
+        event: event.toApi(),
+    };
+}
+
+/**
+ * @param {Application.Context} ctx
+ * @returns {Promise<void>}
+ */
 async function listEvents(ctx) {
     let {Op} = Sequelize;
     let from = Utils.parseDate(ctx.query.from);
@@ -282,7 +310,9 @@ async function listEvents(ctx) {
         where[Op.and] = conditions;
     }
 
-    let include = [];
+    let include = [
+        'Lunch',
+    ];
 
     if (ownParticipations) {
         include.push({
@@ -318,8 +348,14 @@ async function listEvents(ctx) {
  */
 async function deleteEvent(ctx) {
     await Db.sequelize.transaction(async transaction => {
-        let event = await getEvent(ctx, transaction);
+        let event = await loadEvent(ctx, transaction);
         await Models.Transaction.destroy({
+            transaction,
+            where: {
+                event: event.id,
+            },
+        });
+        await Models.Lunch.destroy({
             transaction,
             where: {
                 event: event.id,
@@ -343,14 +379,10 @@ async function deleteEvent(ctx) {
  * @param {Router} router
  */
 exports.register = function register(router) {
-    let opts = {
-        model:  Models.Event,
-        mapper: event => event.toApi(),
-    };
     router.get('/events', listEvents);
     router.post('/events', createEvent);
     router.delete('/events/:event(\\d+)', deleteEvent);
-    router.get('/events/:event(\\d+)', Factory.makeSingleObjectController(opts));
+    router.get('/events/:event(\\d+)', getEvent);
     router.post('/events/:event(\\d+)', updateEvent);
     router.get('/events/:event(\\d+)/participations', getParticipationList);
     router.get('/events/:event(\\d+)/participations/:user(\\d+)', getSingleParticipation);

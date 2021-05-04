@@ -24,7 +24,7 @@ function getWeightsForParticipationType(event, participation) {
         case Constants.PARTICIPATION_TYPES.VEGETARIAN:
             return {
                 pointsWeight: 1,
-                moneyWeight:  event.type === Constants.EVENT_TYPES.LUNCH ? event.vegetarianMoneyFactor : 1,
+                moneyWeight:  event.type === Constants.EVENT_TYPES.LUNCH ? event.Lunch.vegetarianMoneyFactor : 1,
             };
         case Constants.PARTICIPATION_TYPES.OPT_OUT:
         case Constants.PARTICIPATION_TYPES.UNDECIDED:
@@ -38,24 +38,24 @@ function getWeightsForParticipationType(event, participation) {
 }
 
 /**
- * Rebuild convenience fields on the event entity.
+ * Rebuild convenience fields on the lunch entity for an event.
  *
  * @param {Transaction} dbTransaction
  * @param {Event|number} event
  * @returns {Promise<void>}
  */
-exports.rebuildEventDetails = async function rebuildEventDetails(dbTransaction, event) {
+exports.rebuildLunchDetails = async function rebuildLunchDetails(dbTransaction, event) {
     let eventId = event instanceof Models.Event ? event.id : event;
 
     // Careful: This query must work with MySQL and also SQLite
     let sql = `
-        UPDATE event AS e
+        UPDATE lunch AS l
         SET moneyCost = (
             SELECT COALESCE(SUM(p.moneyCredited), 0)
             FROM participation AS p
-            WHERE p.event = e.id
+            WHERE p.event = l.event
         )
-        WHERE e.id = :eventId
+        WHERE l.event = :eventId
     `;
 
     await dbTransaction.sequelize.query(sql, {
@@ -82,13 +82,6 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
 
     let systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}, transaction: dbTransaction});
 
-    /** @type {Array<Participation>} */
-    let participations = await Models.Participation.findAll({
-        where:       {event: event.id},
-        order:       [['id', 'ASC']],
-        transaction: dbTransaction,
-    });
-
     // get all existing transactions for that event
     /** @type {Object<string, Array<Transaction>>} */
     let existingTransactions = Utils.groupBy(
@@ -100,19 +93,6 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
         }),
         transaction => `${transaction.user}/${transaction.contraUser}/${transaction.currency}`,
     );
-
-    let totalPointsWeight = 0;
-    let totalMoneyWeight = 0;
-    let totalPointsCredited = 0;
-    let totalMoneyCredited = 0;
-
-    for (let participation of participations) {
-        let {pointsWeight, moneyWeight} = getWeightsForParticipationType(event, participation);
-        totalPointsWeight += pointsWeight;
-        totalMoneyWeight += moneyWeight;
-        totalPointsCredited += participation.pointsCredited;
-        totalMoneyCredited += participation.moneyCredited;
-    }
 
     let transactionInserts = [];
     let transactionUpdates = [];
@@ -159,38 +139,97 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
         addInsert(systemUser.id, user, -amount, currency);
     }
 
-    let pointsCostPerWeightUnit = event.pointsCost / totalPointsWeight;
-    let pointsCostPerPointsCredited = event.pointsCost / totalPointsCredited;
-    let moneyCostPerWeightUnit = totalMoneyCredited / totalMoneyWeight;
-    // Note: pointsCostPerPointsCredited *should* usually be equal to 1, but let's not trust it anyway
-
-    for (let participation of participations) {
-        let {pointsWeight, moneyWeight} = getWeightsForParticipationType(event, participation);
-
-        // credit points for organizing the event
-        let points = participation.pointsCredited * pointsCostPerPointsCredited;
-        if (Math.abs(points) > Constants.EPSILON) {
-            addTransaction(participation.user, points, Constants.CURRENCIES.POINTS);
-        }
-
-        // debit points for participating in the event
-        points = -pointsCostPerWeightUnit * pointsWeight;
-        if (Math.abs(points) > Constants.EPSILON) {
-            addTransaction(participation.user, points, Constants.CURRENCIES.POINTS);
-        }
-
-        if (totalMoneyCredited > Constants.EPSILON) {
-            // credit money for financing the event
-            if (participation.moneyCredited > Constants.EPSILON) {
-                addTransaction(participation.user, participation.moneyCredited, Constants.CURRENCIES.MONEY);
-            }
-
-            // debit money for participating in the event
-            let money = -moneyCostPerWeightUnit * moneyWeight;
-            if (Math.abs(money) > Constants.EPSILON) {
-                addTransaction(participation.user, money, Constants.CURRENCIES.MONEY);
+    /**
+     * Insert transactions for a lunch
+     *
+     * @returns {Promise<void>}
+     */
+    async function handleLunchOrEvent() {
+        if (!event.Lunch) {
+            let opts = {
+                where:       {event: event.id},
+                transaction: dbTransaction,
+            };
+            event.Lunch = await Models.Lunch.findOne(opts);
+            if (!event.Lunch) {
+                throw new Error(`Event ${event.id} has no associated lunch`);
             }
         }
+
+        /** @type {Array<Participation>} */
+        let participations = await Models.Participation.findAll({
+            where:       {event: event.id},
+            order:       [['id', 'ASC']],
+            transaction: dbTransaction,
+        });
+
+        let totalPointsWeight = 0;
+        let totalMoneyWeight = 0;
+        let totalPointsCredited = 0;
+        let totalMoneyCredited = 0;
+
+        for (let participation of participations) {
+            let {pointsWeight, moneyWeight} = getWeightsForParticipationType(event, participation);
+            totalPointsWeight += pointsWeight;
+            totalMoneyWeight += moneyWeight;
+            totalPointsCredited += participation.pointsCredited;
+            totalMoneyCredited += participation.moneyCredited;
+        }
+
+        let pointsCostPerWeightUnit = event.Lunch.pointsCost / totalPointsWeight;
+        let pointsCostPerPointsCredited = event.Lunch.pointsCost / totalPointsCredited;
+        let moneyCostPerWeightUnit = totalMoneyCredited / totalMoneyWeight;
+        // Note: pointsCostPerPointsCredited *should* usually be equal to 1, but let's not trust it anyway
+
+        for (let participation of participations) {
+            let {pointsWeight, moneyWeight} = getWeightsForParticipationType(event, participation);
+
+            // credit points for organizing the event
+            let points = participation.pointsCredited * pointsCostPerPointsCredited;
+            if (Math.abs(points) > Constants.EPSILON) {
+                addTransaction(participation.user, points, Constants.CURRENCIES.POINTS);
+            }
+
+            // debit points for participating in the event
+            points = -pointsCostPerWeightUnit * pointsWeight;
+            if (Math.abs(points) > Constants.EPSILON) {
+                addTransaction(participation.user, points, Constants.CURRENCIES.POINTS);
+            }
+
+            if (totalMoneyCredited > Constants.EPSILON) {
+                // credit money for financing the event
+                if (participation.moneyCredited > Constants.EPSILON) {
+                    addTransaction(participation.user, participation.moneyCredited, Constants.CURRENCIES.MONEY);
+                }
+
+                // debit money for participating in the event
+                let money = -moneyCostPerWeightUnit * moneyWeight;
+                if (Math.abs(money) > Constants.EPSILON) {
+                    addTransaction(participation.user, money, Constants.CURRENCIES.MONEY);
+                }
+            }
+        }
+    }
+
+    /**
+     * Handle a label
+     */
+    function handleLabel() {
+        // Nothing to do, labels don't cause transactions.  Any superfluous transaction will be removed
+    }
+
+    switch (event.type) {
+        case Constants.EVENT_TYPES.LUNCH:
+        case Constants.EVENT_TYPES.EVENT:
+            await handleLunchOrEvent();
+            break;
+
+        case Constants.EVENT_TYPES.LABEL:
+            await handleLabel();
+            break;
+
+        default:
+            throw new Error(`Cannot rebuild transactions for unknown event type ${event.type}`);
     }
 
     /** @type {number|null} */
@@ -368,7 +407,9 @@ exports.rebuildEvent = async function rebuildEvent(dbTransaction, event) {
      * @returns {Promise<void>}
      */
     async function execute() {
-        await exports.rebuildEventDetails(dbTransaction, event);
+        if (event.type === Constants.EVENT_TYPES.LUNCH) {
+            await exports.rebuildLunchDetails(dbTransaction, event);
+        }
         let {earliestDate} = await exports.rebuildEventTransactions(dbTransaction, event);
         if (earliestDate !== null) {
             await exports.rebuildTransactionBalances(dbTransaction, earliestDate);

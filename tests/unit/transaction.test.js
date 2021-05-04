@@ -42,15 +42,19 @@ async function createUsers(n) {
  *
  * @returns {Promise<Event>}
  */
-function createLunch() {
-    return /** @type {Promise<Event>} */ Models.Event.create({
-        type:                  Constants.EVENT_TYPES.LUNCH,
-        date:                  new Date('2020-01-10 12:00'),
-        name:                  'Test lunch',
+async function createLunch() {
+    let event = await Models.Event.create({
+        type: Constants.EVENT_TYPES.LUNCH,
+        date: new Date('2020-01-10 12:00'),
+        name: 'Test lunch',
+    });
+    event.Lunch = await Models.Lunch.create({
+        event:                 event.id,
         pointsCost:            12,
         moneyCost:             60,
         vegetarianMoneyFactor: 0.5,
     });
+    return event;
 }
 
 /**
@@ -70,7 +74,7 @@ async function createLunchWithParticipations(participants, cook, buyer) {
             event:          event.id,
             type:           Constants.PARTICIPATION_TYPES.OMNIVOROUS,
             pointsCredited: participant.id === cook.id ? 8 : 0,
-            moneyCredited:  buyer !== null && participant.id === buyer.id ? event.moneyCost : 0,
+            moneyCredited:  buyer !== null && participant.id === buyer.id ? event.Lunch.moneyCost : 0,
         });
     }
 
@@ -106,7 +110,7 @@ describe('transaction tests', () => {
         let originalTransactionIds = new Set(transactions.map(transaction => transaction.id));
 
         // change costs and rebuild
-        await event.update({pointsCost: 12, moneyCost: 40});
+        await event.Lunch.update({pointsCost: 12, moneyCost: 40});
         await TransactionRebuilder.rebuildEvent(null, event);
 
         transactions = await Models.Transaction.findAll();
@@ -149,7 +153,7 @@ describe('transaction tests', () => {
                 event:          event.id,
                 type:           Constants.PARTICIPATION_TYPES.OMNIVOROUS,
                 pointsCredited: 8,
-                moneyCredited:  event.moneyCost,
+                moneyCredited:  event.Lunch.moneyCost,
             }, {
                 user:           user2.id,
                 event:          event.id,
@@ -191,7 +195,7 @@ describe('transaction tests', () => {
                 event:          event.id,
                 type:           Constants.PARTICIPATION_TYPES.OMNIVOROUS,
                 pointsCredited: 7,
-                moneyCredited:  event.moneyCost,
+                moneyCredited:  event.Lunch.moneyCost,
             },
         ]);
 
@@ -261,7 +265,7 @@ describe('transaction tests', () => {
                 event:          event.id,
                 type:           Constants.PARTICIPATION_TYPES.OMNIVOROUS,
                 pointsCredited: 1,
-                moneyCredited:  event.moneyCost,
+                moneyCredited:  event.Lunch.moneyCost,
             }, {
                 user:           user2.id,
                 event:          event.id,

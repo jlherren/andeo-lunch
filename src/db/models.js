@@ -53,9 +53,7 @@ class User extends Model {
  * @property {number} type
  * @property {Date} date
  * @property {string} name
- * @property {number} pointsCost
- * @property {number} moneyCost
- * @property {number|null} vegetarianMoneyFactor
+ * @property {Lunch|null} Lunch
  */
 class Event extends Model {
     /**
@@ -69,17 +67,25 @@ class Event extends Model {
             type:    Constants.EVENT_TYPE_NAMES[this.type],
             date:    this.date,
             name:    this.name,
-            costs:   {
-                points: this.pointsCost,
-                money:  this.moneyCost,
+            costs:   this.Lunch && {
+                points: this.Lunch.pointsCost,
+                money:  this.Lunch.moneyCost,
             },
-            factors: {
+            factors: this.Lunch && {
                 [Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.VEGETARIAN]]: {
-                    [Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY]]: this.vegetarianMoneyFactor,
+                    [Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY]]: this.Lunch.vegetarianMoneyFactor,
                 },
             },
         };
     }
+}
+
+/**
+ * @property {number} pointsCost
+ * @property {number} moneyCost
+ * @property {number|null} vegetarianMoneyFactor
+ */
+class Lunch extends Model {
 }
 
 /**
@@ -154,6 +160,7 @@ class Presence extends Model {
 
 exports.User = User;
 exports.Event = Event;
+exports.Lunch = Lunch;
 exports.ParticipationType = ParticipationType;
 exports.Participation = Participation;
 exports.Transaction = Transaction;
@@ -187,15 +194,20 @@ exports.initModels = function initModels(sequelize) {
     }, {sequelize, modelName: 'user'});
 
     Event.init({
-        type:                  {type: DataTypes.TINYINT, allowNull: false},
-        date:                  {type: DataTypes.DATE, allowNull: false},
-        name:                  {type: DataTypes.STRING(255), allowNull: false},
+        type: {type: DataTypes.TINYINT, allowNull: false},
+        date: {type: DataTypes.DATE, allowNull: false},
+        name: {type: DataTypes.STRING(255), allowNull: false},
+    }, {sequelize, modelName: 'event'});
+
+    Lunch.init({
         pointsCost:            {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
         // Note: moneyCost is purely informational and won't affect calculations!  The moneyCredited field
         // of participations is what will actually be used for calculations.
         moneyCost:             {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
         vegetarianMoneyFactor: {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 1},
-    }, {sequelize, modelName: 'event'});
+    }, {sequelize, modelName: 'lunch'});
+    Lunch.belongsTo(Event, {foreignKey: 'event', as: 'Event'});
+    Event.hasOne(Lunch, {foreignKey: 'event', as: 'Lunch'});
 
     ParticipationType.init({
         label: {type: DataTypes.STRING(64), allowNull: false},
