@@ -33,6 +33,7 @@
 </template>
 
 <script>
+    import * as ParticipationUtils from '@/utils/participationUtils';
     import Balance from '@/components/Balance';
     import ParticipationEdit from '@/components/event/ParticipationEdit';
     import Vue from 'vue';
@@ -64,18 +65,7 @@
             },
 
             bigIcon() {
-                switch (this.participation.type) {
-                    case 'omnivorous':
-                        return this.$icons.omnivorous;
-                    case 'vegetarian':
-                        return this.$icons.vegetarian;
-                    case 'opt-out':
-                        return this.$icons.optOut;
-                    case 'undecided':
-                        return this.$icons.undecided;
-                    default:
-                        return null;
-                }
+                return ParticipationUtils.icon(this.participation.type);
             },
 
             bigIconColor() {

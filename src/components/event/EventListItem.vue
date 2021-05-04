@@ -10,8 +10,8 @@
                 </v-list-item-content>
             </v-list-item-content>
 
-            <v-list-item-action v-if="undecidedParticipation">
-                <v-icon>{{ $icons.alertCircle }}</v-icon>
+            <v-list-item-action v-if="ownParticipationIcon">
+                <v-icon>{{ ownParticipationIcon }}</v-icon>
             </v-list-item-action>
         </template>
 
@@ -29,8 +29,8 @@
                 </v-list-item-subtitle>
             </v-list-item-content>
 
-            <v-list-item-action v-if="undecidedParticipation">
-                <v-icon title="You have not decided yet!">{{ $icons.alertCircle }}</v-icon>
+            <v-list-item-action v-if="ownParticipationIcon">
+                <v-icon>{{ ownParticipationIcon }}</v-icon>
             </v-list-item-action>
         </template>
     </v-list-item>
@@ -38,6 +38,7 @@
 
 <script>
     import * as DateUtils from '@/utils/dateUtils';
+    import * as ParticipationUtils from '@/utils/participationUtils';
     import ParticipationSummary from '@/components/event/ParticipationSummary';
 
     export default {
@@ -72,12 +73,19 @@
         },
 
         computed: {
-            undecidedParticipation() {
-                if (this.event.type === 'label') {
-                    return false;
-                }
+            ownParticipationType() {
                 let ownParticipation = this.$store.getters.participation(this.event.id, this.ownUserId);
-                return !ownParticipation || ownParticipation.type === 'undecided';
+                if (!ownParticipation) {
+                    return 'undecided';
+                }
+                return ownParticipation.type;
+            },
+
+            ownParticipationIcon() {
+                if (this.event.type === 'label') {
+                    return null;
+                }
+                return ParticipationUtils.icon(this.ownParticipationType);
             },
 
             icon() {
@@ -119,5 +127,10 @@
 <style scoped lang="scss">
     span + span {
         margin-left: 1em;
+    }
+
+    .v-list-item__action > .v-icon {
+        // Align equally with the plus buttons
+        margin-right: 6px;
     }
 </style>

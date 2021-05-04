@@ -3,7 +3,7 @@ import * as mdi from '@mdi/js';
 // All icons used in the project must be declared here.  This avoids having to load a 300KB+ icon font
 // when we really only use a handful icons.
 
-const icons = {
+export const icons = {
     // Add icons here
     accountCircle: mdi.mdiAccountCircle,
     alert:         mdi.mdiAlert,
