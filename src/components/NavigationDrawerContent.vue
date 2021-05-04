@@ -24,7 +24,7 @@
             </v-list-item-content>
         </v-list-item>
 
-        <v-list-item @click="openAboutDialog">
+        <v-list-item @click="aboutDialog = true">
             <v-list-item-icon>
                 <v-icon>{{ $icons.information }}</v-icon>
             </v-list-item-icon>
@@ -43,64 +43,37 @@
         </v-list-item>
 
         <v-dialog v-model="aboutDialog">
-            <v-card>
-                <v-card-title>
-                    About Lunch Money
-                </v-card-title>
-
-                <v-card-text>
-                    Frontend version: {{ frontendVersion }}<br>
-
-                    Backend version:
-                    <v-progress-circular size="10" width="1" indeterminate v-if="backendVersionLoading"/>
-                    <span v-else>{{ backendVersion }}</span>
-                    <br>
-                </v-card-text>
-
-                <v-card-actions>
-                    <v-spacer />
-                    <v-btn text @click="aboutDialog = false">
-                        Close
-                    </v-btn>
-                </v-card-actions>
-            </v-card>
+            <about-content @close="aboutDialog = false"/>
         </v-dialog>
     </v-list>
 </template>
 
 <script>
+    import AboutContent from '@/components/AboutContent';
     import {mapGetters} from 'vuex';
 
     export default {
-        name:       'navigationDrawerContent',
+        name: 'navigationDrawerContent',
+
+        components: {
+            AboutContent,
+        },
 
         data() {
             return {
-                aboutDialog:           false,
-                backendVersionLoading: false,
+                aboutDialog: false,
             };
         },
 
         computed: {
             ...mapGetters([
                 'ownUser',
-                'backendVersion',
-                'frontendVersion',
             ]),
         },
 
         methods:  {
             logout() {
                 this.$store.dispatch('logout');
-            },
-            openAboutDialog() {
-                this.aboutDialog = true;
-                this.backendVersionLoading = true;
-                this.$store.dispatch('fetchBackendVersion')
-                    .catch(() => null)
-                    .then(() => {
-                        this.backendVersionLoading = false;
-                    });
             },
         },
     };
