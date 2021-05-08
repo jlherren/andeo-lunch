@@ -176,10 +176,16 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
             totalMoneyCredited += participation.moneyCredited;
         }
 
-        let pointsCostPerWeightUnit = event.Lunch.pointsCost / totalPointsWeight;
-        let pointsCostPerPointsCredited = event.Lunch.pointsCost / totalPointsCredited;
-        let moneyCostPerWeightUnit = totalMoneyCredited / totalMoneyWeight;
+        let pointsCostPerWeightUnit = totalPointsWeight > Constants.EPSILON ? event.Lunch.pointsCost / totalPointsWeight : 0.0;
+        let pointsCostPerPointsCredited = totalPointsCredited > Constants.EPSILON ? event.Lunch.pointsCost / totalPointsCredited : 0.0;
+        let moneyCostPerWeightUnit = totalMoneyWeight > Constants.EPSILON ? totalMoneyCredited / totalMoneyWeight : 0.0;
         // Note: pointsCostPerPointsCredited *should* usually be equal to 1, but let's not trust it anyway
+
+        if (pointsCostPerPointsCredited < Constants.EPSILON) {
+            // No points will be credited, probably because there's no cook.  Therefore no points should be
+            // debited either.
+            pointsCostPerWeightUnit = 0.0;
+        }
 
         for (let participation of participations) {
             let {pointsWeight, moneyWeight} = getWeightsForParticipationType(event, participation);

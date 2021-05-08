@@ -61,7 +61,7 @@ async function createLunch() {
  * Create a lunch with the given number of participants
  *
  * @param {Array<User>} participants
- * @param {User} cook
+ * @param {User|null} cook
  * @param {User|null} buyer
  * @returns {Promise<Event>}
  */
@@ -73,7 +73,7 @@ async function createLunchWithParticipations(participants, cook, buyer) {
             user:           participant.id,
             event:          event.id,
             type:           Constants.PARTICIPATION_TYPES.OMNIVOROUS,
-            pointsCredited: participant.id === cook.id ? 8 : 0,
+            pointsCredited: cook !== null && participant.id === cook.id ? 8 : 0,
             moneyCredited:  buyer !== null && participant.id === buyer.id ? event.Lunch.moneyCost : 0,
         });
     }
@@ -289,5 +289,17 @@ describe('transaction tests', () => {
         expect(user1.points).toEqual(-1);
         expect(user2.points).toEqual(5);
         expect(user3.points).toEqual(-4);
+    });
+
+    it('Correctly ignores points calculation if there is no cook', async () => {
+        let [user1, user2] = await createUsers(2);
+        let event = await createLunchWithParticipations([user1, user2], null, user1);
+        await TransactionRebuilder.rebuildEvent(null, event);
+        await user1.reload();
+        await user2.reload();
+        expect(user1.points).toEqual(0);
+        expect(user2.points).toEqual(0);
+        expect(user1.money).toEqual(30);
+        expect(user2.money).toEqual(-30);
     });
 });
