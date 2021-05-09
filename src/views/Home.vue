@@ -3,7 +3,9 @@
         <the-app-bar>
             {{ ownUser.name }}
             <template v-slot:buttons>
-                <user-stats/>
+                <router-link to="/history">
+                    <user-stats/>
+                </router-link>
             </template>
         </the-app-bar>
 
@@ -107,3 +109,9 @@
         },
     };
 </script>
+
+<style scoped lang="scss">
+    a {
+        text-decoration: none;
+    }
+</style>

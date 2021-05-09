@@ -24,6 +24,24 @@
             </v-list-item-content>
         </v-list-item>
 
+        <v-list-item to="/history">
+            <v-list-item-icon>
+                <v-icon>{{ $icons.balanceHistory }}</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+                <v-list-item-title>Balance history</v-list-item-title>
+            </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item to="/log">
+            <v-list-item-icon>
+                <v-icon>{{ $icons.log }}</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+                <v-list-item-title>Audit log</v-list-item-title>
+            </v-list-item-content>
+        </v-list-item>
+
         <v-list-item @click="aboutDialog = true">
             <v-list-item-icon>
                 <v-icon>{{ $icons.information }}</v-icon>

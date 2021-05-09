@@ -73,11 +73,6 @@
                         title: 'Transfer',
                         icon:  this.$icons.transfer,
                     },
-                    {
-                        url:   '/history',
-                        title: 'History',
-                        icon:  this.$icons.history,
-                    },
                 ],
                 drawerOpen:      false,
             };

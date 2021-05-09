@@ -1,3 +1,4 @@
+import AuditLog from '@/views/AuditLog';
 import Calendar from '@/views/Calendar.vue';
 import EventDetail from '@/views/EventDetail';
 import History from '@/views/History.vue';
@@ -46,7 +47,11 @@ const routes = [
         name:      'Preferences',
         component: Preferences,
     },
-
+    {
+        path:      '/log',
+        name:      'Audit log',
+        component: AuditLog,
+    },
 ];
 
 const router = new VueRouter({
