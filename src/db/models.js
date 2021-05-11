@@ -214,17 +214,25 @@ exports.initModels = function initModels(sequelize) {
     }, {sequelize, modelName: 'participationType'});
 
     Participation.init({
-        user:           {type: DataTypes.INTEGER, allowNull: false, unique: 'userEvent', references: {model: User}},
-        event:          {type: DataTypes.INTEGER, allowNull: false, unique: 'userEvent', references: {model: Event}},
-        type:           {type: DataTypes.INTEGER, allowNull: false, references: {model: ParticipationType}},
         pointsCredited: {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
         moneyCredited:  {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
-    }, {sequelize, modelName: 'participation'});
+    }, {
+        sequelize,
+        modelName: 'participation',
+        indexes:   [
+            {
+                unique: true,
+                fields: ['user', 'event'],
+            },
+        ],
+    });
+    Participation.belongsTo(ParticipationType, {foreignKey: {name: 'type', allowNull: false}, as: 'ParticipationType'});
+    Participation.belongsTo(User, {foreignKey: {name: 'user', allowNull: false}, as: 'User'});
+    Participation.belongsTo(Event, {foreignKey: {name: 'event', allowNull: false}, as: 'Event'});
+    Event.hasMany(Participation, {foreignKey: {name: 'event', allowNull: false}, as: 'Participations'});
 
     Transaction.init({
         date:       {type: DataTypes.DATE, allowNull: false},
-        user:       {type: DataTypes.INTEGER, allowNull: false, references: {model: User}},
-        contraUser: {type: DataTypes.INTEGER, allowNull: false, references: {model: User}},
         currency:   {type: DataTypes.TINYINT, allowNull: false},
         amount:     {type: DataTypes.DOUBLE, allowNull: false},
         balance:    {type: DataTypes.DOUBLE, allowNull: false},
@@ -238,13 +246,14 @@ exports.initModels = function initModels(sequelize) {
             },
         ],
     });
-
-    Transaction.belongsTo(Event, {foreignKey: 'event', as: 'Event'});
-    Event.hasMany(Participation, {foreignKey: 'event', as: 'Participations'});
+    Transaction.belongsTo(Event, {foreignKey: {name: 'event', allowNull: false}, as: 'Event'});
+    Event.hasMany(Transaction, {foreignKey: {name: 'event', allowNull: false}, as: 'Transactions'});
+    Transaction.belongsTo(User, {foreignKey: {name: 'user', allowNull: false}, as: 'User'});
+    Transaction.belongsTo(User, {foreignKey: {name: 'contraUser', allowNull: false}, as: 'ContraUser'});
 
     Presence.init({
-        user:  {type: DataTypes.INTEGER, allowNull: false, references: {model: User}},
         start: {type: DataTypes.DATEONLY, allowNull: true},
         end:   {type: DataTypes.DATEONLY, allowNull: true},
     }, {sequelize, modelName: 'presence'});
+    Presence.belongsTo(User, {foreignKey: {name: 'user', allowNull: false}, as: 'User'});
 };
