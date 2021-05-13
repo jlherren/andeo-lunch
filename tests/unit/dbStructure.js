@@ -54,7 +54,7 @@ module.exports = {
             unique:       false,
         },
         event:                 {
-            allowNull:    true,
+            allowNull:    false,
             defaultValue: undefined,
             primaryKey:   false,
             references:   {
@@ -62,7 +62,7 @@ module.exports = {
                 model: 'event',
             },
             type:         'INTEGER',
-            unique:       false,
+            unique:       true,
         },
         id:                    {
             allowNull:    true,

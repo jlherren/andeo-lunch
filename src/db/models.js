@@ -53,7 +53,7 @@ class User extends Model {
  * @property {number} type
  * @property {Date} date
  * @property {string} name
- * @property {Lunch|null} Lunch
+ * @property {Lunch} [Lunch]
  */
 class Event extends Model {
     /**
@@ -84,6 +84,8 @@ class Event extends Model {
  * @property {number} pointsCost
  * @property {number} moneyCost
  * @property {number|null} vegetarianMoneyFactor
+ * @property {number} event
+ * @property {Event} [Event]
  */
 class Lunch extends Model {
 }
@@ -96,7 +98,9 @@ class ParticipationType extends Model {
 
 /**
  * @property {number} user
+ * @property {User} [User]
  * @property {number} event
+ * @property {Event} [Event]
  * @property {number} type
  * @property {number} pointsCredited
  * @property {number} moneyCredited
@@ -123,11 +127,14 @@ class Participation extends Model {
 /**
  * @property {Date} date
  * @property {number} user
+ * @property {User} [User]
  * @property {number} contraUser
+ * @property {User} [ContraUser]
  * @property {number} currency
  * @property {number} amount
  * @property {number} balance
  * @property {number} event
+ * @property {Event} [Event]
  */
 class Transaction extends Model {
     /**
@@ -152,6 +159,7 @@ class Transaction extends Model {
 
 /**
  * @property {number} user
+ * @property {User} [User]
  * @property {Date} start
  * @property {Date} end
  */
@@ -206,8 +214,8 @@ exports.initModels = function initModels(sequelize) {
         moneyCost:             {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
         vegetarianMoneyFactor: {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 1},
     }, {sequelize, modelName: 'lunch'});
-    Lunch.belongsTo(Event, {foreignKey: 'event', as: 'Event'});
-    Event.hasOne(Lunch, {foreignKey: 'event', as: 'Lunch'});
+    Lunch.belongsTo(Event, {foreignKey: {name: 'event', allowNull: false, unique: true}, as: 'Event'});
+    Event.hasOne(Lunch, {foreignKey: {name: 'event', allowNull: false, unique: true}, as: 'Lunch'});
 
     ParticipationType.init({
         label: {type: DataTypes.STRING(64), allowNull: false},
@@ -247,7 +255,6 @@ exports.initModels = function initModels(sequelize) {
         ],
     });
     Transaction.belongsTo(Event, {foreignKey: {name: 'event', allowNull: false}, as: 'Event'});
-    Event.hasMany(Transaction, {foreignKey: {name: 'event', allowNull: false}, as: 'Transactions'});
     Transaction.belongsTo(User, {foreignKey: {name: 'user', allowNull: false}, as: 'User'});
     Transaction.belongsTo(User, {foreignKey: {name: 'contraUser', allowNull: false}, as: 'ContraUser'});
 
