@@ -52,7 +52,7 @@ export function addDays(date, days) {
 }
 
 /**
- * Format a date in a sensible displayFormat for disaypling
+ * Format a date in a sensible displayFormat for displaying
  *
  * @param {Date} date
  * @returns {string}
@@ -70,10 +70,26 @@ export function displayFormat(date) {
  * @returns {string}
  */
 export function isoDate(date) {
-    let year = date.getUTCFullYear();
+    let year = date.getFullYear();
     let month = String(date.getMonth() + 1).padStart(2, '0');
     let day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
+}
+
+/**
+ * Format as ISO date string in local time zone
+ *
+ * @param {Date} date
+ * @returns {string}
+ */
+export function isoDateTime(date) {
+    let year = date.getFullYear();
+    let month = String(date.getMonth() + 1).padStart(2, '0');
+    let day = String(date.getDate()).padStart(2, '0');
+    let hour = String(date.getHours()).padStart(2, '0');
+    let minute = String(date.getMinutes()).padStart(2, '0');
+    let second = String(date.getSeconds()).padStart(2, '0');
+    return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
 }
 
 /**

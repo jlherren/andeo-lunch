@@ -56,6 +56,8 @@ export default new Vuex.Store({
 
             // TODO: Unload these again when not needed?  How to handle very old history to avoid memory pressure?
         },
+
+        audits: [],
     },
 
     getters: {
@@ -81,7 +83,9 @@ export default new Vuex.Store({
         // Transactions
         transactions: state => userId => state.transactions[userId],
 
+        // Misc
         globalSnackbar: state => state.globalSnackbar,
+        audits:         state => state.audits,
     },
 
     mutations: {
@@ -250,6 +254,17 @@ export default new Vuex.Store({
                     transaction.date = new Date(transaction.date);
                 }
                 Vue.set(context.state.transactions, userId, transactions);
+            });
+        },
+
+        fetchAuditLog(context) {
+            return Cache.ifNotFresh('audits', 0, 5000, async () => {
+                let response = await Backend.get('/audits?with=names');
+                let audits = response.data.audits;
+                for (let audit of audits) {
+                    audit.date = new Date(audit.date);
+                }
+                context.state.audits = audits;
             });
         },
     },
