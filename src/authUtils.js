@@ -7,7 +7,6 @@ let bcrypt = require('bcryptjs');
  * Hash a password
  *
  * @param {string} password
- *
  * @returns {Promise<string>}
  */
 exports.hashPassword = async function (password) {
@@ -30,7 +29,6 @@ exports.comparePassword = function (password, hash) {
  * Do a fake password verification to mitigate time based attacks
  *
  * @param {string} password
- *
  * @returns {Promise}
  */
 exports.fakeCompare = async function (password) {

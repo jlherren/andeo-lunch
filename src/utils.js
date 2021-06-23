@@ -68,7 +68,6 @@ function objectFlip(object, numericKey) {
  * Parse a string to a Date, returning null if it is invalid
  *
  * @param {string} str
- *
  * @returns {Date|null}
  */
 function parseDate(str) {
