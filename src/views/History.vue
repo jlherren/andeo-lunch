@@ -19,6 +19,12 @@
 
         <shy-progress v-if="loading"/>
 
+        <v-container v-if="!loading && transactions.length === 0">
+            <v-banner elevation="2" single-line :icon="$icons.information">
+                No balance history
+            </v-banner>
+        </v-container>
+
         <v-virtual-scroll item-height="30" :items="transactions" ref="scroll">
             <template v-slot:default="{item: transaction}" v-if="!loading">
                 <v-list-item :to="'/events/' + transaction.eventId" :key="transaction.id" :class="transaction.class">
