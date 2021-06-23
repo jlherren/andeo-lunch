@@ -1,6 +1,6 @@
 <template>
     <v-card>
-        <v-form v-model="valid" :disabled="saving" @submit.prevent="save()" ref="form">
+        <v-form v-model="valid" :disabled="isBusy" @submit.prevent="save()" ref="form">
             <v-card-title>{{ title }}</v-card-title>
 
             <v-card-text>
@@ -19,7 +19,7 @@
             <v-card-actions>
                 <v-btn text @click="cancel()">Cancel</v-btn>
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" type="submit">Save</v-btn>
+                <v-btn text type="submit" color="primary" :disabled="isBusy">Save</v-btn>
             </v-card-actions>
         </v-form>
     </v-card>
@@ -55,7 +55,7 @@
                     v => !!v || 'A name is required',
                 ],
 
-                saving: false,
+                isBusy: false,
                 valid:  false,
             };
         },
@@ -91,7 +91,7 @@
                     return;
                 }
                 try {
-                    this.saving = true;
+                    this.isBusy = true;
                     let data = {
                         name: this.name,
                         date: this.date,
@@ -113,8 +113,10 @@
                     }
                     await this.$store.dispatch('saveEvent', data);
                     this.$emit('close');
-                } finally {
-                    this.saving = false;
+                } catch (err) {
+                    // Disabled flag is only released on errors, otherwise we risk double saving after the first
+                    // one is successful and the modal is closing.
+                    this.isBusy = false;
                 }
             },
         },

@@ -46,7 +46,8 @@
                 this.isBusy = true;
                 try {
                     await this.$store.dispatch('login', {username: this.username, password: this.password});
-                } finally {
+                } catch (err) {
+                    // Only release on error, not on success
                     this.isBusy = false;
                 }
             },
