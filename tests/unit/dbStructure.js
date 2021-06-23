@@ -1,6 +1,71 @@
 'use strict';
 
 module.exports = {
+    audit:             {
+        actingUser:   {
+            allowNull:    false,
+            defaultValue: undefined,
+            primaryKey:   false,
+            type:         'INTEGER',
+            unique:       false,
+        },
+        affectedUser: {
+            allowNull:    true,
+            defaultValue: undefined,
+            primaryKey:   false,
+            type:         'INTEGER',
+            unique:       false,
+        },
+        createdAt:    {
+            allowNull:    false,
+            defaultValue: undefined,
+            primaryKey:   false,
+            type:         'DATETIME',
+            unique:       false,
+        },
+        date:         {
+            allowNull:    false,
+            defaultValue: undefined,
+            primaryKey:   false,
+            type:         'DATETIME',
+            unique:       false,
+        },
+        details:      {
+            allowNull:    true,
+            defaultValue: undefined,
+            primaryKey:   false,
+            type:         'VARCHAR(255)',
+            unique:       false,
+        },
+        event:        {
+            allowNull:    true,
+            defaultValue: undefined,
+            primaryKey:   false,
+            type:         'INTEGER',
+            unique:       false,
+        },
+        id:           {
+            allowNull:    true,
+            defaultValue: undefined,
+            primaryKey:   true,
+            type:         'INTEGER',
+            unique:       false,
+        },
+        type:         {
+            allowNull:    false,
+            defaultValue: undefined,
+            primaryKey:   false,
+            type:         'VARCHAR(32)',
+            unique:       false,
+        },
+        updatedAt:    {
+            allowNull:    false,
+            defaultValue: undefined,
+            primaryKey:   false,
+            type:         'DATETIME',
+            unique:       false,
+        },
+    },
     event:             {
         createdAt: {
             allowNull:    false,
@@ -200,7 +265,7 @@ module.exports = {
             unique:       false,
         },
     },
-    presence: {
+    presence:          {
         createdAt: {
             allowNull:    false,
             defaultValue: undefined,
@@ -248,7 +313,7 @@ module.exports = {
             unique:       false,
         },
     },
-    transfer: {
+    transfer:          {
         createdAt: {
             allowNull:    false,
             defaultValue: undefined,
@@ -256,7 +321,7 @@ module.exports = {
             type:         'DATETIME',
             unique:       false,
         },
-        event:   {
+        event:     {
             allowNull:    false,
             defaultValue: undefined,
             primaryKey:   false,
@@ -318,7 +383,7 @@ module.exports = {
             unique:       false,
         },
     },
-    user:     {
+    user:              {
         active:    {
             allowNull:    false,
             defaultValue: false,

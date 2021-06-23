@@ -9,6 +9,7 @@ const Constants = require('../constants');
 const Utils = require('../utils');
 const Sequelize = require('sequelize');
 const TransactionRebuilder = require('../transactionRebuilder');
+const AuditManager = require('../auditManager');
 
 const nameSchema = Joi.string().normalize().min(1).regex(/\S/u);
 const eventTypeSchema = Joi.string().valid(...Object.values(Constants.EVENT_TYPE_NAMES));
@@ -118,6 +119,7 @@ async function createEvent(ctx) {
         }, {transaction});
 
         await TransactionRebuilder.rebuildEvent(transaction, event);
+        await AuditManager.log(transaction, ctx.user, 'event.create', {event: event.id});
         return event.id;
     });
     ctx.status = 201;
@@ -201,6 +203,7 @@ async function updateEvent(ctx) {
         );
 
         await TransactionRebuilder.rebuildEvent(transaction, event);
+        await AuditManager.log(transaction, ctx.user, 'event.update', {event: event.id});
     });
     ctx.status = 204;
 }
@@ -233,14 +236,18 @@ async function saveParticipation(ctx) {
             pointsCredited: apiParticipation.credits && apiParticipation.credits.points,
             moneyCredited:  apiParticipation.credits && apiParticipation.credits.money,
         };
+        let auditType = 'unknown';
         if (!participation) {
             data.event = event.id;
             data.user = user.id;
             await Models.Participation.create(data, {transaction});
+            auditType = 'participation.create';
         } else {
             await participation.update(data, {transaction});
+            auditType = 'participation.update';
         }
         await TransactionRebuilder.rebuildEvent(transaction, event);
+        await AuditManager.log(transaction, ctx.user, auditType, {event: event.id, affectedUser: user.id});
     });
     ctx.status = 204;
 }
@@ -263,6 +270,7 @@ async function deleteParticipation(ctx) {
         });
         if (nDestroyed) {
             await TransactionRebuilder.rebuildEvent(transaction, event);
+            await AuditManager.log(transaction, ctx.user, 'participation.delete', {event: event.id, affectedUser: user.id});
         }
         return nDestroyed;
     });
@@ -393,6 +401,7 @@ async function deleteEvent(ctx) {
 
         await TransactionRebuilder.rebuildTransactionBalances(transaction, event.date);
         await TransactionRebuilder.rebuildUserBalances(transaction);
+        await AuditManager.log(transaction, ctx.user, 'event.delete', {event: event.id});
     });
     ctx.status = 204;
 }

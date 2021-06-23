@@ -18,6 +18,7 @@
  * @property {number} amount
  * @property {number} balance
  * @property {number} eventId
+ * @property {string} [eventName]
  */
 
 /**
@@ -36,4 +37,18 @@
  * @property {number} eventId
  * @property {string} type
  * @property {{points: number, money: number}} credits
+ */
+
+/**
+ * @typedef {Object} ApiAudit
+ * @property {number} id
+ * @property {Date} date
+ * @property {string} type
+ * @property {number} actingUserId
+ * @property {string} actingUserName
+ * @property {number|null} affectedUserId
+ * @property {string|null} affectedUserName
+ * @property {number|null} eventId
+ * @property {string|null} eventName
+ * @property {string|null} details
  */

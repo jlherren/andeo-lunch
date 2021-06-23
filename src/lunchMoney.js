@@ -10,6 +10,7 @@ const AccountRoutes = require('./routes/account');
 const UserRoutes = require('./routes/user');
 const EventRoutes = require('./routes/event');
 const MiscRoutes = require('./routes/misc');
+const AuditRoutes = require('./routes/audit');
 const RouteUtils = require('./routes/route-utils');
 const Db = require('./db');
 const Constants = require('./constants');
@@ -174,6 +175,7 @@ class LunchMoney {
         UserRoutes.register(router);
         EventRoutes.register(router);
         MiscRoutes.register(router);
+        AuditRoutes.register(router);
 
         return router;
     }

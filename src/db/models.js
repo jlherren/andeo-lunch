@@ -180,6 +180,66 @@ class Transaction extends Model {
 class Presence extends Model {
 }
 
+/**
+ * @property {Date} date
+ * @property {number|null} actingUser
+ * @property {User|null} [ActingUser]
+ * @property {string} type
+ * @property {number|null} event
+ * @property {Event|null} Event
+ * @property {number|null} affectedUser
+ * @property {User|null} AffectedUser
+ * @property {string|null} details
+ */
+class Audit extends Model {
+    /**
+     * Map an audit to an object suitable to return over the API
+     *
+     * @returns {ApiAudit}
+     */
+    toApi() {
+        return {
+            id:               this.id,
+            date:             this.date,
+            type:             this.type,
+            actingUserId:     this.actingUser,
+            actingUserName:   this.getActingUserName(),
+            eventId:          this.event,
+            eventName:        this.getEventName(),
+            affectedUserId:   this.affectedUser,
+            affectedUserName: this.getAffectedUserName(),
+            details:          this.details,
+        };
+    }
+
+    getActingUserName() {
+        if (this.ActingUser) {
+            return this.ActingUser.name;
+        } else if (this.ActingUser === null && this.actingUser !== null) {
+            return 'Deleted user';
+        }
+        return null;
+    }
+
+    getEventName() {
+        if (this.Event) {
+            return this.Event.name;
+        } else if (this.Event === null && this.event !== null) {
+            return 'Deleted event';
+        }
+        return null;
+    }
+
+    getAffectedUserName() {
+        if (this.AffectedUser) {
+            return this.AffectedUser.name;
+        } else if (this.AffectedUser === null && this.affectedUser !== null) {
+            return 'Deleted user';
+        }
+        return null;
+    }
+}
+
 exports.User = User;
 exports.Event = Event;
 exports.Lunch = Lunch;
@@ -188,6 +248,7 @@ exports.Participation = Participation;
 exports.Transaction = Transaction;
 exports.Transfer = Transfer;
 exports.Presence = Presence;
+exports.Audit = Audit;
 
 /**
  * @param {Sequelize} sequelize
@@ -223,7 +284,8 @@ exports.initModels = function initModels(sequelize) {
     }, {sequelize, modelName: 'event'});
 
     Lunch.init({
-        pointsCost:            {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
+        pointsCost: {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
+
         // Note: moneyCost is purely informational and won't affect calculations!  The moneyCredited field
         // of participations is what will actually be used for calculations.
         moneyCost:             {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
@@ -233,8 +295,8 @@ exports.initModels = function initModels(sequelize) {
     Event.hasOne(Lunch, {foreignKey: {name: 'event', allowNull: false, unique: true}, as: 'Lunch'});
 
     Transfer.init({
-        points:    {type: DataTypes.DOUBLE, allowNull: false},
-        money:     {type: DataTypes.DOUBLE, allowNull: false},
+        points: {type: DataTypes.DOUBLE, allowNull: false},
+        money:  {type: DataTypes.DOUBLE, allowNull: false},
     }, {sequelize, modelName: 'transfer'});
     Transfer.belongsTo(User, {foreignKey: {name: 'sender', allowNull: false}, as: 'Sender'});
     Transfer.belongsTo(User, {foreignKey: {name: 'recipient', allowNull: false}, as: 'Recipient'});
@@ -264,10 +326,10 @@ exports.initModels = function initModels(sequelize) {
     Event.hasMany(Participation, {foreignKey: {name: 'event', allowNull: false}, as: 'Participations'});
 
     Transaction.init({
-        date:       {type: DataTypes.DATE, allowNull: false},
-        currency:   {type: DataTypes.TINYINT, allowNull: false},
-        amount:     {type: DataTypes.DOUBLE, allowNull: false},
-        balance:    {type: DataTypes.DOUBLE, allowNull: false},
+        date:     {type: DataTypes.DATE, allowNull: false},
+        currency: {type: DataTypes.TINYINT, allowNull: false},
+        amount:   {type: DataTypes.DOUBLE, allowNull: false},
+        balance:  {type: DataTypes.DOUBLE, allowNull: false},
     }, {
         sequelize,
         modelName: 'transaction',
@@ -287,4 +349,14 @@ exports.initModels = function initModels(sequelize) {
         end:   {type: DataTypes.DATEONLY, allowNull: true},
     }, {sequelize, modelName: 'presence'});
     Presence.belongsTo(User, {foreignKey: {name: 'user', allowNull: false}, as: 'User'});
+
+    Audit.init({
+        date:    {type: DataTypes.DATE, allowNull: false},
+        type:    {type: ascii(32), allowNull: false},
+        details: {type: DataTypes.STRING(255), allowNull: true},
+    }, {sequelize, modelName: 'audit'});
+    // These do not enforce the FK constraint on purpose, to allow deleting objects but keeping the audits for it
+    Audit.belongsTo(User, {foreignKey: {name: 'actingUser', allowNull: false}, constraints: false, as: 'ActingUser'});
+    Audit.belongsTo(Event, {foreignKey: {name: 'event', allowNull: true}, constraints: false, as: 'Event'});
+    Audit.belongsTo(User, {foreignKey: {name: 'affectedUser', allowNull: true}, constraints: false, as: 'AffectedUser'});
 };
