@@ -296,6 +296,17 @@ async function listEvents(ctx) {
     let from = Utils.parseDate(ctx.query.from);
     let to = Utils.parseDate(ctx.query.to);
     let ownParticipations = ctx.query.with === 'ownParticipations';
+    let types = ctx.query.types;
+
+    if (types !== undefined) {
+        types = types.split(',').map(typeName => {
+            let typeId = Constants.EVENT_TYPE_IDS[typeName];
+            if (!typeId) {
+                ctx.throw(400, 'Invalid type');
+            }
+            return typeId;
+        });
+    }
 
     let conditions = [];
     if (from !== null) {
@@ -304,25 +315,36 @@ async function listEvents(ctx) {
     if (to !== null) {
         conditions.push({date: {[Op.lt]: to}});
     }
+    if (types) {
+        conditions.push({type: {[Op.in]: types}});
+    }
 
     let where = {};
     if (conditions.length) {
         where[Op.and] = conditions;
     }
 
-    let include = [
-        'Lunch',
-    ];
+    let include = [];
 
-    if (ownParticipations) {
-        include.push({
-            model:    Models.Participation,
-            as:       'Participations',
-            where:    {
-                user: ctx.user.id,
-            },
-            required: false,
-        });
+    if (!types || types.includes(Constants.EVENT_TYPES.LUNCH)) {
+        include.push('Lunch');
+
+        if (ownParticipations) {
+            include.push({
+                model:    Models.Participation,
+                as:       'Participations',
+                where:    {
+                    user: ctx.user.id,
+                },
+                required: false,
+            });
+        }
+    } else if (ownParticipations) {
+        ctx.throw(400, 'with=ownParticipations does not make sense when excluding lunches');
+    }
+
+    if (!types || types.includes(Constants.EVENT_TYPES.TRANSFER)) {
+        include.push('Transfer');
     }
 
     /** @type {Array<Event>} */

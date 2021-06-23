@@ -200,7 +200,7 @@ module.exports = {
             unique:       false,
         },
     },
-    presence:          {
+    presence: {
         createdAt: {
             allowNull:    false,
             defaultValue: undefined,
@@ -248,7 +248,77 @@ module.exports = {
             unique:       false,
         },
     },
-    user:              {
+    transfer: {
+        createdAt: {
+            allowNull:    false,
+            defaultValue: undefined,
+            primaryKey:   false,
+            type:         'DATETIME',
+            unique:       false,
+        },
+        event:   {
+            allowNull:    false,
+            defaultValue: undefined,
+            primaryKey:   false,
+            references:   {
+                key:   'id',
+                model: 'event',
+            },
+            type:         'INTEGER',
+            unique:       true,
+        },
+        id:        {
+            allowNull:    true,
+            defaultValue: undefined,
+            primaryKey:   true,
+            type:         'INTEGER',
+            unique:       false,
+        },
+        money:     {
+            allowNull:    false,
+            defaultValue: undefined,
+            primaryKey:   false,
+            type:         'DOUBLE PRECISION',
+            unique:       false,
+        },
+        points:    {
+            allowNull:    false,
+            defaultValue: undefined,
+            primaryKey:   false,
+            type:         'DOUBLE PRECISION',
+            unique:       false,
+        },
+        recipient: {
+            allowNull:    false,
+            defaultValue: undefined,
+            primaryKey:   false,
+            references:   {
+                key:   'id',
+                model: 'user',
+            },
+            type:         'INTEGER',
+            unique:       false,
+        },
+        sender:    {
+            allowNull:    false,
+            defaultValue: undefined,
+            primaryKey:   false,
+            references:   {
+                key:   'id',
+                model: 'user',
+            },
+            type:         'INTEGER',
+            unique:       false,
+        },
+        updatedAt: {
+            allowNull:    false,
+            defaultValue: undefined,
+            primaryKey:   false,
+            type:         'DATETIME',
+            unique:       false,
+        },
+    },
+    user:     {
         active:    {
             allowNull:    false,
             defaultValue: false,

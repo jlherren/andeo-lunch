@@ -54,6 +54,7 @@ class User extends Model {
  * @property {Date} date
  * @property {string} name
  * @property {Lunch} [Lunch]
+ * @property {Transfer} [Transfer]
  */
 class Event extends Model {
     /**
@@ -88,6 +89,19 @@ class Event extends Model {
  * @property {Event} [Event]
  */
 class Lunch extends Model {
+}
+
+/**
+ * @property {number} event
+ * @property {Event} [Event]
+ * @property {number} sender
+ * @property {User} [Sender]
+ * @property {number} recipient
+ * @property {User} [Recipient]
+ * @property {number} points
+ * @property {number} money
+ */
+class Transfer extends Model {
 }
 
 /**
@@ -172,6 +186,7 @@ exports.Lunch = Lunch;
 exports.ParticipationType = ParticipationType;
 exports.Participation = Participation;
 exports.Transaction = Transaction;
+exports.Transfer = Transfer;
 exports.Presence = Presence;
 
 /**
@@ -216,6 +231,15 @@ exports.initModels = function initModels(sequelize) {
     }, {sequelize, modelName: 'lunch'});
     Lunch.belongsTo(Event, {foreignKey: {name: 'event', allowNull: false, unique: true}, as: 'Event'});
     Event.hasOne(Lunch, {foreignKey: {name: 'event', allowNull: false, unique: true}, as: 'Lunch'});
+
+    Transfer.init({
+        points:    {type: DataTypes.DOUBLE, allowNull: false},
+        money:     {type: DataTypes.DOUBLE, allowNull: false},
+    }, {sequelize, modelName: 'transfer'});
+    Transfer.belongsTo(User, {foreignKey: {name: 'sender', allowNull: false}, as: 'Sender'});
+    Transfer.belongsTo(User, {foreignKey: {name: 'recipient', allowNull: false}, as: 'Recipient'});
+    Transfer.belongsTo(Event, {foreignKey: {name: 'event', allowNull: false, unique: true}, as: 'Event'});
+    Event.hasOne(Transfer, {foreignKey: {name: 'event', allowNull: false, unique: true}, as: 'Transfer'});
 
     ParticipationType.init({
         label: {type: DataTypes.STRING(64), allowNull: false},

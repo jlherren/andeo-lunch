@@ -314,4 +314,14 @@ describe('Event lists', () => {
         expect(response.status).toEqual(200);
         expect(response.body.events).toHaveLength(0);
     });
+
+    it('Returns only events of the specified type', async () => {
+        let response = await request.get('/events?types=lunch');
+        expect(response.status).toEqual(200);
+        expect(response.body.events).toHaveLength(1);
+
+        response = await request.get('/events?types=label');
+        expect(response.status).toEqual(200);
+        expect(response.body.events).toHaveLength(0);
+    });
 });
