@@ -10,6 +10,9 @@
         "lint:fix": "vue-cli-service lint",
         "ui": "vue ui"
     },
+    "engines": {
+        "node": ">= 14.0.0"
+    },
     "dependencies": {
         "@fontsource/roboto": "^4.4.5",
         "@mdi/js": "^5.9.55",
