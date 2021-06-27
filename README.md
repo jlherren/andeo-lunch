@@ -5,7 +5,7 @@ Create a file `config.json` and fill it with this for a MySQL database:
 
     {
         "database": {
-            "dialect": "mysql",
+            "dialect": "mariadb",
             "host": "localhost",
             "database": "lunchmoney",
             "username": "lunchmoney",
