@@ -165,7 +165,7 @@ class Transaction extends Model {
             userId:       this.user,
             contraUserId: this.contraUser,
             eventId:      this.event,
-            eventName:    this.Event && this.Event.name,
+            eventName:    this.Event?.name,
             currency:     Constants.CURRENCY_NAMES[this.currency],
             amount:       this.amount,
             balance:      this.balance,

@@ -274,8 +274,8 @@ async function saveParticipation(ctx) {
         });
         let data = {
             type:           Constants.PARTICIPATION_TYPE_IDS[apiParticipation.type],
-            pointsCredited: apiParticipation.credits && apiParticipation.credits.points,
-            moneyCredited:  apiParticipation.credits && apiParticipation.credits.money,
+            pointsCredited: apiParticipation.credits?.points,
+            moneyCredited:  apiParticipation.credits?.money,
             automatic:      false,
         };
         let auditType = 'unknown';
