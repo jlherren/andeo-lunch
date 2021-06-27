@@ -7,6 +7,8 @@ module.exports = {
 
     productionSourceMap: false,
 
+    lintOnSave: 'warning',
+
     pwa: {
         name:          'Lunch Money',
         themeColor:    '#1e1617',
