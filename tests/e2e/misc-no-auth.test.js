@@ -13,8 +13,8 @@ let request = null;
 
 beforeAll(async () => {
     lunchMoney = new LunchMoney({config: ConfigProvider.getTestConfig()});
-    await lunchMoney.waitReady();
-    request = supertest(lunchMoney.listen());
+    await lunchMoney.initDb();
+    request = supertest.agent(lunchMoney.listen());
 });
 
 afterAll(async () => {

@@ -440,6 +440,13 @@ module.exports = {
             type:         'DOUBLE PRECISION',
             unique:       false,
         },
+        settings:  {
+            allowNull:    false,
+            defaultValue: '{}',
+            primaryKey:   false,
+            type:         'JSON',
+            unique:       false,
+        },
         updatedAt: {
             allowNull:    false,
             defaultValue: undefined,

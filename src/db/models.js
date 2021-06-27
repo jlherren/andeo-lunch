@@ -19,6 +19,7 @@ const Constants = require('../constants');
  * @property {string} name
  * @property {number} points
  * @property {number} money
+ * @property {Object} settings
  */
 class User extends Model {
     /**
@@ -276,6 +277,7 @@ exports.initModels = function initModels(sequelize) {
         hidden:   {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
         points:   {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
         money:    {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
+        settings: {type: DataTypes.JSON, allowNull: false, defaultValue: {}},
     }, {sequelize, modelName: 'user'});
 
     Event.init({

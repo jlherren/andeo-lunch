@@ -1,0 +1,52 @@
+'use strict';
+
+const Joi = require('joi');
+const RouteUtils = require('./route-utils');
+const Constants = require('../constants');
+
+let participationTypeSchema = Joi.string().valid(...Object.values(Constants.PARTICIPATION_TYPE_NAMES));
+
+const saveSettingsSchema = Joi.object({
+    defaultOptIn1: participationTypeSchema,
+    defaultOptIn2: participationTypeSchema,
+    defaultOptIn3: participationTypeSchema,
+    defaultOptIn4: participationTypeSchema,
+    defaultOptIn5: participationTypeSchema,
+    quickOptIn:    Joi.string().valid('omnivorous', 'vegetarian'),
+});
+
+/**
+ * @param {Application.Context} ctx
+ */
+function getSettings(ctx) {
+    ctx.body = {
+        settings: ctx.user.settings,
+    };
+}
+
+/**
+ * @param {Application.Context} ctx
+ * @returns {Promise<void>}
+ */
+async function saveSettings(ctx) {
+    let settings = RouteUtils.validateBody(ctx, saveSettingsSchema);
+
+    ctx.user.settings = {
+        ...ctx.user.settings,
+        ...settings,
+    };
+
+    await ctx.user.save();
+
+    ctx.status = 204;
+}
+
+/**
+ * @param {Router} router
+ */
+function register(router) {
+    router.get('/settings', getSettings);
+    router.post('/settings', saveSettings);
+}
+
+exports.register = register;
