@@ -4,6 +4,9 @@
     "main": "src/lunchMoney.js",
     "license": "UNLICENSED",
     "private": true,
+    "engines": {
+        "node": ">= 14.0.0"
+    },
     "scripts": {
         "serve": "node src/lunchMoney.js",
         "serve:watch": "nodemon src/lunchMoney.js",
