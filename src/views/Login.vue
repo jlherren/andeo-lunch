@@ -7,18 +7,18 @@
         </v-app-bar>
 
         <v-container>
-            <v-form @submit.prevent="login" v-model="formValid" :disabled="isBusy">
+            <v-form v-model="formValid" :disabled="isBusy" @submit.prevent="login">
                 <h1>Login</h1>
 
-                <v-text-field type="text" label="Username" v-model="username" :rules="requiredRule" autofocus required/>
-                <v-text-field type="password" label="Password" v-model="password" :rules="requiredRule" required/>
+                <v-text-field v-model="username" type="text" :rules="requiredRule" autofocus label="Username" required/>
+                <v-text-field v-model="password" type="password" :rules="requiredRule" label="Password" required/>
 
-                <v-btn block color="primary" type="submit" :disabled="!formValid || isBusy">
+                <v-btn type="submit" :disabled="!formValid || isBusy" color="primary" block>
                     Login
                 </v-btn>
 
-                <div class="text-center" v-if="isBusy">
-                    <v-progress-circular indeterminate class="mt-4"/>
+                <div v-if="isBusy" class="text-center">
+                    <v-progress-circular class="mt-4" indeterminate/>
                 </div>
             </v-form>
         </v-container>
@@ -55,7 +55,7 @@
     };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
     .v-form {
         max-width: 30em;
         margin: 0 auto;

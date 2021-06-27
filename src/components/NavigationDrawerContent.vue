@@ -11,7 +11,7 @@
             </v-list-item-content>
         </v-list-item>
 
-        <v-divider />
+        <v-divider/>
 
         <v-list-item to="/preferences">
             <v-list-item-icon>
@@ -89,7 +89,7 @@
             ]),
         },
 
-        methods:  {
+        methods: {
             logout() {
                 this.$store.dispatch('logout');
             },

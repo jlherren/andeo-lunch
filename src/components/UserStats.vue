@@ -10,13 +10,13 @@
     import {mapGetters} from 'vuex';
 
     export default {
-        name:       'userStats',
+        name: 'userStats',
 
         components: {
             Balance,
         },
 
-        computed:   {
+        computed: {
             ...mapGetters([
                 'ownUser',
             ]),
@@ -24,7 +24,7 @@
     };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
     .stats {
         font-size: 16pt;
         white-space: nowrap;

@@ -1,7 +1,7 @@
 <template>
     <span :class="valueClass">
         {{ formatted }}
-        <v-icon :small="small" :large="large" v-if="actualIcon !== null">{{ actualIcon }}</v-icon>
+        <v-icon v-if="actualIcon !== null" :large="large" :small="small">{{ actualIcon }}</v-icon>
     </span>
 </template>
 
@@ -73,7 +73,7 @@
     };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
     .v-icon {
         color: inherit;
     }

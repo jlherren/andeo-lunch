@@ -25,9 +25,9 @@
             </v-banner>
         </v-container>
 
-        <v-virtual-scroll item-height="30" :items="transactions" ref="scroll">
-            <template v-slot:default="{item: transaction}" v-if="!loading">
-                <v-list-item :to="'/events/' + transaction.eventId" :key="transaction.id" :class="transaction.class">
+        <v-virtual-scroll ref="scroll" :items="transactions" item-height="30">
+            <template v-if="!loading" v-slot:default="{item: transaction}">
+                <v-list-item :key="transaction.id" :class="transaction.class" :to="'/events/' + transaction.eventId">
                     <span>{{ formatDate(transaction.date) }}</span>
                     <span>{{ transaction.eventName }}</span>
                     <balance :value="transaction.amount" precise small color/>
@@ -103,7 +103,7 @@
     };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
     .v-virtual-scroll {
         position: absolute;
         top: 0;
@@ -140,6 +140,7 @@
             flex: 0 0 20%;
             text-align: right;
         }
+
         & > span:nth-child(4) {
             font-weight: bold;
         }

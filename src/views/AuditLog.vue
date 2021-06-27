@@ -13,7 +13,7 @@
         </v-container>
 
         <v-virtual-scroll item-height="30" :items="audits" ref="scroll">
-            <template v-slot:default="{item: audit}" v-if="!loading">
+            <template v-if="!loading" v-slot:default="{item: audit}">
                 <v-list-item :key="audit.id" :class="audit.class">
                     <span>{{ formatDate(audit.date) }}</span>
                     <span>{{ audit.actingUserName }}</span>
@@ -103,7 +103,7 @@
     };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
     .v-virtual-scroll {
         position: absolute;
         top: 0;

@@ -14,7 +14,7 @@
             <router-view :key="$route.path"/>
 
             <v-bottom-navigation app>
-                <v-btn v-for="link of navigationLinks" :to="link.url" :key="link.title">
+                <v-btn v-for="link of navigationLinks" :key="link.title" :to="link.url">
                     <span>{{ link.title }}</span>
                     <v-icon>{{ link.icon }}</v-icon>
                 </v-btn>
@@ -26,11 +26,11 @@
             <Login/>
         </template>
 
-        <v-snackbar :value="globalSnackbar !== null" @input="closeSnackbar" timeout="5000">
+        <v-snackbar :value="globalSnackbar !== null" timeout="5000" @input="closeSnackbar">
             {{ globalSnackbar }}
 
             <template v-slot:action="{ attrs }">
-                <v-btn text v-bind="attrs" @click="closeSnackbar">
+                <v-btn v-bind="attrs" text @click="closeSnackbar">
                     Close
                 </v-btn>
             </template>

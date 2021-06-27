@@ -8,13 +8,13 @@
             Frontend version: {{ frontendVersion }}<br>
 
             Backend version:
-            <v-progress-circular size="10" width="1" indeterminate v-if="backendVersionLoading"/>
+            <v-progress-circular v-if="backendVersionLoading" indeterminate size="10" width="1"/>
             <span v-else>{{ backendVersion }}</span>
             <br>
         </v-card-text>
 
         <v-card-actions>
-            <v-spacer />
+            <v-spacer/>
             <v-btn text @click="$emit('close')">
                 Close
             </v-btn>

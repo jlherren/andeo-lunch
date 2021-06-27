@@ -1,7 +1,7 @@
 <template>
     <v-list-item :class="itemClass">
         <v-list-item-avatar>
-            <v-avatar :color="bigIconColor" v-if="bigIcon !== null">
+            <v-avatar v-if="bigIcon !== null" :color="bigIconColor">
                 <v-icon dark>{{ bigIcon }}</v-icon>
             </v-avatar>
         </v-list-item-avatar>
@@ -10,11 +10,11 @@
             <v-list-item-title>
                 <span class="mr-4">{{ user.name }}</span>
 
-                <v-chip small class="mr-1" v-if="participation.credits.points > 0">
+                <v-chip v-if="participation.credits.points > 0" class="mr-1" small>
                     <balance :value="participation.credits.points" points small/>
                 </v-chip>
 
-                <v-chip small v-if="participation.credits.money > 0" class="mr-1">
+                <v-chip v-if="participation.credits.money > 0" class="mr-1" small>
                     <v-icon small>{{ $icons.money }}</v-icon>
                 </v-chip>
             </v-list-item-title>
@@ -103,7 +103,7 @@
     };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
     .participants {
         display: inline-flex;
         align-items: center;

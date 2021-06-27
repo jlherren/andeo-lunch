@@ -17,7 +17,7 @@
 
         props: {
             value: {
-                type:     Number,
+                type: Number,
             },
         },
 

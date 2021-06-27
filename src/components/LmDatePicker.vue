@@ -1,9 +1,8 @@
 <template>
     <v-dialog v-model="open" width="290px">
         <template v-slot:activator="{ on, attrs }">
-            <v-text-field :label="label" :value="formatted" readonly
-                          :append-icon="$icons.calendar"
-                          v-bind="attrs" v-on="on" :rules="rules"
+            <v-text-field v-bind="attrs" v-on="on" :append-icon="$icons.calendar"
+                          :label="label" :rules="rules" :value="formatted" readonly
             />
         </template>
         <v-date-picker :value="value" @input="update($event)" first-day-of-week="1"/>
@@ -17,8 +16,8 @@
         name: 'LmDatePicker',
 
         props: {
-            value: String,
-            label: {
+            value:    String,
+            label:    {
                 type:    String,
                 default: 'Date',
             },
@@ -44,8 +43,6 @@
                 }
                 return DateUtils.displayFormat(new Date(this.value));
             },
-
-
         },
 
         methods: {

@@ -1,8 +1,8 @@
 <template>
     <div>
         <v-app-bar app :extension-height="extensionHeight">
-            <v-app-bar-nav-icon @click="toggleDrawer" v-if="!subPage"/>
-            <v-app-bar-nav-icon @click="goBack" v-if="subPage">
+            <v-app-bar-nav-icon v-if="!subPage" @click="toggleDrawer"/>
+            <v-app-bar-nav-icon v-if="subPage" @click="goBack">
                 <v-icon>{{ $icons.arrowLeft }}</v-icon>
             </v-app-bar-nav-icon>
             <v-app-bar-title>
@@ -10,7 +10,7 @@
             </v-app-bar-title>
             <v-spacer/>
             <slot name="buttons"/>
-            <template v-slot:extension v-if="$slots.extension">
+            <template v-if="$slots.extension" v-slot:extension>
                 <slot name="extension"/>
             </template>
         </v-app-bar>

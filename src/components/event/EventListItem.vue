@@ -6,7 +6,7 @@
                 <v-list-item-subtitle>{{ formattedDate }}</v-list-item-subtitle>
 
                 <v-list-item-content>
-                    <participation-summary class="justify-center" :participations="participations"/>
+                    <participation-summary :participations="participations" class="justify-center"/>
                 </v-list-item-content>
             </v-list-item-content>
 
@@ -124,7 +124,7 @@
     };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
     span + span {
         margin-left: 1em;
     }

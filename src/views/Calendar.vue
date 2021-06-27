@@ -16,9 +16,9 @@
 
         <v-list v-if="!loading">
             <template v-for="event of entries">
-                <event-list-item :event="event" :key="event.id" v-if="event.type !== 'placeholder'"/>
+                <event-list-item v-if="event.type !== 'placeholder'" :key="event.id" :event="event"/>
 
-                <v-list-item :key="event.id" v-if="event.type === 'placeholder'">
+                <v-list-item v-if="event.type === 'placeholder'" :key="event.id">
                     <v-list-item-icon/>
                     <v-list-item-content>
                         <v-list-item-title class="text--secondary">No event</v-list-item-title>
@@ -35,24 +35,24 @@
 
         <v-speed-dial v-model="speedDial" fixed bottom right direction="top" transition="slide-y-reverse-transition">
             <template slot="activator">
-                <v-btn fab v-model="speedDial" color="primary">
+                <v-btn v-model="speedDial" color="primary" fab>
                     <v-icon v-if="speedDial">{{ $icons.close }}</v-icon>
                     <v-icon v-else>{{ $icons.plus }}</v-icon>
                 </v-btn>
             </template>
-            <v-btn fab small color="primary" @click="openCreateDialog('lunch', null)">
+            <v-btn color="primary" fab small @click="openCreateDialog('lunch', null)">
                 <v-icon>{{ $icons.lunch }}</v-icon>
             </v-btn>
-            <v-btn fab small color="primary" @click="openCreateDialog('event', null)">
+            <v-btn color="primary" fab small @click="openCreateDialog('event', null)">
                 <v-icon>{{ $icons.event }}</v-icon>
             </v-btn>
-            <v-btn fab small color="primary" @click="openCreateDialog('label', null)">
+            <v-btn color="primary" fab small @click="openCreateDialog('label', null)">
                 <v-icon>{{ $icons.label }}</v-icon>
             </v-btn>
         </v-speed-dial>
 
         <v-dialog v-model="createDialog">
-            <event-edit :event="newEvent" ref="createEvent" @close="createDialog = false"/>
+            <event-edit ref="createEvent" :event="newEvent" @close="createDialog = false"/>
         </v-dialog>
     </v-main>
 </template>
@@ -180,7 +180,7 @@
     };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
     .v-speed-dial {
         // This is a known issue, it doesn't account for the bottom navigation
         bottom: 16px + 56px;

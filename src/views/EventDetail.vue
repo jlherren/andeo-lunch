@@ -2,7 +2,7 @@
     <v-main>
         <the-app-bar sub-page>
             {{ name }}
-            <template slot="buttons" v-if="event">
+            <template v-if="event" slot="buttons">
                 <v-btn icon @click="openEditDialog">
                     <v-icon>{{ $icons.edit }}</v-icon>
                 </v-btn>
@@ -17,7 +17,7 @@
                 <div class="headline">{{ name }}</div>
                 <div class="text--secondary">{{ formattedDate }}</div>
 
-                <div class="costs" v-if="event.type !== 'label'">
+                <div v-if="event.type !== 'label'" class="costs">
                     <participation-summary :participations="participations"/>
                     <balance :value="event.costs.points" points large no-sign/>
                     <balance :value="event.costs.money" money large no-sign/>
@@ -40,7 +40,7 @@
                 </v-banner>
             </v-container>
 
-            <v-tabs fixed-tabs v-model="tab" v-if="event.type !== 'label'">
+            <v-tabs v-if="event.type !== 'label'" v-model="tab" fixed-tabs>
                 <v-tab key="participations">
                     <v-icon>{{ $icons.lunch }}</v-icon>
                 </v-tab>
@@ -49,13 +49,13 @@
                 </v-tab>
             </v-tabs>
 
-            <v-tabs-items v-model="tab" v-if="event.type !== 'label'">
+            <v-tabs-items v-if="event.type !== 'label'" v-model="tab">
                 <v-tab-item key="participations">
                     <v-list>
-                        <v-skeleton-loader type="list-item-avatar" v-if="participationsLoading"/>
+                        <v-skeleton-loader v-if="participationsLoading" type="list-item-avatar"/>
 
-                        <participation-list-item :participation="myParticipation" @saved="refreshEvent()"
-                                                 v-if="!participationsLoading"/>
+                        <participation-list-item v-if="!participationsLoading" :participation="myParticipation"
+                                                 @saved="refreshEvent()"/>
 
                         <participation-list-item v-for="participation of activeParticipations"
                                                  :key="participation.userId"
@@ -66,7 +66,7 @@
 
                 <v-tab-item key="money">
                     <v-list>
-                        <v-skeleton-loader type="list-item-avatar" v-if="participationsLoading"/>
+                        <v-skeleton-loader v-if="participationsLoading" type="list-item-avatar"/>
 
                         <participation-list-item v-for="participation of moneyProviders"
                                                  :key="participation.userId"
@@ -84,7 +84,7 @@
             </v-tabs-items>
 
             <v-dialog v-model="edit">
-                <event-edit :event="event" ref="editDialog" @close="edit = false"/>
+                <event-edit ref="editDialog" :event="event" @close="edit = false"/>
             </v-dialog>
 
             <v-dialog v-model="confirmDelete">
@@ -257,7 +257,7 @@
     };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
     .costs {
         margin-top: 0.5ex;
         font-size: 28pt;

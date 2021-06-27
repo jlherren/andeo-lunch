@@ -4,14 +4,14 @@
             <v-card-title>{{ title }}</v-card-title>
 
             <v-card-text>
-                <v-text-field label="Name" v-model="name" :rules="nameRules" autofocus required/>
+                <v-text-field v-model="name" :rules="nameRules" label="Name" autofocus required/>
 
                 <v-row>
                     <v-col>
                         <lm-date-picker v-model="date" required/>
                     </v-col>
                     <v-col v-if="type !== 'label'">
-                        <points-field label="Points credited" v-model="points"/>
+                        <points-field v-model="points" label="Points credited"/>
                     </v-col>
                 </v-row>
             </v-card-text>
@@ -19,7 +19,7 @@
             <v-card-actions>
                 <v-btn text @click="cancel()">Cancel</v-btn>
                 <v-spacer></v-spacer>
-                <v-btn text type="submit" color="primary" :disabled="isBusy">Save</v-btn>
+                <v-btn type="submit" :disabled="isBusy" color="primary" text>Save</v-btn>
             </v-card-actions>
         </v-form>
     </v-card>
@@ -40,7 +40,7 @@
 
         props: {
             event: {
-                type:     Object,
+                type: Object,
             },
         },
 

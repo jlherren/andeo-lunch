@@ -392,7 +392,7 @@ module.exports = {
             {},
         ],
     },
-    overrides: [
+    overrides:     [
         {
             files: ['*.vue'],
             rules: {

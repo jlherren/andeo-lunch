@@ -1,5 +1,5 @@
 <template>
-    <v-progress-linear indeterminate absolute v-if="show"/>
+    <v-progress-linear v-if="show" absolute indeterminate/>
 </template>
 
 <script>
