@@ -1,5 +1,5 @@
 <template>
-    <v-text-field type="number" label="Points credited" :value="value" @input="input($event)" class="no-spinner">
+    <v-text-field type="number" label="Points credited" :value="value" @input="input($event)" class="no-spinner" :disabled="disabled">
         <template v-slot:append>
             <v-btn small icon @click="addPoints(-1)" :disabled="value <= 0">
                 <v-icon small>{{ $icons.minus }}</v-icon>
@@ -17,7 +17,13 @@
 
         props: {
             value: {
-                type: Number,
+                type:     Number,
+                required: true,
+            },
+
+            disabled: {
+                type:    Boolean,
+                default: false,
             },
         },
 

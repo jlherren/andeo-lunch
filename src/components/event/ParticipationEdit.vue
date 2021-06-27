@@ -7,19 +7,18 @@
         <v-card-text>
             <v-row>
                 <v-col>
-                    <participation-type-widget v-model="type"/>
+                    <participation-type-widget v-model="type" :disabled="isBusy"/>
                 </v-col>
             </v-row>
 
             <v-row>
                 <v-col cols="6">
-                    <points-field v-model="points" label="Points credited"/>
+                    <points-field v-model="points" label="Points credited" :disabled="isBusy"/>
                 </v-col>
                 <v-col cols="6">
-                    <v-text-field v-model="money" type="number" label="Money credited"/>
+                    <v-text-field v-model="money" type="number" label="Money credited" :disabled="isBusy"/>
                 </v-col>
             </v-row>
-
         </v-card-text>
 
         <v-card-actions>
@@ -58,6 +57,7 @@
                 points: this.participation.credits.points,
                 money:  this.participation.credits.money,
                 type:   this.participation.type,
+                isBusy: false,
             };
         },
 
@@ -86,17 +86,22 @@
             },
 
             async save() {
-                await this.$store.dispatch('saveParticipation', {
-                    userId:  this.participation.userId,
-                    eventId: this.participation.eventId,
-                    type:    this.type,
-                    credits: {
-                        points: this.points,
-                        money:  this.money,
-                    },
-                });
-                this.$emit('saved');
-                this.$emit('close');
+                this.isBusy = true;
+                try {
+                    await this.$store.dispatch('saveParticipation', {
+                        userId:  this.participation.userId,
+                        eventId: this.participation.eventId,
+                        type:    this.type,
+                        credits: {
+                            points: this.points,
+                            money:  this.money,
+                        },
+                    });
+                    this.$emit('saved');
+                    this.$emit('close');
+                } catch (err) {
+                    this.isBusy = false;
+                }
             },
         },
     };
