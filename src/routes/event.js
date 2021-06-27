@@ -87,6 +87,61 @@ async function getSingleParticipation(ctx) {
 
 /**
  * @param {Application.Context} ctx
+ * @param {number} type
+ * @param {ApiEvent} apiEvent
+ */
+function validEvent(ctx, type, apiEvent) {
+    if (type === Constants.EVENT_TYPES.LABEL) {
+        if (apiEvent?.costs?.points !== undefined) {
+            ctx.throw(400, 'Label events cannot have point costs');
+        }
+        if (apiEvent?.factors?.vegetarian?.money !== undefined) {
+            ctx.throw(400, 'Label events cannot have a vegetarian money factor');
+        }
+    }
+}
+
+/**
+ * @param {Event} event
+ * @param {Transaction} transaction
+ */
+async function updateDefaultOptIns(event, transaction) {
+    if (event.type === Constants.EVENT_TYPES.LUNCH) {
+        // Create default opt-ins
+        for (let user of await Models.User.findAll()) {
+            let weekday = new Date(event.date).getDay();
+            let participation = await Models.Participation.findOne({where: {event: event.id, user: user.id}});
+
+            if (participation && !participation.automatic) {
+                continue;
+            }
+
+            let isType = participation ? participation.type : null;
+            let shouldBeType = Constants.PARTICIPATION_TYPE_IDS[user.settings[`defaultOptIn${weekday}`] ?? 'undecided'];
+            if (shouldBeType === Constants.PARTICIPATION_TYPES.UNDECIDED) {
+                shouldBeType = null;
+            }
+
+            if (isType === null && shouldBeType !== null) {
+                await Models.Participation.create({
+                    user:      user.id,
+                    event:     event.id,
+                    type:      shouldBeType,
+                    automatic: true,
+                }, {transaction});
+            } else if (isType !== null && shouldBeType === null) {
+                await participation.destroy();
+            } else if (isType !== null && isType !== shouldBeType) {
+                await participation.update({
+                    type: shouldBeType,
+                });
+            }
+        }
+    }
+}
+
+/**
+ * @param {Application.Context} ctx
  * @returns {Promise<void>}
  */
 async function createEvent(ctx) {
@@ -94,17 +149,7 @@ async function createEvent(ctx) {
     let apiEvent = RouteUtils.validateBody(ctx, eventCreateSchema);
     let eventId = await Db.sequelize.transaction(async transaction => {
         let type = Constants.EVENT_TYPE_IDS[apiEvent.type];
-        let pointsCost = apiEvent.costs && apiEvent.costs.points;
-        let vegetarianMoneyFactor = apiEvent.factors && apiEvent.factors.vegetarian && apiEvent.factors.vegetarian.money;
-
-        if (type === Constants.EVENT_TYPES.LABEL) {
-            if (pointsCost !== undefined) {
-                ctx.throw(400, 'Label events cannot have point costs');
-            }
-            if (vegetarianMoneyFactor !== undefined) {
-                ctx.throw(400, 'Label events cannot have a vegetarian money factor');
-            }
-        }
+        validEvent(ctx, type, apiEvent);
 
         let event = await Models.Event.create({
             name: apiEvent.name,
@@ -113,11 +158,12 @@ async function createEvent(ctx) {
         }, {transaction});
 
         await Models.Lunch.create({
-            event: event.id,
-            pointsCost,
-            vegetarianMoneyFactor,
+            event:                 event.id,
+            pointsCost:            apiEvent?.costs?.points,
+            vegetarianMoneyFactor: apiEvent?.factors?.vegetarian?.money,
         }, {transaction});
 
+        await updateDefaultOptIns(event, transaction);
         await TransactionRebuilder.rebuildEvent(transaction, event);
         await AuditManager.log(transaction, ctx.user, 'event.create', {event: event.id});
         return event.id;
@@ -174,17 +220,8 @@ async function updateEvent(ctx) {
     let apiEvent = RouteUtils.validateBody(ctx, eventUpdateSchema);
     await Db.sequelize.transaction(async transaction => {
         let event = await loadEvent(ctx, transaction);
-        let pointsCost = apiEvent.costs && apiEvent.costs.points;
-        let vegetarianMoneyFactor = apiEvent.factors && apiEvent.factors.vegetarian && apiEvent.factors.vegetarian.money;
-
-        if (event.type === Constants.EVENT_TYPES.LABEL) {
-            if (pointsCost !== undefined) {
-                ctx.throw(400, 'Label events cannot have point costs');
-            }
-            if (vegetarianMoneyFactor !== undefined) {
-                ctx.throw(400, 'Label events cannot have a vegetarian money factor');
-            }
-        }
+        validEvent(ctx, event.type, apiEvent);
+        let originalDate = event.date;
 
         await event.update(
             {
@@ -196,11 +233,15 @@ async function updateEvent(ctx) {
 
         await event.Lunch.update(
             {
-                pointsCost,
-                vegetarianMoneyFactor,
+                pointsCost:            apiEvent?.costs?.points,
+                vegetarianMoneyFactor: apiEvent?.factors?.vegetarian?.money,
             },
             {transaction},
         );
+
+        if (originalDate.getTime() !== event.date.getTime()) {
+            await updateDefaultOptIns(event, transaction);
+        }
 
         await TransactionRebuilder.rebuildEvent(transaction, event);
         await AuditManager.log(transaction, ctx.user, 'event.update', {event: event.id});
@@ -235,6 +276,7 @@ async function saveParticipation(ctx) {
             type:           Constants.PARTICIPATION_TYPE_IDS[apiParticipation.type],
             pointsCredited: apiParticipation.credits && apiParticipation.credits.points,
             moneyCredited:  apiParticipation.credits && apiParticipation.credits.money,
+            automatic:      false,
         };
         let auditType = 'unknown';
         if (!participation) {

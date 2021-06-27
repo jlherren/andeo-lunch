@@ -119,6 +119,7 @@ class ParticipationType extends Model {
  * @property {number} type
  * @property {number} pointsCredited
  * @property {number} moneyCredited
+ * @property {boolean} [automatic]
  */
 class Participation extends Model {
     /**
@@ -313,6 +314,7 @@ exports.initModels = function initModels(sequelize) {
     Participation.init({
         pointsCredited: {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
         moneyCredited:  {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
+        automatic:      {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
     }, {
         sequelize,
         modelName: 'participation',

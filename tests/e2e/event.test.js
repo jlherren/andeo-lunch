@@ -325,3 +325,93 @@ describe('Event lists', () => {
         expect(response.body.events).toHaveLength(0);
     });
 });
+
+describe('Default opt-in', () => {
+    it('Sets default opt-ins when saving an event', async () => {
+        let settings = {
+            defaultOptIn1: 'omnivorous',
+            defaultOptIn2: 'vegetarian',
+            defaultOptIn3: 'opt-out',
+            defaultOptIn4: 'undecided',
+        };
+        await request.post('/settings')
+            .send(settings);
+        let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2020-01-13T12:00:00Z'});
+        let response = await request.get(`/events/${eventId}/participations/${user.id}`);
+        expect(response.status).toEqual(200);
+        expect(response.body.participation.type).toEqual('omnivorous');
+    });
+
+    it('Preserves default opt-in when changing to day with the same opt-in', async () => {
+        let settings = {
+            defaultOptIn1: 'omnivorous',
+            defaultOptIn2: 'omnivorous',
+        };
+        await request.post('/settings')
+            .send(settings);
+        let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2020-01-13T12:00:00Z'});
+        await request.post(`/events/${eventId}`)
+            .send({date: '2020-01-14T12:00:00Z'});
+        let response = await request.get(`/events/${eventId}/participations/${user.id}`);
+        expect(response.status).toEqual(200);
+        expect(response.body.participation.type).toEqual('omnivorous');
+    });
+
+    it('Adds default opt-in when changing to day with different opt-in', async () => {
+        let settings = {
+            defaultOptIn2: 'omnivorous',
+        };
+        await request.post('/settings')
+            .send(settings);
+        let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2020-01-13T12:00:00Z'});
+        await request.post(`/events/${eventId}`)
+            .send({date: '2020-01-14T12:00:00Z'});
+        let response = await request.get(`/events/${eventId}/participations/${user.id}`);
+        expect(response.status).toEqual(200);
+        expect(response.body.participation.type).toEqual('omnivorous');
+    });
+
+    it('Adjusts default opt-in when changing to day with different opt-in', async () => {
+        let settings = {
+            defaultOptIn1: 'omnivorous',
+            defaultOptIn2: 'vegetarian',
+        };
+        await request.post('/settings')
+            .send(settings);
+        let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2020-01-13T12:00:00Z'});
+        await request.post(`/events/${eventId}`)
+            .send({date: '2020-01-14T12:00:00Z'});
+        let response = await request.get(`/events/${eventId}/participations/${user.id}`);
+        expect(response.status).toEqual(200);
+        expect(response.body.participation.type).toEqual('vegetarian');
+    });
+
+    it('Deletes default opt-in when changing to day without default opt-in', async () => {
+        let settings = {
+            defaultOptIn1: 'omnivorous',
+        };
+        await request.post('/settings')
+            .send(settings);
+        let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2020-01-13T12:00:00Z'});
+        await request.post(`/events/${eventId}`)
+            .send({date: '2020-01-14T12:00:00Z'});
+        let response = await request.get(`/events/${eventId}/participations/${user.id}`);
+        expect(response.status).toEqual(404);
+    });
+
+    it('Does not modify manual opt-in when changing to day with different opt-in', async () => {
+        let settings = {
+            defaultOptIn1: 'omnivorous',
+        };
+        await request.post('/settings')
+            .send(settings);
+        let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2020-01-13T12:00:00Z'});
+        await request.post(`/events/${eventId}/participations/${user.id}`)
+            .send({type: 'vegetarian'});
+        await request.post(`/events/${eventId}`)
+            .send({date: '2020-01-14T12:00:00Z'});
+        let response = await request.get(`/events/${eventId}/participations/${user.id}`);
+        expect(response.status).toEqual(200);
+        expect(response.body.participation.type).toEqual('vegetarian');
+    });
+});
