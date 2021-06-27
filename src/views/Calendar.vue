@@ -52,7 +52,7 @@
         </v-speed-dial>
 
         <v-dialog v-model="createDialog">
-            <event-edit ref="createEvent" :event="newEvent" @close="createDialog = false"/>
+            <event-edit ref="createEvent" :event="newEvent" @close="createDialogClosed()"/>
         </v-dialog>
     </v-main>
 </template>
@@ -171,6 +171,11 @@
                     date,
                 };
                 Vue.nextTick(() => this.$refs.createEvent.reset());
+            },
+
+            createDialogClosed() {
+                this.createDialog = false;
+                this.reload();
             },
 
             formatDate(date) {
