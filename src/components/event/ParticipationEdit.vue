@@ -7,24 +7,7 @@
         <v-card-text>
             <v-row>
                 <v-col>
-                    <v-btn-toggle v-model="type" :dense="$vuetify.breakpoint.xs" mandatory>
-                        <v-btn value="omnivorous">
-                            <v-icon :large="mdAndUp" left>{{ $icons.omnivorous }}</v-icon>
-                            <span>Omni</span>
-                        </v-btn>
-                        <v-btn value="vegetarian">
-                            <v-icon :large="mdAndUp" left>{{ $icons.vegetarian }}</v-icon>
-                            <span>Vegi</span>
-                        </v-btn>
-                        <v-btn value="opt-out">
-                            <v-icon :large="mdAndUp" left>{{ $icons.optOut }}</v-icon>
-                            <span>Out</span>
-                        </v-btn>
-                        <v-btn value="undecided">
-                            <v-icon :large="mdAndUp" left>{{ $icons.undecided }}</v-icon>
-                            <span>Undecided</span>
-                        </v-btn>
-                    </v-btn-toggle>
+                    <participation-type-widget v-model="type"/>
                 </v-col>
             </v-row>
 
@@ -52,12 +35,14 @@
 </template>
 
 <script>
+    import ParticipationTypeWidget from '@/components/event/ParticipationTypeWidget';
     import PointsField from '@/components/PointsField';
 
     export default {
         name: 'ParticipationEdit',
 
         components: {
+            ParticipationTypeWidget,
             PointsField,
         },
 
