@@ -58,6 +58,8 @@ export default new Vuex.Store({
         },
 
         audits: [],
+
+        settings: {},
     },
 
     getters: {
@@ -72,7 +74,6 @@ export default new Vuex.Store({
         isLoggedIn: state => state.account.userId !== null,
         ownUserId:  state => state.account.userId,
         ownUser:    (state, getters) => getters.user(getters.ownUserId),
-        settings:   state => state.user.settings,
 
         // Events
         events:         state => Object.values(state.events),
@@ -86,6 +87,7 @@ export default new Vuex.Store({
         // Misc
         globalSnackbar: state => state.globalSnackbar,
         audits:         state => state.audits,
+        settings:       state => state.settings,
     },
 
     mutations: {
@@ -266,6 +268,25 @@ export default new Vuex.Store({
                 }
                 context.state.audits = audits;
             });
+        },
+
+        fetchSettings(context) {
+            return Cache.ifNotFresh('settings', 0, 5000, async () => {
+                let response = await Backend.get('/settings');
+                let settings = response.data.settings;
+                // Complete default opt-ins
+                for (let i = 1; i <= 5; i++) {
+                    settings[`defaultOptIn${i}`] ??= 'undecided';
+                }
+                settings.quickOptIn ??= 'omnivorous';
+                context.state.settings = settings;
+            });
+        },
+
+        async saveSettings(context, settings) {
+            await Backend.post('/settings', settings);
+            Cache.invalidate('settings');
+            await context.dispatch('fetchSettings');
         },
     },
 });

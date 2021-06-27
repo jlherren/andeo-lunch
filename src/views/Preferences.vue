@@ -12,19 +12,40 @@
             </v-banner>
         </v-container>
 
-        <v-list subheader>
-            <v-subheader>
-                Default opt-in
-            </v-subheader>
-
-            <v-list-item v-for="weekday of weekdays" :key="weekday.index">
+        <v-list>
+            <v-list-item>
                 <v-list-item-content>
                     <v-list-item-title>
-                        {{ weekday.name }}
+                        Username
+                    </v-list-item-title>
+                    <v-list-item-subtitle>
+                        {{ $store.getters.ownUser.username }}
+                    </v-list-item-subtitle>
+                </v-list-item-content>
+            </v-list-item>
+
+            <v-list-item>
+                <v-list-item-content>
+                    <v-list-item-title>
+                        Display name
                         <v-icon small>{{ $icons.alert }}</v-icon>
                     </v-list-item-title>
                     <v-list-item-subtitle>
-                        Opt-in
+                        {{ $store.getters.ownUser.name }}
+                    </v-list-item-subtitle>
+                </v-list-item-content>
+                <v-list-item-action>
+                    <v-icon>{{ $icons.chevronRight }}</v-icon>
+                </v-list-item-action>
+            </v-list-item>
+
+            <v-list-item @click.prevent="openDefaultOptInModal()">
+                <v-list-item-content>
+                    <v-list-item-title>
+                        Default opt-in
+                    </v-list-item-title>
+                    <v-list-item-subtitle>
+                        {{ defaultOptIn }}
                     </v-list-item-subtitle>
                 </v-list-item-content>
                 <v-list-item-action>
@@ -35,19 +56,7 @@
             <v-list-item>
                 <v-list-item-content>
                     <v-list-item-title>
-                        Quick opt-in as vegetarian
-                        <v-icon small>{{ $icons.alert }}</v-icon>
-                    </v-list-item-title>
-                </v-list-item-content>
-                <v-list-item-action>
-                    <v-switch/>
-                </v-list-item-action>
-            </v-list-item>
-
-            <v-list-item>
-                <v-list-item-content>
-                    <v-list-item-title>
-                        Default notes
+                        Dietary information
                         <v-icon small>{{ $icons.alert }}</v-icon>
                     </v-list-item-title>
                     <v-list-item-subtitle>
@@ -58,10 +67,6 @@
                     <v-icon>{{ $icons.chevronRight }}</v-icon>
                 </v-list-item-action>
             </v-list-item>
-
-            <v-subheader>
-                App settings
-            </v-subheader>
 
             <v-list-item>
                 <v-list-item-content>
@@ -74,23 +79,39 @@
                 </v-list-item-action>
             </v-list-item>
         </v-list>
+
+        <v-dialog v-model="defaultOptInModal">
+            <default-opt-in-edit ref="optInModal" @close="defaultOptInModal = false"/>
+        </v-dialog>
     </v-main>
 </template>
 
 <script>
+    import DefaultOptInEdit from '@/components/DefaultOptInEdit';
     import TheAppBar from '@/components/TheAppBar';
+    import Vue from 'vue';
+    import {WEEKDAYS} from '@/utils/dateUtils';
 
     export default {
         name: 'Preferences',
 
         components: {
+            DefaultOptInEdit,
             TheAppBar,
         },
 
         props: {},
 
+        created() {
+            let userId = this.$store.getters.ownUserId;
+            this.$store.dispatch('fetchUser', {userId});
+            this.$store.dispatch('fetchSettings');
+        },
+
         data() {
             return {
+                defaultOptInModal: false,
+
                 weekdays: [
                     {
                         name:  'Monday',
@@ -116,7 +137,30 @@
             };
         },
 
+        computed: {
+            defaultOptIn() {
+                let settings = this.$store.getters.settings;
+                let optInValues = ['omnivorous', 'vegetarian'];
+                let optInDays = [];
+                for (let i = 1; i <= 5; i++) {
+                    if (optInValues.includes(settings[`defaultOptIn${i}`])) {
+                        optInDays.push(WEEKDAYS[i].name);
+                    }
+                }
+                let description = optInDays.length ? optInDays.join(', ') : 'None';
+                if (settings.quickOptIn === 'vegetarian') {
+                    description += ', vegetarian';
+                }
+                return description;
+            },
+        },
+
         methods: {
+            openDefaultOptInModal() {
+                this.defaultOptInModal = true;
+                Vue.nextTick(() => this.$refs.optInModal.reset());
+            },
+
             toggleDarkMode() {
                 this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
                 localStorage.setItem('dark-mode', this.$vuetify.theme.dark ? 'true' : 'false');

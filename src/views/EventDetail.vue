@@ -142,7 +142,10 @@
 
         async created() {
             try {
-                await this.$store.dispatch('fetchEvent', {eventId: this.eventId});
+                await Promise.all([
+                    await this.$store.dispatch('fetchSettings', {eventId: this.eventId}),
+                    await this.$store.dispatch('fetchEvent', {eventId: this.eventId}),
+                ]);
                 let event = this.$store.getters.event(this.eventId);
                 if (event.type !== 'label') {
                     await this.$store.dispatch('fetchParticipations', {eventId: this.eventId});
@@ -218,8 +221,7 @@
                 await this.$store.dispatch('saveParticipation', {
                     userId:  this.ownUserId,
                     eventId: this.eventId,
-                    // TODO: Change default type based on user preferences
-                    type:    'omnivorous',
+                    type:    this.$store.getters.settings.quickOptIn,
                 });
                 // Not refetching the event here, because opt-in will never cause the event to change
                 await this.$store.dispatch('fetchUser', {userId: this.$store.getters.ownUserId});

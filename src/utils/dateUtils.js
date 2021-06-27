@@ -6,6 +6,29 @@
  * - all time calculations done in local time
  */
 
+export const WEEKDAYS = {
+    1: {
+        name:  'Monday',
+        index: 1,
+    },
+    2: {
+        name:  'Tuesday',
+        index: 2,
+    },
+    3: {
+        name:  'Wednesday',
+        index: 3,
+    },
+    4: {
+        name:  'Thursday',
+        index: 4,
+    },
+    5: {
+        name:  'Friday',
+        index: 5,
+    },
+};
+
 /**
  * Get the midnight preceding (or on) the given date
  *
