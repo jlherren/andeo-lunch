@@ -278,7 +278,8 @@ exports.initModels = function initModels(sequelize) {
         hidden:   {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
         points:   {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
         money:    {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
-        settings: {type: DataTypes.JSON, allowNull: false, defaultValue: {}},
+        settings: {type: DataTypes.JSON, allowNull: true},
+        // Note: Couldn't manage to set default on 'settins'
     }, {sequelize, modelName: 'user'});
 
     Event.init({

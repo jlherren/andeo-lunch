@@ -117,7 +117,7 @@ async function updateDefaultOptIns(event, transaction) {
             }
 
             let isType = participation ? participation.type : null;
-            let shouldBeType = Constants.PARTICIPATION_TYPE_IDS[user.settings[`defaultOptIn${weekday}`] ?? 'undecided'];
+            let shouldBeType = Constants.PARTICIPATION_TYPE_IDS[user.settings?.[`defaultOptIn${weekday}`] ?? 'undecided'];
             if (shouldBeType === Constants.PARTICIPATION_TYPES.UNDECIDED) {
                 shouldBeType = null;
             }

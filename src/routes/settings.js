@@ -20,7 +20,7 @@ const saveSettingsSchema = Joi.object({
  */
 function getSettings(ctx) {
     ctx.body = {
-        settings: ctx.user.settings,
+        settings: ctx.user.settings ?? {},
     };
 }
 

@@ -15,6 +15,7 @@
         "lint": "eslint src tests",
         "yarn-deduplicate": "yarn-deduplicate",
         "db:init": "node src/scripts/initDb.js",
+        "db:update": "node src/scripts/updateDb.js",
         "db:createUser": "node src/scripts/createUser.js",
         "db:rebuild": "node src/scripts/rebuildTransactions.js"
     },

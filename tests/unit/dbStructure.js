@@ -448,8 +448,8 @@ module.exports = {
             unique:       false,
         },
         settings:  {
-            allowNull:    false,
-            defaultValue: '{}',
+            allowNull:    true,
+            defaultValue: undefined,
             primaryKey:   false,
             type:         'JSON',
             unique:       false,
