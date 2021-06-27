@@ -17,7 +17,7 @@ let user = null;
 /** @type {User|null} */
 let inactiveUser = null;
 
-beforeAll(async () => {
+beforeEach(async () => {
     lunchMoney = new LunchMoney({config: ConfigProvider.getTestConfig()});
     await lunchMoney.initDb();
     user = await Models.User.create({
@@ -35,7 +35,7 @@ beforeAll(async () => {
     request = supertest(lunchMoney.listen());
 });
 
-afterAll(async () => {
+afterEach(async () => {
     await lunchMoney.close();
 });
 

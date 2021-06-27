@@ -14,7 +14,7 @@ let request = null;
 /** @type {User|null} */
 let user = null;
 
-beforeAll(async () => {
+beforeEach(async () => {
     lunchMoney = new LunchMoney({config: ConfigProvider.getTestConfig()});
     await lunchMoney.initDb();
     request = supertest.agent(lunchMoney.listen());
@@ -30,7 +30,7 @@ beforeAll(async () => {
     request.set('Authorization', `Bearer ${jwt}`);
 });
 
-afterAll(async () => {
+afterEach(async () => {
     await lunchMoney.close();
 });
 

@@ -11,13 +11,13 @@ let lunchMoney = null;
 /** @type {supertest.SuperTest|null} */
 let request = null;
 
-beforeAll(async () => {
+beforeEach(async () => {
     lunchMoney = new LunchMoney({config: ConfigProvider.getTestConfig()});
     await lunchMoney.initDb();
     request = supertest.agent(lunchMoney.listen());
 });
 
-afterAll(async () => {
+afterEach(async () => {
     await lunchMoney.close();
 });
 
