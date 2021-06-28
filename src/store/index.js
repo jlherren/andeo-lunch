@@ -224,20 +224,24 @@ export default new Vuex.Store({
 
             Cache.invalidate('user');
             Cache.invalidate('events');
+            let eventId = null;
 
             if (data.id) {
-                Cache.invalidate('event', data.id);
+                eventId = data.id;
+                Cache.invalidate('event', eventId);
                 Cache.invalidate('participation');
-                Cache.invalidate('participations', data.id);
-                await context.dispatch('fetchEvent', {eventId: data.id});
-                await context.dispatch('fetchParticipations', {eventId: data.id});
+                Cache.invalidate('participations', eventId);
             } else {
-                let {location} = response.headers;
+                let location = response.headers.location;
                 let match = location.match(/^\/events\/(?<id>\d+)$/u);
                 if (match) {
-                    await context.dispatch('fetchEvent', {eventId: match.groups.id});
-                    await context.dispatch('fetchParticipations', {eventId: data.id});
+                    eventId = match.groups.id;
                 }
+            }
+
+            if (eventId) {
+                await context.dispatch('fetchEvent', {eventId});
+                await context.dispatch('fetchParticipations', {eventId});
             }
         },
 
