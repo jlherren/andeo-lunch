@@ -11,7 +11,7 @@
             </v-list-item-content>
 
             <v-list-item-action v-if="ownParticipationIcon">
-                <v-icon>{{ ownParticipationIcon }}</v-icon>
+                <v-icon :color="ownParticipationIconColor">{{ ownParticipationIcon }}</v-icon>
             </v-list-item-action>
         </template>
 
@@ -30,7 +30,7 @@
             </v-list-item-content>
 
             <v-list-item-action v-if="ownParticipationIcon">
-                <v-icon>{{ ownParticipationIcon }}</v-icon>
+                <v-icon :color="ownParticipationIconColor">{{ ownParticipationIcon }}</v-icon>
             </v-list-item-action>
         </template>
     </v-list-item>
@@ -86,6 +86,10 @@
                     return null;
                 }
                 return ParticipationUtils.icon(this.ownParticipationType);
+            },
+
+            ownParticipationIconColor() {
+                return this.ownParticipationType === 'undecided' ? 'red' : null;
             },
 
             icon() {
