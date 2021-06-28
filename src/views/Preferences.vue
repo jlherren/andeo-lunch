@@ -4,41 +4,7 @@
             Preferences
         </the-app-bar>
 
-        <v-container>
-            <v-banner :icon="$icons.alert">
-                Settings marked with
-                <v-icon small>{{ $icons.alert }}</v-icon>
-                have not yet been implemented.
-            </v-banner>
-        </v-container>
-
         <v-list>
-            <v-list-item>
-                <v-list-item-content>
-                    <v-list-item-title>
-                        Username
-                    </v-list-item-title>
-                    <v-list-item-subtitle>
-                        {{ $store.getters.ownUser.username }}
-                    </v-list-item-subtitle>
-                </v-list-item-content>
-            </v-list-item>
-
-            <v-list-item>
-                <v-list-item-content>
-                    <v-list-item-title>
-                        Display name
-                        <v-icon small>{{ $icons.alert }}</v-icon>
-                    </v-list-item-title>
-                    <v-list-item-subtitle>
-                        {{ $store.getters.ownUser.name }}
-                    </v-list-item-subtitle>
-                </v-list-item-content>
-                <v-list-item-action>
-                    <v-icon>{{ $icons.chevronRight }}</v-icon>
-                </v-list-item-action>
-            </v-list-item>
-
             <v-list-item @click.prevent="openDefaultOptInModal()">
                 <v-list-item-content>
                     <v-list-item-title>
@@ -57,10 +23,10 @@
                 <v-list-item-content>
                     <v-list-item-title>
                         Dietary information
-                        <v-icon small>{{ $icons.alert }}</v-icon>
                     </v-list-item-title>
                     <v-list-item-subtitle>
-                        None
+                        <v-icon small>{{ $icons.alert }}</v-icon>
+                        Not implemented yet
                     </v-list-item-subtitle>
                 </v-list-item-content>
                 <v-list-item-action>
