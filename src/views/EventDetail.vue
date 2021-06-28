@@ -33,7 +33,7 @@
                             Opt-out
                         </v-btn>
                         <v-btn text color="primary" @click="optIn">
-                            <v-icon small left>{{ $icons.omnivorous }}</v-icon>
+                            <v-icon small left>{{ optInIcon }}</v-icon>
                             Opt-in
                         </v-btn>
                     </template>
@@ -213,6 +213,10 @@
             ownParticipationMissing() {
                 let myDecision = this.participations.filter(p => p.userId === this.ownUserId && p.type !== 'undecided');
                 return myDecision.length === 0;
+            },
+
+            optInIcon() {
+                return this.$icons[this.$store.getters.settings.quickOptIn];
             },
         },
 
