@@ -83,7 +83,7 @@
                 </v-tab-item>
             </v-tabs-items>
 
-            <v-dialog v-model="edit">
+            <v-dialog v-model="edit" persistent>
                 <event-edit ref="editDialog" :event="event" @close="edit = false"/>
             </v-dialog>
 

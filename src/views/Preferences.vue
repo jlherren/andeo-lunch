@@ -80,7 +80,7 @@
             </v-list-item>
         </v-list>
 
-        <v-dialog v-model="defaultOptInModal">
+        <v-dialog v-model="defaultOptInModal" persistent>
             <default-opt-in-edit ref="optInModal" @close="defaultOptInModal = false"/>
         </v-dialog>
     </v-main>

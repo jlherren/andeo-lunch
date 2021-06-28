@@ -51,7 +51,7 @@
             </v-btn>
         </v-speed-dial>
 
-        <v-dialog v-model="createDialog">
+        <v-dialog v-model="createDialog" persistent>
             <event-edit ref="createEvent" :event="newEvent" @close="createDialogClosed()"/>
         </v-dialog>
     </v-main>

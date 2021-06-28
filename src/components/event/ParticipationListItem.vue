@@ -26,7 +26,7 @@
             </v-btn>
         </v-list-item-action>
 
-        <v-dialog v-model="editDialog">
+        <v-dialog v-model="editDialog" persistent>
             <participation-edit :participation="participation" @close="editDialog = false" @saved="saved()" ref="editForm"/>
         </v-dialog>
     </v-list-item>
