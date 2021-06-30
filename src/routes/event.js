@@ -116,15 +116,20 @@ async function computeDefaultParticipationType(user, date, transaction) {
         return Constants.PARTICIPATION_TYPES.UNDECIDED;
     }
     let where = {
-        user,
-        [Op.or]: [
-            {start: {[Op.lte]: date}},
-            {start: null},
-        ],
-        [Op.or]: [
-            {end: {[Op.gte]: date}},
-            {end: null},
-        ],
+        user:     user.id,
+        [Op.and]: [{
+            // Note how the generated SQL will only contain the date part of 'date', not the time, which results
+            // in exactly what we want.
+            [Op.or]: [
+                {start: {[Op.lte]: date}},
+                {start: null},
+            ],
+        }, {
+            [Op.or]: [
+                {end: {[Op.gte]: date}},
+                {end: null},
+            ],
+        }],
     };
     if (await Models.Absence.count({where, transaction})) {
         return Constants.PARTICIPATION_TYPES.OPT_OUT;
@@ -152,7 +157,7 @@ async function resetDefaultOptIns(event, transaction) {
             let options = {where: {event: event.id, user: user.id}, transaction};
             let participation = await Models.Participation.findOne(options);
             let currentType = participation?.type;
-            let shouldBeType = await computeDefaultParticipationType(user, date);
+            let shouldBeType = await computeDefaultParticipationType(user, date, transaction);
 
             if (shouldBeType !== UNDECIDED) {
                 if (currentType === undefined) {

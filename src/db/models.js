@@ -175,8 +175,8 @@ class Transaction extends Model {
 /**
  * @property {number} user
  * @property {User} [User]
- * @property {Date} start
- * @property {Date} end
+ * @property {Date|null} start
+ * @property {Date|null} end
  */
 class Absence extends Model {
     /**
