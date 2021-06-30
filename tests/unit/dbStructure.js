@@ -166,13 +166,6 @@ module.exports = {
         },
     },
     participation:     {
-        automatic: {
-            allowNull:    false,
-            defaultValue: false,
-            primaryKey:   false,
-            type:         'TINYINT(1)',
-            unique:       false,
-        },
         createdAt:      {
             allowNull:    false,
             defaultValue: undefined,
@@ -272,7 +265,7 @@ module.exports = {
             unique:       false,
         },
     },
-    presence:          {
+    absence:          {
         createdAt: {
             allowNull:    false,
             defaultValue: undefined,

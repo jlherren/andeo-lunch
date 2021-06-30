@@ -52,3 +52,12 @@
  * @property {string|null} eventName
  * @property {string|null} details
  */
+
+/**
+ * @typedef {Object} ApiAbsence
+ * @property {number} id
+ * @property {number} userId
+ * @property {Date} start
+ * @property {Date} end
+ */
+

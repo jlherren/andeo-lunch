@@ -1,6 +1,6 @@
 'use strict';
 
-const Sequelize = require('sequelize');
+const {Sequelize, Op} = require('sequelize');
 
 const Models = require('./db/models');
 const Utils = require('./utils');
@@ -289,8 +289,6 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
  * @returns {Promise<number>} Number of updates performed
  */
 exports.rebuildTransactionBalances = async function rebuildTransactionBalances(dbTransaction, startDate) {
-    let {Op} = Sequelize;
-
     // date and id of last handled transaction
     let date = startDate;
     let id = -1;

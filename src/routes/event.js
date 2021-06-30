@@ -1,13 +1,13 @@
 'use strict';
 
 const Joi = require('joi');
+const {Op} = require('sequelize');
 
 const Models = require('../db/models');
 const RouteUtils = require('./route-utils');
 const Db = require('../db');
 const Constants = require('../constants');
 const Utils = require('../utils');
-const Sequelize = require('sequelize');
 const TransactionRebuilder = require('../transactionRebuilder');
 const AuditManager = require('../auditManager');
 
@@ -102,39 +102,75 @@ function validEvent(ctx, type, apiEvent) {
 }
 
 /**
+ * Compute the default opt-in type for a user on a specific date
+ *
+ * @param {User} user
+ * @param {Date} date
+ * @param {Transaction} transaction
+ * @returns {Promise<number>}
+ */
+async function computeDefaultParticipationType(user, date, transaction) {
+    if (!user.active) {
+        // Technically opt-out is more accurate, but we don't want legacy users to have an explicit opt-out entry
+        // for all events for all eternity.
+        return Constants.PARTICIPATION_TYPES.UNDECIDED;
+    }
+    let where = {
+        user,
+        [Op.or]: [
+            {start: {[Op.lte]: date}},
+            {start: null},
+        ],
+        [Op.or]: [
+            {end: {[Op.gte]: date}},
+            {end: null},
+        ],
+    };
+    if (await Models.Absence.count({where, transaction})) {
+        return Constants.PARTICIPATION_TYPES.OPT_OUT;
+    }
+    let weekday = date.getDay();
+    return Constants.PARTICIPATION_TYPE_IDS[user.settings?.[`defaultOptIn${weekday}`] ?? 'undecided'];
+}
+
+/**
  * @param {Event} event
  * @param {Transaction} transaction
  */
-async function updateDefaultOptIns(event, transaction) {
+async function resetDefaultOptIns(event, transaction) {
+    let date = new Date(event.date);
+
+    if (date < new Date()) {
+        // Event is in the past, do nothing.  Changing event dates from the past probably shouldn't be allowed anyway.
+        return;
+    }
+
     if (event.type === Constants.EVENT_TYPES.LUNCH) {
-        // Create default opt-ins
+        const UNDECIDED = Constants.PARTICIPATION_TYPES.UNDECIDED;
+
         for (let user of await Models.User.findAll()) {
-            let weekday = new Date(event.date).getDay();
-            let participation = await Models.Participation.findOne({where: {event: event.id, user: user.id}});
+            let options = {where: {event: event.id, user: user.id}, transaction};
+            let participation = await Models.Participation.findOne(options);
+            let currentType = participation?.type;
+            let shouldBeType = await computeDefaultParticipationType(user, date);
 
-            if (participation && !participation.automatic) {
-                continue;
-            }
-
-            let isType = participation ? participation.type : null;
-            let shouldBeType = Constants.PARTICIPATION_TYPE_IDS[user.settings?.[`defaultOptIn${weekday}`] ?? 'undecided'];
-            if (shouldBeType === Constants.PARTICIPATION_TYPES.UNDECIDED) {
-                shouldBeType = null;
-            }
-
-            if (isType === null && shouldBeType !== null) {
-                await Models.Participation.create({
-                    user:      user.id,
-                    event:     event.id,
-                    type:      shouldBeType,
-                    automatic: true,
-                }, {transaction});
-            } else if (isType !== null && shouldBeType === null) {
-                await participation.destroy();
-            } else if (isType !== null && isType !== shouldBeType) {
-                await participation.update({
-                    type: shouldBeType,
-                });
+            if (shouldBeType !== UNDECIDED) {
+                if (currentType === undefined) {
+                    await Models.Participation.create({
+                        user:  user.id,
+                        event: event.id,
+                        type:  shouldBeType,
+                    }, {transaction});
+                } else if (currentType !== UNDECIDED) {
+                    await participation.update({type: shouldBeType}, {transaction});
+                }
+            } else if (currentType !== undefined) {
+                if (Math.abs(participation.moneyCredited) < Constants.EPSILON &&
+                    Math.abs(participation.pointsCredited) < Constants.EPSILON) {
+                    await participation.destroy({transaction});
+                } else if (currentType !== UNDECIDED) {
+                    await participation.update({type: UNDECIDED}, {transaction});
+                }
             }
         }
     }
@@ -163,7 +199,7 @@ async function createEvent(ctx) {
             vegetarianMoneyFactor: apiEvent?.factors?.vegetarian?.money,
         }, {transaction});
 
-        await updateDefaultOptIns(event, transaction);
+        await resetDefaultOptIns(event, transaction);
         await TransactionRebuilder.rebuildEvent(transaction, event);
         await AuditManager.log(transaction, ctx.user, 'event.create', {event: event.id});
         return event.id;
@@ -240,7 +276,7 @@ async function updateEvent(ctx) {
         );
 
         if (originalDate.getTime() !== event.date.getTime()) {
-            await updateDefaultOptIns(event, transaction);
+            await resetDefaultOptIns(event, transaction);
         }
 
         await TransactionRebuilder.rebuildEvent(transaction, event);
@@ -276,7 +312,6 @@ async function saveParticipation(ctx) {
             type:           Constants.PARTICIPATION_TYPE_IDS[apiParticipation.type],
             pointsCredited: apiParticipation.credits?.points,
             moneyCredited:  apiParticipation.credits?.money,
-            automatic:      false,
         };
         let auditType = 'unknown';
         if (!participation) {
@@ -342,7 +377,6 @@ async function getEvent(ctx) {
  * @returns {Promise<void>}
  */
 async function listEvents(ctx) {
-    let {Op} = Sequelize;
     let from = Utils.parseDate(ctx.query.from);
     let to = Utils.parseDate(ctx.query.to);
     let ownParticipations = ctx.query.with === 'ownParticipations';

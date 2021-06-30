@@ -119,7 +119,6 @@ class ParticipationType extends Model {
  * @property {number} type
  * @property {number} pointsCredited
  * @property {number} moneyCredited
- * @property {boolean} [automatic]
  */
 class Participation extends Model {
     /**
@@ -179,7 +178,18 @@ class Transaction extends Model {
  * @property {Date} start
  * @property {Date} end
  */
-class Presence extends Model {
+class Absence extends Model {
+    /**
+     * @returns {ApiAbsence}
+     */
+    toApi() {
+        return {
+            id:     this.id,
+            userId: this.user.id,
+            start:  this.start,
+            end:    this.end,
+        };
+    }
 }
 
 /**
@@ -249,7 +259,7 @@ exports.ParticipationType = ParticipationType;
 exports.Participation = Participation;
 exports.Transaction = Transaction;
 exports.Transfer = Transfer;
-exports.Presence = Presence;
+exports.Absence = Absence;
 exports.Audit = Audit;
 
 /**
@@ -315,7 +325,6 @@ exports.initModels = function initModels(sequelize) {
     Participation.init({
         pointsCredited: {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
         moneyCredited:  {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
-        automatic:      {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
     }, {
         sequelize,
         modelName: 'participation',
@@ -350,11 +359,11 @@ exports.initModels = function initModels(sequelize) {
     Transaction.belongsTo(User, {foreignKey: {name: 'user', allowNull: false}, as: 'User'});
     Transaction.belongsTo(User, {foreignKey: {name: 'contraUser', allowNull: false}, as: 'ContraUser'});
 
-    Presence.init({
+    Absence.init({
         start: {type: DataTypes.DATEONLY, allowNull: true},
         end:   {type: DataTypes.DATEONLY, allowNull: true},
-    }, {sequelize, modelName: 'presence'});
-    Presence.belongsTo(User, {foreignKey: {name: 'user', allowNull: false}, as: 'User'});
+    }, {sequelize, modelName: 'absence'});
+    Absence.belongsTo(User, {foreignKey: {name: 'user', allowNull: false}, as: 'User'});
 
     Audit.init({
         date:    {type: DataTypes.DATE, allowNull: false},
