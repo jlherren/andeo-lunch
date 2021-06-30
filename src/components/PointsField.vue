@@ -1,5 +1,5 @@
 <template>
-    <v-text-field type="number" label="Points credited" :value="value" @input="input($event)" class="no-spinner" :disabled="disabled">
+    <v-text-field type="number" min="0" step="0.5" label="Points credited" :value="value" @input="input($event)" class="no-spinner" :disabled="disabled">
         <template v-slot:append>
             <v-btn small icon @click="addPoints(-1)" :disabled="value <= 0">
                 <v-icon small>{{ $icons.minus }}</v-icon>
@@ -29,7 +29,7 @@
 
         methods: {
             validate(value) {
-                return parseInt(`${value}`, 10) || 0;
+                return parseFloat(`${value}`) || 0;
             },
 
             addPoints(increment) {

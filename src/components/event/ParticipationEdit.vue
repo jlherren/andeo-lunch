@@ -16,7 +16,7 @@
                     <points-field v-model="points" label="Points credited" :disabled="isBusy"/>
                 </v-col>
                 <v-col cols="6">
-                    <v-text-field v-model="money" type="number" label="Money credited" :disabled="isBusy"/>
+                    <v-text-field v-model="money" type="number" min="0" label="Money credited" :disabled="isBusy"/>
                 </v-col>
             </v-row>
         </v-card-text>
@@ -70,15 +70,6 @@
         methods: {
             reset() {
                 Object.assign(this.$data, this.$options.data.apply(this));
-            },
-
-            addPoints(increment) {
-                let points = parseInt(`${this.points}`, 10) || 0;
-                points += increment;
-                if (points < 0) {
-                    points = 0;
-                }
-                this.points = points;
             },
 
             cancel() {
