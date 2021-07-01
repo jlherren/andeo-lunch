@@ -2,6 +2,11 @@
     <v-main>
         <the-app-bar sub-page>
             Audit log
+            <template v-slot:buttons>
+                <v-btn icon @click.prevent="refresh()">
+                    <v-icon>{{ $icons.refresh }}</v-icon>
+                </v-btn>
+            </template>
         </the-app-bar>
 
         <shy-progress v-if="loading"/>
@@ -13,7 +18,7 @@
         </v-container>
 
         <v-virtual-scroll item-height="30" :items="audits" ref="scroll">
-            <template v-if="!loading" v-slot:default="{item: audit}">
+            <template v-slot:default="{item: audit}">
                 <v-list-item :key="audit.id" :class="audit.class">
                     <span>{{ formatDate(audit.date) }}</span>
                     <span>{{ audit.actingUserName }}</span>
@@ -52,9 +57,9 @@
         },
 
         async created() {
-            await this.$store.dispatch('fetchAuditLog', {userId: this.ownUserId});
+            await this.$store.dispatch('fetchAuditLog');
             this.loading = false;
-            Vue.nextTick(() => this.scrollToBottom());
+            this.scrollToBottom();
         },
 
         computed: {
@@ -70,20 +75,16 @@
             },
         },
 
-        watch: {
-            tab() {
-                Vue.nextTick(() => this.scrollToBottom());
-            },
-        },
-
         methods: {
             formatDate(date) {
                 return DateUtils.isoDateTime(date);
             },
 
             scrollToBottom() {
-                let element = this.$refs.scroll.$el;
-                element.scrollTop = element.scrollHeight;
+                Vue.nextTick(() => {
+                    let element = this.$refs.scroll.$el;
+                    element.scrollTop = element.scrollHeight;
+                });
             },
 
             getDisplayString(audit) {
@@ -98,6 +99,13 @@
                     base += ` / ${audit.details}`;
                 }
                 return base;
+            },
+
+            async refresh() {
+                this.loading = true;
+                await this.$store.dispatch('fetchAuditLog', true);
+                this.loading = false;
+                this.scrollToBottom();
             },
         },
     };

@@ -266,7 +266,10 @@ export default new Vuex.Store({
             });
         },
 
-        fetchAuditLog(context) {
+        fetchAuditLog(context, force = false) {
+            if (force) {
+                Cache.invalidate('audits');
+            }
             return Cache.ifNotFresh('audits', 0, 5000, async () => {
                 let response = await Backend.get('/audits?with=names');
                 let audits = response.data.audits;

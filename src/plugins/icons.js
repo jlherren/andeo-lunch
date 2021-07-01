@@ -23,6 +23,7 @@ export const icons = {
     logout:        mdi.mdiLogout,
     minus:         mdi.mdiMinus,
     plus:          mdi.mdiPlus,
+    refresh:       mdi.mdiRefresh,
 
     // Add semantic aliases here (this is encouraged)
     balanceHistory: mdi.mdiScaleBalance,
