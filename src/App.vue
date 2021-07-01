@@ -35,12 +35,29 @@
                 </v-btn>
             </template>
         </v-snackbar>
+
+        <v-dialog v-model="updateAvailable">
+            <v-card>
+                <v-card-title>
+                    Update available
+                </v-card-title>
+                <v-card-text>
+                    A new version is available.  Reload to update?
+                </v-card-text>
+                <v-card-actions>
+                    <v-btn text @click.prevent="updateAvailable = false">Cancel</v-btn>
+                    <v-spacer/>
+                    <v-btn text color="primary" @click.prevent="reload()">Update</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-app>
 </template>
 
 <script>
     import {ErrorService} from '@/services/errorService';
     import Login from '@/views/Login';
+    import {UpdateService} from '@/services/updateService';
     import {mapGetters} from 'vuex';
 
     export default {
@@ -75,7 +92,22 @@
                     },
                 ],
                 drawerOpen:      false,
+                updateAvailable: false,
             };
+        },
+
+        mounted() {
+            // Restore dark mode setting
+            this.$vuetify.theme.dark = localStorage.getItem('dark-mode') === 'true';
+
+            this.unregisterErrors = ErrorService.instance.register(error => {
+                this.$store.commit('globalSnackbar', `Error: ${error.message}`);
+            });
+            this.$store.dispatch('checkLogin');
+
+            this.unregisterUpdateHandler = UpdateService.instance.register(() => {
+                this.updateAvailable = true;
+            });
         },
 
         computed: {
@@ -93,20 +125,15 @@
             closeSnackbar() {
                 this.$store.commit('globalSnackbar', null);
             },
-        },
 
-        mounted() {
-            // Restore dark mode setting
-            this.$vuetify.theme.dark = localStorage.getItem('dark-mode') === 'true';
-
-            this.unregisterErrors = ErrorService.instance.register(error => {
-                this.$store.commit('globalSnackbar', `Error: ${error.message}`);
-            });
-            this.$store.dispatch('checkLogin');
+            reload() {
+                window.location.reload();
+            },
         },
 
         beforeDestroy() {
             this.unregisterErrors();
+            this.unregisterUpdateHandler();
         },
     };
 </script>

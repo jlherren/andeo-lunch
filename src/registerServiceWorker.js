@@ -1,6 +1,8 @@
 /* eslint-disable no-console */
 
+import {UpdateService} from '@/services/updateService';
 import {register} from 'register-service-worker';
+
 
 if (process.env.NODE_ENV === 'production') {
     register(`${process.env.BASE_URL}service-worker.js`, {
@@ -17,9 +19,13 @@ if (process.env.NODE_ENV === 'production') {
             console.log('New content is downloading.');
         },
         updated() {
-            console.log('New content is available, refreshing app');
             // See https://stackoverflow.com/questions/54145735/vue-pwa-not-getting-new-content-after-refresh
-            window.location.reload();
+            if (UpdateService.instance.onUpdate()) {
+                console.log('New content is available, notified update handler');
+            } else {
+                console.log('New content is available, no update handler available, refreshing app');
+                window.location.reload();
+            }
         },
         offline() {
             console.log('No internet connection found. App is running in offline mode.');
