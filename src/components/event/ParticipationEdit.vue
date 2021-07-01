@@ -22,11 +22,12 @@
         </v-card-text>
 
         <v-card-actions>
-            <v-btn text @click="cancel">
+            <v-btn text :disabled="isBusy" @click="cancel">
                 Cancel
             </v-btn>
             <v-spacer></v-spacer>
-            <v-btn color="primary" text @click="save">
+            <v-progress-circular v-if="isBusy" indeterminate size="20" width="2"/>
+            <v-btn color="primary" text :disabled="isBusy" @click="save">
                 Save
             </v-btn>
         </v-card-actions>

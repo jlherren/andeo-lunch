@@ -28,6 +28,7 @@
                 <v-banner elevation="2" :icon="$icons.alertCircle">
                     Make up your mind!
                     <template v-slot:actions>
+                        <v-progress-circular v-if="isBusy" indeterminate size="20" width="2"/>
                         <v-btn text color="error" class="ml-1" :disabled="isBusy" @click="optOut">
                             <v-icon small left>{{ $icons.optOut }}</v-icon>
                             Opt-out

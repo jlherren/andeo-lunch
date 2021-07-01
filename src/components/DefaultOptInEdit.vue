@@ -20,11 +20,12 @@
         </v-card-text>
 
         <v-card-actions>
-            <v-btn text @click.prevent="close()">
+            <v-btn text :disabled="isBusy" @click.prevent="close()">
                 Close
             </v-btn>
             <v-spacer/>
-            <v-btn text @click.prevent="save()" color="primary">
+            <v-progress-circular v-if="isBusy" indeterminate size="20" width="2"/>
+            <v-btn text :disabled="isBusy" @click.prevent="save()" color="primary">
                 Save
             </v-btn>
         </v-card-actions>
