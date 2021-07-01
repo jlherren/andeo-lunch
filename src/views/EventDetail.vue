@@ -28,11 +28,11 @@
                 <v-banner elevation="2" :icon="$icons.alertCircle">
                     Make up your mind!
                     <template v-slot:actions>
-                        <v-btn text color="error" class="ml-1" @click="optOut">
+                        <v-btn text color="error" class="ml-1" :disabled="isBusy" @click="optOut">
                             <v-icon small left>{{ $icons.optOut }}</v-icon>
                             Opt-out
                         </v-btn>
-                        <v-btn text color="primary" @click="optIn">
+                        <v-btn text color="primary" :disabled="isBusy" @click="optIn">
                             <v-icon small left>{{ optInIcon }}</v-icon>
                             Opt-in
                         </v-btn>
@@ -40,48 +40,17 @@
                 </v-banner>
             </v-container>
 
-            <v-tabs v-if="event.type !== 'label'" v-model="tab" fixed-tabs>
-                <v-tab key="participations">
-                    <v-icon>{{ $icons.lunch }}</v-icon>
-                </v-tab>
-                <v-tab key="money">
-                    <v-icon>{{ $icons.money }}</v-icon>
-                </v-tab>
-            </v-tabs>
+            <v-list v-if="event.type !== 'label'">
+                <v-skeleton-loader v-if="participationsLoading" type="list-item-avatar"/>
 
-            <v-tabs-items v-if="event.type !== 'label'" v-model="tab">
-                <v-tab-item key="participations">
-                    <v-list>
-                        <v-skeleton-loader v-if="participationsLoading" type="list-item-avatar"/>
+                <participation-list-item v-if="!participationsLoading" :participation="myParticipation"
+                                         @saved="refreshEvent()"/>
 
-                        <participation-list-item v-if="!participationsLoading" :participation="myParticipation"
-                                                 @saved="refreshEvent()"/>
-
-                        <participation-list-item v-for="participation of activeParticipations"
-                                                 :key="participation.userId"
-                                                 :participation="participation"
-                                                 @saved="refreshEvent()"/>
-                    </v-list>
-                </v-tab-item>
-
-                <v-tab-item key="money">
-                    <v-list>
-                        <v-skeleton-loader v-if="participationsLoading" type="list-item-avatar"/>
-
-                        <participation-list-item v-for="participation of moneyProviders"
-                                                 :key="participation.userId"
-                                                 :participation="participation"
-                                                 @saved="refreshEvent()"/>
-
-                    </v-list>
-
-                    <v-container v-if="!participationsLoading && moneyProviders.length === 0">
-                        <v-banner single-line :icon="$icons.information">
-                            No buyers have been set.
-                        </v-banner>
-                    </v-container>
-                </v-tab-item>
-            </v-tabs-items>
+                <participation-list-item v-for="participation of foreignParticipations"
+                                         :key="participation.userId"
+                                         :participation="participation"
+                                         @saved="refreshEvent()"/>
+            </v-list>
 
             <v-dialog v-model="edit" persistent>
                 <event-edit ref="editDialog" :event="event" @close="edit = false"/>
@@ -133,10 +102,10 @@
             let eventId = parseInt(this.$route.params.id, 10);
             return {
                 eventId,
-                tab:           'participations',
                 ownUserId:     this.$store.getters.ownUserId,
                 edit:          false,
                 confirmDelete: false,
+                isBusy:        false,
             };
         },
 
@@ -174,13 +143,14 @@
                 return !this.$store.getters.participations(this.eventId);
             },
 
-            activeParticipations() {
-                // List of opt-inners as well as opt-out/undecided that cook.  Excluding own participation
+            foreignParticipations() {
+                // List of opt-inners as well as opt-out/undecided that cook or provide money.
+                // This excludes own participation
                 return this.participations.filter(p => {
                     if (p.userId === this.ownUserId) {
                         return false;
                     }
-                    return !PASSIVE_TYPES.includes(p.type) || p.credits.points > 0;
+                    return !PASSIVE_TYPES.includes(p.type) || p.credits.points > 0 || p.credits.money > 0;
                 });
             },
 
@@ -202,10 +172,6 @@
                 };
             },
 
-            moneyProviders() {
-                return this.participations.filter(p => p.credits.money);
-            },
-
             formattedDate() {
                 return this.event.date !== null ? DateUtils.displayFormat(this.event.date) : null;
             },
@@ -222,6 +188,7 @@
 
         methods: {
             async optIn() {
+                this.isBusy = true;
                 await this.$store.dispatch('saveParticipation', {
                     userId:  this.ownUserId,
                     eventId: this.eventId,
@@ -229,14 +196,17 @@
                 });
                 // Not refetching the event here, because opt-in will never cause the event to change
                 await this.$store.dispatch('fetchUser', {userId: this.$store.getters.ownUserId});
+                this.isBusy = false;
             },
 
             async optOut() {
+                this.isBusy = true;
                 await this.$store.dispatch('saveParticipation', {
                     userId:  this.ownUserId,
                     eventId: this.eventId,
                     type:    'opt-out',
                 });
+                this.isBusy = false;
                 // Not refetching the event here, because opt-out will never cause it to change
                 // Not refetching the user here, because opt-out from undecided will never cause it to change
             },

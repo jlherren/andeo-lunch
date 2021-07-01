@@ -1,5 +1,5 @@
 <template>
-    <v-list-item :class="itemClass">
+    <v-list-item :class="itemClass" @click="openDialog()">
         <v-list-item-avatar>
             <v-avatar v-if="bigIcon !== null" :color="bigIconColor">
                 <v-icon dark>{{ bigIcon }}</v-icon>
@@ -19,12 +19,6 @@
                 </v-chip>
             </v-list-item-title>
         </v-list-item-content>
-
-        <v-list-item-action>
-            <v-btn icon @click="openDialog()">
-                <v-icon>{{ $icons.edit }}</v-icon>
-            </v-btn>
-        </v-list-item-action>
 
         <v-dialog v-model="editDialog" persistent>
             <participation-edit :participation="participation" @close="editDialog = false" @saved="saved()" ref="editForm"/>
