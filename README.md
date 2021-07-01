@@ -1,4 +1,4 @@
-# Lunch money frontend
+# Andeo Money frontend
 
 ## Install dependencies
 

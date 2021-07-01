@@ -2,7 +2,7 @@
     <v-main>
         <v-app-bar app>
             <v-toolbar-title>
-                Lunch Money
+                {{ appTitle }}
             </v-toolbar-title>
         </v-app-bar>
 
@@ -39,6 +39,12 @@
                     v => !!v,
                 ],
             };
+        },
+
+        computed: {
+            appTitle() {
+                return process.env.VUE_APP_BRANDING_TITLE;
+            },
         },
 
         methods: {

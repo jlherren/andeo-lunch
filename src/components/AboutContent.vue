@@ -1,7 +1,7 @@
 <template>
     <v-card>
         <v-card-title>
-            About Lunch Money
+            About {{ appTitle }}
         </v-card-title>
 
         <v-card-text>
@@ -46,6 +46,10 @@
                 'backendVersion',
                 'frontendVersion',
             ]),
+
+            appTitle() {
+                return process.env.VUE_APP_BRANDING_TITLE;
+            },
         },
     };
 </script>

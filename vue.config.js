@@ -10,7 +10,7 @@ module.exports = {
     lintOnSave: 'warning',
 
     pwa: {
-        name:          'Lunch Money',
+        name:          process.env.VUE_APP_BRANDING_TITLE,
         themeColor:    '#1e1617',
         assetsVersion: '2',
         iconPaths:     {
