@@ -119,6 +119,7 @@
         min-height: auto;
         display: flex;
         max-width: 800px;
+        margin: 0 auto;
         font-size: 11pt;
 
         & > span {

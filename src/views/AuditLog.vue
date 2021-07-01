@@ -118,7 +118,8 @@
         height: 30px;
         min-height: auto;
         display: flex;
-        max-width: 800px;
+        max-width: 1200px;
+        margin: 0 auto;
         font-size: 11pt;
 
         & > span {
@@ -129,15 +130,15 @@
         }
 
         & > span:nth-child(1) {
-            flex: 0 0 150px;
+            flex: 1 0 150px;
         }
 
         & > span:nth-child(2) {
-            flex: 0 0 15%;
+            flex: 2 0 100px;
         }
 
         & > span:nth-child(3) {
-            flex: 0 0 65%;
+            flex: 20 0 200px;
         }
     }
 
