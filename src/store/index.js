@@ -68,7 +68,8 @@ export default new Vuex.Store({
         backendVersion:  state => state.backendVersion,
 
         // Users and account
-        user: state => userId => state.users[userId],
+        user:  state => userId => state.users[userId],
+        users: state => Object.values(state.users),
 
         // Own user
         isLoggedIn: state => state.account.userId !== null,
@@ -147,6 +148,13 @@ export default new Vuex.Store({
             });
         },
 
+        fetchUsers(context) {
+            return Cache.ifNotFresh('users', null, 10000, async () => {
+                let response = await Backend.get('/users');
+                context.state.users = response.data.users;
+            });
+        },
+
         // Events
         fetchEvents(context, params) {
             return Cache.ifNotFresh('events', JSON.stringify(params), 10000, async () => {
@@ -215,6 +223,7 @@ export default new Vuex.Store({
             Cache.invalidate('participations', eventId);
             Cache.invalidate('participation', `${eventId}/${userId}`);
             Cache.invalidate('user');
+            Cache.invalidate('users');
             await context.dispatch('fetchParticipations', {eventId});
         },
 
@@ -223,6 +232,7 @@ export default new Vuex.Store({
             let response = await Backend.post(url, {...data, id: undefined});
 
             Cache.invalidate('user');
+            Cache.invalidate('users');
             Cache.invalidate('events');
             let eventId = null;
 
@@ -252,6 +262,7 @@ export default new Vuex.Store({
                 Cache.invalidate('event', eventId);
                 Cache.invalidate('events');
                 Cache.invalidate('user');
+                Cache.invalidate('users');
             }
         },
 

@@ -40,6 +40,7 @@ export const icons = {
     transfer:       mdi.mdiSwapHorizontalBold,
     undecided:      mdi.mdiHelpCircle,
     vegetarian:     mdi.mdiFoodApple,
+    stats:          mdi.mdiChartBar,
 };
 
 export default {

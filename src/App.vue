@@ -80,15 +80,20 @@
                         title: 'Calendar',
                         icon:  this.$icons.calendar,
                     },
-                    {
-                        url:   '/menus',
-                        title: 'Menus',
-                        icon:  this.$icons.menu,
-                    },
+                    // {
+                    //     url:   '/menus',
+                    //     title: 'Menus',
+                    //     icon:  this.$icons.menu,
+                    // },
                     {
                         url:   '/transfer',
                         title: 'Transfer',
                         icon:  this.$icons.transfer,
+                    },
+                    {
+                        url:   '/stats',
+                        title: 'Stats',
+                        icon:  this.$icons.stats,
                     },
                 ],
                 drawerOpen:      false,

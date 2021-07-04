@@ -5,6 +5,7 @@ import History from '@/views/History.vue';
 import Home from '@/views/Home.vue';
 import Menus from '@/views/Menus.vue';
 import Preferences from '@/views/Preferences';
+import Stats from '@/views/Stats';
 import Transfer from '@/views/Transfer.vue';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
@@ -51,6 +52,11 @@ const routes = [
         path:      '/log',
         name:      'Audit log',
         component: AuditLog,
+    },
+    {
+        path:      '/stats',
+        name:      'Stats',
+        component: Stats,
     },
 ];
 
