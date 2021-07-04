@@ -1,0 +1,13 @@
+/node_modules
+/dist
+
+# local env files
+.env.local
+.env.*.local
+
+# Log files
+/pnpm-debug.log
+
+# Editor directories and files
+/.idea
+/.vscode

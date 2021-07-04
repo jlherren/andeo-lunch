@@ -1,0 +1,16 @@
+// Since we disable the color pack, add back the only handful of colors we actually need
+
+.green--text {
+    color: #4CAF50 !important;
+    caret-color: #4CAF50 !important;
+}
+
+.red--text {
+    color: #F44336 !important;
+    caret-color: #F44336 !important;
+}
+
+.grey {
+    background-color: #9e9e9e !important;
+    border-color: #9e9e9e !important;
+}
