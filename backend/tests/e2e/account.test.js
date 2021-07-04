@@ -41,7 +41,7 @@ afterEach(async () => {
 
 describe('account login route', () => {
     it('returns a token after correct login', async () => {
-        let response = await request.post('/account/login')
+        let response = await request.post('/api/account/login')
             .send({username: 'testuser', password: 'abc123'});
         expect(response.status).toEqual(200);
         let config = lunchMoney.getConfig();
@@ -50,31 +50,31 @@ describe('account login route', () => {
     });
 
     it('returns failure for wrong password', async () => {
-        let response = await request.post('/account/login')
+        let response = await request.post('/api/account/login')
             .send({username: 'testuser', password: 'wrongPa$$w0rd'});
         expect(response.status).toEqual(401);
     });
 
     it('returns failure for non-existent user', async () => {
-        let response = await request.post('/account/login')
+        let response = await request.post('/api/account/login')
             .send({username: 'nosuchuser', password: 'abc123'});
         expect(response.status).toEqual(401);
     });
 
     it('returns failure for inactive user', async () => {
-        let response = await request.post('/account/login')
+        let response = await request.post('/api/account/login')
             .send({username: 'inactiveuser', password: 'qwe456'});
         expect(response.status).toEqual(401);
     });
 
     it('returns failure on missing fields', async () => {
-        let response = await request.post('/account/login')
+        let response = await request.post('/api/account/login')
             .send({});
         expect(response.status).toEqual(400);
     });
 
     it('returns failure on invalid content type', async () => {
-        let response = await request.post('/account/login')
+        let response = await request.post('/api/account/login')
             .set('Content-Type', 'text/plain')
             .send('Hi!');
         expect(response.status).toEqual(400);
@@ -86,14 +86,14 @@ describe('account renew route', () => {
         // Create a valid token
         let config = lunchMoney.getConfig();
         let token = await user.generateToken(config.secret);
-        let response = await request.post('/account/renew').set('Authorization', `Bearer ${token}`);
+        let response = await request.post('/api/account/renew').set('Authorization', `Bearer ${token}`);
         expect(response.status).toEqual(200);
         let data = await JsonWebToken.verify(response.body.token, config.secret);
         expect(data.id).toEqual(user.id);
     });
 
     it('returns an error when renewing an unparsable token', async () => {
-        let response = await request.post('/account/renew').set('Authorization', 'Bearer WHATEVER');
+        let response = await request.post('/api/account/renew').set('Authorization', 'Bearer WHATEVER');
         expect(response.status).toEqual(401);
     });
 
@@ -101,7 +101,7 @@ describe('account renew route', () => {
         // Create an expired token
         let config = lunchMoney.getConfig();
         let token = await user.generateToken(config.secret, {expiresIn: '-1 day'});
-        let response = await request.post('/account/renew').set('Authorization', `Bearer ${token}`);
+        let response = await request.post('/api/account/renew').set('Authorization', `Bearer ${token}`);
         expect(response.status).toEqual(401);
     });
 
@@ -109,20 +109,20 @@ describe('account renew route', () => {
         // Create a valid token
         let config = lunchMoney.getConfig();
         let token = await inactiveUser.generateToken(config.secret);
-        let response = await request.post('/account/renew').set('Authorization', `Bearer ${token}`);
+        let response = await request.post('/api/account/renew').set('Authorization', `Bearer ${token}`);
         expect(response.status).toEqual(401);
     });
 });
 
 describe('account check route', () => {
     it('works when not providing a token', async () => {
-        let response = await request.get('/account/check');
+        let response = await request.get('/api/account/check');
         expect(response.status).toEqual(200);
         expect(response.body).toEqual({userId: null});
     });
 
     it('works when providing a non-parsable token', async () => {
-        let response = await request.get('/account/check').set('Authorization', 'Bearer WHATEVER');
+        let response = await request.get('/api/account/check').set('Authorization', 'Bearer WHATEVER');
         expect(response.status).toEqual(200);
         expect(response.body).toEqual({userId: null});
     });
@@ -131,7 +131,7 @@ describe('account check route', () => {
         // Create an expired token
         let config = lunchMoney.getConfig();
         let token = await user.generateToken(config.secret, {expiresIn: '-1 day'});
-        let response = await request.get('/account/check').set('Authorization', `Bearer ${token}`);
+        let response = await request.get('/api/account/check').set('Authorization', `Bearer ${token}`);
         expect(response.status).toEqual(200);
         expect(response.body).toEqual({userId: null});
     });
@@ -140,7 +140,7 @@ describe('account check route', () => {
         // Create a valid token
         let config = lunchMoney.getConfig();
         let token = await user.generateToken(config.secret);
-        let response = await request.get('/account/check').set('Authorization', `Bearer ${token}`);
+        let response = await request.get('/api/account/check').set('Authorization', `Bearer ${token}`);
         expect(response.status).toEqual(200);
         expect(response.body).toEqual({userId: user.id});
     });

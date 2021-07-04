@@ -87,7 +87,7 @@ class LunchMoney {
         });
 
         this.app.use(async (ctx, next) => {
-            if (!['/account/login', '/account/check', '/version'].includes(ctx.request.url)) {
+            if (!['/api/account/login', '/api/account/check', '/api/version'].includes(ctx.request.url)) {
                 await RouteUtils.requireUser(ctx);
             }
             return next();
@@ -170,7 +170,7 @@ class LunchMoney {
      * @private
      */
     createRouter() {
-        let router = new Router();
+        let router = new Router({prefix: '/api'});
 
         AccountRoutes.register(router);
         UserRoutes.register(router);

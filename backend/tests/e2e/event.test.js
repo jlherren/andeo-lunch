@@ -31,7 +31,7 @@ beforeEach(async () => {
     });
     request = supertest.agent(lunchMoney.listen());
     if (jwt === null) {
-        let response = await request.post('/account/login')
+        let response = await request.post('/api/account/login')
             .send({username, password});
         jwt = response.body.token;
     }
@@ -107,21 +107,21 @@ const invalidData = {
 
 describe('creating events', () => {
     it('Accepts a simple event', async () => {
-        let response = await request.post('/events').send(sampleEvent);
+        let response = await request.post('/api/events').send(sampleEvent);
         expect(response.status).toEqual(201);
         let {location} = response.headers;
         expect(typeof location).toBe('string');
-        expect(location).toMatch(/^\/events\/\d+$/u);
+        expect(location).toMatch(/^\/api\/events\/\d+$/u);
         response = await request.get(location);
         expect(response.body.event).toMatchObject(sampleEvent);
     });
 
     it('Accepts an event with minimal data', async () => {
-        let response = await request.post('/events').send(minimalEvent);
+        let response = await request.post('/api/events').send(minimalEvent);
         expect(response.status).toEqual(201);
         let {location} = response.headers;
         expect(typeof location).toBe('string');
-        expect(location).toMatch(/^\/events\/\d+$/u);
+        expect(location).toMatch(/^\/api\/events\/\d+$/u);
         response = await request.get(location);
         expect(response.body.event).toMatchObject({...minimalEvent, ...defaultValues});
     });
@@ -131,18 +131,18 @@ describe('creating events', () => {
             ...sampleEvent,
             type: 'event',
         };
-        let response = await request.post('/events').send(specialEvent);
+        let response = await request.post('/api/events').send(specialEvent);
         expect(response.status).toEqual(201);
         let {location} = response.headers;
         expect(typeof location).toBe('string');
-        expect(location).toMatch(/^\/events\/\d+$/u);
+        expect(location).toMatch(/^\/api\/events\/\d+$/u);
         response = await request.get(location);
         expect(response.body.event).toMatchObject(specialEvent);
     });
 
     it('Rejects missing data', async () => {
         for (let key of ['name', 'type', 'date']) {
-            let response = await request.post('/events').send({...sampleEvent, [key]: undefined});
+            let response = await request.post('/api/events').send({...sampleEvent, [key]: undefined});
             expect(response.status).toEqual(400);
         }
     });
@@ -150,14 +150,14 @@ describe('creating events', () => {
     it('Rejects invalid data', async () => {
         for (let key of Object.keys(invalidData)) {
             for (let value of invalidData[key]) {
-                let response = await request.post('/events').send({...sampleEvent, [key]: value});
+                let response = await request.post('/api/events').send({...sampleEvent, [key]: value});
                 expect(response.status).toEqual(400);
             }
         }
     });
 
     it('Accepts a label event', async () => {
-        let response = await request.post('/events').send(labelEvent);
+        let response = await request.post('/api/events').send(labelEvent);
         expect(response.status).toEqual(201);
     });
 
@@ -168,7 +168,7 @@ describe('creating events', () => {
                 points: 10,
             },
         };
-        let response = await request.post('/events').send(event);
+        let response = await request.post('/api/events').send(event);
         expect(response.status).toEqual(400);
     });
 
@@ -181,7 +181,7 @@ describe('creating events', () => {
                 },
             },
         };
-        let response = await request.post('/events').send(event);
+        let response = await request.post('/api/events').send(event);
         expect(response.status).toEqual(400);
     });
 });
@@ -196,17 +196,17 @@ describe('Updating lunch event', () => {
     it('allows to update an event', async () => {
         let expected = {...sampleEvent};
         for (let key of Object.keys(eventUpdates)) {
-            let response = await request.post(`/events/${eventId}`).send({[key]: eventUpdates[key]});
+            let response = await request.post(`/api/events/${eventId}`).send({[key]: eventUpdates[key]});
             expect(response.status).toEqual(204);
             expected[key] = eventUpdates[key];
-            response = await request.get(`/events/${eventId}`);
+            response = await request.get(`/api/events/${eventId}`);
             expect(response.body.event).toMatchObject(expected);
         }
     });
 
     it('rejects disallowed updates', async () => {
         for (let key of Object.keys(disallowedUpdate)) {
-            let response = await request.post(`/events/${eventId}`).send({[key]: disallowedUpdate[key]});
+            let response = await request.post(`/api/events/${eventId}`).send({[key]: disallowedUpdate[key]});
             expect(response.status).toEqual(400);
         }
     });
@@ -214,7 +214,7 @@ describe('Updating lunch event', () => {
     it('rejects invalid updates', async () => {
         for (let key of Object.keys(invalidData)) {
             for (let value of invalidData[key]) {
-                let response = await request.post(`/events/${eventId}`).send({[key]: value});
+                let response = await request.post(`/api/events/${eventId}`).send({[key]: value});
                 expect(response.status).toEqual(400);
             }
         }
@@ -229,22 +229,22 @@ describe('Updating label events', () => {
     });
 
     it('Can update without anychanges', async () => {
-        let response = await request.post(`/events/${eventId}`).send({});
+        let response = await request.post(`/api/events/${eventId}`).send({});
         expect(response.status).toEqual(204);
     });
 
     it('Cannot update point costs', async () => {
-        let response = await request.post(`/events/${eventId}`).send({costs: {points: 1}});
+        let response = await request.post(`/api/events/${eventId}`).send({costs: {points: 1}});
         expect(response.status).toEqual(400);
     });
 
     it('Cannot update money costs', async () => {
-        let response = await request.post(`/events/${eventId}`).send({costs: {money: 1}});
+        let response = await request.post(`/api/events/${eventId}`).send({costs: {money: 1}});
         expect(response.status).toEqual(400);
     });
 
     it('Cannot update vegetarian money factor', async () => {
-        let response = await request.post(`/events/${eventId}`).send({factors: {vegetarian: {money: 1}}});
+        let response = await request.post(`/api/events/${eventId}`).send({factors: {vegetarian: {money: 1}}});
         expect(response.status).toEqual(400);
     });
 });
@@ -257,25 +257,25 @@ describe('deleting events', () => {
     });
 
     it('can no longer retrieve a deleted event', async () => {
-        let response = await request.delete(`/events/${eventId}`);
+        let response = await request.delete(`/api/events/${eventId}`);
         expect(response.status).toEqual(204);
 
-        response = await request.get(`/events/${eventId}`);
+        response = await request.get(`/api/events/${eventId}`);
         expect(response.status).toEqual(404);
     });
 
     it('deleting twice results in an error', async () => {
-        await request.delete(`/events/${eventId}`);
-        let response = await request.delete(`/events/${eventId}`);
+        await request.delete(`/api/events/${eventId}`);
+        let response = await request.delete(`/api/events/${eventId}`);
         expect(response.status).toEqual(404);
     });
 
     it('deleting an event with participations works', async () => {
-        let response = await request.post(`${`/events/${eventId}`}/participations/${user.id}`)
+        let response = await request.post(`${`/api/events/${eventId}`}/participations/${user.id}`)
             .send({type: Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OMNIVOROUS]});
         expect(response.status).toEqual(204);
 
-        response = await request.delete(`/events/${eventId}`);
+        response = await request.delete(`/api/events/${eventId}`);
         expect(response.status).toEqual(204);
     });
 });
@@ -289,14 +289,14 @@ describe('Event lists', () => {
     });
 
     it('Lists the event when querying by date', async () => {
-        let response = await request.get('/events?from=2020-01-14T11:00:00.000Z&to=2020-01-16T11:00:00.000Z');
+        let response = await request.get('/api/events?from=2020-01-14T11:00:00.000Z&to=2020-01-16T11:00:00.000Z');
         expect(response.status).toEqual(200);
         expect(response.body.events).toHaveLength(1);
         expect(response.body.events[0]).toMatchObject(sampleEvent);
     });
 
     it('Lists the event including empty participations when querying by date', async () => {
-        let response = await request.get('/events?from=2020-01-14T11:00:00.000Z&to=2020-01-16T11:00:00.000Z&with=ownParticipations');
+        let response = await request.get('/api/events?from=2020-01-14T11:00:00.000Z&to=2020-01-16T11:00:00.000Z&with=ownParticipations');
         expect(response.status).toEqual(200);
         expect(response.body.events).toHaveLength(1);
         expect(response.body.events[0]).toMatchObject(sampleEvent);
@@ -304,23 +304,23 @@ describe('Event lists', () => {
     });
 
     it('Does not list the event when querying by date before', async () => {
-        let response = await request.get('/events?from=2020-01-13T11:00:00.000Z&to=2020-01-14T11:00:00.000Z');
+        let response = await request.get('/api/events?from=2020-01-13T11:00:00.000Z&to=2020-01-14T11:00:00.000Z');
         expect(response.status).toEqual(200);
         expect(response.body.events).toHaveLength(0);
     });
 
     it('Does not list the event when querying by date after', async () => {
-        let response = await request.get('/events?from=2020-01-16T11:00:00.000Z&to=2020-01-17T11:00:00.000Z');
+        let response = await request.get('/api/events?from=2020-01-16T11:00:00.000Z&to=2020-01-17T11:00:00.000Z');
         expect(response.status).toEqual(200);
         expect(response.body.events).toHaveLength(0);
     });
 
     it('Returns only events of the specified type', async () => {
-        let response = await request.get('/events?types=lunch');
+        let response = await request.get('/api/events?types=lunch');
         expect(response.status).toEqual(200);
         expect(response.body.events).toHaveLength(1);
 
-        response = await request.get('/events?types=label');
+        response = await request.get('/api/events?types=label');
         expect(response.status).toEqual(200);
         expect(response.body.events).toHaveLength(0);
     });
@@ -331,10 +331,10 @@ describe('Default opt-in', () => {
         let settings = {
             defaultOptIn1: 'omnivorous',
         };
-        await request.post('/settings')
+        await request.post('/api/settings')
             .send(settings);
         let eventId = await Helper.createEvent(request, {...minimalEvent, date: '1980-01-07T12:00:00Z'});
-        let response = await request.get(`/events/${eventId}/participations/${user.id}`);
+        let response = await request.get(`/api/events/${eventId}/participations/${user.id}`);
         expect(response.status).toEqual(404);
     });
 
@@ -345,10 +345,10 @@ describe('Default opt-in', () => {
             defaultOptIn3: 'opt-out',
             defaultOptIn4: 'undecided',
         };
-        await request.post('/settings')
+        await request.post('/api/settings')
             .send(settings);
         let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
-        let response = await request.get(`/events/${eventId}/participations/${user.id}`);
+        let response = await request.get(`/api/events/${eventId}/participations/${user.id}`);
         expect(response.status).toEqual(200);
         expect(response.body.participation.type).toEqual('omnivorous');
     });
@@ -358,12 +358,12 @@ describe('Default opt-in', () => {
             defaultOptIn1: 'omnivorous',
             defaultOptIn2: 'omnivorous',
         };
-        await request.post('/settings')
+        await request.post('/api/settings')
             .send(settings);
         let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
-        await request.post(`/events/${eventId}`)
+        await request.post(`/api/events/${eventId}`)
             .send({date: '2036-01-08T12:00:00Z'});
-        let response = await request.get(`/events/${eventId}/participations/${user.id}`);
+        let response = await request.get(`/api/events/${eventId}/participations/${user.id}`);
         expect(response.status).toEqual(200);
         expect(response.body.participation.type).toEqual('omnivorous');
     });
@@ -372,12 +372,12 @@ describe('Default opt-in', () => {
         let settings = {
             defaultOptIn2: 'omnivorous',
         };
-        await request.post('/settings')
+        await request.post('/api/settings')
             .send(settings);
         let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
-        await request.post(`/events/${eventId}`)
+        await request.post(`/api/events/${eventId}`)
             .send({date: '2036-01-08T12:00:00Z'});
-        let response = await request.get(`/events/${eventId}/participations/${user.id}`);
+        let response = await request.get(`/api/events/${eventId}/participations/${user.id}`);
         expect(response.status).toEqual(200);
         expect(response.body.participation.type).toEqual('omnivorous');
     });
@@ -387,12 +387,12 @@ describe('Default opt-in', () => {
             defaultOptIn1: 'omnivorous',
             defaultOptIn2: 'vegetarian',
         };
-        await request.post('/settings')
+        await request.post('/api/settings')
             .send(settings);
         let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
-        await request.post(`/events/${eventId}`)
+        await request.post(`/api/events/${eventId}`)
             .send({date: '2036-01-08T12:00:00Z'});
-        let response = await request.get(`/events/${eventId}/participations/${user.id}`);
+        let response = await request.get(`/api/events/${eventId}/participations/${user.id}`);
         expect(response.status).toEqual(200);
         expect(response.body.participation.type).toEqual('vegetarian');
     });
@@ -401,12 +401,12 @@ describe('Default opt-in', () => {
         let settings = {
             defaultOptIn1: 'omnivorous',
         };
-        await request.post('/settings')
+        await request.post('/api/settings')
             .send(settings);
         let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
-        await request.post(`/events/${eventId}`)
+        await request.post(`/api/events/${eventId}`)
             .send({date: '2036-01-08T12:00:00Z'});
-        let response = await request.get(`/events/${eventId}/participations/${user.id}`);
+        let response = await request.get(`/api/events/${eventId}/participations/${user.id}`);
         expect(response.status).toEqual(404);
     });
 
@@ -419,7 +419,7 @@ describe('Default opt-in', () => {
             settings: {defaultOptIn1: 'omnivorous'},
         });
         let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
-        let response = await request.get(`/events/${eventId}/participations/${bob.id}`);
+        let response = await request.get(`/api/events/${eventId}/participations/${bob.id}`);
         expect(response.status).toEqual(404);
     });
 
@@ -432,10 +432,10 @@ describe('Default opt-in', () => {
         let settings = {
             defaultOptIn1: 'omnivorous',
         };
-        await request.post('/settings')
+        await request.post('/api/settings')
             .send(settings);
         let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
-        let response = await request.get(`/events/${eventId}/participations/${user.id}`);
+        let response = await request.get(`/api/events/${eventId}/participations/${user.id}`);
         expect(response.status).toEqual(200);
         expect(response.body.participation.type).toEqual('opt-out');
     });
@@ -449,10 +449,10 @@ describe('Default opt-in', () => {
         let settings = {
             defaultOptIn1: 'omnivorous',
         };
-        await request.post('/settings')
+        await request.post('/api/settings')
             .send(settings);
         let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
-        let response = await request.get(`/events/${eventId}/participations/${user.id}`);
+        let response = await request.get(`/api/events/${eventId}/participations/${user.id}`);
         expect(response.status).toEqual(200);
         expect(response.body.participation.type).toEqual('omnivorous');
     });
@@ -466,10 +466,10 @@ describe('Default opt-in', () => {
         let settings = {
             defaultOptIn1: 'omnivorous',
         };
-        await request.post('/settings')
+        await request.post('/api/settings')
             .send(settings);
         let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
-        let response = await request.get(`/events/${eventId}/participations/${user.id}`);
+        let response = await request.get(`/api/events/${eventId}/participations/${user.id}`);
         expect(response.status).toEqual(200);
         expect(response.body.participation.type).toEqual('omnivorous');
     });

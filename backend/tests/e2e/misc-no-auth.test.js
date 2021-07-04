@@ -23,13 +23,13 @@ afterEach(async () => {
 
 describe('misc route tests', () => {
     it('responds with backend version', async () => {
-        let response = await request.get('/version');
+        let response = await request.get('/api/version');
         expect(response.status).toEqual(200);
         expect(response.body.version).toEqual(PackageJson.version);
     });
 
     it('responds to cors request', async () => {
-        let response = await request.options('/version')
+        let response = await request.options('/api/version')
             .set('Access-Control-Request-Method', 'GET')
             .set('Origin', 'http://www.example.com');
         expect(response.status).toEqual(204);

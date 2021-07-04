@@ -64,7 +64,7 @@ beforeEach(async () => {
     });
     request = supertest.agent(lunchMoney.listen());
     if (jwt === null) {
-        let response = await request.post('/account/login')
+        let response = await request.post('/api/account/login')
             .send({username, password});
         jwt = response.body.token;
     }
@@ -95,11 +95,11 @@ describe('transactions for event', () => {
     });
 
     it('Transactions and balances for event look correct', async () => {
-        await request.post(`/events/${eventId}/participations/${user1.id}`).send(participation1);
-        await request.post(`/events/${eventId}/participations/${user2.id}`).send(participation2);
+        await request.post(`/api/events/${eventId}/participations/${user1.id}`).send(participation1);
+        await request.post(`/api/events/${eventId}/participations/${user2.id}`).send(participation2);
 
         // Check user 1
-        let response = await request.get(`/users/${user1.id}/transactions`);
+        let response = await request.get(`/api/users/${user1.id}/transactions`);
         expect(response.status).toEqual(200);
         expect(response.body.transactions).toHaveLength(3);
         expect(response.body.transactions[0]).toEqual(expect.objectContaining({
@@ -129,12 +129,12 @@ describe('transactions for event', () => {
             amount:       -20,
             balance:      -20,
         }));
-        response = await request.get(`/users/${user1.id}`);
+        response = await request.get(`/api/users/${user1.id}`);
         expect(response.status).toEqual(200);
         expect(response.body.user.balances).toEqual({points: 4, money: -20});
 
         // Check user 2
-        response = await request.get(`/users/${user2.id}/transactions`);
+        response = await request.get(`/api/users/${user2.id}/transactions`);
         expect(response.status).toEqual(200);
         expect(response.body.transactions).toHaveLength(3);
         expect(response.body.transactions[0]).toEqual(expect.objectContaining({
@@ -164,23 +164,23 @@ describe('transactions for event', () => {
             amount:       -10,
             balance:      20,
         }));
-        response = await request.get(`/users/${user2.id}`);
+        response = await request.get(`/api/users/${user2.id}`);
         expect(response.status).toEqual(200);
         expect(response.body.user.balances).toEqual({points: -4, money: 20});
 
         // Check system user (balance only)
-        response = await request.get('/users/system');
+        response = await request.get('/api/users/system');
         expect(response.status).toEqual(200);
         expect(response.body.user.balances).toEqual({points: 0, money: 0});
     });
 
     it('Recalculates transactions and balances after event costs change', async () => {
-        await request.post(`/events/${eventId}/participations/${user1.id}`).send(participation1);
-        await request.post(`/events/${eventId}/participations/${user2.id}`).send(participation2);
+        await request.post(`/api/events/${eventId}/participations/${user1.id}`).send(participation1);
+        await request.post(`/api/events/${eventId}/participations/${user2.id}`).send(participation2);
 
         // Lower the points cost (note that participation points remain the same!), and increase the vegetarian
         // factor
-        await request.post(`/events/${eventId}`).send({
+        await request.post(`/api/events/${eventId}`).send({
             costs:   {
                 points: 6,
             },
@@ -192,7 +192,7 @@ describe('transactions for event', () => {
         });
 
         // Check user 1
-        let response = await request.get(`/users/${user1.id}/transactions`);
+        let response = await request.get(`/api/users/${user1.id}/transactions`);
         expect(response.status).toEqual(200);
         expect(response.body.transactions).toHaveLength(3);
         expect(response.body.transactions[0]).toEqual(expect.objectContaining({
@@ -222,12 +222,12 @@ describe('transactions for event', () => {
             amount:       -18.75,
             balance:      -18.75,
         }));
-        response = await request.get(`/users/${user1.id}`);
+        response = await request.get(`/api/users/${user1.id}`);
         expect(response.status).toEqual(200);
         expect(response.body.user.balances).toEqual({points: 3, money: -18.75});
 
         // Check user 2
-        response = await request.get(`/users/${user2.id}/transactions`);
+        response = await request.get(`/api/users/${user2.id}/transactions`);
         expect(response.status).toEqual(200);
         expect(response.body.transactions).toHaveLength(3);
         expect(response.body.transactions[0]).toEqual(expect.objectContaining({
@@ -257,42 +257,42 @@ describe('transactions for event', () => {
             amount:       -11.25,
             balance:      18.75,
         }));
-        response = await request.get(`/users/${user2.id}`);
+        response = await request.get(`/api/users/${user2.id}`);
         expect(response.status).toEqual(200);
         expect(response.body.user.balances).toEqual({points: -3, money: 18.75});
 
         // Check system user (balance only)
-        response = await request.get('/users/system');
+        response = await request.get('/api/users/system');
         expect(response.status).toEqual(200);
         expect(response.body.user.balances).toEqual({points: 0, money: 0});
     });
 
     it('Recalculates transactions and balances after event is deleted', async () => {
         // Add participations
-        await request.post(`/events/${eventId}/participations/${user1.id}`).send(participation1);
-        await request.post(`/events/${eventId}/participations/${user2.id}`).send(participation2);
+        await request.post(`/api/events/${eventId}/participations/${user1.id}`).send(participation1);
+        await request.post(`/api/events/${eventId}/participations/${user2.id}`).send(participation2);
 
         // Delete event
-        await request.delete(`/events/${eventId}`);
+        await request.delete(`/api/events/${eventId}`);
 
         // Check user 1
-        let response = await request.get(`/users/${user1.id}/transactions`);
+        let response = await request.get(`/api/users/${user1.id}/transactions`);
         expect(response.status).toEqual(200);
         expect(response.body.transactions).toHaveLength(0);
-        response = await request.get(`/users/${user1.id}`);
+        response = await request.get(`/api/users/${user1.id}`);
         expect(response.status).toEqual(200);
         expect(response.body.user.balances).toEqual({points: 0, money: 0});
 
         // Check user 2
-        response = await request.get(`/users/${user2.id}/transactions`);
+        response = await request.get(`/api/users/${user2.id}/transactions`);
         expect(response.status).toEqual(200);
         expect(response.body.transactions).toHaveLength(0);
-        response = await request.get(`/users/${user2.id}`);
+        response = await request.get(`/api/users/${user2.id}`);
         expect(response.status).toEqual(200);
         expect(response.body.user.balances).toEqual({points: 0, money: 0});
 
         // Check system user (balance only)
-        response = await request.get('/users/system');
+        response = await request.get('/api/users/system');
         expect(response.status).toEqual(200);
         expect(response.body.user.balances).toEqual({points: 0, money: 0});
     });
@@ -322,63 +322,63 @@ describe('Recalculates transactions and balances after event date change', () =>
     });
 
     it('Recalculates balances after event date moves to be earlier', async () => {
-        await request.post(`/events/${event1Id}/participations/${user1.id}`).send(participation1);
-        await request.post(`/events/${event1Id}/participations/${user2.id}`).send(participation2);
-        await request.post(`/events/${event2Id}/participations/${user1.id}`).send(participation1);
-        await request.post(`/events/${event2Id}/participations/${user2.id}`).send(participation2);
+        await request.post(`/api/events/${event1Id}/participations/${user1.id}`).send(participation1);
+        await request.post(`/api/events/${event1Id}/participations/${user2.id}`).send(participation2);
+        await request.post(`/api/events/${event2Id}/participations/${user1.id}`).send(participation1);
+        await request.post(`/api/events/${event2Id}/participations/${user2.id}`).send(participation2);
 
         // Get user balances
-        let response = await request.get(`/users/${user1.id}`);
+        let response = await request.get(`/api/users/${user1.id}`);
         expect(response.status).toEqual(200);
         let userBalances1 = response.body.user.balances;
-        response = await request.get(`/users/${user2.id}`);
+        response = await request.get(`/api/users/${user2.id}`);
         expect(response.status).toEqual(200);
         let userBalances2 = response.body.user.balances;
 
         // Move event 2 to be before event 1
-        await request.post(`/events/${event2Id}`).send({date: EVENT_DATE_0});
+        await request.post(`/api/events/${event2Id}`).send({date: EVENT_DATE_0});
 
         // Final balances must remain the same
-        response = await request.get(`/users/${user1.id}`);
+        response = await request.get(`/api/users/${user1.id}`);
         expect(response.status).toEqual(200);
         expect(response.body.user.balances).toEqual(userBalances1);
-        response = await request.get(`/users/${user2.id}`);
+        response = await request.get(`/api/users/${user2.id}`);
         expect(response.status).toEqual(200);
         expect(response.body.user.balances).toEqual(userBalances2);
 
         // Check system user (balance only)
-        response = await request.get('/users/system');
+        response = await request.get('/api/users/system');
         expect(response.status).toEqual(200);
         expect(response.body.user.balances).toEqual({points: 0, money: 0});
     });
 
     it('Recalculates balances after event date moves to be later', async () => {
-        await request.post(`/events/${event1Id}/participations/${user1.id}`).send(participation1);
-        await request.post(`/events/${event1Id}/participations/${user2.id}`).send(participation2);
-        await request.post(`/events/${event2Id}/participations/${user1.id}`).send(participation1);
-        await request.post(`/events/${event2Id}/participations/${user2.id}`).send(participation2);
+        await request.post(`/api/events/${event1Id}/participations/${user1.id}`).send(participation1);
+        await request.post(`/api/events/${event1Id}/participations/${user2.id}`).send(participation2);
+        await request.post(`/api/events/${event2Id}/participations/${user1.id}`).send(participation1);
+        await request.post(`/api/events/${event2Id}/participations/${user2.id}`).send(participation2);
 
         // Get user balances
-        let response = await request.get(`/users/${user1.id}`);
+        let response = await request.get(`/api/users/${user1.id}`);
         expect(response.status).toEqual(200);
         let userBalances1 = response.body.user.balances;
-        response = await request.get(`/users/${user2.id}`);
+        response = await request.get(`/api/users/${user2.id}`);
         expect(response.status).toEqual(200);
         let userBalances2 = response.body.user.balances;
 
         // Move event 1 to be after event 2
-        await request.post(`/events/${event2Id}`).send({date: EVENT_DATE_3});
+        await request.post(`/api/events/${event2Id}`).send({date: EVENT_DATE_3});
 
         // Final balances must remain the same
-        response = await request.get(`/users/${user1.id}`);
+        response = await request.get(`/api/users/${user1.id}`);
         expect(response.status).toEqual(200);
         expect(response.body.user.balances).toEqual(userBalances1);
-        response = await request.get(`/users/${user2.id}`);
+        response = await request.get(`/api/users/${user2.id}`);
         expect(response.status).toEqual(200);
         expect(response.body.user.balances).toEqual(userBalances2);
 
         // Check system user (balance only)
-        response = await request.get('/users/system');
+        response = await request.get('/api/users/system');
         expect(response.status).toEqual(200);
         expect(response.body.user.balances).toEqual({points: 0, money: 0});
     });

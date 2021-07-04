@@ -61,7 +61,7 @@ beforeEach(async () => {
         name:     'Test User',
     });
     request = supertest.agent(lunchMoney.listen());
-    let response = await request.post('/account/login').send({username: user1.username, password});
+    let response = await request.post('/api/account/login').send({username: user1.username, password});
     jwt = response.body.token;
     request.set('Authorization', `Bearer ${jwt}`);
 });
@@ -85,13 +85,13 @@ describe('A simple event', () => {
     });
 
     it('Initially has no participations', async () => {
-        let response = await request.get(`/events/${eventId}/participations`);
+        let response = await request.get(`/api/events/${eventId}/participations`);
         expect(response.status).toEqual(200);
         expect(response.body.participations).toEqual([]);
     });
 
     it('Can create a participations', async () => {
-        let url = `/events/${eventId}/participations/${user1.id}`;
+        let url = `/api/events/${eventId}/participations/${user1.id}`;
         let response = await request.post(url).send(sampleParticipation1);
         expect(response.status).toEqual(204);
 
@@ -107,7 +107,7 @@ describe('A simple event', () => {
 
     it('Can update a participations', async () => {
         // Create
-        let url = `/events/${eventId}/participations/${user1.id}`;
+        let url = `/api/events/${eventId}/participations/${user1.id}`;
         let response = await request.post(url).send(sampleParticipation1);
         expect(response.status).toEqual(204);
 
@@ -126,7 +126,7 @@ describe('A simple event', () => {
     });
 
     it('Can delete a participations', async () => {
-        let url = `/events/${eventId}/participations/${user1.id}`;
+        let url = `/api/events/${eventId}/participations/${user1.id}`;
         let response = await request.post(url).send(sampleParticipation1);
         expect(response.status).toEqual(204);
 
@@ -141,29 +141,29 @@ describe('A simple event', () => {
     });
 
     it('Cannot delete a non-existing participation', async () => {
-        let url = `/events/${eventId}/participations/${user1.id}`;
+        let url = `/api/events/${eventId}/participations/${user1.id}`;
         let response = await request.delete(url);
         expect(response.status).toEqual(404);
     });
 
     it('Adjusts money costs on new money-providing participations', async () => {
         // Add participant
-        let url = `/events/${eventId}/participations/${user1.id}`;
+        let url = `/api/events/${eventId}/participations/${user1.id}`;
         let response = await request.post(url).send(sampleParticipation2);
         expect(response.status).toEqual(204);
 
         // Retrieve event
-        response = await request.get(`/events/${eventId}`);
+        response = await request.get(`/api/events/${eventId}`);
         expect(response.status).toEqual(200);
         expect(response.body.event.costs.money).toEqual(sampleParticipation2.credits.money);
 
         // Add another participant
-        url = `/events/${eventId}/participations/${user2.id}`;
+        url = `/api/events/${eventId}/participations/${user2.id}`;
         response = await request.post(url).send(sampleParticipation3);
         expect(response.status).toEqual(204);
 
         // Retrieve event
-        response = await request.get(`/events/${eventId}`);
+        response = await request.get(`/api/events/${eventId}`);
         expect(response.status).toEqual(200);
         expect(response.body.event.costs.money).toEqual(sampleParticipation2.credits.money + sampleParticipation3.credits.money);
     });
@@ -181,13 +181,13 @@ describe('A label event', () => {
     });
 
     it('initially has no participations', async () => {
-        let response = await request.get(`/events/${eventId}/participations`);
+        let response = await request.get(`/api/events/${eventId}/participations`);
         expect(response.status).toEqual(200);
         expect(response.body.participations).toEqual([]);
     });
 
     it('cannot create a participations', async () => {
-        let url = `/events/${eventId}/participations/${user1.id}`;
+        let url = `/api/events/${eventId}/participations/${user1.id}`;
         let response = await request.post(url).send(sampleParticipation1);
         expect(response.status).toEqual(400);
     });

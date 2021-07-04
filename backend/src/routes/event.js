@@ -211,7 +211,7 @@ async function createEvent(ctx) {
     });
     ctx.status = 201;
     ctx.body = '';
-    ctx.set('Location', `/events/${eventId}`);
+    ctx.set('Location', `/api/events/${eventId}`);
 }
 
 /**

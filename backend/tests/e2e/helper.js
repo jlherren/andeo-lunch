@@ -8,7 +8,7 @@
  * @returns {Promise<number>}
  */
 exports.createEvent = async function createEvent(request, data) {
-    let response = await request.post('/events').send(data);
+    let response = await request.post('/api/events').send(data);
     return parseInt(response.headers.location.match(/(?<id>\d+)/u).groups.id, 10);
 };
 
