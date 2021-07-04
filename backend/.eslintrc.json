@@ -156,7 +156,7 @@
         "max-lines": [
             "error",
             {
-                "max": 500
+                "max": 1000
             }
         ],
         "max-lines-per-function": "off",
