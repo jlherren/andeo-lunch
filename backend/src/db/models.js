@@ -12,6 +12,13 @@ const Constants = require('../constants');
  */
 
 /**
+ * @property {string} name
+ * @property {string} value
+ */
+class Configuration extends Model {
+}
+
+/**
  * @property {string} username
  * @property {string} [password]
  * @property {boolean} active Whether this user can log in, and can be added or removed from events
@@ -252,6 +259,7 @@ class Audit extends Model {
     }
 }
 
+exports.Configuration = Configuration;
 exports.User = User;
 exports.Event = Event;
 exports.Lunch = Lunch;
@@ -279,6 +287,11 @@ exports.initModels = function initModels(sequelize) {
                 return DataTypes.STRING(len);
         }
     }
+
+    Configuration.init({
+        name:  {type: ascii(32), allowNull: false, unique: true},
+        value: {type: DataTypes.STRING(255), allowNull: false},
+    }, {sequelize, modelName: 'configuration'});
 
     User.init({
         username: {type: ascii(64), allowNull: false, unique: true},

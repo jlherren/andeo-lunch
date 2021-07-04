@@ -66,6 +66,43 @@ module.exports = {
             unique:       false,
         },
     },
+    configuration:     {
+        createdAt: {
+            allowNull:    false,
+            defaultValue: undefined,
+            primaryKey:   false,
+            type:         'DATETIME',
+            unique:       false,
+        },
+        id:        {
+            allowNull:    true,
+            defaultValue: undefined,
+            primaryKey:   true,
+            type:         'INTEGER',
+            unique:       false,
+        },
+        name:      {
+            allowNull:    false,
+            defaultValue: undefined,
+            primaryKey:   false,
+            type:         'VARCHAR(32)',
+            unique:       true,
+        },
+        value:     {
+            allowNull:    false,
+            defaultValue: undefined,
+            primaryKey:   false,
+            type:         'VARCHAR(255)',
+            unique:       false,
+        },
+        updatedAt: {
+            allowNull:    false,
+            defaultValue: undefined,
+            primaryKey:   false,
+            type:         'DATETIME',
+            unique:       false,
+        },
+    },
     event:             {
         createdAt: {
             allowNull:    false,
@@ -265,7 +302,7 @@ module.exports = {
             unique:       false,
         },
     },
-    absence:          {
+    absence:           {
         createdAt: {
             allowNull:    false,
             defaultValue: undefined,

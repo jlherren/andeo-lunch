@@ -44,8 +44,8 @@ describe('account login route', () => {
         let response = await request.post('/api/account/login')
             .send({username: 'testuser', password: 'abc123'});
         expect(response.status).toEqual(200);
-        let config = lunchMoney.getConfig();
-        let data = await JsonWebToken.verify(response.body.token, config.secret);
+        let secret = await AuthUtils.getSecret();
+        let data = await JsonWebToken.verify(response.body.token, secret);
         expect(data.id).toEqual(user.id);
     });
 
@@ -84,11 +84,11 @@ describe('account login route', () => {
 describe('account renew route', () => {
     it('returns a new token after renewing', async () => {
         // Create a valid token
-        let config = lunchMoney.getConfig();
-        let token = await user.generateToken(config.secret);
+        let secret = await AuthUtils.getSecret();
+        let token = await user.generateToken(secret);
         let response = await request.post('/api/account/renew').set('Authorization', `Bearer ${token}`);
         expect(response.status).toEqual(200);
-        let data = await JsonWebToken.verify(response.body.token, config.secret);
+        let data = await JsonWebToken.verify(response.body.token, secret);
         expect(data.id).toEqual(user.id);
     });
 
@@ -99,16 +99,16 @@ describe('account renew route', () => {
 
     it('returns an error when renewing an expired token', async () => {
         // Create an expired token
-        let config = lunchMoney.getConfig();
-        let token = await user.generateToken(config.secret, {expiresIn: '-1 day'});
+        let secret = await AuthUtils.getSecret();
+        let token = await user.generateToken(secret, {expiresIn: '-1 day'});
         let response = await request.post('/api/account/renew').set('Authorization', `Bearer ${token}`);
         expect(response.status).toEqual(401);
     });
 
     it('returns an error when renewing a newly inactive user', async () => {
         // Create a valid token
-        let config = lunchMoney.getConfig();
-        let token = await inactiveUser.generateToken(config.secret);
+        let secret = await AuthUtils.getSecret();
+        let token = await inactiveUser.generateToken(secret);
         let response = await request.post('/api/account/renew').set('Authorization', `Bearer ${token}`);
         expect(response.status).toEqual(401);
     });
@@ -129,8 +129,8 @@ describe('account check route', () => {
 
     it('works when providing an expired token', async () => {
         // Create an expired token
-        let config = lunchMoney.getConfig();
-        let token = await user.generateToken(config.secret, {expiresIn: '-1 day'});
+        let secret = await AuthUtils.getSecret();
+        let token = await user.generateToken(secret, {expiresIn: '-1 day'});
         let response = await request.get('/api/account/check').set('Authorization', `Bearer ${token}`);
         expect(response.status).toEqual(200);
         expect(response.body).toEqual({userId: null});
@@ -138,8 +138,8 @@ describe('account check route', () => {
 
     it('works when providing a valid token', async () => {
         // Create a valid token
-        let config = lunchMoney.getConfig();
-        let token = await user.generateToken(config.secret);
+        let secret = await AuthUtils.getSecret();
+        let token = await user.generateToken(secret);
         let response = await request.get('/api/account/check').set('Authorization', `Bearer ${token}`);
         expect(response.status).toEqual(200);
         expect(response.body).toEqual({userId: user.id});

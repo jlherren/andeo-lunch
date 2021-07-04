@@ -2,6 +2,7 @@
 
 const JsonWebToken = require('jsonwebtoken');
 
+const AuthUtils = require('../authUtils');
 const Models = require('../db/models');
 
 /**
@@ -37,10 +38,10 @@ exports.getUser = async function (ctx) {
     if (match === null) {
         return null;
     }
-    let config = ctx.lunchMoney.getConfig();
+    let secret = await AuthUtils.getSecret();
     let userId = null;
     try {
-        userId = (await JsonWebToken.verify(match.groups.token, config.secret)).id;
+        userId = (await JsonWebToken.verify(match.groups.token, secret)).id;
     } catch (err) {
         // Happens on malformed tokens
         return null;

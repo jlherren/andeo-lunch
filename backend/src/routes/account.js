@@ -21,7 +21,8 @@ async function login(ctx) {
     if (user !== null && user.active) {
         if (await AuthUtils.comparePassword(requestBody.password, user.password)) {
             let config = ctx.lunchMoney.getConfig();
-            let token = await user.generateToken(config.secret, {expiresIn: config.tokenExpiry});
+            let secret = await AuthUtils.getSecret();
+            let token = await user.generateToken(secret, {expiresIn: config.tokenExpiry});
             ctx.body = {
                 token,
                 userId: user.id,
@@ -41,7 +42,8 @@ async function login(ctx) {
  */
 async function renew(ctx) {
     let config = ctx.lunchMoney.getConfig();
-    let token = await ctx.user.generateToken(config.secret, {expiresIn: config.tokenExpiry});
+    let secret = await AuthUtils.getSecret();
+    let token = await ctx.user.generateToken(secret, {expiresIn: config.tokenExpiry});
     ctx.body = {token};
 }
 

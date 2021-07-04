@@ -12,8 +12,7 @@ Create a file `config.json` and fill it with this for a MySQL database:
             "password": "my-password"
         },
         "port": 3000,
-        "host": "0.0.0.0",
-        "secret": "SOME_RANDOMLY_GENERATED_BASE_64_STRING_WITH_AT_LEAST_256_BITS"
+        "host": "0.0.0.0"
     }
 
 Or if sqlite is preferred:
@@ -24,8 +23,7 @@ Or if sqlite is preferred:
             "storage": "lunchmoney.db"
         },
         "port": 3000,
-        "host": "0.0.0.0",
-        "secret": "SOME_RANDOMLY_GENERATED_BASE_64_STRING_WITH_AT_LEAST_256_BITS"
+        "host": "0.0.0.0"
     }
 
 Note that `host` is optional and defaults to `"0.0.0.0"`.

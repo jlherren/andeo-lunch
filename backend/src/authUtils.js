@@ -1,7 +1,9 @@
 'use strict';
 
-let crypto = require('crypto');
-let bcrypt = require('bcryptjs');
+const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
+
+const Models = require('./db/models');
 
 /**
  * Hash a password
@@ -52,4 +54,24 @@ exports.generateSecret = function () {
             resolve(buf.toString('base64'));
         });
     });
+};
+
+/**
+ * @type {string|null}
+ */
+let cachedSecret = null;
+
+/**
+ * @returns {Promise<string>}
+ */
+exports.getSecret = async function getSecret() {
+    if (cachedSecret === null) {
+        /** @type {Configuration|null} */
+        let configuration = await Models.Configuration.findOne({name: 'secret'});
+        if (!configuration) {
+            throw new Error('Authentication secret is missing');
+        }
+        cachedSecret = configuration.value;
+    }
+    return cachedSecret;
 };
