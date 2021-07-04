@@ -47,7 +47,7 @@ function getWeightsForParticipationType(event, participation) {
 exports.rebuildLunchDetails = async function rebuildLunchDetails(dbTransaction, event) {
     let eventId = event instanceof Models.Event ? event.id : event;
 
-    // Careful: This query must work with MySQL and also SQLite
+    // Careful: This query must work with MariaDB and also SQLite
     let sql = `
         UPDATE lunch AS l
         SET moneyCost = (
@@ -374,7 +374,7 @@ exports.rebuildTransactionBalances = async function rebuildTransactionBalances(d
  * @returns {Promise<void>}
  */
 exports.rebuildUserBalances = async function rebuildUserBalances(dbTransaction) {
-    // Careful: This query must work with MySQL and also SQLite
+    // Careful: This query must work with MariaDB and also SQLite
     let sql = `
         UPDATE user AS u
         SET points = COALESCE((SELECT t.balance

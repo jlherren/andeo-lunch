@@ -1,7 +1,7 @@
 
 # Database configuration
 
-Create a file `config.json` and fill it with this for a MySQL database:
+Create a file `config.json` and fill it with this for a MariaDB database:
 
     {
         "database": {
@@ -15,12 +15,12 @@ Create a file `config.json` and fill it with this for a MySQL database:
         "host": "0.0.0.0"
     }
 
-Or if sqlite is preferred:
+For development, you can also use sqlite:
 
     {
         "database": {
             "dialect": "sqlite",
-            "storage": "lunchmoney.db"
+            "storage": "andeolunch.db"
         },
         "port": 3000,
         "host": "0.0.0.0"
@@ -63,4 +63,13 @@ To log all SQL queries, you can enable logging in the config:
             ...
             logSql: true
         }
+    }
+
+## Artificial lag
+
+To make the backend artificially slow in order to simulate a slow network:
+
+    {
+        ...
+        lag: 1000
     }
