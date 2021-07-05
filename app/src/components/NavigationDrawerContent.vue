@@ -7,7 +7,6 @@
 
             <v-list-item-content>
                 <v-list-item-title class="title">{{ ownUser.name }}</v-list-item-title>
-                <v-list-item-subtitle>{{ ownUser.username }}</v-list-item-subtitle>
             </v-list-item-content>
         </v-list-item>
 

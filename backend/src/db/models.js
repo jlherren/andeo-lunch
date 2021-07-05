@@ -47,7 +47,6 @@ class User extends Model {
     toApi() {
         return {
             id:       this.id,
-            username: this.username,
             name:     this.name,
             balances: {
                 points: this.points,
