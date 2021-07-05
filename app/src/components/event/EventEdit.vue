@@ -4,14 +4,21 @@
             <v-card-title>{{ title }}</v-card-title>
 
             <v-card-text>
-                <v-text-field v-model="name" :rules="nameRules" label="Name" autofocus required/>
-
                 <v-row>
+                    <v-col>
+                        <v-text-field v-model="name" :rules="nameRules" label="Name" autofocus required/>
+                    </v-col>
                     <v-col>
                         <lm-date-picker v-model="date" required/>
                     </v-col>
+                </v-row>
+
+                <v-row>
                     <v-col v-if="type !== 'label'">
-                        <points-field v-model="points" label="Points credited"/>
+                        <number-field v-model="points" label="Points" :min="0"/>
+                    </v-col>
+                    <v-col>
+                        <number-field v-model="vegetarianFactor" label="Vegetarian factor [%]" :min="0" :max="100" :step="5"/>
                     </v-col>
                 </v-row>
             </v-card-text>
@@ -29,14 +36,14 @@
 <script>
     import * as DateUtils from '@/utils/dateUtils';
     import LmDatePicker from '@/components/LmDatePicker';
-    import PointsField from '@/components/PointsField';
+    import NumberField from '@/components/NumberField';
 
     export default {
         name: 'EventEdit',
 
         components: {
             LmDatePicker,
-            PointsField,
+            NumberField,
         },
 
         props: {
@@ -51,6 +58,8 @@
                 name:   this.event?.name,
                 date:   this.event?.date ? DateUtils.isoDate(this.event.date) : null,
                 points: this.event?.costs?.points,
+                /* eslint-disable-next-line no-extra-parens */
+                vegetarianFactor: (this.event?.factors?.vegetarian?.money ?? 0.5) * 100,
 
                 nameRules: [
                     v => !!v || 'A name is required',
@@ -108,7 +117,7 @@
                         };
                         data.factors = {
                             vegetarian: {
-                                money: 1,
+                                money: this.vegetarianFactor / 100,
                             },
                         };
                     }

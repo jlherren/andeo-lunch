@@ -1,10 +1,10 @@
 <template>
-    <v-text-field type="number" min="0" step="0.5" label="Points credited" :value="value" @input="input($event)" class="no-spinner" :disabled="disabled">
+    <v-text-field type="number" :min="min" :max="max" :step="step" :label="label" :value="value" @input="input($event)" class="no-spinner" :disabled="disabled">
         <template v-slot:append>
-            <v-btn small icon @click="addPoints(-1)" :disabled="value <= 0">
+            <v-btn small icon @click="addPoints(-step)" :disabled="min !== undefined && value <= min">
                 <v-icon small>{{ $icons.minus }}</v-icon>
             </v-btn>
-            <v-btn small icon @click="addPoints(1)">
+            <v-btn small icon @click="addPoints(step)" :disabled="max !== undefined && value >= max">
                 <v-icon small>{{ $icons.plus }}</v-icon>
             </v-btn>
         </template>
@@ -13,7 +13,7 @@
 
 <script>
     export default {
-        name: 'PointsField',
+        name: 'NumberField',
 
         props: {
             value: {
@@ -25,6 +25,25 @@
                 type:    Boolean,
                 default: false,
             },
+
+            min: {
+                type:    Number,
+                default: 0,
+            },
+
+            max: {
+                type:    Number,
+                default: undefined,
+            },
+
+            step: {
+                type:    Number,
+                default: 1,
+            },
+
+            label: {
+                type: String,
+            },
         },
 
         methods: {
@@ -35,8 +54,10 @@
             addPoints(increment) {
                 let value = this.validate(this.value);
                 value += increment;
-                if (value < 0) {
-                    value = 0;
+                if (value < this.min) {
+                    value = this.min;
+                } else if (value > this.max) {
+                    value = this.max;
                 }
                 this.$emit('input', value);
             },

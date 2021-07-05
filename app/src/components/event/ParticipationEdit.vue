@@ -13,7 +13,7 @@
 
             <v-row>
                 <v-col cols="6">
-                    <points-field v-model="points" label="Points credited" :disabled="isBusy"/>
+                    <number-field v-model="points" label="Points credited" :disabled="isBusy"/>
                 </v-col>
                 <v-col cols="6">
                     <v-text-field v-model="money" type="number" min="0" label="Money credited" :disabled="isBusy"/>
@@ -35,15 +35,15 @@
 </template>
 
 <script>
+    import NumberField from '@/components/NumberField';
     import ParticipationTypeWidget from '@/components/event/ParticipationTypeWidget';
-    import PointsField from '@/components/PointsField';
 
     export default {
         name: 'ParticipationEdit',
 
         components: {
             ParticipationTypeWidget,
-            PointsField,
+            NumberField,
         },
 
         props: {
