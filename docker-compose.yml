@@ -1,0 +1,53 @@
+version: '3.6'
+
+# This is an example deployment which will need to be adapted to your needs!
+
+# You may remove the db container and use an existing database server.
+
+# Currently, after the *first* deployment, you will have to manually initialize the database:
+# docker exec -ti andeo-lunch_backend_1 yarn db:init
+
+# To create users:
+# docker exec -ti andeo-lunch_backend_1 yarn db:createUser
+
+services:
+    db:
+        image: mariadb:10.6
+        restart: unless-stopped
+        environment:
+            MARIADB_ROOT_PASSWORD_FILE: /run/secrets/db-root-password
+            MARIADB_ROOT_HOST: localhost
+            MARIADB_DATABASE: andeolunch
+            MARIADB_USER: andeolunch
+            MARIADB_PASSWORD_FILE: /run/secrets/db-user-password
+        secrets:
+            - db-root-password
+            - db-user-password
+        volumes:
+            - ./data:/var/lib/mysql
+
+    backend:
+        image: andeo-lunch-backend
+        restart: unless-stopped
+        environment:
+            MARIADB_DATABASE: andeolunch
+            MARIADB_USER: andeolunch
+            MARIADB_PASSWORD_FILE: /run/secrets/db-user-password
+        secrets:
+            - db-user-password
+        depends_on:
+          - db
+
+    app:
+        image: andeo-lunch-app
+        restart: unless-stopped
+        ports:
+            - 8080:80
+        depends_on:
+            - backend
+
+secrets:
+    db-root-password:
+        file: ./db-root-password.secret
+    db-user-password:
+        file: ./db-user-password.secret

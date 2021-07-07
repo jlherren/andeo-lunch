@@ -2,11 +2,11 @@ const crypto = require('crypto');
 
 process.env.VUE_APP_VERSION = require('./package.json').version;
 
-if (process.env.VUE_APP_BACKEND_URL === undefined) {
+if (!process.env.VUE_APP_BACKEND_URL) {
     throw new Error('VUE_APP_BACKEND_URL is not set, please read README.md');
 }
 
-if (process.env.VUE_APP_BRANDING_TITLE === undefined) {
+if (!process.env.VUE_APP_BRANDING_TITLE) {
     throw new Error('VUE_APP_BRANDING_TITLE is not set, please read README.md');
 }
 

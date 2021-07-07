@@ -1,0 +1,8 @@
+{
+    "database": {
+        "dialect": "mariadb",
+        "host": "db"
+    },
+    "port": 3000,
+    "bind": "0.0.0.0"
+}
