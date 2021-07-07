@@ -1,10 +1,14 @@
 'use strict';
 
+const chalk = require('chalk');
+
 const Models = require('../db/models');
 const Cli = require('../cli');
 const LunchMoney = require('../lunchMoney');
 const ConfigProvider = require('../configProvider');
 const AuthUtils = require('../authUtils');
+
+console.log(chalk.bold('Creating new user'));
 
 let lunchMoney = new LunchMoney({config: ConfigProvider.getMainConfig()});
 

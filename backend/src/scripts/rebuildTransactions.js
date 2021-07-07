@@ -1,10 +1,14 @@
 'use strict';
 
+const chalk = require('chalk');
+
 const LunchMoney = require('../lunchMoney');
 const Transaction = require('../transactionRebuilder');
 const Models = require('../db/models');
 const ConfigProvider = require('../configProvider');
 const Db = require('../db');
+
+console.log(chalk.bold('Rebuilding transactions and balances...'));
 
 let lunchMoney = new LunchMoney({config: ConfigProvider.getMainConfig()});
 

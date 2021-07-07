@@ -1,5 +1,6 @@
 'use strict';
 
+const chalk = require('chalk');
 const Koa = require('koa');
 const Router = require('@koa/router');
 const Logger = require('koa-logger');
@@ -224,12 +225,18 @@ class LunchMoney {
 
 
 if (!module.parent) {
+    console.log(chalk.bold('Starting Andeo Lunch backend...'));
+
     let mainConfig = ConfigProvider.getMainConfig();
     let lm = new LunchMoney({
         config:  mainConfig,
         logging: true,
     });
     lm.listen();
+
+    lm.sequelizePromise.then(() => {
+        console.log(chalk.bold('Server is ready'));
+    });
 }
 
 module.exports = LunchMoney;

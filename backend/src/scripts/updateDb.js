@@ -1,7 +1,11 @@
 'use strict';
 
+const chalk = require('chalk');
+
 const LunchMoney = require('../lunchMoney');
 const ConfigProvider = require('../configProvider');
+
+console.log(chalk.bold('Updating database...'));
 
 let lunchMoney = new LunchMoney({config: ConfigProvider.getMainConfig()});
 
