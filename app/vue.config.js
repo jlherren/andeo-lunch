@@ -11,7 +11,7 @@ module.exports = {
 
     pwa: {
         name:          process.env.VUE_APP_BRANDING_TITLE,
-        themeColor:    '#1e1617',
+        themeColor:    '#ffffff',
         assetsVersion: '2',
         iconPaths:     {
             favicon16:      'img/icons/icon16.png',
