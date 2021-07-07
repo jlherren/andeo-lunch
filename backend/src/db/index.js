@@ -1,10 +1,18 @@
 'use strict';
 
 const {Sequelize} = require('sequelize');
+const fs = require('fs').promises;
+
 const Models = require('./models');
 
 /** @type {Sequelize|null} */
 exports.sequelize = null;
+
+const ENV_FALLBACKS = {
+    database: 'MARIADB_DATABASE',
+    username: 'MARIADB_USER',
+    password: 'MARIADB_PASSWORD',
+};
 
 /**
  * @param {Object<string, any>} options
@@ -22,14 +30,27 @@ exports.connect = async function connect(options) {
     };
 
     // Use environment for missing config
-    if (options?.database === undefined) {
-        options.database = process.env.MARIADB_DATABASE;
-    }
-    if (options?.username === undefined) {
-        options.username = process.env.MARIADB_USER;
-    }
-    if (options?.password === undefined) {
-        options.password = process.env.MARIADB_PASSWORD;
+    for (let confKey in ENV_FALLBACKS) {
+        if (options[confKey] !== undefined) {
+            continue;
+        }
+        let envName = ENV_FALLBACKS[confKey];
+        if (process.env[envName] !== undefined) {
+            console.log(`Loading missing DB config '${confKey}' from environment variable ${envName}`);
+            options[confKey] = process.env[envName];
+            continue;
+        }
+        if (process.env[`${envName}_FILE`] !== undefined) {
+            try {
+                console.log(`Loading missing DB config '${confKey}' from environment variable ${envName}_FILE`);
+                let str = await fs.readFile(process.env[`${envName}_FILE`], 'utf-8');
+                options[confKey] = str.trim();
+            } catch (err) {
+                console.error('Unable to read file: ' + process.env[`${envName}_FILE`]);
+                console.error(err);
+                process.exit(1);
+            }
+        }
     }
 
     exports.sequelize = new Sequelize(options);

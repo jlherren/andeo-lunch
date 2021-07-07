@@ -53,6 +53,8 @@
    * MARIADB_USER
    * MARIADB_PASSWORD
 
+  Additional, each of these with a _FILE suffix will also be checked, making it easy to use docker secrets.
+
 * `port` Port to use, defaults to `3000`.
 * `bind` Interface to bind to, defaults to `"127.0.0.1"`
 * `lag` Artificial lag in milliseconds to delay each request. Allows to simulate a bad network.
