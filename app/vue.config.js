@@ -1,3 +1,5 @@
+const crypto = require('crypto');
+
 process.env.VUE_APP_VERSION = require('./package.json').version;
 
 if (process.env.VUE_APP_BACKEND_URL === undefined) {
@@ -7,6 +9,8 @@ if (process.env.VUE_APP_BACKEND_URL === undefined) {
 if (process.env.VUE_APP_BRANDING_TITLE === undefined) {
     throw new Error('VUE_APP_BRANDING_TITLE is not set, please read README.md');
 }
+
+const randomVersion = crypto.randomBytes(3).toString('hex');
 
 module.exports = {
     transpileDependencies: [
@@ -20,7 +24,7 @@ module.exports = {
     pwa: {
         name:          process.env.VUE_APP_BRANDING_TITLE,
         themeColor:    '#ffffff',
-        assetsVersion: '2',
+        assetsVersion: randomVersion,
         iconPaths:     {
             favicon16:      'img/icons/icon16.png',
             favicon32:      'img/icons/icon32.png',
@@ -32,12 +36,12 @@ module.exports = {
         manifestOptions: {
             icons: [
                 {
-                    src:   'img/icons/icon.svg?v=1',
+                    src:   `img/icons/icon.svg?v=${randomVersion}`,
                     sizes: 'any',
                     type:  'image/svg+xml',
                 },
                 {
-                    src:     'img/icons/icon-maskable.svg?v=1',
+                    src:     `img/icons/icon-maskable.svg?v=${randomVersion}`,
                     sizes:   'any',
                     type:    'image/svg+xml',
                     purpose: 'maskable',
