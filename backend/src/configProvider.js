@@ -13,9 +13,9 @@ const Joi = require('joi');
 const configSchema = Joi.object({
     database:    Joi.object({
         dialect: Joi.string().required(),
-    }).unknown(true),
-    port:        Joi.number().required().allow(null),
-    host:        Joi.string().allow(null),
+    }).required().unknown(true),
+    port:        Joi.number().allow(null).default(3000),
+    bind:        Joi.string().default('127.0.0.1'),
     tokenExpiry: Joi.string().min(1).default('30 days'),
     lag:         Joi.number(),
 }).unknown(true);
