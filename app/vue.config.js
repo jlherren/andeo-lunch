@@ -1,5 +1,13 @@
 process.env.VUE_APP_VERSION = require('./package.json').version;
 
+if (process.env.VUE_APP_BACKEND_URL === undefined) {
+    throw new Error('VUE_APP_BACKEND_URL is not set, please read README.md');
+}
+
+if (process.env.VUE_APP_BRANDING_TITLE === undefined) {
+    throw new Error('VUE_APP_BRANDING_TITLE is not set, please read README.md');
+}
+
 module.exports = {
     transpileDependencies: [
         'vuetify',

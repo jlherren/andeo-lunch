@@ -1,13 +1,7 @@
 import Axios from 'axios';
 import {ErrorService} from '@/services/errorService';
 
-const BACKEND_URL = process.env.NODE_ENV === 'production' ?
-    process.env.VUE_APP_BACKEND_URL_PRODUCTION :
-    process.env.VUE_APP_BACKEND_URL_DEVELOPMENT;
-
-if (BACKEND_URL === undefined) {
-    throw new Error('Missing backend URL, something is wrong with your .env or .env.local');
-}
+const BACKEND_URL = process.env.VUE_APP_BACKEND_URL;
 
 let axios = Axios.create();
 
