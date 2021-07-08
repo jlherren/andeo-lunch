@@ -3,7 +3,7 @@ ARG VUE_APP_BACKEND_URL
 ARG VUE_APP_BRANDING_TITLE
 WORKDIR /build
 COPY package.json yarn.lock ./
-RUN yarn install
+RUN yarn install --frozen-lockfile
 COPY . .
 RUN yarn build
 
