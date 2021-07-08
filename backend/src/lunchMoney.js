@@ -223,8 +223,7 @@ class LunchMoney {
     }
 }
 
-
-if (!module.parent) {
+async function main() {
     console.log(chalk.bold('Starting Andeo Lunch backend...'));
 
     let mainConfig = ConfigProvider.getMainConfig();
@@ -232,11 +231,19 @@ if (!module.parent) {
         config:  mainConfig,
         logging: true,
     });
-    lm.listen();
 
-    lm.sequelizePromise.then(() => {
+    try {
+        lm.listen();
+        await lm.sequelizePromise;
         console.log(chalk.bold('Server is ready'));
-    });
+    } catch (err) {
+        await lm.close();
+        console.error(err);
+    }
+}
+
+if (!module.parent) {
+    main();
 }
 
 module.exports = LunchMoney;
