@@ -36,7 +36,7 @@ module.exports = {
 
         manifestOptions: {
             background_color: '#ffffff',
-            display:          'fullscreen',
+            display:          'standalone',
             lang:             'en-US',
             icons:            [
                 {
