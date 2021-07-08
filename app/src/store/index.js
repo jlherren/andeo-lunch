@@ -115,8 +115,9 @@ export default new Vuex.Store({
         async login(context, data) {
             let response = await Backend.post('/account/login', data);
             localStorage.setItem('token', response.data.token);
-            context.state.account.userId = response.data.userId;
             await context.dispatch('fetchUser', {userId: response.data.userId});
+            // Don't set the following until after the user is fetched, otherwise 'ownUser' won't be reliable
+            context.state.account.userId = response.data.userId;
         },
 
         logout(context) {
@@ -130,8 +131,9 @@ export default new Vuex.Store({
             let userId = response.data.userId;
 
             if (userId !== null) {
-                context.state.account.userId = userId;
                 await context.dispatch('fetchUser', {userId});
+                // Don't set the following until after the user is fetched, otherwise 'ownUser' won't be reliable
+                context.state.account.userId = userId;
             } else {
                 context.state.account.userId = null;
             }
