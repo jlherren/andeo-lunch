@@ -4,7 +4,7 @@
 
 1. Make sure you have node 14+ and yarn.
 
-2. Create a file `backend/config.js` with this content:
+2. Create a file `backend/config.json` with this content:
 
        {
             "database": {
