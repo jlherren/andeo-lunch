@@ -223,6 +223,9 @@ class LunchMoney {
     }
 }
 
+/**
+ * Main entry point
+ */
 async function main() {
     console.log(chalk.bold('Starting Andeo Lunch backend...'));
 

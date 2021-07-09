@@ -44,8 +44,8 @@ const eventUpdateSchema = Joi.object({
 });
 
 const participationSchema = Joi.object({
-    type:     participationTypeSchema.required(),
-    credits:  Joi.object({
+    type:    participationTypeSchema.required(),
+    credits: Joi.object({
         points: nonNegativeSchema,
         money:  nonNegativeSchema,
     }),
@@ -311,7 +311,7 @@ async function saveParticipation(ctx) {
                 user:  user.id,
             },
             transaction,
-            lock: transaction.LOCK.UPDATE,
+            lock:  transaction.LOCK.UPDATE,
         });
         let data = {
             type:           Constants.PARTICIPATION_TYPE_IDS[apiParticipation.type],

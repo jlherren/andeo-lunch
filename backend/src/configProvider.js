@@ -57,12 +57,12 @@ exports.getMainConfig = function getMainConfig() {
 exports.getTestConfig = function getTestConfig() {
     // noinspection SpellCheckingInspection
     let config = /** @type {Config} */ {
-        database:    {
+        database: {
             dialect: 'sqlite',
             storage: ':memory:',
         },
-        port:        null,
-        secret:      'O1KQvnQKnlfPRn5c/N+tBerGlG+BIUOM7eOilKx2vj+8ykcaGyGMFR3AMuGtcoatH3C+r8zl03U/wNND',
+        port:     null,
+        secret:   'O1KQvnQKnlfPRn5c/N+tBerGlG+BIUOM7eOilKx2vj+8ykcaGyGMFR3AMuGtcoatH3C+r8zl03U/wNND',
     };
     return validateConfig(config);
 };

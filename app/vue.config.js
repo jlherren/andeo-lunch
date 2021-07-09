@@ -35,6 +35,7 @@ module.exports = {
         },
 
         manifestOptions: {
+            // eslint-disable-next-line camelcase
             background_color: '#ffffff',
             display:          'standalone',
             lang:             'en-US',

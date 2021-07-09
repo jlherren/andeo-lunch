@@ -29,16 +29,16 @@ let systemUser = null;
 let jwt = null;
 
 let participation1 = {
-    type:     Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OMNIVOROUS],
-    credits:  {
+    type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OMNIVOROUS],
+    credits: {
         points: 8,
         money:  0,
     },
 };
 
 let participation2 = {
-    type:     Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.VEGETARIAN],
-    credits:  {
+    type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.VEGETARIAN],
+    credits: {
         points: 0,
         money:  30,
     },
@@ -304,18 +304,18 @@ describe('Recalculates transactions and balances after event date change', () =>
 
     beforeEach(async () => {
         event1Id = await Helper.createEvent(request, {
-            name:    'Test event 1',
-            date:    EVENT_DATE_1,
-            type:    Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.LUNCH],
-            costs:   {
+            name:  'Test event 1',
+            date:  EVENT_DATE_1,
+            type:  Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.LUNCH],
+            costs: {
                 points: 8,
             },
         });
         event2Id = await Helper.createEvent(request, {
-            name:    'Test event 2',
-            date:    EVENT_DATE_2,
-            type:    Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.LUNCH],
-            costs:   {
+            name:  'Test event 2',
+            date:  EVENT_DATE_2,
+            type:  Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.LUNCH],
+            costs: {
                 points: 6,
             },
         });

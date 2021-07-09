@@ -36,7 +36,7 @@ services:
         secrets:
             - db-user-password
         depends_on:
-          - db
+            - db
 
     app:
         image: andeo-lunch-app

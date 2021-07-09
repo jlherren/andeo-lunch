@@ -92,12 +92,14 @@ Overview of object structures used in this API
 ### Logging in
 
 Request:
+
 ```
 POST /account/login
 { "username": "<username>", "password": "<password>" }
 ```
 
 Response:
+
 ```
 200 OK
 { "token": "<token>" }
@@ -124,7 +126,7 @@ the token itself, which follows the JSON web token standard.
 Request:
 ```
 POST /accout/renew
-Authorization: Bearer <current-token> 
+Authorization: Bearer <current-token>
 ```
 
 Response:
@@ -145,11 +147,13 @@ Response:
 Query the version of the backend.
 
 Request:
+
 ```
 GET /version
 ```
 
 Response:
+
 ```
 200 OK
 {"version": "0.0.1"}
@@ -160,11 +164,13 @@ Response:
 ### Get the user list
 
 Request:
+
 ```
 GET /users
 ```
 
 Response:
+
 ```
 200 OK
 {
@@ -178,11 +184,13 @@ Response:
 ### Get single user
 
 Request:
+
 ```
 GET /users/<user-id>
 ```
 
 Response:
+
 ```
 200 OK
 {
@@ -193,11 +201,13 @@ Response:
 ### Get user's transaction history
 
 Request:
+
 ```
 GET /users/<user-id>/transactions
 ```
 
 Response:
+
 ```
 200 OK
 {
@@ -215,11 +225,13 @@ Response:
 ### Get the event list
 
 Request:
+
 ```
 GET /events
 ```
 
 Response:
+
 ```
 200 OK
 {
@@ -238,11 +250,13 @@ Response:
 ### Get single event
 
 Request:
+
 ```
 GET /events/<event-id>
 ```
 
 Response:
+
 ```
 200 OK
 {
@@ -253,6 +267,7 @@ Response:
 ### Create an event
 
 Request:
+
 ```
 POST /events
 <event-object>
@@ -261,6 +276,7 @@ POST /events
 *Note:* The event object posted should not contain an event ID.
 
 Response:
+
 ```
 201 Created
 Location: /events/<event-id>
@@ -269,18 +285,21 @@ Location: /events/<event-id>
 ### Update an event
 
 Request:
+
 ```
 POST /events/<event-id>
 <event-object>
 ```
 
 *Note:* Only the following keys are allowed in the posted object:
+
 - name
 - date
 - costs
 - factors
 
 Response:
+
 ```
 201 Created
 Location: /events/<event-id>
@@ -289,11 +308,13 @@ Location: /events/<event-id>
 ### Get event participations
 
 Request:
+
 ```
 GET /events/<event-id>/participations
 ```
 
 Response:
+
 ```
 200 OK
 {
@@ -307,6 +328,7 @@ Response:
 ### Save/update participation
 
 Request:
+
 ```
 POST /events/<event-id>/participations/<user-id>
 <participation>
@@ -315,6 +337,7 @@ POST /events/<event-id>/participations/<user-id>
 *Note:* The participation should not contain the event ID and user ID as these are implied from the URL
 
 Response:
+
 ```
 204 No Content
 ```
@@ -322,11 +345,13 @@ Response:
 ### Delete participation
 
 Request:
+
 ```
 DELETE /events/<event-id>/participations/<user-id>
 ```
 
 Response:
+
 ```
 204 No Content
 ```

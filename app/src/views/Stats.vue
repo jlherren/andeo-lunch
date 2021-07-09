@@ -64,9 +64,9 @@
             tableItems() {
                 return this.$store.getters.users.map(user => {
                     return {
-                        name:          user.name,
-                        points:        user.balances.points,
-                        money:         user.balances.money,
+                        name:   user.name,
+                        points: user.balances.points,
+                        money:  user.balances.money,
                     };
                 });
             },

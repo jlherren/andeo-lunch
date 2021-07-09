@@ -24,7 +24,7 @@
         name: 'ParticipationTypeWidget',
 
         props: {
-            value: {
+            value:    {
                 type:     String,
                 required: true,
             },

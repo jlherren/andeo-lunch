@@ -41,15 +41,9 @@ exports.connect = async function connect(options) {
             continue;
         }
         if (process.env[`${envName}_FILE`] !== undefined) {
-            try {
-                console.log(`Loading missing DB config '${confKey}' from environment variable ${envName}_FILE`);
-                let str = await fs.readFile(process.env[`${envName}_FILE`], 'utf-8');
-                options[confKey] = str.trim();
-            } catch (err) {
-                console.error('Unable to read file: ' + process.env[`${envName}_FILE`]);
-                console.error(err);
-                process.exit(1);
-            }
+            console.log(`Loading missing DB config '${confKey}' from environment variable ${envName}_FILE`);
+            let str = await fs.readFile(process.env[`${envName}_FILE`], 'utf-8');
+            options[confKey] = str.trim();
         }
     }
 

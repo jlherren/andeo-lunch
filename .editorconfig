@@ -6,6 +6,7 @@ end_of_line = lf
 indent_size = 4
 indent_style = space
 insert_final_newline = true
+trim_trailing_whitespace = true
 max_line_length = 218
 tab_width = 4
 ij_continuation_indent_size = 4
@@ -16,7 +17,7 @@ ij_formatter_tags_enabled = true
 ij_visual_guides = 120
 ij_wrap_on_typing = false
 
-[{*.cjs, *.js, .sequelizerc}]
+[{*.cjs, *.js, *.vue}]
 ij_javascript_align_imports = false
 ij_javascript_align_multiline_array_initializer_expression = true
 ij_javascript_align_multiline_binary_operation = false
@@ -180,7 +181,7 @@ ij_javascript_while_brace_force = always
 ij_javascript_while_on_new_line = false
 ij_javascript_wrap_comments = false
 
-[{composer.lock, bowerrc, jest.config, .babelrc, .stylelintrc, .eslintrc, *.jsb3, *.jsb2, *.json}]
+[{.babelrc, .stylelintrc, .eslintrc, *.json}]
 ij_json_keep_blank_lines_in_code = 1
 ij_json_keep_indents_on_empty_lines = false
 ij_json_keep_line_breaks = true
