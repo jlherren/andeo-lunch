@@ -5,6 +5,7 @@
         <v-container>
             <v-data-table :headers="tableHeaders" :items="tableItems"
                           dense disable-pagination hide-default-footer must-sort sort-by="points"
+                          mobile-breakpoint="300"
             >
                 <template v-slot:header.points>
                     <v-icon size="20">{{ $icons.points }}</v-icon>

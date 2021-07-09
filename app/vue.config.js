@@ -24,6 +24,7 @@ module.exports = {
     pwa: {
         name:          process.env.VUE_APP_BRANDING_TITLE,
         themeColor:    '#ffffff',
+        msTileColor:   '#ffffff',
         assetsVersion: randomVersion,
         iconPaths:     {
             favicon16:      'img/icons/icon16.png',
@@ -34,7 +35,10 @@ module.exports = {
         },
 
         manifestOptions: {
-            icons: [
+            background_color: '#ffffff',
+            display:          'standalone',
+            lang:             'en-US',
+            icons:            [
                 {
                     src:   `img/icons/icon.svg?v=${randomVersion}`,
                     sizes: 'any',
