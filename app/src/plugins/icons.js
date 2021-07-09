@@ -4,7 +4,7 @@ import * as mdi from '@mdi/js';
 // when we really only use a handful icons.
 
 export const icons = {
-    // Add icons here
+    // Add icons here.  Keep this list sorted!
     accountCircle: mdi.mdiAccountCircle,
     alert:         mdi.mdiAlert,
     alertCircle:   mdi.mdiAlertCircle,
@@ -25,7 +25,7 @@ export const icons = {
     plus:          mdi.mdiPlus,
     refresh:       mdi.mdiRefresh,
 
-    // Add semantic aliases here (this is encouraged)
+    // Add semantic aliases here (this is encouraged).  Keep this list sorted!
     balanceHistory: mdi.mdiScaleBalance,
     edit:           mdi.mdiPencil,
     event:          mdi.mdiPartyPopper,
@@ -37,10 +37,10 @@ export const icons = {
     omnivorous:     mdi.mdiHamburger,
     optOut:         mdi.mdiCancel,
     points:         mdi.mdiHandshake,
+    stats:          mdi.mdiChartBar,
     transfer:       mdi.mdiSwapHorizontalBold,
     undecided:      mdi.mdiHelpCircle,
     vegetarian:     mdi.mdiFoodApple,
-    stats:          mdi.mdiChartBar,
 };
 
 export default {
