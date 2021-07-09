@@ -4,7 +4,7 @@
 
 1. Make sure you have node 14+ and yarn.
 
-2. Create a file `backend/config.js` with this content:
+2. Create a file `backend/config.json` with this content:
 
        {
             "database": {
@@ -27,6 +27,7 @@
 
 5. In the directory `app`, run:
 
+       yarn install
        yarn serve
 
 6. Visit `http://localhost:8080/` (or whatever URL step 5 showed).  You should be able to log in
