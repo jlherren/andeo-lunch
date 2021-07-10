@@ -219,7 +219,7 @@ class LunchMoney {
             this.server.close();
         }
         let sequelize = await this.sequelizePromise;
-        sequelize.close();
+        await sequelize.close();
     }
 }
 
