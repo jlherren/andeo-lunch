@@ -39,6 +39,9 @@ export default new Vuex.Store({
             // Users by ID
         },
 
+        // All user IDs
+        allUserIds: [],
+
         events: {
             // Events by ID
         },
@@ -69,7 +72,7 @@ export default new Vuex.Store({
 
         // Users and account
         user:  state => userId => state.users[userId],
-        users: state => Object.values(state.users),
+        users: (state, getters) => state.allUserIds.map(userId => getters.user(userId)),
 
         // Own user
         isLoggedIn: state => state.account.userId !== null,
@@ -158,6 +161,7 @@ export default new Vuex.Store({
                     users[user.id] = user;
                 }
                 Vue.set(context.state, 'users', users);
+                context.state.allUserIds = response.data.users.map(user => user.id);
             });
         },
 
