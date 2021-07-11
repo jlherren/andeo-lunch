@@ -302,4 +302,19 @@ describe('transaction tests', () => {
         expect(user1.money).toEqual(30);
         expect(user2.money).toEqual(-30);
     });
+
+    it('Correctly ignores money calculation if there is no paying participant', async () => {
+        let [user] = await createUsers(1);
+        let event = await createLunch();
+        await Models.Participation.create({
+            user:           user.id,
+            event:          event.id,
+            type:           Constants.PARTICIPATION_TYPES.OPT_OUT,
+            pointsCredited: 12,
+            moneyCredited:  event.Lunch.moneyCost,
+        });
+        await TransactionRebuilder.rebuildEvent(null, event);
+        await user.reload();
+        expect(user.money).toEqual(0);
+    });
 });
