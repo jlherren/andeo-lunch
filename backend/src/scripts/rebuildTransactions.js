@@ -19,10 +19,6 @@ lunchMoney.waitReady()
             let overallEarliestDate = null;
             let nUpdatesTotal = 0;
 
-            if (events.length === 0) {
-                console.log('Nothing to rebuild');
-                return;
-            }
             console.log(`Found ${events.length} events to rebuild`);
 
             for (let event of events) {
