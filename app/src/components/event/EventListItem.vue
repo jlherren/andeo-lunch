@@ -6,7 +6,8 @@
                 <v-list-item-subtitle>{{ formattedDate }}</v-list-item-subtitle>
 
                 <v-list-item-content>
-                    <participation-summary :participations="participations" class="justify-center"/>
+                    <participation-summary :participations="participations" :loading="participationsLoading"
+                                           class="justify-center"/>
                 </v-list-item-content>
             </v-list-item-content>
 
@@ -58,7 +59,8 @@
 
         data() {
             return {
-                ownUserId: this.$store.getters.ownUserId,
+                ownUserId:             this.$store.getters.ownUserId,
+                participationsLoading: false,
             };
         },
 
@@ -119,9 +121,11 @@
         },
 
         methods: {
-            reload() {
+            async reload() {
                 if (this.prominent) {
-                    this.$store.dispatch('fetchParticipations', {eventId: this.event.id});
+                    this.participationsLoading = true;
+                    await this.$store.dispatch('fetchParticipations', {eventId: this.event.id});
+                    this.participationsLoading = false;
                 }
             },
         },

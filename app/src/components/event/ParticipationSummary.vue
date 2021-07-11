@@ -13,28 +13,40 @@
 
 <script>
     export default {
-        name:     'ParticipationSummary',
-        props:    {
+        name: 'ParticipationSummary',
+
+        props: {
             participations: {
                 type:     Array,
                 required: true,
                 default:  () => [],
             },
+            loading:        Boolean,
         },
+
         computed: {
             optIns() {
                 return this.participations.filter(p => !['opt-out', 'undecided'].includes(p.type));
             },
 
             omnivorous() {
+                if (this.loading) {
+                    return '?';
+                }
                 return this.optIns.filter(p => p.type === 'omnivorous').length;
             },
 
             vegetarian() {
+                if (this.loading) {
+                    return '?';
+                }
                 return this.optIns.filter(p => p.type === 'vegetarian').length;
             },
 
             total() {
+                if (this.loading) {
+                    return '?';
+                }
                 return this.optIns.length;
             },
         },
