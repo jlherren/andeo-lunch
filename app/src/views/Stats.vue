@@ -3,6 +3,14 @@
         <the-app-bar>Statistics</the-app-bar>
 
         <v-container>
+            <v-alert v-if="Math.abs(pointsSum) > 1e-6" type="warning" :icon="$icons.alert">
+                The sum of all points is {{ pointsSum.toFixed(4) }}
+            </v-alert>
+
+            <v-alert v-if="Math.abs(moneySum) > 1e-6" type="warning" :icon="$icons.alert">
+                The sum of all money is {{ moneySum.toFixed(4) }}
+            </v-alert>
+
             <v-data-table :headers="tableHeaders" :items="tableItems"
                           dense disable-pagination hide-default-footer must-sort sort-by="points"
                           mobile-breakpoint="300"
@@ -69,6 +77,14 @@
                         money:  user.balances.money,
                     };
                 });
+            },
+
+            pointsSum() {
+                return this.$store.getters.users.reduce((acc, user) => acc + user.balances.points, 0);
+            },
+
+            moneySum() {
+                return this.$store.getters.users.reduce((acc, user) => acc + user.balances.money, 0);
             },
         },
     };
