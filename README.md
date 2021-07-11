@@ -32,6 +32,29 @@
 
 6. Visit `http://localhost:8080/` (or whatever URL step 5 showed).  You should be able to log in
    using the username and password you created in step 4.
+   
+## Cypress setup
+
+1. Navigate to the `app` directory
+2. If you haven't already, install Cypress on your local machine by running: 
+
+       yarn run cypress install
+
+4. Create a `cypress.env.json` file where you add this content, replacing "TestUserName" 
+   and "TestUserPassword" with the values you entered when running `db:createUser`:
+
+        {
+            "username": "TestUserName",
+            "password": "TestUserPassword"
+        }
+
+3. Open the test runner with
+
+       yarn run cypress open
+
+4. Furthermore, you can run the test in the command line
+
+       yarn run cypress run
 
 ## Full backend config reference
 
