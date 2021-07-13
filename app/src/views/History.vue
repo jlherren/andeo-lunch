@@ -25,7 +25,7 @@
             </v-banner>
         </v-container>
 
-        <v-virtual-scroll ref="scroll" :items="transactions" item-height="30">
+        <v-virtual-scroll ref="scroll" :items="transactions" item-height="30" bench="1">
             <template v-if="!loading" v-slot:default="{item: transaction}">
                 <v-list-item :key="transaction.id" :class="transaction.class" :to="'/events/' + transaction.eventId">
                     <span>{{ formatDate(transaction.date) }}</span>

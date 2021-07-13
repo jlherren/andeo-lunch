@@ -17,7 +17,7 @@
             </v-banner>
         </v-container>
 
-        <v-virtual-scroll item-height="30" :items="audits" ref="scroll">
+        <v-virtual-scroll item-height="30" :items="audits" ref="scroll" bench="1">
             <template v-slot:default="{item: audit}">
                 <v-list-item :key="audit.id" :class="audit.class">
                     <span>{{ formatDate(audit.date) }}</span>
