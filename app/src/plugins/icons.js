@@ -5,6 +5,7 @@ import * as mdi from '@mdi/js';
 
 export const icons = {
     // Add icons here.  Keep this list sorted!
+    account:       mdi.mdiAccount,
     accountCircle: mdi.mdiAccountCircle,
     alert:         mdi.mdiAlert,
     alertCircle:   mdi.mdiAlertCircle,
@@ -36,6 +37,7 @@ export const icons = {
     money:          mdi.mdiCashMultiple,
     omnivorous:     mdi.mdiHamburger,
     optOut:         mdi.mdiCancel,
+    password:       mdi.mdiLock,
     points:         mdi.mdiHandshake,
     stats:          mdi.mdiChartBar,
     transfer:       mdi.mdiSwapHorizontalBold,
