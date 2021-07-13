@@ -18,7 +18,8 @@
                         <number-field v-model="points" label="Points" :min="0"/>
                     </v-col>
                     <v-col>
-                        <number-field v-model="vegetarianFactor" label="Vegetarian factor [%]" :min="0" :max="100" :step="5"/>
+                        <number-field v-model="vegetarianFactor" label="Vegetarian factor" suffix="%"
+                                      :min="0" :max="100" :step="5"/>
                     </v-col>
                 </v-row>
             </v-card-text>
