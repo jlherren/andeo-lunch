@@ -74,11 +74,19 @@
             transactions() {
                 let currency = ['points', 'money'][this.tab];
                 let transactions = this.$store.getters.transactions(this.ownUserId) || [];
+                let now = new Date();
                 return transactions.filter(t => t.currency === currency)
                     .map((t, i) => {
+                        let classes = [];
+                        if (i % 2) {
+                            classes.push('odd');
+                        }
+                        if (t.date > now) {
+                            classes.push('future');
+                        }
                         return {
                             ...t,
-                            class: i % 2 ? 'odd' : null,
+                            class: classes.join(' '),
                         };
                     });
             },
@@ -152,5 +160,10 @@
     }
     .theme--dark.odd {
         background: #000000;
+    }
+
+    // Need extra specificity to override color
+    .theme--light.future.v-list-item, .theme--dark.future.v-list-item {
+        color: gray !important;
     }
 </style>
