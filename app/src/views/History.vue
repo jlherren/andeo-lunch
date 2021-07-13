@@ -147,9 +147,10 @@
         }
     }
 
-    .v-virtual-scroll__item {
-        .odd {
-            background: #f5f5f5;
-        }
+    .theme--light.odd {
+        background: #f5f5f5;
+    }
+    .theme--dark.odd {
+        background: #000000;
     }
 </style>
