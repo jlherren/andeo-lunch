@@ -234,7 +234,7 @@ export default new Vuex.Store({
                 Cache.invalidate('participations', eventId);
             } else {
                 let location = response.headers.location;
-                let match = location.match(/^\/events\/(?<id>\d+)$/u);
+                let match = location.match(/^\/api\/events\/(?<id>\d+)$/u);
                 if (match) {
                     eventId = match.groups.id;
                 }
