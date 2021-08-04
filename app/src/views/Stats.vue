@@ -16,16 +16,16 @@
                           mobile-breakpoint="300"
                           :loading="tableItems.length === 0"
             >
-                <template v-slot:header.points>
+                <template v-slot:[`header.points`]>
                     <v-icon size="20">{{ $icons.points }}</v-icon>
                 </template>
-                <template v-slot:header.money>
+                <template v-slot:[`header.money`]>
                     <v-icon size="20">{{ $icons.money }}</v-icon>
                 </template>
-                <template v-slot:item.points="{ item }">
+                <template v-slot:[`item.points`]="{ item }">
                     <balance v-model="item.points" precise color/>
                 </template>
-                <template v-slot:item.money="{ item }">
+                <template v-slot:[`item.money`]="{ item }">
                     <balance v-model="item.money" precise color/>
                 </template>
             </v-data-table>

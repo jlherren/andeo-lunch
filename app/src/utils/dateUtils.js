@@ -120,7 +120,6 @@ export function isoDateTime(date) {
  *
  * @param {Date} date1
  * @param {Date} date2
- *
  * @returns {boolean}
  */
 export function isSuccessiveDays(date1, date2) {
@@ -132,7 +131,6 @@ export function isSuccessiveDays(date1, date2) {
  *
  * @param {Date} date1
  * @param {Date} date2
- *
  * @returns {boolean}
  */
 export function isSameDay(date1, date2) {
