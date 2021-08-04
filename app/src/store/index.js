@@ -208,25 +208,6 @@ export default new Vuex.Store({
             await Promise.all(promises);
         },
 
-        async fetchSingleParticipation(context, {eventId, userId}) {
-            let key = `${eventId}/${userId}`;
-            await Cache.ifNotFresh('participation', key, 10000, async () => {
-                // Don't show an error if there is no participation
-                let config = {
-                    validateStatus: status => status >= 200 && status < 300 || status === 404,
-                };
-                let response = await Backend.get(`/events/${eventId}/participations/${userId}`, config);
-                if (response.status === 404) {
-                    // Note that negative answers will also be cached
-                    return;
-                }
-                let participation = response.data.participation;
-                Vue.set(context.state.singleParticipations, `${eventId}/${userId}`, participation);
-            });
-
-            await context.dispatch('fetchUser', {userId});
-        },
-
         async saveParticipation(context, {eventId, userId, ...data}) {
             await Backend.post(`/events/${eventId}/participations/${userId}`, data);
             Cache.invalidate('event', eventId);
