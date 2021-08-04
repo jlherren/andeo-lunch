@@ -351,11 +351,25 @@ module.exports = {
         },
     },
     transfer:          {
+        amount:    {
+            allowNull:    false,
+            defaultValue: undefined,
+            primaryKey:   false,
+            type:         'DOUBLE PRECISION',
+            unique:       false,
+        },
         createdAt: {
             allowNull:    false,
             defaultValue: undefined,
             primaryKey:   false,
             type:         'DATETIME',
+            unique:       false,
+        },
+        currency:  {
+            allowNull:    false,
+            defaultValue: undefined,
+            primaryKey:   false,
+            type:         'TINYINT',
             unique:       false,
         },
         event:     {
@@ -367,27 +381,13 @@ module.exports = {
                 model: 'event',
             },
             type:         'INTEGER',
-            unique:       true,
+            unique:       false,
         },
         id:        {
             allowNull:    true,
             defaultValue: undefined,
             primaryKey:   true,
             type:         'INTEGER',
-            unique:       false,
-        },
-        money:     {
-            allowNull:    false,
-            defaultValue: undefined,
-            primaryKey:   false,
-            type:         'DOUBLE PRECISION',
-            unique:       false,
-        },
-        points:    {
-            allowNull:    false,
-            defaultValue: undefined,
-            primaryKey:   false,
-            type:         'DOUBLE PRECISION',
             unique:       false,
         },
         recipient: {

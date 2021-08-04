@@ -128,15 +128,27 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
     }
 
     /**
-     * Insert a double transaction
+     * Schedule two inserts to represent a transaction
+     *
+     * @param {number} user The user being credited
+     * @param {number} contraUser
+     * @param {number} amount
+     * @param {number} currency
+     */
+    function addTransaction(user, contraUser, amount, currency) {
+        addInsert(user, contraUser, amount, currency);
+        addInsert(contraUser, user, -amount, currency);
+    }
+
+    /**
+     * Schedule two inserts to represent a transaction with the system user as contra
      *
      * @param {number} user
      * @param {number} amount
      * @param {number} currency
      */
-    function addTransaction(user, amount, currency) {
-        addInsert(user, systemUser.id, amount, currency);
-        addInsert(systemUser.id, user, -amount, currency);
+    function addSystemTransaction(user, amount, currency) {
+        addTransaction(user, systemUser.id, amount, currency);
     }
 
     /**
@@ -150,6 +162,7 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
                 where:       {event: event.id},
                 transaction: dbTransaction,
             };
+            /** @type {Lunch} */
             event.Lunch = await Models.Lunch.findOne(opts);
             if (!event.Lunch) {
                 throw new Error(`Event ${event.id} has no associated lunch`);
@@ -197,35 +210,55 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
             // credit points for organizing the event
             let points = participation.pointsCredited * pointsCostPerPointsCredited;
             if (Math.abs(points) > Constants.EPSILON) {
-                addTransaction(participation.user, points, Constants.CURRENCIES.POINTS);
+                addSystemTransaction(participation.user, points, Constants.CURRENCIES.POINTS);
             }
 
             // debit points for participating in the event
             points = -pointsCostPerWeightUnit * pointsWeight;
             if (Math.abs(points) > Constants.EPSILON) {
-                addTransaction(participation.user, points, Constants.CURRENCIES.POINTS);
+                addSystemTransaction(participation.user, points, Constants.CURRENCIES.POINTS);
             }
 
             if (enableMoneyCalculation) {
                 // credit money for financing the event
                 if (participation.moneyCredited > Constants.EPSILON) {
-                    addTransaction(participation.user, participation.moneyCredited, Constants.CURRENCIES.MONEY);
+                    addSystemTransaction(participation.user, participation.moneyCredited, Constants.CURRENCIES.MONEY);
                 }
 
                 // debit money for participating in the event
                 let money = -moneyCostPerWeightUnit * moneyWeight;
                 if (Math.abs(money) > Constants.EPSILON) {
-                    addTransaction(participation.user, money, Constants.CURRENCIES.MONEY);
+                    addSystemTransaction(participation.user, money, Constants.CURRENCIES.MONEY);
                 }
             }
         }
     }
 
     /**
-     * Handle a label
+     * Handle a label event
      */
     function handleLabel() {
         // Nothing to do, labels don't cause transactions.  Any superfluous transaction will be removed
+    }
+
+    /**
+     * Handle a transfer event
+     *
+     * @returns {Promise<void>}
+     */
+    async function handleTransfer() {
+        if (!event.Transfers) {
+            let opts = {
+                where:       {event: event.id},
+                transaction: dbTransaction,
+            };
+            /** @type {Array<Transfer>} */
+            event.Transfers = await Models.Transfer.findAll(opts);
+        }
+
+        for (let transfer of event.Transfers) {
+            addTransaction(transfer.recipient, transfer.sender, transfer.amount, transfer.currency);
+        }
     }
 
     switch (event.type) {
@@ -236,6 +269,10 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
 
         case Constants.EVENT_TYPES.LABEL:
             await handleLabel();
+            break;
+
+        case Constants.EVENT_TYPES.TRANSFER:
+            await handleTransfer();
             break;
 
         default:

@@ -14,6 +14,7 @@ const AuditManager = require('../auditManager');
 const eventNameSchema = Joi.string().normalize().min(1).regex(/\S/u);
 const eventTypeSchema = Joi.string().valid(...Object.values(Constants.EVENT_TYPE_NAMES));
 const participationTypeSchema = Joi.string().valid(...Object.values(Constants.PARTICIPATION_TYPE_NAMES));
+const currencySchema = Joi.string().valid(...Object.values(Constants.CURRENCY_NAMES));
 const factorSchema = Joi.number().min(0).max(1);
 const vegetarianApiNameSchema = Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.VEGETARIAN];
 const moneyApiNameSchema = Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY];
@@ -50,6 +51,14 @@ const participationSchema = Joi.object({
         money:  nonNegativeSchema,
     }),
 });
+
+const transferSchema = Joi.object({
+    currency:    currencySchema.required(),
+    amount:      nonNegativeSchema.required(),
+    senderId:    Joi.number().required(),
+    recipientId: Joi.number().required(),
+});
+const transfersSchema = Joi.array().items(transferSchema).required();
 
 /**
  * @param {Application.Context} ctx
@@ -216,16 +225,17 @@ async function createEvent(ctx) {
 
 /**
  * @param {Application.Context} ctx
+ * @param {number} eventId
  * @param {Transaction} [transaction]
  * @returns {Promise<Event>}
  */
-async function loadEvent(ctx, transaction) {
+async function loadEvent(ctx, eventId, transaction) {
     let options = {
         include: ['Lunch'],
         transaction,
         lock:    transaction ? transaction.LOCK.UPDATE : undefined,
     };
-    let event = await Models.Event.findByPk(parseInt(ctx.params.event, 10), options);
+    let event = await Models.Event.findByPk(eventId, options);
     if (!event) {
         ctx.throw(404, 'No such event');
     }
@@ -235,21 +245,64 @@ async function loadEvent(ctx, transaction) {
 /**
  * @param {Application.Context} ctx
  * @param {Transaction} [transaction]
- * @returns {Promise<User>}
+ * @returns {Promise<Event>}
  */
-async function getUser(ctx, transaction) {
+function loadEventFromParam(ctx, transaction) {
+    return loadEvent(ctx, parseInt(ctx.params.event, 10), transaction);
+}
+
+/**
+ * @param {Application.Context} ctx
+ * @param {number} eventId
+ * @param {Transaction} [transaction]
+ * @returns {Promise<Transfer>}
+ */
+async function loadTransfer(ctx, eventId, transaction) {
     let options = {
         transaction,
         lock: transaction ? transaction.LOCK.UPDATE : undefined,
     };
-    let user = await Models.User.findByPk(parseInt(ctx.params.user, 10), options);
+    let transfer = await Models.Transfer.findByPk(eventId, options);
+    if (!transfer) {
+        ctx.throw(404, 'No such transfer');
+    }
+    return transfer;
+}
+
+/**
+ * @param {Application.Context} ctx
+ * @param {Transaction} [transaction]
+ * @returns {Promise<Transfer>}
+ */
+function loadTransferFromParam(ctx, transaction) {
+    return loadTransfer(ctx, parseInt(ctx.params.transfer, 10), transaction);
+}
+
+/**
+ * @param {Application.Context} ctx
+ * @param {number} userId
+ * @param {Transaction} transaction
+ * @returns {Promise<User>}
+ */
+async function loadUser(ctx, userId, transaction) {
+    let options = {
+        transaction,
+        lock: transaction.LOCK.UPDATE,
+    };
+    let user = await Models.User.findByPk(userId, options);
     if (!user) {
         ctx.throw(404, 'No such user');
     }
-    if (!user.active) {
-        ctx.throw(403, 'User is not active');
-    }
     return user;
+}
+
+/**
+ * @param {Application.Context} ctx
+ * @param {Transaction} transaction
+ * @returns {Promise<User>}
+ */
+function loadUserFromParam(ctx, transaction) {
+    return loadUser(ctx, parseInt(ctx.params.user, 10), transaction);
 }
 
 /**
@@ -260,7 +313,7 @@ async function updateEvent(ctx) {
     /** @type {ApiEvent} */
     let apiEvent = RouteUtils.validateBody(ctx, eventUpdateSchema);
     await Db.sequelize.transaction(async transaction => {
-        let event = await loadEvent(ctx, transaction);
+        let event = await loadEventFromParam(ctx, transaction);
         validateEvent(ctx, event.type, apiEvent);
         let originalDate = event.date;
 
@@ -298,13 +351,13 @@ async function saveParticipation(ctx) {
     /** @type {ApiParticipation} */
     let apiParticipation = RouteUtils.validateBody(ctx, participationSchema);
     await Db.sequelize.transaction(async transaction => {
-        let event = await loadEvent(ctx, transaction);
+        let event = await loadEventFromParam(ctx, transaction);
 
         if (event.type === Constants.EVENT_TYPES.LABEL) {
             ctx.throw(400, 'Label events cannot have participations');
         }
 
-        let user = await getUser(ctx, transaction);
+        let user = await loadUserFromParam(ctx, transaction);
         let participation = await Models.Participation.findOne({
             where: {
                 event: event.id,
@@ -340,8 +393,8 @@ async function saveParticipation(ctx) {
  */
 async function deleteParticipation(ctx) {
     let n = await Db.sequelize.transaction(async transaction => {
-        let event = await loadEvent(ctx, transaction);
-        let user = await getUser(ctx, transaction);
+        let event = await loadEventFromParam(ctx, transaction);
+        let user = await loadUserFromParam(ctx, transaction);
 
         let nDestroyed = await Models.Participation.destroy({
             where: {
@@ -368,7 +421,7 @@ async function deleteParticipation(ctx) {
  * @returns {Promise<void>}
  */
 async function getEvent(ctx) {
-    let event = await loadEvent(ctx);
+    let event = await loadEventFromParam(ctx);
     if (!event) {
         ctx.throw(404, 'No such event');
     }
@@ -433,7 +486,7 @@ async function listEvents(ctx) {
     }
 
     if (!types || types.includes(Constants.EVENT_TYPES.TRANSFER)) {
-        include.push('Transfer');
+        include.push('Transfers');
     }
 
     /** @type {Array<Event>} */
@@ -459,7 +512,7 @@ async function listEvents(ctx) {
  */
 async function deleteEvent(ctx) {
     await Db.sequelize.transaction(async transaction => {
-        let event = await loadEvent(ctx, transaction);
+        let event = await loadEventFromParam(ctx, transaction);
         await Models.Transaction.destroy({
             transaction,
             where: {
@@ -488,16 +541,142 @@ async function deleteEvent(ctx) {
 }
 
 /**
+ * @param {Application.Context} ctx
+ * @returns {Promise<void>}
+ */
+async function getTransferList(ctx) {
+    let transfers = await Models.Transfer.findAll({
+        where: {
+            event: ctx.params.event,
+        },
+    });
+    ctx.body = {
+        transfers: transfers.map(transfer => transfer.toApi()),
+    };
+}
+
+/**
+ * @param {Application.Context} ctx
+ * @returns {Promise<void>}
+ */
+async function createTransfers(ctx) {
+    /** @type {Array<ApiTransfer>} */
+    let apiTransfers = RouteUtils.validateBody(ctx, transfersSchema);
+    await Db.sequelize.transaction(async transaction => {
+        let event = await loadEventFromParam(ctx, transaction);
+
+        if (event.type === Constants.EVENT_TYPES.LABEL) {
+            ctx.throw(400, 'Label events cannot have transfers');
+        }
+
+        let transactionInserts = [];
+        let logEntries = [];
+
+        for (let apiTransfer of apiTransfers) {
+            if (apiTransfer.senderId === apiTransfer.recipientId) {
+                ctx.throw(400, 'Cannot transfer back to sender');
+            }
+            let sender = await loadUser(ctx, apiTransfer.senderId, transaction);
+            let recipient = await loadUser(ctx, apiTransfer.recipientId, transaction);
+
+            transactionInserts.push({
+                event:     event.id,
+                currency:  Constants.CURRENCY_IDS[apiTransfer.currency],
+                amount:    apiTransfer.amount,
+                sender:    sender.id,
+                recipient: recipient.id,
+            });
+
+            logEntries.push({
+                type:  'transfer.create',
+                event: event.id,
+            });
+        }
+
+        await Models.Transfer.bulkCreate(transactionInserts, {transaction});
+        await TransactionRebuilder.rebuildEvent(transaction, event);
+        await AuditManager.logMultiple(transaction, ctx.user, logEntries);
+    });
+    ctx.status = 204;
+}
+
+/**
+ * @param {Application.Context} ctx
+ * @returns {Promise<void>}
+ */
+async function saveTransfer(ctx) {
+    /** @type {ApiTransfer} */
+    let apiTransfer = RouteUtils.validateBody(ctx, transferSchema);
+    await Db.sequelize.transaction(async transaction => {
+        let event = await loadEventFromParam(ctx, transaction);
+        let transfer = await loadTransferFromParam(ctx, transaction);
+
+        if (transfer.event !== event.id) {
+            ctx.throw('400', 'Transfer does not belong to specified event');
+        }
+
+        let sender = await loadUser(ctx, apiTransfer.senderId, transaction);
+        let recipient = await loadUser(ctx, apiTransfer.recipientId, transaction);
+        if (apiTransfer.senderId === apiTransfer.recipientId) {
+            ctx.throw(400, 'Cannot transfer back to sender');
+        }
+
+        await transfer.update({
+            currency:  Constants.CURRENCY_IDS[apiTransfer.currency],
+            amount:    apiTransfer.amount,
+            sender:    sender.id,
+            recipient: recipient.id,
+        }, {transaction});
+        await TransactionRebuilder.rebuildEvent(transaction, event);
+        await AuditManager.log(transaction, ctx.user, 'transfer.update', {
+            type:  'transfer.create',
+            event: event.id,
+        });
+    });
+    ctx.status = 204;
+}
+
+/**
+ * @param {Application.Context} ctx
+ * @returns {Promise<void>}
+ */
+async function deleteTransfer(ctx) {
+    await Db.sequelize.transaction(async transaction => {
+        let event = await loadEventFromParam(ctx, transaction);
+        let transfer = await loadTransferFromParam(ctx, transaction);
+
+        if (transfer.event !== event.id) {
+            ctx.throw('400', 'Transfer does not belong to specified event');
+        }
+
+        await transfer.destroy({transaction});
+        await TransactionRebuilder.rebuildEvent(transaction, event);
+        await AuditManager.log(transaction, ctx.user, 'transfer.update', {
+            type:  'transfer.delete',
+            event: event.id,
+        });
+    });
+    ctx.status = 204;
+}
+
+/**
  * @param {Router} router
  */
 exports.register = function register(router) {
     router.get('/events', listEvents);
     router.post('/events', createEvent);
+
     router.delete('/events/:event(\\d+)', deleteEvent);
     router.get('/events/:event(\\d+)', getEvent);
     router.post('/events/:event(\\d+)', updateEvent);
+
     router.get('/events/:event(\\d+)/participations', getParticipationList);
     router.get('/events/:event(\\d+)/participations/:user(\\d+)', getSingleParticipation);
     router.post('/events/:event(\\d+)/participations/:user(\\d+)', saveParticipation);
     router.delete('/events/:event(\\d+)/participations/:user(\\d+)', deleteParticipation);
+
+    router.get('/events/:event(\\d+)/transfers', getTransferList);
+    router.post('/events/:event(\\d+)/transfers', createTransfers);
+    router.post('/events/:event(\\d+)/transfers/:transfer(\\d+)', saveTransfer);
+    router.delete('/events/:event(\\d+)/transfers/:transfer(\\d+)', deleteTransfer);
 };

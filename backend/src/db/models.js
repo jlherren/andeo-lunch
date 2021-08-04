@@ -61,7 +61,7 @@ class User extends Model {
  * @property {Date} date
  * @property {string} name
  * @property {Lunch} [Lunch]
- * @property {Transfer} [Transfer]
+ * @property {Array<Transfer>} [Transfers]
  */
 class Event extends Model {
     /**
@@ -84,6 +84,7 @@ class Event extends Model {
                     [Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY]]: this.Lunch.vegetarianMoneyFactor,
                 },
             },
+            transfers: this.Transfers?.map(transfer => transfer.toApi()),
         };
     }
 }
@@ -105,10 +106,26 @@ class Lunch extends Model {
  * @property {User} [Sender]
  * @property {number} recipient
  * @property {User} [Recipient]
- * @property {number} points
- * @property {number} money
+ * @property {number} currency
+ * @property {number} amount
  */
 class Transfer extends Model {
+    /**
+     * Map to an object suitable to return over the API
+     *
+     * @returns {ApiTransfer}
+     */
+    toApi() {
+        return {
+            id:          this.id,
+            eventId:     this.event,
+            eventName:   this.Event?.name,
+            senderId:    this.sender,
+            recipientId: this.recipient,
+            currency:    Constants.CURRENCY_NAMES[this.currency],
+            amount:      this.amount,
+        };
+    }
 }
 
 /**
@@ -322,13 +339,13 @@ exports.initModels = function initModels(sequelize) {
     Event.hasOne(Lunch, {foreignKey: {name: 'event', allowNull: false, unique: true}, as: 'Lunch'});
 
     Transfer.init({
-        points: {type: DataTypes.DOUBLE, allowNull: false},
-        money:  {type: DataTypes.DOUBLE, allowNull: false},
+        currency: {type: DataTypes.TINYINT, allowNull: false},
+        amount:   {type: DataTypes.DOUBLE, allowNull: false},
     }, {sequelize, modelName: 'transfer'});
     Transfer.belongsTo(User, {foreignKey: {name: 'sender', allowNull: false}, as: 'Sender'});
     Transfer.belongsTo(User, {foreignKey: {name: 'recipient', allowNull: false}, as: 'Recipient'});
-    Transfer.belongsTo(Event, {foreignKey: {name: 'event', allowNull: false, unique: true}, as: 'Event'});
-    Event.hasOne(Transfer, {foreignKey: {name: 'event', allowNull: false, unique: true}, as: 'Transfer'});
+    Transfer.belongsTo(Event, {foreignKey: {name: 'event', allowNull: false}, as: 'Event'});
+    Event.hasMany(Transfer, {foreignKey: {name: 'event', allowNull: false}, as: 'Transfers'});
 
     ParticipationType.init({
         label: {type: DataTypes.STRING(64), allowNull: false},

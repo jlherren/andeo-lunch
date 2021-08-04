@@ -24,7 +24,7 @@ afterEach(async () => {
  * @param {number} n
  * @returns {Promise<Array<User>>}
  */
-async function createUsers(n) {
+function createUsers(n) {
     let inserts = [];
     for (let i = 0; i < n; i++) {
         inserts.push({
@@ -34,7 +34,7 @@ async function createUsers(n) {
             name:     `User ${i}`,
         });
     }
-    return await Models.User.bulkCreate(inserts);
+    return Models.User.bulkCreate(inserts);
 }
 
 /**
