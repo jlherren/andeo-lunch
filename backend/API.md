@@ -41,7 +41,7 @@ Overview of object structures used in this API
 
 ```
 "lunch"
-"event"
+"special"
 "label"
 "transaction"
 ```

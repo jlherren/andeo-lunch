@@ -98,8 +98,8 @@
                 switch (this.event.type) {
                     case 'lunch':
                         return this.$icons.lunch;
-                    case 'event':
-                        return this.$icons.event;
+                    case 'special':
+                        return this.$icons.special;
                     case 'label':
                         return this.$icons.label;
                     default:

@@ -29,7 +29,6 @@ export const icons = {
     // Add semantic aliases here (this is encouraged).  Keep this list sorted!
     balanceHistory: mdi.mdiScaleBalance,
     edit:           mdi.mdiPencil,
-    event:          mdi.mdiPartyPopper,
     log:            mdi.mdiNotebook,
     lunch:          mdi.mdiFoodVariant,
     menu:           mdi.mdiSilverware,
@@ -39,6 +38,7 @@ export const icons = {
     optOut:         mdi.mdiCancel,
     password:       mdi.mdiLock,
     points:         mdi.mdiHandshake,
+    special:        mdi.mdiPartyPopper,
     stats:          mdi.mdiChartBar,
     transfer:       mdi.mdiSwapHorizontalBold,
     undecided:      mdi.mdiHelpCircle,

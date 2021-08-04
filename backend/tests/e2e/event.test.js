@@ -129,7 +129,7 @@ describe('creating events', () => {
     it('Accepts a special event', async () => {
         let specialEvent = {
             ...sampleEvent,
-            type: 'event',
+            type: 'special',
         };
         let response = await request.post('/api/events').send(specialEvent);
         expect(response.status).toEqual(201);

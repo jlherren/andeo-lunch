@@ -230,7 +230,7 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
 
     switch (event.type) {
         case Constants.EVENT_TYPES.LUNCH:
-        case Constants.EVENT_TYPES.EVENT:
+        case Constants.EVENT_TYPES.SPECIAL:
             await handleLunchOrEvent();
             break;
 

@@ -48,9 +48,7 @@
         },
 
         props: {
-            event: {
-                type: Object,
-            },
+            event: Object,
         },
 
         data() {
@@ -81,8 +79,14 @@
             },
 
             eventTypeName() {
-                // Internal types happen to coincide with english words
-                return this.event.type;
+                switch (this.event.type) {
+                    case 'special':
+                        return 'special event';
+
+                    default:
+                        // The rest of internal type names happen to coincide with english words
+                        return this.event.type;
+                }
             },
         },
 

@@ -43,8 +43,8 @@
             <v-btn color="primary" fab small @click="openCreateDialog('lunch', null)">
                 <v-icon>{{ $icons.lunch }}</v-icon>
             </v-btn>
-            <v-btn color="primary" fab small @click="openCreateDialog('event', null)">
-                <v-icon>{{ $icons.event }}</v-icon>
+            <v-btn color="primary" fab small @click="openCreateDialog('special', null)">
+                <v-icon>{{ $icons.special }}</v-icon>
             </v-btn>
             <v-btn color="primary" fab small @click="openCreateDialog('label', null)">
                 <v-icon>{{ $icons.label }}</v-icon>
