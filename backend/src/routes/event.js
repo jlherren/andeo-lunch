@@ -634,10 +634,7 @@ async function saveTransfer(ctx) {
             recipient: recipient.id,
         }, {transaction});
         await TransactionRebuilder.rebuildEvent(transaction, event);
-        await AuditManager.log(transaction, ctx.user, 'transfer.update', {
-            type:  'transfer.create',
-            event: event.id,
-        });
+        await AuditManager.log(transaction, ctx.user, 'transfer.update', {event: event.id});
     });
     ctx.status = 204;
 }
@@ -657,10 +654,7 @@ async function deleteTransfer(ctx) {
 
         await transfer.destroy({transaction});
         await TransactionRebuilder.rebuildEvent(transaction, event);
-        await AuditManager.log(transaction, ctx.user, 'transfer.update', {
-            type:  'transfer.delete',
-            event: event.id,
-        });
+        await AuditManager.log(transaction, ctx.user, 'transfer.delete', {event: event.id});
     });
     ctx.status = 204;
 }

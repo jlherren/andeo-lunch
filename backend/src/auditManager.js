@@ -31,9 +31,8 @@ exports.logMultiple = async function logMultiple(transaction, actingUser, entrie
     for (let entry of entries) {
         inserts.push({
             date:       date,
-            type:       entry.type,
             actingUser: actingUser.id,
-            ...entry.rest,
+            ...entry,
         });
     }
 
