@@ -3,14 +3,16 @@
         <the-app-bar sub-page>
             {{ name }}
             <template v-if="event" slot="buttons">
-                <v-btn icon @click="openEditDialog">
+                <v-btn icon @click="openEditDialog" :disabled="isBusy">
                     <v-icon>{{ $icons.edit }}</v-icon>
                 </v-btn>
-                <v-btn icon @click="openConfirmDelete">
+                <v-btn icon @click="openConfirmDelete" :disabled="isBusy">
                     <v-icon>{{ $icons.delete }}</v-icon>
                 </v-btn>
             </template>
         </the-app-bar>
+
+        <shy-progress v-if="isBusy"/>
 
         <div v-if="event">
             <v-container class="center-text">
@@ -28,7 +30,6 @@
                 <v-banner elevation="2" :icon="$icons.alertCircle">
                     Make up your mind!
                     <template v-slot:actions>
-                        <v-progress-circular v-if="isBusy" indeterminate size="20" width="2"/>
                         <v-btn text color="error" class="ml-1" :disabled="isBusy" @click="optOut">
                             <v-icon small left>{{ $icons.optOut }}</v-icon>
                             Opt-out
@@ -67,9 +68,9 @@
                         be undone.
                     </v-card-text>
                     <v-card-actions>
-                        <v-btn text @click="confirmDelete = false">Cancel</v-btn>
+                        <v-btn text @click="confirmDelete = false" :disabled="isBusy">Cancel</v-btn>
                         <v-spacer/>
-                        <v-btn text @click="deleteEvent" color="error">Delete</v-btn>
+                        <v-btn text @click="deleteEvent" :disabled="isBusy" color="error">Delete</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-dialog>
@@ -83,6 +84,7 @@
     import LunchEdit from '@/components/event/LunchEdit';
     import ParticipationListItem from '@/components/event/ParticipationListItem';
     import ParticipationSummary from '@/components/event/ParticipationSummary';
+    import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
     import Vue from 'vue';
 
@@ -92,6 +94,7 @@
         name: 'LunchDetail',
 
         components: {
+            ShyProgress,
             TheAppBar,
             Balance,
             ParticipationListItem,
@@ -221,9 +224,14 @@
             },
 
             async deleteEvent() {
-                await this.$store.dispatch('deleteEvent', {eventId: this.eventId});
-                this.confirmDelete = false;
-                this.$router.go(-1);
+                try {
+                    this.isBusy = true;
+                    await this.$store.dispatch('deleteEvent', {eventId: this.eventId});
+                    this.confirmDelete = false;
+                    this.$router.go(-1);
+                } catch (err) {
+                    this.isBusy = false;
+                }
             },
 
             async refreshEvent() {

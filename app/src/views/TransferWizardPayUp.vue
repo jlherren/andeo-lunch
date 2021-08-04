@@ -4,9 +4,11 @@
             Pay up
 
             <template v-slot:buttons>
-                <v-btn text color="primary" @click="save()">Save</v-btn>
+                <v-btn text color="primary" @click="save()" :disabled="isBusy">Save</v-btn>
             </template>
         </the-app-bar>
+
+        <shy-progress v-if="isBusy"/>
 
         <v-container>
             <p class="text-body-1 mt-4">
@@ -28,6 +30,7 @@
 </template>
 
 <script>
+    import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
     import {mapGetters} from 'vuex';
 
@@ -35,6 +38,7 @@
         name: 'TransferWizardPayUp',
 
         components: {
+            ShyProgress,
             TheAppBar,
         },
 

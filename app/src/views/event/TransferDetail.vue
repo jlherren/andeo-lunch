@@ -12,7 +12,7 @@
             </template>
         </the-app-bar>
 
-        <shy-progress v-if="loading"/>
+        <shy-progress v-if="isBusy"/>
 
         <div v-if="event">
             <v-container class="center-text">
@@ -21,7 +21,7 @@
             </v-container>
         </div>
 
-        <v-list v-if="!loading">
+        <v-list>
             <v-list-item v-for="transfer of transfers" :key="transfer.id">
                 <v-list-item-content>
                     <v-list-item-title>
@@ -36,6 +36,8 @@
                     </v-list-item-subtitle>
                 </v-list-item-content>
             </v-list-item>
+
+            <v-skeleton-loader v-if="!transfers" type="list-item-avatar"/>
         </v-list>
 
         <v-dialog v-model="confirmDelete">
@@ -47,9 +49,9 @@
                     Really delete this transfer? This cannot be undone.
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn text @click="confirmDelete = false">Cancel</v-btn>
+                    <v-btn text @click="confirmDelete = false" :disabled="isBusy">Cancel</v-btn>
                     <v-spacer/>
-                    <v-btn text @click="deleteEvent" color="error">Delete</v-btn>
+                    <v-btn text @click="deleteEvent" :disabled="isBusy" color="error">Delete</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -75,17 +77,17 @@
             let eventId = parseInt(this.$route.params.id, 10);
             return {
                 eventId,
-                loading:       false,
+                isBusy:        false,
                 confirmDelete: false,
             };
         },
 
         async created() {
             try {
-                this.loading = true;
+                this.isBusy = true;
                 await this.$store.dispatch('fetchTransfers', {eventId: this.eventId});
             } finally {
-                this.loading = false;
+                this.isBusy = false;
             }
         },
 
@@ -95,7 +97,7 @@
             },
 
             transfers() {
-                return this.$store.getters.transfers(this.eventId).map(transfer => {
+                return this.$store.getters.transfers(this.eventId)?.map(transfer => {
                     return {
                         ...transfer,
                         senderName:    this.$store.getters.user(transfer.senderId)?.name,
@@ -119,9 +121,14 @@
             },
 
             async deleteEvent() {
-                await this.$store.dispatch('deleteEvent', {eventId: this.eventId});
-                this.confirmDelete = false;
-                this.$router.go(-1);
+                try {
+                    this.isBusy = true;
+                    await this.$store.dispatch('deleteEvent', {eventId: this.eventId});
+                    this.confirmDelete = false;
+                    this.$router.go(-1);
+                } catch (err) {
+                    this.isBusy = false;
+                }
             },
         },
     };

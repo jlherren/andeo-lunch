@@ -42,6 +42,9 @@
         'participation.create': 'Participation created',
         'participation.update': 'Participation updated',
         'participation.delete': 'Participation deleted',
+        'transfer.create':      'Transfer created',
+        'transfer.update':      'Transfer updated',
+        'transfer.delete':      'Transfer deleted',
     };
 
     export default {
