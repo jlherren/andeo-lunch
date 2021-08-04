@@ -330,6 +330,26 @@ describe('Balance calculation', () => {
         response = await request.get(`/api/users/${user2.id}`);
         expect(response.body.user.balances).toMatchObject({points: 0, money: 0});
     });
+
+    it('correctly updates balances after deleting an event with transfers', async () => {
+        let transfers = [{
+            senderId:    user1.id,
+            recipientId: user2.id,
+            amount:      10,
+            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+        }];
+        let response = await request.post(`/api/events/${eventId}/transfers`).send(transfers);
+        expect(response.status).toEqual(204);
+
+        response = await request.delete(`/api/events/${eventId}`);
+        expect(response.status).toEqual(204);
+
+        response = await request.get(`/api/users/${user1.id}`);
+        expect(response.body.user.balances).toMatchObject({points: 0, money: 0});
+
+        response = await request.get(`/api/users/${user2.id}`);
+        expect(response.body.user.balances).toMatchObject({points: 0, money: 0});
+    });
 });
 
 describe('Label events', () => {

@@ -531,6 +531,12 @@ async function deleteEvent(ctx) {
                 event: event.id,
             },
         });
+        await Models.Transfer.destroy({
+            transaction,
+            where: {
+                event: event.id,
+            },
+        });
         await event.destroy({transaction});
 
         await TransactionRebuilder.rebuildTransactionBalances(transaction, event.date);
