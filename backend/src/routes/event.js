@@ -11,36 +11,36 @@ const Utils = require('../utils');
 const TransactionRebuilder = require('../transactionRebuilder');
 const AuditManager = require('../auditManager');
 
-const nameSchema = Joi.string().normalize().min(1).regex(/\S/u);
+const eventNameSchema = Joi.string().normalize().min(1).regex(/\S/u);
 const eventTypeSchema = Joi.string().valid(...Object.values(Constants.EVENT_TYPE_NAMES));
 const participationTypeSchema = Joi.string().valid(...Object.values(Constants.PARTICIPATION_TYPE_NAMES));
 const factorSchema = Joi.number().min(0).max(1);
-const vegetarianApiName = Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.VEGETARIAN];
-const moneyApiName = Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY];
-const discountFactors = Joi.object({
-    [vegetarianApiName]: Joi.object({
-        [moneyApiName]: factorSchema.required(),
+const vegetarianApiNameSchema = Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.VEGETARIAN];
+const moneyApiNameSchema = Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY];
+const discountFactorsSchema = Joi.object({
+    [vegetarianApiNameSchema]: Joi.object({
+        [moneyApiNameSchema]: factorSchema.required(),
     }).required(),
 });
 const nonNegativeSchema = Joi.number().min(0);
 
 const eventCreateSchema = Joi.object({
-    name:    nameSchema.required(),
+    name:    eventNameSchema.required(),
     date:    Joi.date().required(),
     type:    eventTypeSchema.required(),
     costs:   Joi.object({
         points: nonNegativeSchema,
     }),
-    factors: discountFactors,
+    factors: discountFactorsSchema,
 });
 
 const eventUpdateSchema = Joi.object({
-    name:    nameSchema,
+    name:    eventNameSchema,
     date:    Joi.date(),
     costs:   Joi.object({
         points: nonNegativeSchema,
     }),
-    factors: discountFactors,
+    factors: discountFactorsSchema,
 });
 
 const participationSchema = Joi.object({
@@ -90,7 +90,7 @@ async function getSingleParticipation(ctx) {
  * @param {number} type
  * @param {ApiEvent} apiEvent
  */
-function validEvent(ctx, type, apiEvent) {
+function validateEvent(ctx, type, apiEvent) {
     if (type === Constants.EVENT_TYPES.LABEL) {
         if (apiEvent?.costs?.points !== undefined) {
             ctx.throw(400, 'Label events cannot have point costs');
@@ -190,7 +190,7 @@ async function createEvent(ctx) {
     let apiEvent = RouteUtils.validateBody(ctx, eventCreateSchema);
     let eventId = await Db.sequelize.transaction(async transaction => {
         let type = Constants.EVENT_TYPE_IDS[apiEvent.type];
-        validEvent(ctx, type, apiEvent);
+        validateEvent(ctx, type, apiEvent);
 
         let event = await Models.Event.create({
             name: apiEvent.name,
@@ -261,7 +261,7 @@ async function updateEvent(ctx) {
     let apiEvent = RouteUtils.validateBody(ctx, eventUpdateSchema);
     await Db.sequelize.transaction(async transaction => {
         let event = await loadEvent(ctx, transaction);
-        validEvent(ctx, event.type, apiEvent);
+        validateEvent(ctx, event.type, apiEvent);
         let originalDate = event.date;
 
         await event.update(
