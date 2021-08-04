@@ -40,7 +40,7 @@
     import NumberField from '@/components/NumberField';
 
     export default {
-        name: 'EventEdit',
+        name: 'LunchEdit',
 
         components: {
             LmDatePicker,

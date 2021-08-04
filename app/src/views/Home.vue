@@ -14,7 +14,7 @@
         <v-list v-if="!loading && events.length > 0">
             <template v-for="event of events">
                 <v-divider v-if="event.hasGap" :key="event.id + '-divider'"/>
-                <event-list-item :key="event.id" :event="event" :prominent="event.prominent"/>
+                <lunch-list-item :key="event.id" :event="event" :prominent="event.prominent"/>
             </template>
         </v-list>
 
@@ -28,7 +28,7 @@
 
 <script>
     import * as DateUtils from '@/utils/dateUtils';
-    import EventListItem from '@/components/event/EventListItem';
+    import LunchListItem from '@/components/event/LunchListItem';
     import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
     import UserStats from '@/components/UserStats';
@@ -39,7 +39,7 @@
 
         components: {
             TheAppBar,
-            EventListItem,
+            LunchListItem,
             UserStats,
             ShyProgress,
         },

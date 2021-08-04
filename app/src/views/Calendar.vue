@@ -16,7 +16,7 @@
 
         <v-list v-if="!loading">
             <template v-for="event of entries">
-                <event-list-item v-if="event.type !== 'placeholder'" :key="event.id" :event="event"/>
+                <lunch-list-item v-if="event.type !== 'placeholder'" :key="event.id" :event="event"/>
 
                 <v-list-item v-if="event.type === 'placeholder'" :key="event.id">
                     <v-list-item-icon/>
@@ -52,15 +52,15 @@
         </v-speed-dial>
 
         <v-dialog v-model="createDialog" persistent>
-            <event-edit ref="createEvent" :event="newEvent" @close="createDialogClosed()"/>
+            <lunch-edit ref="createEvent" :event="newEvent" @close="createDialogClosed()"/>
         </v-dialog>
     </v-main>
 </template>
 
 <script>
     import * as DateUtils from '@/utils/dateUtils';
-    import EventEdit from '@/components/event/EventEdit';
-    import EventListItem from '@/components/event/EventListItem';
+    import LunchEdit from '@/components/event/LunchEdit';
+    import LunchListItem from '@/components/event/LunchListItem';
     import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
     import Vue from 'vue';
@@ -70,8 +70,8 @@
 
         components: {
             TheAppBar,
-            EventListItem,
-            EventEdit,
+            LunchListItem,
+            LunchEdit,
             ShyProgress,
         },
 

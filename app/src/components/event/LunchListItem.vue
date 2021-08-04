@@ -43,7 +43,7 @@
     import ParticipationSummary from '@/components/event/ParticipationSummary';
 
     export default {
-        name: 'eventListItem',
+        name: 'LunchListItem',
 
         components: {
             ParticipationSummary,

@@ -54,7 +54,7 @@
             </v-list>
 
             <v-dialog v-model="edit" persistent>
-                <event-edit ref="editDialog" :event="event" @close="edit = false"/>
+                <lunch-edit ref="editDialog" :event="event" @close="edit = false"/>
             </v-dialog>
 
             <v-dialog v-model="confirmDelete">
@@ -80,7 +80,7 @@
 <script>
     import * as DateUtils from '@/utils/dateUtils';
     import Balance from '@/components/Balance';
-    import EventEdit from '@/components/event/EventEdit';
+    import LunchEdit from '@/components/event/LunchEdit';
     import ParticipationListItem from '@/components/event/ParticipationListItem';
     import ParticipationSummary from '@/components/event/ParticipationSummary';
     import TheAppBar from '@/components/TheAppBar';
@@ -89,14 +89,14 @@
     const PASSIVE_TYPES = ['opt-out', 'undecided'];
 
     export default {
-        name: 'EventDetail',
+        name: 'LunchDetail',
 
         components: {
             TheAppBar,
             Balance,
             ParticipationListItem,
             ParticipationSummary,
-            EventEdit,
+            LunchEdit,
         },
 
         data() {
