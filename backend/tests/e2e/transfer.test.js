@@ -215,8 +215,13 @@ describe('Manipulate transfer events', () => {
 });
 
 describe('Balance calculation', () => {
+    let eventId = null;
+
+    beforeEach(async () => {
+        eventId = await Helper.createEvent(request, minimalEvent);
+    });
+
     it('correctly calculates money transfers', async () => {
-        let eventId = await Helper.createEvent(request, minimalEvent);
         let transfers = [{
             senderId:    user1.id,
             recipientId: user2.id,
@@ -234,7 +239,6 @@ describe('Balance calculation', () => {
     });
 
     it('correctly calculates point transfers', async () => {
-        let eventId = await Helper.createEvent(request, minimalEvent);
         let transfers = [{
             senderId:    user1.id,
             recipientId: user2.id,
@@ -252,7 +256,6 @@ describe('Balance calculation', () => {
     });
 
     it('correctly calculates a sale transfer', async () => {
-        let eventId = await Helper.createEvent(request, minimalEvent);
         let transfers = [{
             senderId:    user1.id,
             recipientId: user2.id,
@@ -275,7 +278,6 @@ describe('Balance calculation', () => {
     });
 
     it('correctly updates balances after changing a transfer', async () => {
-        let eventId = await Helper.createEvent(request, minimalEvent);
         let transfers = [{
             senderId:    user1.id,
             recipientId: user2.id,
@@ -306,7 +308,6 @@ describe('Balance calculation', () => {
     });
 
     it('correctly updates balances after deleting a transfer', async () => {
-        let eventId = await Helper.createEvent(request, minimalEvent);
         let transfers = [{
             senderId:    user1.id,
             recipientId: user2.id,
