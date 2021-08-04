@@ -86,9 +86,9 @@
                     //     icon:  this.$icons.menu,
                     // },
                     {
-                        url:   '/transfer',
-                        title: 'Transfer',
-                        icon:  this.$icons.transfer,
+                        url:   '/transfers',
+                        title: 'Transfers',
+                        icon:  this.$icons.transfers,
                     },
                     {
                         url:   '/stats',

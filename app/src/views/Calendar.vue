@@ -108,7 +108,8 @@
             entries() {
                 // TODO: This is a bit cheap, since potentially many events may be loaded at the time
                 let events = this.$store.getters.events.filter(event => {
-                    return event.date >= this.startDate && event.date < this.endDate;
+                    return ['lunch', 'special'].includes(event.type) &&
+                        event.date >= this.startDate && event.date < this.endDate;
                 });
 
                 // Add placeholders for missing weekdays
