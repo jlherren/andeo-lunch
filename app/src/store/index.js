@@ -54,6 +54,10 @@ export default new Vuex.Store({
             // Single participations by event ID and user ID.  Key format `${eventId}/${userId}`
         },
 
+        transfers: {
+            // Transfers by event ID
+        },
+
         transactions: {
             // Transactions by user ID
 
@@ -84,6 +88,7 @@ export default new Vuex.Store({
         event:          state => eventId => state.events[eventId],
         participations: state => eventId => state.participations[eventId],
         participation:  state => (eventId, userId) => state.singleParticipations[`${eventId}/${userId}`],
+        transfers:      state => eventId => state.transfers[eventId],
 
         // Transactions
         transactions: state => userId => state.transactions[userId],
@@ -218,6 +223,30 @@ export default new Vuex.Store({
             await context.dispatch('fetchParticipations', {eventId});
         },
 
+        async fetchTransfers(context, {eventId}) {
+            await Cache.ifNotFresh('transfers', eventId, 10000, async () => {
+                let response = await Backend.get(`/events/${eventId}/transfers`);
+                let transfers = response.data.transfers;
+                Vue.set(context.state.transfers, eventId, transfers);
+            });
+
+            let promises = context.state.transfers[eventId]
+                .map(t => Promise.all([
+                    context.dispatch('fetchUser', {userId: t.senderId}),
+                    context.dispatch('fetchUser', {userId: t.recipientId}),
+                ]));
+            await Promise.all(promises);
+        },
+
+        async saveTransfers(context, {eventId, transfers}) {
+            await Backend.post(`/events/${eventId}/transfers`, transfers);
+            Cache.invalidate('event', eventId);
+            Cache.invalidate('transfers', eventId);
+            Cache.invalidate('user');
+            Cache.invalidate('users');
+            await context.dispatch('fetchTransfers', {eventId});
+        },
+
         async saveEvent(context, data) {
             let url = data.id ? `/events/${data.id}` : '/events';
             let response = await Backend.post(url, {...data, id: undefined});
@@ -244,6 +273,8 @@ export default new Vuex.Store({
                 await context.dispatch('fetchEvent', {eventId});
                 await context.dispatch('fetchParticipations', {eventId});
             }
+
+            return eventId;
         },
 
         async deleteEvent(context, {eventId}) {
