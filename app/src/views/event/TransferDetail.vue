@@ -6,7 +6,7 @@
                 <v-btn icon disabled>
                     <v-icon>{{ $icons.edit }}</v-icon>
                 </v-btn>
-                <v-btn icon disabled>
+                <v-btn icon @click="openConfirmDelete">
                     <v-icon>{{ $icons.delete }}</v-icon>
                 </v-btn>
             </template>
@@ -37,6 +37,22 @@
                 </v-list-item-content>
             </v-list-item>
         </v-list>
+
+        <v-dialog v-model="confirmDelete">
+            <v-card>
+                <v-card-title>
+                    Confirm
+                </v-card-title>
+                <v-card-text>
+                    Really delete this transfer? This cannot be undone.
+                </v-card-text>
+                <v-card-actions>
+                    <v-btn text @click="confirmDelete = false">Cancel</v-btn>
+                    <v-spacer/>
+                    <v-btn text @click="deleteEvent" color="error">Delete</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-main>
 </template>
 
@@ -59,7 +75,8 @@
             let eventId = parseInt(this.$route.params.id, 10);
             return {
                 eventId,
-                loading: false,
+                loading:       false,
+                confirmDelete: false,
             };
         },
 
@@ -96,6 +113,16 @@
             },
         },
 
-        methods: {},
+        methods: {
+            openConfirmDelete() {
+                this.confirmDelete = true;
+            },
+
+            async deleteEvent() {
+                await this.$store.dispatch('deleteEvent', {eventId: this.eventId});
+                this.confirmDelete = false;
+                this.$router.go(-1);
+            },
+        },
     };
 </script>
