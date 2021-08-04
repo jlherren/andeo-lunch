@@ -188,28 +188,30 @@
         },
 
         methods: {
-            async optIn() {
-                this.isBusy = true;
-                await this.$store.dispatch('saveParticipation', {
-                    userId:  this.ownUserId,
-                    eventId: this.eventId,
-                    type:    this.$store.getters.settings.quickOptIn,
-                });
-                // Not refetching the event here, because opt-in will never cause the event to change
-                await this.$store.dispatch('fetchUser', {userId: this.$store.getters.ownUserId});
-                this.isBusy = false;
+            optIn() {
+                this.setParticipation(this.$store.getters.settings.quickOptIn, true);
             },
 
-            async optOut() {
-                this.isBusy = true;
-                await this.$store.dispatch('saveParticipation', {
-                    userId:  this.ownUserId,
-                    eventId: this.eventId,
-                    type:    'opt-out',
-                });
-                this.isBusy = false;
-                // Not refetching the event here, because opt-out will never cause it to change
+            optOut() {
                 // Not refetching the user here, because opt-out from undecided will never cause it to change
+                this.setParticipation('opt-out', false);
+            },
+
+            async setParticipation(type, refetchUser) {
+                try {
+                    this.isBusy = true;
+                    await this.$store.dispatch('saveParticipation', {
+                        userId:  this.ownUserId,
+                        eventId: this.eventId,
+                        type,
+                    });
+                    // Not refetching the event here, because neither opt-in nor opt-out will ever cause it to change
+                    if (refetchUser) {
+                        await this.$store.dispatch('fetchUser', {userId: this.$store.getters.ownUserId});
+                    }
+                } finally {
+                    this.isBusy = false;
+                }
             },
 
             openEditDialog() {
