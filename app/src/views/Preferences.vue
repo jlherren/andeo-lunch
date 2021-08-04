@@ -41,7 +41,7 @@
                     </v-list-item-title>
                 </v-list-item-content>
                 <v-list-item-action>
-                    <v-switch :value="$vuetify.theme.dark" @change="toggleDarkMode"/>
+                    <v-switch v-model="darkMode"/>
                 </v-list-item-action>
             </v-list-item>
         </v-list>
@@ -76,6 +76,7 @@
 
         data() {
             return {
+                darkMode:          this.$vuetify.theme.dark,
                 defaultOptInModal: false,
 
                 weekdays: [
@@ -126,10 +127,12 @@
                 this.defaultOptInModal = true;
                 Vue.nextTick(() => this.$refs.optInModal.reset());
             },
+        },
 
-            toggleDarkMode() {
-                this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
-                localStorage.setItem('dark-mode', this.$vuetify.theme.dark ? 'true' : 'false');
+        watch: {
+            darkMode(value) {
+                this.$vuetify.theme.dark = value;
+                localStorage.setItem('dark-mode', value ? 'true' : 'false');
             },
         },
     };
