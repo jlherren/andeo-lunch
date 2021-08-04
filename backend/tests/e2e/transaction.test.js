@@ -6,7 +6,6 @@ const LunchMoney = require('../../src/lunchMoney');
 const ConfigProvider = require('../../src/configProvider');
 const Constants = require('../../src/constants');
 const Models = require('../../src/db/models');
-const AuthUtils = require('../../src/authUtils');
 const Helper = require('./helper');
 
 // These must be in chronological order!
@@ -49,23 +48,21 @@ beforeEach(async () => {
     await lunchMoney.initDb();
     systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
     let username = 'test-user-1';
-    let password = 'abc123';
-    user1 = await Models.User.create({
+    [user1, user2] = await Models.User.bulkCreate([{
         username: username,
-        password: await AuthUtils.hashPassword(password),
+        password: Helper.passwordHash,
         active:   true,
         name:     'Test User 1',
-    });
-    user2 = await Models.User.create({
+    }, {
         username: 'test-user-2',
-        password: await AuthUtils.hashPassword(password),
+        password: Helper.passwordHash,
         active:   true,
         name:     'Test User 2',
-    });
+    }]);
     request = supertest.agent(lunchMoney.listen());
     if (jwt === null) {
         let response = await request.post('/api/account/login')
-            .send({username, password});
+            .send({username, password: Helper.password});
         jwt = response.body.token;
     }
     request.set('Authorization', `Bearer ${jwt}`);

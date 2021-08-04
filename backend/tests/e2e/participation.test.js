@@ -6,7 +6,6 @@ const LunchMoney = require('../../src/lunchMoney');
 const ConfigProvider = require('../../src/configProvider');
 const Constants = require('../../src/constants');
 const Models = require('../../src/db/models');
-const AuthUtils = require('../../src/authUtils');
 const Helper = require('./helper');
 
 /** @type {LunchMoney|null} */
@@ -53,21 +52,20 @@ let sampleParticipation3 = {
 beforeEach(async () => {
     lunchMoney = new LunchMoney({config: ConfigProvider.getTestConfig()});
     await lunchMoney.initDb();
-    let password = 'abc123';
-    user1 = await Models.User.create({
+    [user1, user2] = await Models.User.bulkCreate([{
         username: 'test-user-1',
-        password: await AuthUtils.hashPassword(password),
+        password: Helper.passwordHash,
         active:   true,
         name:     'Test User',
-    });
-    user2 = await Models.User.create({
+    }, {
         username: 'test-user-2',
-        password: await AuthUtils.hashPassword(password),
+        password: Helper.passwordHash,
         active:   true,
         name:     'Test User',
-    });
+    }]);
     request = supertest.agent(lunchMoney.listen());
-    let response = await request.post('/api/account/login').send({username: user1.username, password});
+    let response = await request.post('/api/account/login')
+        .send({username: user1.username, password: Helper.password});
     jwt = response.body.token;
     request.set('Authorization', `Bearer ${jwt}`);
 });

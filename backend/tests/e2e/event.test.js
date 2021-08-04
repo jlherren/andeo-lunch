@@ -6,7 +6,6 @@ const LunchMoney = require('../../src/lunchMoney');
 const ConfigProvider = require('../../src/configProvider');
 const Constants = require('../../src/constants');
 const Models = require('../../src/db/models');
-const AuthUtils = require('../../src/authUtils');
 const Helper = require('./helper');
 
 /** @type {LunchMoney|null} */
@@ -22,17 +21,16 @@ beforeEach(async () => {
     lunchMoney = new LunchMoney({config: ConfigProvider.getTestConfig()});
     await lunchMoney.initDb();
     let username = 'test-user';
-    let password = 'abc123';
     user = await Models.User.create({
         username,
-        password: await AuthUtils.hashPassword(password),
+        password: Helper.passwordHash,
         active:   true,
         name:     'Test User 1',
     });
     request = supertest.agent(lunchMoney.listen());
     if (jwt === null) {
         let response = await request.post('/api/account/login')
-            .send({username, password});
+            .send({username, password: Helper.password});
         jwt = response.body.token;
     }
     request.set('Authorization', `Bearer ${jwt}`);

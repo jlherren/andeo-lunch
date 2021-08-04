@@ -20,18 +20,17 @@ let inactiveUser = null;
 beforeEach(async () => {
     lunchMoney = new LunchMoney({config: ConfigProvider.getTestConfig()});
     await lunchMoney.initDb();
-    user = await Models.User.create({
+    [user, inactiveUser] = await Models.User.bulkCreate([{
         username: 'testuser',
         password: await AuthUtils.hashPassword('abc123'),
         active:   true,
         name:     'Test User',
-    });
-    inactiveUser = await Models.User.create({
+    }, {
         username: 'inactiveuser',
         password: await AuthUtils.hashPassword('qwe456'),
         active:   false,
         name:     'Inactive User',
-    });
+    }]);
     request = supertest(lunchMoney.listen());
 });
 
