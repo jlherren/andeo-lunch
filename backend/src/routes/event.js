@@ -353,8 +353,8 @@ async function saveParticipation(ctx) {
     await Db.sequelize.transaction(async transaction => {
         let event = await loadEventFromParam(ctx, transaction);
 
-        if (event.type === Constants.EVENT_TYPES.LABEL) {
-            ctx.throw(400, 'Label events cannot have participations');
+        if (![Constants.EVENT_TYPES.LUNCH, Constants.EVENT_TYPES.SPECIAL].includes(event.type)) {
+            ctx.throw(400, 'This type of event cannot have participations');
         }
 
         let user = await loadUserFromParam(ctx, transaction);

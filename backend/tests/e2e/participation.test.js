@@ -194,7 +194,7 @@ describe('A label event', () => {
         let url = `/api/events/${eventId}/participations/${user1.id}`;
         let response = await request.post(url).send(sampleParticipation1);
         expect(response.status).toEqual(400);
-        expect(response.text).toEqual('Label events cannot have participations');
+        expect(response.text).toEqual('This type of event cannot have participations');
     });
 });
 
