@@ -112,10 +112,7 @@
 
         async created() {
             try {
-                await Promise.all([
-                    await this.$store.dispatch('fetchSettings', {eventId: this.eventId}),
-                    await this.$store.dispatch('fetchEvent', {eventId: this.eventId}),
-                ]);
+                await this.$store.dispatch('fetchSettings');
                 let event = this.$store.getters.event(this.eventId);
                 if (event.type !== 'label') {
                     await this.$store.dispatch('fetchParticipations', {eventId: this.eventId});

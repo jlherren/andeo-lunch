@@ -1,8 +1,8 @@
 import AuditLog from '@/views/AuditLog';
 import Calendar from '@/views/Calendar.vue';
+import EventDetail from '@/views/event/EventDetail';
 import History from '@/views/History.vue';
 import Home from '@/views/Home.vue';
-import LunchDetail from '@/views/LunchDetail';
 import Menus from '@/views/Menus.vue';
 import Preferences from '@/views/Preferences';
 import Stats from '@/views/Stats';
@@ -41,7 +41,7 @@ const routes = [
     {
         path:      '/events/:id(\\d+)',
         name:      'LunchDetail',
-        component: LunchDetail,
+        component: EventDetail,
     },
     {
         path:      '/preferences',
