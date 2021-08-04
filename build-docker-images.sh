@@ -11,11 +11,13 @@ if [[ -z "$VUE_APP_BACKEND_URL" ]]; then
 fi
 
 docker build \
+    --pull \
     -t andeo-lunch-app \
     --build-arg VUE_APP_BACKEND_URL="$VUE_APP_BACKEND_URL" \
     --build-arg VUE_APP_BRANDING_TITLE="$VUE_APP_BRANDING_TITLE" \
     app
 
 docker build \
+    --pull \
     -t andeo-lunch-backend \
     backend
