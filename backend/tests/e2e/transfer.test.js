@@ -227,12 +227,10 @@ describe('Balance calculation', () => {
         expect(response.status).toEqual(204);
 
         response = await request.get(`/api/users/${user1.id}`);
-        expect(response.body.user.balances.points).toEqual(0);
-        expect(response.body.user.balances.money).toEqual(-10);
+        expect(response.body.user.balances).toMatchObject({points: 0, money: -10});
 
         response = await request.get(`/api/users/${user2.id}`);
-        expect(response.body.user.balances.points).toEqual(0);
-        expect(response.body.user.balances.money).toEqual(10);
+        expect(response.body.user.balances).toMatchObject({points: 0, money: 10});
     });
 
     it('correctly calculates point transfers', async () => {
@@ -247,12 +245,10 @@ describe('Balance calculation', () => {
         expect(response.status).toEqual(204);
 
         response = await request.get(`/api/users/${user1.id}`);
-        expect(response.body.user.balances.points).toEqual(-10);
-        expect(response.body.user.balances.money).toEqual(0);
+        expect(response.body.user.balances).toMatchObject({points: -10, money: 0});
 
         response = await request.get(`/api/users/${user2.id}`);
-        expect(response.body.user.balances.points).toEqual(10);
-        expect(response.body.user.balances.money).toEqual(0);
+        expect(response.body.user.balances).toMatchObject({points: 10, money: 0});
     });
 
     it('correctly calculates a sale transfer', async () => {
@@ -272,12 +268,10 @@ describe('Balance calculation', () => {
         expect(response.status).toEqual(204);
 
         response = await request.get(`/api/users/${user1.id}`);
-        expect(response.body.user.balances.points).toEqual(-10);
-        expect(response.body.user.balances.money).toEqual(15);
+        expect(response.body.user.balances).toMatchObject({points: -10, money: 15});
 
         response = await request.get(`/api/users/${user2.id}`);
-        expect(response.body.user.balances.points).toEqual(10);
-        expect(response.body.user.balances.money).toEqual(-15);
+        expect(response.body.user.balances).toMatchObject({points: 10, money: -15});
     });
 
     it('correctly updates balances after changing a transfer', async () => {
@@ -305,12 +299,10 @@ describe('Balance calculation', () => {
         expect(response.status).toEqual(204);
 
         response = await request.get(`/api/users/${user1.id}`);
-        expect(response.body.user.balances.points).toEqual(-15);
-        expect(response.body.user.balances.money).toEqual(0);
+        expect(response.body.user.balances).toMatchObject({points: -15, money: 0});
 
         response = await request.get(`/api/users/${user2.id}`);
-        expect(response.body.user.balances.points).toEqual(15);
-        expect(response.body.user.balances.money).toEqual(0);
+        expect(response.body.user.balances).toMatchObject({points: 15, money: 0});
     });
 
     it('correctly updates balances after deleting a transfer', async () => {
@@ -332,12 +324,10 @@ describe('Balance calculation', () => {
         expect(response.status).toEqual(204);
 
         response = await request.get(`/api/users/${user1.id}`);
-        expect(response.body.user.balances.points).toEqual(0);
-        expect(response.body.user.balances.money).toEqual(0);
+        expect(response.body.user.balances).toMatchObject({points: 0, money: 0});
 
         response = await request.get(`/api/users/${user2.id}`);
-        expect(response.body.user.balances.points).toEqual(0);
-        expect(response.body.user.balances.money).toEqual(0);
+        expect(response.body.user.balances).toMatchObject({points: 0, money: 0});
     });
 });
 

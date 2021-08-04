@@ -99,7 +99,7 @@ describe('transactions for event', () => {
         let response = await request.get(`/api/users/${user1.id}/transactions`);
         expect(response.status).toEqual(200);
         expect(response.body.transactions).toHaveLength(3);
-        expect(response.body.transactions[0]).toEqual(expect.objectContaining({
+        expect(response.body.transactions[0]).toMatchObject({
             eventId:      eventId,
             userId:       user1.id,
             contraUserId: systemUser.id,
@@ -107,8 +107,8 @@ describe('transactions for event', () => {
             currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
             amount:       8,
             balance:      8,
-        }));
-        expect(response.body.transactions[1]).toEqual(expect.objectContaining({
+        });
+        expect(response.body.transactions[1]).toMatchObject({
             eventId:      eventId,
             userId:       user1.id,
             contraUserId: systemUser.id,
@@ -116,8 +116,8 @@ describe('transactions for event', () => {
             currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
             amount:       -4,
             balance:      4,
-        }));
-        expect(response.body.transactions[2]).toEqual(expect.objectContaining({
+        });
+        expect(response.body.transactions[2]).toMatchObject({
             eventId:      eventId,
             userId:       user1.id,
             contraUserId: systemUser.id,
@@ -125,7 +125,7 @@ describe('transactions for event', () => {
             currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
             amount:       -20,
             balance:      -20,
-        }));
+        });
         response = await request.get(`/api/users/${user1.id}`);
         expect(response.status).toEqual(200);
         expect(response.body.user.balances).toEqual({points: 4, money: -20});
@@ -134,7 +134,7 @@ describe('transactions for event', () => {
         response = await request.get(`/api/users/${user2.id}/transactions`);
         expect(response.status).toEqual(200);
         expect(response.body.transactions).toHaveLength(3);
-        expect(response.body.transactions[0]).toEqual(expect.objectContaining({
+        expect(response.body.transactions[0]).toMatchObject({
             eventId:      eventId,
             userId:       user2.id,
             contraUserId: systemUser.id,
@@ -142,8 +142,8 @@ describe('transactions for event', () => {
             currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
             amount:       -4,
             balance:      -4,
-        }));
-        expect(response.body.transactions[1]).toEqual(expect.objectContaining({
+        });
+        expect(response.body.transactions[1]).toMatchObject({
             eventId:      eventId,
             userId:       user2.id,
             contraUserId: systemUser.id,
@@ -151,8 +151,8 @@ describe('transactions for event', () => {
             currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
             amount:       30,
             balance:      30,
-        }));
-        expect(response.body.transactions[2]).toEqual(expect.objectContaining({
+        });
+        expect(response.body.transactions[2]).toMatchObject({
             eventId:      eventId,
             userId:       user2.id,
             contraUserId: systemUser.id,
@@ -160,7 +160,7 @@ describe('transactions for event', () => {
             currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
             amount:       -10,
             balance:      20,
-        }));
+        });
         response = await request.get(`/api/users/${user2.id}`);
         expect(response.status).toEqual(200);
         expect(response.body.user.balances).toEqual({points: -4, money: 20});
@@ -192,7 +192,7 @@ describe('transactions for event', () => {
         let response = await request.get(`/api/users/${user1.id}/transactions`);
         expect(response.status).toEqual(200);
         expect(response.body.transactions).toHaveLength(3);
-        expect(response.body.transactions[0]).toEqual(expect.objectContaining({
+        expect(response.body.transactions[0]).toMatchObject({
             eventId:      eventId,
             userId:       user1.id,
             contraUserId: systemUser.id,
@@ -200,8 +200,8 @@ describe('transactions for event', () => {
             currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
             amount:       6,
             balance:      6,
-        }));
-        expect(response.body.transactions[1]).toEqual(expect.objectContaining({
+        });
+        expect(response.body.transactions[1]).toMatchObject({
             eventId:      eventId,
             userId:       user1.id,
             contraUserId: systemUser.id,
@@ -209,8 +209,8 @@ describe('transactions for event', () => {
             currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
             amount:       -3,
             balance:      3,
-        }));
-        expect(response.body.transactions[2]).toEqual(expect.objectContaining({
+        });
+        expect(response.body.transactions[2]).toMatchObject({
             eventId:      eventId,
             userId:       user1.id,
             contraUserId: systemUser.id,
@@ -218,7 +218,7 @@ describe('transactions for event', () => {
             currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
             amount:       -18.75,
             balance:      -18.75,
-        }));
+        });
         response = await request.get(`/api/users/${user1.id}`);
         expect(response.status).toEqual(200);
         expect(response.body.user.balances).toEqual({points: 3, money: -18.75});
@@ -227,7 +227,7 @@ describe('transactions for event', () => {
         response = await request.get(`/api/users/${user2.id}/transactions`);
         expect(response.status).toEqual(200);
         expect(response.body.transactions).toHaveLength(3);
-        expect(response.body.transactions[0]).toEqual(expect.objectContaining({
+        expect(response.body.transactions[0]).toMatchObject({
             eventId:      eventId,
             userId:       user2.id,
             contraUserId: systemUser.id,
@@ -235,8 +235,8 @@ describe('transactions for event', () => {
             currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
             amount:       -3,
             balance:      -3,
-        }));
-        expect(response.body.transactions[1]).toEqual(expect.objectContaining({
+        });
+        expect(response.body.transactions[1]).toMatchObject({
             eventId:      eventId,
             userId:       user2.id,
             contraUserId: systemUser.id,
@@ -244,8 +244,8 @@ describe('transactions for event', () => {
             currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
             amount:       30,
             balance:      30,
-        }));
-        expect(response.body.transactions[2]).toEqual(expect.objectContaining({
+        });
+        expect(response.body.transactions[2]).toMatchObject({
             eventId:      eventId,
             userId:       user2.id,
             contraUserId: systemUser.id,
@@ -253,7 +253,7 @@ describe('transactions for event', () => {
             currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
             amount:       -11.25,
             balance:      18.75,
-        }));
+        });
         response = await request.get(`/api/users/${user2.id}`);
         expect(response.status).toEqual(200);
         expect(response.body.user.balances).toEqual({points: -3, money: 18.75});
