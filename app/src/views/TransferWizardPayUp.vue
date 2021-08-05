@@ -24,6 +24,8 @@
                 <v-text-field type="number" v-model="amount" label="Amount in CHF"
                               min="0" :rules="amountRules"
                               class="no-spinner" :prepend-icon="$icons.money"/>
+                <!-- Button is to make it submittable by pressing enter -->
+                <v-btn type="submit" :disabled="isBusy" v-show="false">Save</v-btn>
             </v-form>
         </v-container>
     </v-main>
