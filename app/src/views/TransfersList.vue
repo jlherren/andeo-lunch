@@ -27,7 +27,7 @@
             </v-banner>
         </v-container>
 
-        <v-btn color="primary" absolute bottom right fab to="/transfers/new">
+        <v-btn color="primary" fixed bottom right fab to="/transfers/new">
             <v-icon>{{ $icons.plus }}</v-icon>
         </v-btn>
     </v-main>
@@ -123,6 +123,6 @@
 <style lang="scss" scoped>
     .v-btn--fab {
         // This is a known issue, it doesn't account for the bottom navigation
-        bottom: 16px !important;
+        bottom: 16px + 56px;
     }
 </style>
