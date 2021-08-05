@@ -70,7 +70,6 @@
 - `yarn test:watch` Run test suite and re-run on every file change
 - `yarn lint` Run linter
 - `yarn lint:fix` Run linter and fix automatically
-- `yarn yarn-deduplicate` Run yarn package deduplicator
 - `yarn db:init` Initialize an empty database. Note: This will do mostly nothing if already
   initialized.
 - `yarn db:update` Re-initialize the database, trying to update out-of-date structure. Note that
@@ -85,5 +84,4 @@
 - `yarn build` Create a development build into `dist/`
 - `yarn lint` Run linter
 - `yarn lint:fix` Run linter and fix automatically
-- `yarn yarn-deduplicate` Run yarn package deduplicator
 - `yarn ui` Launch Vue UI
