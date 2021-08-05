@@ -1,0 +1,26 @@
+/.git
+/.idea
+/.vscode
+/node_modules
+
+/.yarn
+!/.yarn/patches
+!/.yarn/releases
+!/.yarn/plugins
+!/.yarn/sdks
+!/.yarn/versions
+/.pnp.*
+
+/app/.env
+/app/dist
+/app/node_modules
+
+/backend/.eslintrc.json
+/backend/config.json
+/backend/node_modules
+/backend/tests
+
+# These are mainly to improve the docker cache behavior
+/docker/Dockerfile.*
+/docker/*.secret
+/docker/*.sh

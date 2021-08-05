@@ -1,0 +1,7 @@
+{
+    "name": "andeo-lunch",
+    "workspaces": [
+        "app",
+        "backend"
+    ]
+}

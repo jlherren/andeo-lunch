@@ -1,4 +1,23 @@
-/*.secret
-.idea
-.vscode
-node_modules
+/.idea
+/.vscode
+/node_modules
+
+# https://yarnpkg.com/getting-started/qa#which-files-should-be-gitignored
+/.yarn/*
+!/.yarn/patches
+!/.yarn/releases
+!/.yarn/plugins
+!/.yarn/sdks
+!/.yarn/versions
+/.pnp.*
+
+/app/.env
+/app/dist
+/app/node_modules
+
+/backend/andeolunch.db
+/backend/config.json
+/backend/node_modules
+
+/docker/*.secret
+/docker/data

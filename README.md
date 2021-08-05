@@ -2,7 +2,7 @@
 
 ## Quick start
 
-1. Make sure you have node 14+ and yarn.
+1. Make sure you have Node 14+ and Yarn installed.
 
 2. Create a file `backend/config.json` with this content:
 
@@ -18,20 +18,22 @@
        VUE_APP_BACKEND_URL=http://127.0.0.1:3000/api
        VUE_APP_BRANDING_TITLE="Andeo Lunch (DEV)"
 
-4. In the directory `backend`, run:
+4. Install all dependencies:
 
-       yarn install
+       yarn
+
+5. In the directory `backend`, run:
+
        yarn db:init
        yarn db:createUser  # This will prompt for a username & password
        yarn serve:watch
 
-5. In the directory `app`, run:
+6. In the directory `app`, run:
 
-       yarn install
        yarn serve
 
-6. Visit `http://localhost:8080/` (or whatever URL step 5 showed).  You should be able to log in
-   using the username and password you created in step 4.
+7. Visit `http://localhost:8080/` (or whatever URL step 6 showed).  You should be able to log in
+   using the username and password you created in step 5.
 
 ## Full backend config reference
 
