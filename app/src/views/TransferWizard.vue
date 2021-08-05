@@ -25,17 +25,13 @@
                 </v-list-item-content>
             </v-list-item>
 
-            <v-list-item to="/transfers/new/trade" disabled>
+            <v-list-item to="/transfers/new/trade">
                 <v-list-item-icon>
                     <v-icon>{{ $icons.transferTrade }}</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                     <v-list-item-title>Trade points</v-list-item-title>
                     <v-list-item-subtitle>Buy or sell points for money</v-list-item-subtitle>
-                    <v-list-item-subtitle>
-                        <v-icon small>{{ $icons.alert }}</v-icon>
-                        Not implemented
-                    </v-list-item-subtitle>
                 </v-list-item-content>
             </v-list-item>
 
