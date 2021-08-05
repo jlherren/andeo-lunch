@@ -15,17 +15,13 @@
                 </v-list-item-content>
             </v-list-item>
 
-            <v-list-item to="/transfers/new/simple" disabled>
+            <v-list-item to="/transfers/new/simple">
                 <v-list-item-icon>
                     <v-icon>{{ $icons.transferSimple }}</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                     <v-list-item-title>Simple money or point transfer</v-list-item-title>
                     <v-list-item-subtitle>Send a gift or honor a bet</v-list-item-subtitle>
-                    <v-list-item-subtitle>
-                        <v-icon small>{{ $icons.alert }}</v-icon>
-                        Not implemented
-                    </v-list-item-subtitle>
                 </v-list-item-content>
             </v-list-item>
 

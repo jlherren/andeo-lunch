@@ -16,7 +16,7 @@
                 to restore your money balance.
             </p>
 
-            <v-form v-model="valid" ref="form" :disabled="isBusy" @submit.prevent="save()">
+            <v-form ref="form" :disabled="isBusy" @submit.prevent="save()">
                 <v-select v-model="recipient" label="Recipient of real-world money"
                           :items="users" item-text="name" item-value="id"
                           :rules="recipientRules"
@@ -46,7 +46,6 @@
 
         data() {
             return {
-                valid:          true,
                 isBusy:         false,
                 amount:         null,
                 recipient:      null,
