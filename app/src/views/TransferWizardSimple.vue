@@ -32,14 +32,14 @@
                                       class="no-spinner" :prepend-icon="$icons.money"/>
                     </v-col>
                     <v-col cols="6">
-                        <v-btn-toggle :value="currency" class="flex-wrap" mandatory>
+                        <v-btn-toggle :value="currency" class="full-width" mandatory>
                             <v-btn value="points">
-                                <v-icon left>{{ $icons.points }}</v-icon>
-                                <span>Points</span>
+                                <v-icon left :large="$vuetify.breakpoint.mdAndUp">{{ $icons.points }}</v-icon>
+                                <span class="hidden-xs-only">Points</span>
                             </v-btn>
                             <v-btn value="money">
-                                <v-icon left>{{ $icons.money }}</v-icon>
-                                <span>Money</span>
+                                <v-icon left :large="$vuetify.breakpoint.mdAndUp">{{ $icons.money }}</v-icon>
+                                <span class="hidden-xs-only">Money</span>
                             </v-btn>
                         </v-btn-toggle>
                     </v-col>
