@@ -9,8 +9,9 @@ export default new Vuex.Store({
     state: {
         globalSnackbar: null,
 
-        backendVersion:  'unknown',
-        frontendVersion: process.env.VUE_APP_VERSION,
+        backendVersion:        'unknown',
+        frontendVersion:       process.env.VUE_APP_VERSION,
+        payUpDefaultRecipient: null,
 
         account: {
             initialCheckCompleted: false,
@@ -78,9 +79,10 @@ export default new Vuex.Store({
         transactions: state => userId => state.transactions[userId],
 
         // Misc
-        globalSnackbar: state => state.globalSnackbar,
-        audits:         state => state.audits,
-        settings:       state => state.settings,
+        globalSnackbar:        state => state.globalSnackbar,
+        audits:                state => state.audits,
+        settings:              state => state.settings,
+        payUpDefaultRecipient: state => state.payUpDefaultRecipient,
     },
 
     mutations: {
@@ -337,6 +339,13 @@ export default new Vuex.Store({
             await Backend.post('/settings', settings);
             Cache.invalidate('settings');
             await context.dispatch('fetchSettings');
+        },
+
+        fetchPayUpDefaultRecipient(context) {
+            return Cache.ifNotFresh('payUp.defaultRecipient', 0, 60000, async () => {
+                let response = await Backend.get('/pay-up/default-recipient');
+                context.state.payUpDefaultRecipient = response.data.defaultRecipient;
+            });
         },
     },
 });

@@ -58,8 +58,18 @@
             };
         },
 
-        created() {
+        async created() {
+            // noinspection ES6MissingAwait
             this.$store.dispatch('fetchUsers');
+
+            await this.$store.dispatch('fetchPayUpDefaultRecipient');
+            if (this.recipient === null) {
+                let defaultRecipient = this.$store.getters.payUpDefaultRecipient;
+                // Do not set if it is null/undefined, otherwise it triggers validation
+                if (defaultRecipient) {
+                    this.recipient = defaultRecipient;
+                }
+            }
         },
 
         computed: {
