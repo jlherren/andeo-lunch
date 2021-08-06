@@ -211,8 +211,13 @@ export default new Vuex.Store({
                 }
             });
 
-            let promises = context.state.participations[eventId].map(p => context.dispatch('fetchUser', {userId: p.userId}));
-            await Promise.all(promises);
+            let participations = context.state.participations[eventId];
+            // Participations may sometimes not be available here, due to multiple fetchParticipations being called
+            // concurrently
+            if (participations) {
+                let promises = participations.map(p => context.dispatch('fetchUser', {userId: p.userId}));
+                await Promise.all(promises);
+            }
         },
 
         async saveParticipation(context, {eventId, userId, ...data}) {
@@ -267,7 +272,7 @@ export default new Vuex.Store({
                 let location = response.headers.location;
                 let match = location.match(/^\/api\/events\/(?<id>\d+)$/u);
                 if (match) {
-                    eventId = match.groups.id;
+                    eventId = parseInt(match.groups.id, 10);
                 }
             }
 
