@@ -114,16 +114,10 @@
         },
 
         async created() {
-            try {
-                await this.$store.dispatch('fetchSettings');
-                let event = this.$store.getters.event(this.eventId);
-                if (event.type !== 'label') {
-                    await this.$store.dispatch('fetchParticipations', {eventId: this.eventId});
-                }
-            } catch (err) {
-                if (err?.response?.status === 404) {
-                    await this.$router.push('/');
-                }
+            await this.$store.dispatch('fetchSettings');
+            let event = this.$store.getters.event(this.eventId);
+            if (event.type !== 'label') {
+                await this.$store.dispatch('fetchParticipations', {eventId: this.eventId});
             }
         },
 
