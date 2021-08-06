@@ -113,11 +113,13 @@
             };
         },
 
-        async created() {
-            await this.$store.dispatch('fetchSettings');
+        created() {
+            // noinspection ES6MissingAwait
+            this.$store.dispatch('fetchSettings');
+
             let event = this.$store.getters.event(this.eventId);
             if (event.type !== 'label') {
-                await this.$store.dispatch('fetchParticipations', {eventId: this.eventId});
+                this.$store.dispatch('fetchParticipations', {eventId: this.eventId});
             }
         },
 
