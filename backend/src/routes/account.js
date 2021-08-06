@@ -30,7 +30,8 @@ async function login(ctx) {
             let token = await user.generateToken(secret, {expiresIn: config.tokenExpiry});
             ctx.body = {
                 token,
-                userId: user.id,
+                userId:   user.id,
+                username: user.username,
             };
             return;
         }
