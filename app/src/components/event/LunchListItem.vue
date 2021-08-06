@@ -27,6 +27,7 @@
                 </v-list-item-title>
                 <v-list-item-subtitle>
                     <span>{{ formattedDate }}</span>
+                    <participation-summary :participations="participations" :loading="participationsLoading"/>
                 </v-list-item-subtitle>
             </v-list-item-content>
 
@@ -66,12 +67,6 @@
 
         created() {
             this.reload();
-        },
-
-        watch: {
-            prominent() {
-                this.reload();
-            },
         },
 
         computed: {
@@ -122,11 +117,9 @@
 
         methods: {
             async reload() {
-                if (this.prominent) {
-                    this.participationsLoading = true;
-                    await this.$store.dispatch('fetchParticipations', {eventId: this.event.id});
-                    this.participationsLoading = false;
-                }
+                this.participationsLoading = true;
+                await this.$store.dispatch('fetchParticipations', {eventId: this.event.id});
+                this.participationsLoading = false;
             },
         },
     };
@@ -134,7 +127,7 @@
 
 <style lang="scss" scoped>
     span + span {
-        margin-left: 1em;
+        margin-left: 0.5em;
     }
 
     .v-list-item__action > .v-icon {

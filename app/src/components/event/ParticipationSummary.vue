@@ -1,12 +1,18 @@
 <template>
-    <span class="participants">
-        <span class="total">{{ total }}</span>
-        <span class="participants-details">
-            <v-icon>{{ $icons.omnivorous }}</v-icon>
-            {{ omnivorous }}
-            <br>
-            <v-icon>{{ $icons.vegetarian }}</v-icon>
-            {{ vegetarian }}
+    <span class="participants" :class="{'large': large}">
+        <span class="icon-and-number">
+            <v-icon v-if="!large">{{ $icons.account }}</v-icon>
+            {{ total }}
+        </span>
+        <span class="details">
+            <span class="icon-and-number">
+                <v-icon>{{ $icons.omnivorous }}</v-icon>
+                {{ omnivorous }}
+            </span>
+            <span class="icon-and-number">
+                <v-icon>{{ $icons.vegetarian }}</v-icon>
+                {{ vegetarian }}
+            </span>
         </span>
     </span>
 </template>
@@ -22,6 +28,7 @@
                 default:  () => [],
             },
             loading:        Boolean,
+            large:          Boolean,
         },
 
         computed: {
@@ -54,27 +61,34 @@
 </script>
 
 <style lang="scss" scoped>
-    .participants {
-        display: inline-flex;
-        align-items: center;
-    }
-
-    .participants-details {
-        font-size: 16px;
-        line-height: 100%;
-
-        .v-icon {
-            width: 16px;
-            height: 16px;
-        }
-    }
-
-    .total {
-        font-size: 28pt;
-        margin: 0 0.25em;
-    }
-
     .v-icon {
+        margin-right: 2px;
+        width: 16px;
+        height: 16px;
         color: inherit;
+    }
+
+    .icon-and-number {
+        display: inline-flex;
+        margin-right: 0.5em;
+        vertical-align: text-bottom;
+    }
+
+    .large {
+        .icon-and-number {
+            margin-right: 0.1em;
+        }
+
+        &.participants {
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .details {
+            line-height: 100%;
+            display: inline-flex;
+            flex-direction: column;
+            font-size: 16px;
+        }
     }
 </style>

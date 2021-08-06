@@ -20,7 +20,7 @@
                 <div class="text--secondary">{{ formattedDate }}</div>
 
                 <div v-if="event.type !== 'label'" class="costs">
-                    <participation-summary :participations="participations" :loading="participationsLoading"/>
+                    <participation-summary :participations="participations" :loading="participationsLoading" large/>
                     <balance :value="event.costs.points" points large no-sign/>
                     <balance :value="event.costs.money" money large no-sign/>
                 </div>
