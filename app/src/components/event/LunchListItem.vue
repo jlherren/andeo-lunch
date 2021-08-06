@@ -6,8 +6,7 @@
                 <v-list-item-subtitle>{{ formattedDate }}</v-list-item-subtitle>
 
                 <v-list-item-content>
-                    <participation-summary :participations="participations" :loading="participationsLoading"
-                                           class="justify-center"/>
+                    <participation-summary :participations="participations" class="justify-center"/>
                 </v-list-item-content>
             </v-list-item-content>
 
@@ -27,7 +26,7 @@
                 </v-list-item-title>
                 <v-list-item-subtitle>
                     <span>{{ formattedDate }}</span>
-                    <participation-summary :participations="participations" :loading="participationsLoading"/>
+                    <participation-summary :participations="participations"/>
                 </v-list-item-subtitle>
             </v-list-item-content>
 
@@ -60,8 +59,7 @@
 
         data() {
             return {
-                ownUserId:             this.$store.getters.ownUserId,
-                participationsLoading: false,
+                ownUserId: this.$store.getters.ownUserId,
             };
         },
 
@@ -111,15 +109,13 @@
             },
 
             participations() {
-                return this.$store.getters.participations(this.event.id) ?? [];
+                return this.$store.getters.participations(this.event.id);
             },
         },
 
         methods: {
             async reload() {
-                this.participationsLoading = true;
                 await this.$store.dispatch('fetchParticipations', {eventId: this.event.id});
-                this.participationsLoading = false;
             },
         },
     };

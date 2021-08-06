@@ -20,13 +20,13 @@
                 <div class="text--secondary">{{ formattedDate }}</div>
 
                 <div v-if="event.type !== 'label'" class="costs">
-                    <participation-summary :participations="participations" :loading="participationsLoading" large/>
+                    <participation-summary :participations="participations" large/>
                     <balance :value="event.costs.points" points large no-sign/>
                     <balance :value="event.costs.money" money large no-sign/>
                 </div>
             </v-container>
 
-            <v-container v-if="!participationsLoading && event.type !== 'label' && ownParticipationMissing">
+            <v-container v-if="participations && event.type !== 'label' && ownParticipationMissing">
                 <v-banner elevation="2" :icon="$icons.alertCircle">
                     Make up your mind!
                     <template v-slot:actions>
@@ -43,9 +43,9 @@
             </v-container>
 
             <v-list v-if="event.type !== 'label'">
-                <v-skeleton-loader v-if="participationsLoading" type="list-item-avatar"/>
+                <v-skeleton-loader v-if="!participations" type="list-item-avatar"/>
 
-                <participation-list-item v-if="!participationsLoading" :participation="myParticipation"
+                <participation-list-item v-if="participations" :participation="myParticipation"
                                          @saved="refreshEvent()"/>
 
                 <participation-list-item v-for="participation of foreignParticipations"
@@ -131,16 +131,15 @@
             },
 
             participations() {
-                return this.$store.getters.participations(this.eventId) ?? [];
-            },
-
-            participationsLoading() {
-                return !this.$store.getters.participations(this.eventId);
+                return this.$store.getters.participations(this.eventId);
             },
 
             foreignParticipations() {
                 // List of opt-inners as well as opt-out/undecided that cook or provide money.
                 // This excludes own participation
+                if (!this.participations) {
+                    return [];
+                }
                 return this.participations.filter(p => {
                     if (p.userId === this.ownUserId) {
                         return false;
@@ -151,7 +150,7 @@
 
             myParticipation() {
                 // User's own opt-out/undecided
-                let participations = this.participations.filter(p => p.userId === this.ownUserId);
+                let participations = this.participations ? this.participations.filter(p => p.userId === this.ownUserId) : [];
                 if (participations.length > 0) {
                     return participations[0];
                 }

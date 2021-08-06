@@ -22,36 +22,35 @@
         name: 'ParticipationSummary',
 
         props: {
-            participations: {
-                type:     Array,
-                required: true,
-                default:  () => [],
-            },
-            loading:        Boolean,
+            participations: Array,
             large:          Boolean,
         },
 
         computed: {
+            loaded() {
+                return !!this.participations;
+            },
+
             optIns() {
-                return this.participations.filter(p => !['opt-out', 'undecided'].includes(p.type));
+                return this.participations.filter(p => ['omnivorous', 'vegetarian'].includes(p.type));
             },
 
             omnivorous() {
-                if (this.loading) {
+                if (!this.loaded) {
                     return '?';
                 }
                 return this.optIns.filter(p => p.type === 'omnivorous').length;
             },
 
             vegetarian() {
-                if (this.loading) {
+                if (!this.loaded) {
                     return '?';
                 }
                 return this.optIns.filter(p => p.type === 'vegetarian').length;
             },
 
             total() {
-                if (this.loading) {
+                if (!this.loaded) {
                     return '?';
                 }
                 return this.optIns.length;
