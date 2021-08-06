@@ -24,6 +24,14 @@
                 <v-text-field type="number" v-model="amount" label="Amount in CHF"
                               min="0" :rules="amountRules"
                               class="no-spinner" :prepend-icon="$icons.money"/>
+
+                <v-card v-if="recipientPaymentInfo !== null">
+                    <v-card-title class="subtitle-2">
+                        Payment information for {{ this.recipientName }}
+                    </v-card-title>
+                    <v-card-text v-html="recipientPaymentInfo"/>
+                </v-card>
+
                 <!-- Button is to make it submittable by pressing enter -->
                 <v-btn type="submit" :disabled="isBusy" v-show="false">Save</v-btn>
             </v-form>
@@ -76,6 +84,20 @@
             ...mapGetters([
                 'users',
             ]),
+
+            recipientPaymentInfo() {
+                if (!this.recipient) {
+                    return null;
+                }
+                return this.$store.getters.paymentInfo(this.recipient);
+            },
+
+            recipientName() {
+                if (!this.users) {
+                    return null;
+                }
+                return this.users.filter(user => user.id === this.recipient)[0].name;
+            },
         },
 
         methods: {
@@ -105,6 +127,12 @@
                     this.isBusy = false;
                     throw err;
                 }
+            },
+        },
+
+        watch: {
+            recipient(userId) {
+                this.$store.dispatch('fetchUserPaymentInfo', {userId});
             },
         },
     };

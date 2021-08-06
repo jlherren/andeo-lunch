@@ -23,6 +23,10 @@ export default new Vuex.Store({
             // Users by ID
         },
 
+        paymentInfos: {
+            // By user ID
+        },
+
         // All user IDs
         allUserIds: [],
 
@@ -59,8 +63,9 @@ export default new Vuex.Store({
         backendVersion:  state => state.backendVersion,
 
         // Users and account
-        user:  state => userId => state.users[userId],
-        users: (state, getters) => state.allUserIds.map(userId => getters.user(userId)),
+        user:        state => userId => state.users[userId],
+        users:       (state, getters) => state.allUserIds.map(userId => getters.user(userId)),
+        paymentInfo: state => userId => state.paymentInfos[userId] ?? null,
 
         // Own user
         isLoggedIn:  state => state.account.userId !== null,
@@ -345,6 +350,13 @@ export default new Vuex.Store({
             return Cache.ifNotFresh('payUp.defaultRecipient', 0, 60000, async () => {
                 let response = await Backend.get('/pay-up/default-recipient');
                 context.state.payUpDefaultRecipient = response.data.defaultRecipient;
+            });
+        },
+
+        fetchUserPaymentInfo(context, {userId}) {
+            return Cache.ifNotFresh('paymentInfo', userId, 60000, async () => {
+                let response = await Backend.get(`/users/${userId}/payment-info`);
+                Vue.set(context.state.paymentInfos, userId, response.data.paymentInfo);
             });
         },
     },
