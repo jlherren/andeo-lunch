@@ -27,7 +27,7 @@
                 </v-list-item-content>
             </v-list-item>
 
-            <v-list-item>
+            <v-list-item to="/profile/password">
                 <v-list-item-content>
                     <v-list-item-title>
                         Change password

@@ -1,5 +1,6 @@
 import AuditLog from '@/views/AuditLog';
 import Calendar from '@/views/Calendar.vue';
+import ChangePassword from '@/views/ChangePassword';
 import EventDetail from '@/views/event/EventDetail';
 import History from '@/views/History.vue';
 import Home from '@/views/Home.vue';
@@ -76,6 +77,10 @@ const routes = [
     {
         path:      '/profile',
         component: Profile,
+    },
+    {
+        path:      '/profile/password',
+        component: ChangePassword,
     },
     {
         path:      '/preferences',

@@ -136,6 +136,21 @@ export default new Vuex.Store({
             context.state.account.initialCheckCompleted = true;
         },
 
+        /**
+         * Change the password
+         *
+         * @param {ActionContext} context
+         * @param {object} data
+         * @returns {Promise<boolean|string>} True if successful, or a reason if not
+         */
+        async changePassword(context, data) {
+            let response = await Backend.post('/account/password', data);
+            if (response.data.success) {
+                return true;
+            }
+            return response.data.reason;
+        },
+
         // Users
         fetchUser(context, {userId}) {
             return Cache.ifNotFresh('user', userId, 10000, async () => {
