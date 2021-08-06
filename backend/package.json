@@ -14,10 +14,11 @@
         "test:watch": "jest --watchAll",
         "lint": "eslint src tests",
         "lint:fix": "eslint --fix src tests",
-        "db:init": "node src/scripts/initDb.js",
-        "db:update": "node src/scripts/updateDb.js",
         "db:createUser": "node src/scripts/createUser.js",
-        "db:rebuild": "node src/scripts/rebuildTransactions.js"
+        "db:init": "node src/scripts/initDb.js",
+        "db:rebuild": "node src/scripts/rebuildTransactions.js",
+        "db:setPaymentInfo": "node src/scripts/setPaymentInfo.js",
+        "db:update": "node src/scripts/updateDb.js"
     },
     "dependencies": {
         "@koa/cors": "~3.1.0",
@@ -30,7 +31,8 @@
         "koa-bodyparser": "~4.3.0",
         "koa-logger": "~3.2.1",
         "mariadb": "~2.5.4",
-        "sequelize": "~6.6.5"
+        "sequelize": "~6.6.5",
+        "sprintf-js": "~1.1.2"
     },
     "devDependencies": {
         "@types/bcryptjs": "~2.4.2",
