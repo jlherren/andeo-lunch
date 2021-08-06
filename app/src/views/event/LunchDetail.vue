@@ -225,6 +225,7 @@
                     this.$router.go(-1);
                 } catch (err) {
                     this.isBusy = false;
+                    throw err;
                 }
             },
 

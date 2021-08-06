@@ -93,6 +93,7 @@
                     this.$emit('close');
                 } catch (err) {
                     this.isBusy = false;
+                    throw err;
                 }
             },
         },

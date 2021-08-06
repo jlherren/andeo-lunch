@@ -93,6 +93,7 @@
                     await this.$router.push(`/events/${eventId}`);
                 } catch (err) {
                     this.isBusy = false;
+                    throw err;
                 }
             },
         },

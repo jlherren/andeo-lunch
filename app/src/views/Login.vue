@@ -62,6 +62,7 @@
                 } catch (err) {
                     // Only release on error, not on success
                     this.isBusy = false;
+                    throw err;
                 }
             },
         },

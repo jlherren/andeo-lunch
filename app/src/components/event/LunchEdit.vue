@@ -132,6 +132,7 @@
                     // Disabled flag is only released on errors, otherwise we risk double saving after the first
                     // one is successful and the modal is closing.
                     this.isBusy = false;
+                    throw err;
                 }
             },
         },
