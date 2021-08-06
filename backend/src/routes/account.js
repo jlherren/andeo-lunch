@@ -11,6 +11,11 @@ const loginSchema = Joi.object({
     password: Joi.string().required().min(1),
 });
 
+const changePasswordSchema = Joi.object({
+    oldPassword: Joi.string().required().min(1),
+    newPassword: Joi.string().required().min(1),
+});
+
 /**
  * @param {Application.Context} ctx
  * @returns {Promise<void>}
@@ -60,10 +65,42 @@ async function check(ctx) {
 }
 
 /**
+ * @param {Application.Context} ctx
+ * @returns {Promise<void>}
+ */
+async function password(ctx) {
+    let requestBody = RouteUtils.validateBody(ctx, changePasswordSchema);
+
+    if (!await AuthUtils.comparePassword(requestBody.oldPassword, ctx.user.password)) {
+        ctx.body = {
+            success: false,
+            reason:  'old-password-invalid',
+        };
+        return;
+    }
+
+    if (requestBody.newPassword.length < 6) {
+        ctx.body = {
+            success: false,
+            reason:  'new-password-too-short',
+        };
+        return;
+    }
+
+    ctx.user.password = await AuthUtils.hashPassword(requestBody.newPassword);
+    await ctx.user.save();
+
+    ctx.body = {
+        success: true,
+    };
+}
+
+/**
  * @param {Router} router
  */
 exports.register = function register(router) {
     router.post('/account/login', login);
     router.post('/account/renew', renew);
     router.get('/account/check', check);
+    router.post('/account/password', password);
 };

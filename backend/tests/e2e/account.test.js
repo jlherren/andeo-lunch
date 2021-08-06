@@ -144,3 +144,46 @@ describe('account check route', () => {
         expect(response.body).toEqual({userId: user.id, username: 'testuser'});
     });
 });
+
+describe('Change password', () => {
+    let token = null;
+
+    beforeEach(async () => {
+        let secret = await AuthUtils.getSecret();
+        token = await user.generateToken(secret);
+    });
+
+    it('allows to change password', async () => {
+        let response = await request.post('/api/account/password')
+            .set('Authorization', `Bearer ${token}`)
+            .send({oldPassword: 'abc123', newPassword: 'qwe456'});
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual({success: true});
+
+        // Login with old password does not work anymore
+        response = await request.post('/api/account/login')
+            .send({username: 'testuser', password: 'abc123'});
+        expect(response.status).toEqual(401);
+
+        // Login with new password works
+        response = await request.post('/api/account/login')
+            .send({username: 'testuser', password: 'qwe456'});
+        expect(response.status).toEqual(200);
+    });
+
+    it('rejects wrong old password', async () => {
+        let response = await request.post('/api/account/password')
+            .set('Authorization', `Bearer ${token}`)
+            .send({oldPassword: 'wrong', newPassword: 'qwe456'});
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual({success: false, reason: 'old-password-invalid'});
+    });
+
+    it('rejects short new password', async () => {
+        let response = await request.post('/api/account/password')
+            .set('Authorization', `Bearer ${token}`)
+            .send({oldPassword: 'abc123', newPassword: 'lol'});
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual({success: false, reason: 'new-password-too-short'});
+    });
+});
