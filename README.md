@@ -1,6 +1,6 @@
 # Andeo Lunch
 
-## Quick start
+## Development quick start
 
 1. Make sure you have Node 14+ and Yarn installed.
 
@@ -22,15 +22,15 @@
 
        yarn
 
-5. In the directory `backend`, run:
+5. In the directory `backend/`, run:
 
        yarn db:init
        yarn db:createUser  # This will prompt for a username & password
-       yarn serve:watch
+       yarn serve:watch    # Leave this running
 
-6. In the directory `app`, run:
+6. In the directory `app/`, run:
 
-       yarn serve
+       yarn serve          # Leave this running
 
 7. Visit `http://localhost:8080/` (or whatever URL step 6 showed).  You should be able to log in
    using the username and password you created in step 5.
@@ -60,9 +60,13 @@
 
 * `port` Port to use, defaults to `3000`.
 * `bind` Interface to bind to, defaults to `"127.0.0.1"`
-* `lag` Artificial lag in milliseconds to delay each request. Allows to simulate a bad network.
+* `lag` Artificial lag in milliseconds to delay each request. Allows simulating network lag.  Practical hint: During
+  development, set this to a small value like `100` to simulate a realistic network lag which allows to more easily see
+  quirks it causes in the app.
 
 ## Backend scripts
+
+Run these from the `backend/` folder.
 
 - `yarn serve` Launch backend
 - `yarn serve:watch` Launch backend with auto-reload on file changes
@@ -70,14 +74,18 @@
 - `yarn test:watch` Run test suite and re-run on every file change
 - `yarn lint` Run linter
 - `yarn lint:fix` Run linter and fix automatically
-- `yarn db:init` Initialize an empty database. Note: This will do mostly nothing if already
-  initialized.
-- `yarn db:update` Re-initialize the database, trying to update out-of-date structure. Note that
-  it's a bit flaky.  **CURRENTLY BUGGY DUE TO A SEQUELIZE BUG**
 - `yarn db:createUser` Create a new user
+- `yarn db:editUser` Edit a user
+- `yarn db:init` Initialize the database by creating all tables and essential data.
+  Note: This will do mostly nothing if already initialized.
 - `yarn db:rebuild` Rebuild all transactions and all balances
+- `yarn db:setPaymentInfo` Set up payment information for a user
+- `yarn db:update` Re-initialize the database, trying to update any out-of-date structure. Note that
+  it's a bit flaky.  **CURRENTLY BUGGY DUE TO A SEQUELIZE BUG**
 
 ## App scripts
+
+Run these from the `app/` folder.
 
 - `yarn serve` Launch development server (with auto-reload on file change)
 - `yarn serve:public` Launch development server, binding to 0.0.0.0
