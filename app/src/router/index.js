@@ -5,6 +5,7 @@ import History from '@/views/History.vue';
 import Home from '@/views/Home.vue';
 import Menus from '@/views/Menus.vue';
 import Preferences from '@/views/Preferences';
+import Profile from '@/views/Profile';
 import Stats from '@/views/Stats';
 import TransferList from '@/views/TransfersList.vue';
 import TransferWizard from '@/views/TransferWizard';
@@ -71,6 +72,10 @@ const routes = [
     {
         path:      '/events/:id(\\d+)',
         component: EventDetail,
+    },
+    {
+        path:      '/profile',
+        component: Profile,
     },
     {
         path:      '/preferences',

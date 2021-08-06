@@ -15,24 +15,7 @@ export default new Vuex.Store({
         account: {
             initialCheckCompleted: false,
             userId:                null,
-        },
-
-        // To be deprecated:
-        user: {
-            displayName: 'Oliver Wiedemann',
-            points:      7.52,
-            money:       -218.15,
-            settings:    {
-                weekdays:     {
-                    monday:    true,
-                    tuesday:   true,
-                    wednesday: true,
-                    thursday:  false,
-                    friday:    false,
-                },
-                isVegetarian: false,
-                generalInfo:  null,
-            },
+            username:              null,
         },
 
         users: {
@@ -79,9 +62,10 @@ export default new Vuex.Store({
         users: (state, getters) => state.allUserIds.map(userId => getters.user(userId)),
 
         // Own user
-        isLoggedIn: state => state.account.userId !== null,
-        ownUserId:  state => state.account.userId,
-        ownUser:    (state, getters) => getters.user(getters.ownUserId),
+        isLoggedIn:  state => state.account.userId !== null,
+        ownUserId:   state => state.account.userId,
+        ownUsername: state => state.account.username,
+        ownUser:     (state, getters) => getters.user(getters.ownUserId),
 
         // Events
         events:         state => Object.values(state.events),
@@ -126,6 +110,7 @@ export default new Vuex.Store({
             await context.dispatch('fetchUser', {userId: response.data.userId});
             // Don't set the following until after the user is fetched, otherwise 'ownUser' won't be reliable
             context.state.account.userId = response.data.userId;
+            context.state.account.username = response.data.username;
         },
 
         logout(context) {
@@ -138,12 +123,14 @@ export default new Vuex.Store({
             let response = await Backend.get('/account/check');
             let userId = response.data.userId;
 
-            if (userId !== null) {
+            if (userId) {
                 await context.dispatch('fetchUser', {userId});
                 // Don't set the following until after the user is fetched, otherwise 'ownUser' won't be reliable
                 context.state.account.userId = userId;
+                context.state.account.username = response.data.username;
             } else {
                 context.state.account.userId = null;
+                context.state.account.username = null;
             }
 
             context.state.account.initialCheckCompleted = true;
