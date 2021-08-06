@@ -15,6 +15,7 @@
         "lint": "eslint src tests",
         "lint:fix": "eslint --fix src tests",
         "db:createUser": "node src/scripts/createUser.js",
+        "db:editUser": "node src/scripts/editUser.js",
         "db:init": "node src/scripts/initDb.js",
         "db:rebuild": "node src/scripts/rebuildTransactions.js",
         "db:setPaymentInfo": "node src/scripts/setPaymentInfo.js",
