@@ -1,7 +1,7 @@
 <template>
     <v-main>
         <the-app-bar sub-page>
-            Simple transfer
+            Trade points
 
             <template v-slot:buttons>
                 <v-btn text color="primary" @click="save()" :disabled="isBusy">Save</v-btn>
