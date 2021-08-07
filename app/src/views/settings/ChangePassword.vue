@@ -12,8 +12,8 @@
 
         <v-container>
             <p class="text-body-1 mt-4">
-                Send real-world money to the recipient first, then add the transaction here
-                to restore your money balance.
+                Change password for user <b>{{ $store.getters.ownUsername }}</b>.  If you forgot your password,
+                please contact an admin.
             </p>
 
             <v-form ref="form" :disabled="isBusy" @submit.prevent="save()">
