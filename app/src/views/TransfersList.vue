@@ -14,10 +14,15 @@
 
         <shy-progress v-if="loading"/>
 
-        <v-list v-if="!loading && events.length > 0">
-            <template v-for="event of events">
-                <v-divider v-if="event.hasGap" :key="event.id + '-divider'"/>
-                <transfer-list-item :key="event.id" :event="event" :prominent="event.prominent"/>
+        <v-list>
+            <template v-if="hasData">
+                <template v-for="event of events">
+                    <v-divider v-if="event.hasGap" :key="event.id + '-divider'"/>
+                    <transfer-list-item :key="event.id" :event="event" :prominent="event.prominent"/>
+                </template>
+            </template>
+            <template v-else>
+                <v-skeleton-loader type="list-item-avatar"/>
             </template>
         </v-list>
 
@@ -72,6 +77,10 @@
         computed: {
             title() {
                 return this.startDate.toLocaleDateString(undefined, {month: 'long', year: 'numeric'});
+            },
+
+            hasData() {
+                return this.events.length || !this.loading;
             },
 
             events() {
