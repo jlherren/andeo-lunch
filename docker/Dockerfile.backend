@@ -10,4 +10,4 @@ COPY --from=backend-build /build/node_modules /srv/andeo-lunch/node_modules
 COPY --from=backend-build /build/backend      /srv/andeo-lunch/backend
 RUN mv config-docker.json config.json
 EXPOSE 3000
-CMD ["yarn", "serve"]
+CMD ["node", "src/lunchMoney.js"]

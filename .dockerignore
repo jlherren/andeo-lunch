@@ -24,3 +24,4 @@
 /docker/Dockerfile.*
 /docker/*.secret
 /docker/*.sh
+/docker/data

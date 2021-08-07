@@ -235,6 +235,11 @@ async function main() {
         logging: true,
     });
 
+    process.on('SIGTERM', () => {
+        console.log(`Received SIGTERM, shutting down`);
+        lm.close();
+    });
+
     try {
         lm.listen();
         await lm.sequelizePromise;
