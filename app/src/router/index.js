@@ -1,12 +1,13 @@
+import Absences from '@/views/settings/Absences';
 import AuditLog from '@/views/AuditLog';
 import Calendar from '@/views/Calendar.vue';
-import ChangePassword from '@/views/ChangePassword';
+import ChangePassword from '@/views/settings/ChangePassword';
 import EventDetail from '@/views/event/EventDetail';
 import History from '@/views/History.vue';
 import Home from '@/views/Home.vue';
 import Menus from '@/views/Menus.vue';
-import Preferences from '@/views/Preferences';
-import Profile from '@/views/Profile';
+import Preferences from '@/views/settings/Preferences';
+import Profile from '@/views/settings/Profile';
 import Stats from '@/views/Stats';
 import TransferList from '@/views/TransfersList.vue';
 import TransferWizard from '@/views/TransferWizard';
@@ -81,6 +82,10 @@ const routes = [
     {
         path:      '/profile/password',
         component: ChangePassword,
+    },
+    {
+        path:      '/profile/absences',
+        component: Absences,
     },
     {
         path:      '/preferences',

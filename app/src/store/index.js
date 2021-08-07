@@ -27,6 +27,10 @@ export default new Vuex.Store({
             // By user ID
         },
 
+        absences: {
+            // By user ID
+        },
+
         // All user IDs
         allUserIds: [],
 
@@ -66,6 +70,7 @@ export default new Vuex.Store({
         user:        state => userId => state.users[userId],
         users:       (state, getters) => state.allUserIds.map(userId => getters.user(userId)),
         paymentInfo: state => userId => state.paymentInfos[userId] ?? null,
+        absences:    state => userId => state.absences[userId] ?? null,
 
         // Own user
         isLoggedIn:  state => state.account.userId !== null,
@@ -357,6 +362,13 @@ export default new Vuex.Store({
             return Cache.ifNotFresh('paymentInfo', userId, 60000, async () => {
                 let response = await Backend.get(`/users/${userId}/payment-info`);
                 Vue.set(context.state.paymentInfos, userId, response.data.paymentInfo);
+            });
+        },
+
+        fetchAbsences(context, {userId}) {
+            return Cache.ifNotFresh('absences', userId, 60000, async () => {
+                let response = await Backend.get(`/users/${userId}/absences`);
+                Vue.set(context.state.absences, userId, response.data.absences);
             });
         },
     },

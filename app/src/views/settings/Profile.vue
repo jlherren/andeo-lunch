@@ -37,6 +37,17 @@
                     <v-icon>{{ $icons.chevronRight }}</v-icon>
                 </v-list-item-action>
             </v-list-item>
+
+            <v-list-item to="/profile/absences">
+                <v-list-item-content>
+                    <v-list-item-title>
+                        Absences
+                    </v-list-item-title>
+                </v-list-item-content>
+                <v-list-item-action>
+                    <v-icon>{{ $icons.chevronRight }}</v-icon>
+                </v-list-item-action>
+            </v-list-item>
         </v-list>
     </v-main>
 </template>
