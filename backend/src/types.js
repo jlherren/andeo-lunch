@@ -50,7 +50,7 @@
  * @property {string|null} affectedUserName
  * @property {number|null} eventId
  * @property {string|null} eventName
- * @property {string|null} details
+ * @property {object|null} values
  */
 
 /**

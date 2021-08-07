@@ -382,7 +382,13 @@ async function saveParticipation(ctx) {
             auditType = 'participation.update';
         }
         await TransactionRebuilder.rebuildEvent(transaction, event);
-        await AuditManager.log(transaction, ctx.user, auditType, {event: event.id, affectedUser: user.id});
+        await AuditManager.log(transaction, ctx.user, auditType, {
+            event:        event.id,
+            affectedUser: user.id,
+            values:       {
+                participationType: apiParticipation.type,
+            },
+        });
     });
     ctx.status = 204;
 }

@@ -30,13 +30,6 @@ module.exports = {
             type:         'DATETIME',
             unique:       false,
         },
-        details:      {
-            allowNull:    true,
-            defaultValue: undefined,
-            primaryKey:   false,
-            type:         'VARCHAR(255)',
-            unique:       false,
-        },
         event:        {
             allowNull:    true,
             defaultValue: undefined,
@@ -63,6 +56,13 @@ module.exports = {
             defaultValue: undefined,
             primaryKey:   false,
             type:         'DATETIME',
+            unique:       false,
+        },
+        values:      {
+            allowNull:    true,
+            defaultValue: undefined,
+            primaryKey:   false,
+            type:         'JSON',
             unique:       false,
         },
     },

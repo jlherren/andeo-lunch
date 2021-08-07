@@ -224,7 +224,7 @@ class Absence extends Model {
  * @property {Event|null} Event
  * @property {number|null} affectedUser
  * @property {User|null} AffectedUser
- * @property {string|null} details
+ * @property {object|null} values
  */
 class Audit extends Model {
     /**
@@ -243,7 +243,7 @@ class Audit extends Model {
             eventName:        this.getEventName(),
             affectedUserId:   this.affectedUser,
             affectedUserName: this.getAffectedUserName(),
-            details:          this.details,
+            values:           this.values,
         };
     }
 
@@ -395,9 +395,9 @@ exports.initModels = function initModels(sequelize) {
     Absence.belongsTo(User, {foreignKey: {name: 'user', allowNull: false}, as: 'User'});
 
     Audit.init({
-        date:    {type: DataTypes.DATE, allowNull: false},
-        type:    {type: ascii(32), allowNull: false},
-        details: {type: DataTypes.STRING(255), allowNull: true},
+        date:   {type: DataTypes.DATE, allowNull: false},
+        type:   {type: ascii(32), allowNull: false},
+        values: {type: DataTypes.JSON, allowNull: true},
     }, {sequelize, modelName: 'audit'});
     // These do not enforce the FK constraint on purpose, to allow deleting objects but keeping the audits for it
     Audit.belongsTo(User, {foreignKey: {name: 'actingUser', allowNull: false}, constraints: false, as: 'ActingUser'});
