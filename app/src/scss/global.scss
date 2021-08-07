@@ -23,3 +23,34 @@
         flex: 1 1 auto;
     }
 }
+
+.theme--dark {
+    // v-banner's default background is transparent, which is ugly on dark themes.
+    // See https://github.com/vuetifyjs/vuetify/issues/12015
+    &.v-banner.v-sheet {
+        background: #1E1E1E !important;
+    }
+
+    // v-overlay's background looks too much like the regular background, making dialogs not stand out.  Also note
+    // that v-overlay is always in dark mode, even on the light theme.  See https://github.com/vuetifyjs/vuetify/issues/13435
+    &.v-application {
+        .v-overlay--active {
+            .v-overlay__scrim {
+                background: #101010 !important;
+                opacity: 0.65 !important;
+            }
+        }
+    }
+
+    // For unknown reasons lists in dark mode have a non-default background, but in light mode it's default.
+    &.v-list.v-sheet {
+        // The :active and :focus colors are not adjusted accordingly, since we plan to move to Vuetify 3
+        // as soon as possible.
+        background: transparent;
+    }
+
+    // Same issue here
+    &.v-data-table {
+        background: transparent !important;
+    }
+}
