@@ -109,7 +109,7 @@
                     this.isBusy = true;
 
                     let eventId = await this.$store.dispatch('saveEvent', {
-                        name: 'Pay up transfer',
+                        name: 'Pay up',
                         date: new Date(),
                         type: 'transfer',
                     });
