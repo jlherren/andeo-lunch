@@ -1,5 +1,6 @@
 'use strict';
 
+const path = require('path');
 const fs = require('fs').promises;
 const Joi = require('joi');
 const MariaDB = require('mariadb');
@@ -38,16 +39,15 @@ function validateConfig(config) {
  * @returns {Promise<Config>}
  */
 exports.getMainConfig = async function getMainConfig() {
-    let filename = 'config.json';
-    let fullPath = `${__dirname}/../${filename}`;
+    let fullPath = path.resolve(`${__dirname}/../config.json`);
 
-    if (!await fs.access(fullPath)) {
-        throw new Error('No configuration file found!  Please read README.md first');
+    try {
+        let fileContent = await fs.readFile(fullPath);
+        let config = JSON.parse(fileContent.toString('UTF-8'));
+        return validateConfig(config);
+    } catch (err) {
+        throw new Error(`No configuration file found at ${fullPath}!  Please read README.md first`);
     }
-
-    let fileContent = await fs.readFile(fullPath);
-    let config = JSON.parse(fileContent.toString('UTF-8'));
-    return validateConfig(config);
 };
 
 /**
