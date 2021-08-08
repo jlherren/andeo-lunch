@@ -236,7 +236,7 @@ async function main() {
     });
 
     process.on('SIGTERM', () => {
-        console.log(`Received SIGTERM, shutting down`);
+        console.log('Received SIGTERM, shutting down');
         lm.close();
     });
 
