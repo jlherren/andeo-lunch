@@ -44,7 +44,7 @@ let participation2 = {
 };
 
 beforeEach(async () => {
-    lunchMoney = new LunchMoney({config: ConfigProvider.getTestConfig()});
+    lunchMoney = new LunchMoney({config: await ConfigProvider.getTestConfig()});
     await lunchMoney.initDb();
     systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
     let username = 'test-user-1';

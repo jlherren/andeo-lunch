@@ -70,7 +70,8 @@ Run these from the `backend/` folder.
 
 - `yarn serve` Launch backend
 - `yarn serve:watch` Launch backend with auto-reload on file changes
-- `yarn test` Run test suite
+- `yarn test` Run test suite using SQLite
+- `yarn test:mariadb` Run test suite using MariaDB (this requires some environment variables to work)
 - `yarn test:watch` Run test suite and re-run on every file change
 - `yarn lint` Run linter
 - `yarn lint:fix` Run linter and fix automatically

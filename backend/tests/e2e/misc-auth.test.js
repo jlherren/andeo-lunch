@@ -15,7 +15,7 @@ let request = null;
 let user = null;
 
 beforeEach(async () => {
-    lunchMoney = new LunchMoney({config: ConfigProvider.getTestConfig()});
+    lunchMoney = new LunchMoney({config: await ConfigProvider.getTestConfig()});
     await lunchMoney.initDb();
     request = supertest.agent(lunchMoney.listen());
     user = await Models.User.create({

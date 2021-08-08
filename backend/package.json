@@ -11,6 +11,7 @@
         "serve": "node src/lunchMoney.js",
         "serve:watch": "nodemon src/lunchMoney.js",
         "test": "jest",
+        "test:mariadb": "TEST_DB=mariadb jest --runInBand",
         "test:watch": "jest --watchAll",
         "lint": "eslint src tests",
         "lint:fix": "eslint --fix src tests",

@@ -18,7 +18,7 @@ let user = null;
 let inactiveUser = null;
 
 beforeEach(async () => {
-    lunchMoney = new LunchMoney({config: ConfigProvider.getTestConfig()});
+    lunchMoney = new LunchMoney({config: await ConfigProvider.getTestConfig()});
     await lunchMoney.initDb();
     [user, inactiveUser] = await Models.User.bulkCreate([{
         username: 'testuser',

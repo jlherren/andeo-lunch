@@ -50,7 +50,7 @@ let sampleParticipation3 = {
 };
 
 beforeEach(async () => {
-    lunchMoney = new LunchMoney({config: ConfigProvider.getTestConfig()});
+    lunchMoney = new LunchMoney({config: await ConfigProvider.getTestConfig()});
     await lunchMoney.initDb();
     [user1, user2] = await Models.User.bulkCreate([{
         username: 'test-user-1',

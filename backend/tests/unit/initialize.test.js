@@ -10,9 +10,12 @@ const ExpectedDbStructure = require('./dbStructure');
 
 /** @type {LunchMoney|null} */
 let lunchMoney = null;
+/** @type {Config|null} */
+let config = null;
 
 beforeEach(async () => {
-    lunchMoney = new LunchMoney({config: ConfigProvider.getTestConfig()});
+    config = await ConfigProvider.getTestConfig();
+    lunchMoney = new LunchMoney({config: config});
     await lunchMoney.initDb();
 });
 
@@ -41,6 +44,10 @@ it('Correctly rebuilds user balances on an empty DB', async () => {
 });
 
 it('Creates a DB that matches the validation schema', async () => {
+    if (config.database.dialect !== 'sqlite') {
+        return;
+    }
+
     let sequelize = await lunchMoney.sequelizePromise;
     let queryInterface = sequelize.getQueryInterface();
     let dump = {};

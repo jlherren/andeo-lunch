@@ -229,7 +229,7 @@ class LunchMoney {
 async function main() {
     console.log(chalk.bold('Starting Andeo Lunch backend...'));
 
-    let mainConfig = ConfigProvider.getMainConfig();
+    let mainConfig = await ConfigProvider.getMainConfig();
     let lm = new LunchMoney({
         config:  mainConfig,
         logging: true,

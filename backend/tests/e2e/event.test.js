@@ -18,7 +18,7 @@ let jwt = null;
 let user = null;
 
 beforeEach(async () => {
-    lunchMoney = new LunchMoney({config: ConfigProvider.getTestConfig()});
+    lunchMoney = new LunchMoney({config: await ConfigProvider.getTestConfig()});
     await lunchMoney.initDb();
     let username = 'test-user';
     user = await Models.User.create({
