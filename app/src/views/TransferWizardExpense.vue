@@ -1,7 +1,7 @@
 <template>
     <v-main>
         <the-app-bar sub-page>
-            Custom transfer
+            Expense...
 
             <template v-slot:buttons>
                 <v-btn text color="primary" disabled>Save</v-btn>
@@ -20,7 +20,7 @@
     import TheAppBar from '@/components/TheAppBar';
 
     export default {
-        name: 'TransferWizardLunch',
+        name: 'TransferWizardExpense',
 
         components: {
             TheAppBar,

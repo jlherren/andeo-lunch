@@ -12,7 +12,7 @@
 
         <v-container>
             <p class="text-body-1 mt-4">
-                Send points or money as a gift to someone, or to honor a bet.
+                Send points or money to someone as a gift, or to honor a lost bet.
             </p>
 
             <v-form ref="form" :disabled="isBusy" @submit.prevent="save()">

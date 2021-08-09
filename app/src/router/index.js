@@ -12,8 +12,8 @@ import Stats from '@/views/Stats';
 import TransferList from '@/views/TransfersList.vue';
 import TransferWizard from '@/views/TransferWizard';
 import TransferWizardCustom from '@/views/TransferWizardCustom';
+import TransferWizardExpense from '@/views/TransferWizardExpense';
 import TransferWizardFine from '@/views/TransferWizardFine';
-import TransferWizardLunch from '@/views/TransferWizardLunch';
 import TransferWizardPayUp from '@/views/TransferWizardPayUp';
 import TransferWizardSimple from '@/views/TransferWizardSimple';
 import TransferWizardTrade from '@/views/TransferWizardTrade';
@@ -56,8 +56,8 @@ const routes = [
         component: TransferWizardTrade,
     },
     {
-        path:      '/transfers/new/event',
-        component: TransferWizardLunch,
+        path:      '/transfers/new/expense',
+        component: TransferWizardExpense,
     },
     {
         path:      '/transfers/new/fine',

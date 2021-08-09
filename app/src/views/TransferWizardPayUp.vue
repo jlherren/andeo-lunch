@@ -12,12 +12,12 @@
 
         <v-container>
             <p class="text-body-1 mt-4">
-                Send real-world money to the recipient first, then add the transaction here
-                to restore your money balance.
+                Send real money to someone else in order to restore your money balance.
+                Please send the money to the recipient <i>before</i> adding the transfer here.
             </p>
 
             <v-form ref="form" :disabled="isBusy" @submit.prevent="save()">
-                <v-select v-model="recipient" label="Recipient of real-world money"
+                <v-select v-model="recipient" label="Recipient of real money"
                           :items="users" item-text="name" item-value="id"
                           :rules="recipientRules"
                           :prepend-icon="$icons.account"/>

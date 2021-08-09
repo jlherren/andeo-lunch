@@ -5,23 +5,33 @@
         </the-app-bar>
 
         <v-list>
+            <v-list-item to="/transfers/new/expense">
+                <v-list-item-icon>
+                    <v-icon>{{ $icons.transferIn }}</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                    <v-list-item-title>Log an expense</v-list-item-title>
+                    <v-list-item-subtitle>Reimbursement after paying for someone else</v-list-item-subtitle>
+                </v-list-item-content>
+            </v-list-item>
+
+            <v-list-item to="/transfers/new/simple">
+                <v-list-item-icon>
+                    <v-icon>{{ $icons.transferOut }}</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                    <v-list-item-title>Virtual money or point transfer</v-list-item-title>
+                    <v-list-item-subtitle>Send a gift or honor a bet</v-list-item-subtitle>
+                </v-list-item-content>
+            </v-list-item>
+
             <v-list-item to="/transfers/new/pay-up">
                 <v-list-item-icon>
                     <v-icon>{{ $icons.transferPayUp }}</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                     <v-list-item-title>Pay up</v-list-item-title>
-                    <v-list-item-subtitle>Pay up real money to restore balance</v-list-item-subtitle>
-                </v-list-item-content>
-            </v-list-item>
-
-            <v-list-item to="/transfers/new/simple">
-                <v-list-item-icon>
-                    <v-icon>{{ $icons.transferSimple }}</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                    <v-list-item-title>Simple money or point transfer</v-list-item-title>
-                    <v-list-item-subtitle>Send a gift or honor a bet</v-list-item-subtitle>
+                    <v-list-item-subtitle>Pay up with real money to restore your balance</v-list-item-subtitle>
                 </v-list-item-content>
             </v-list-item>
 
@@ -32,20 +42,6 @@
                 <v-list-item-content>
                     <v-list-item-title>Trade points</v-list-item-title>
                     <v-list-item-subtitle>Buy or sell points for money</v-list-item-subtitle>
-                </v-list-item-content>
-            </v-list-item>
-
-            <v-list-item to="/transfers/new/event" disabled>
-                <v-list-item-icon>
-                    <v-icon>{{ $icons.transferLunch }}</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                    <v-list-item-title>Additional lunch transfer</v-list-item-title>
-                    <v-list-item-subtitle>Add a transaction to an existing event</v-list-item-subtitle>
-                    <v-list-item-subtitle>
-                        <v-icon small>{{ $icons.alert }}</v-icon>
-                        Not implemented
-                    </v-list-item-subtitle>
                 </v-list-item-content>
             </v-list-item>
 
