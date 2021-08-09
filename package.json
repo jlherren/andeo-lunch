@@ -5,6 +5,6 @@
         "backend"
     ],
     "scripts": {
-        "check": "yarn workspace andeo-lunch-app run lint && yarn workspace andeo-lunch-backend run lint && yarn workspace andeo-lunch-backend run test"
+        "check": "yarn dedupe --check && yarn workspace andeo-lunch-app run lint && yarn workspace andeo-lunch-backend run lint && yarn workspace andeo-lunch-backend run test"
     }
 }

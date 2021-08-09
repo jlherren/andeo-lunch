@@ -63,9 +63,18 @@
   development, set this to a small value like `100` to simulate a realistic network lag which allows to more easily see
   quirks it causes in the app.
 
+## Root level scripts
+
+Run these from the root directory.
+
+- `yarn check` Performs various checks that should be run before committing, including:
+    - Check for duplicate Yarn packages
+    - Lint all the code
+    - Run the backend tests
+
 ## Backend scripts
 
-Run these from the `backend/` folder.
+Run these from the `backend/` directory.
 
 - `yarn serve` Launch backend
 - `yarn serve:watch` Launch backend with auto-reload on file changes
@@ -82,7 +91,7 @@ Run these from the `backend/` folder.
 
 ## App scripts
 
-Run these from the `app/` folder.
+Run these from the `app/` directory.
 
 - `yarn serve` Launch development server (with auto-reload on file change)
 - `yarn serve:public` Launch development server, binding to 0.0.0.0
