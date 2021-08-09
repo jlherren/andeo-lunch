@@ -17,16 +17,16 @@
         "lint:fix": "eslint --fix src tests",
         "db:createUser": "node src/scripts/createUser.js",
         "db:editUser": "node src/scripts/editUser.js",
-        "db:init": "node src/scripts/initDb.js",
         "db:rebuild": "node src/scripts/rebuildTransactions.js",
         "db:setPaymentInfo": "node src/scripts/setPaymentInfo.js",
-        "db:update": "node src/scripts/updateDb.js"
+        "db:validate": "node src/scripts/validateDb.js"
     },
     "dependencies": {
         "@koa/cors": "~3.1.0",
         "@koa/router": "~10.1.0",
         "bcryptjs": "~2.4.3",
         "chalk": "~4.1.2",
+        "jest-diff": "~27.0.6",
         "joi": "~17.4.2",
         "jsonwebtoken": "~8.5.1",
         "koa": "~2.13.1",
@@ -34,7 +34,8 @@
         "koa-logger": "~3.2.1",
         "mariadb": "~2.5.4",
         "sequelize": "~6.6.5",
-        "sprintf-js": "~1.1.2"
+        "sprintf-js": "~1.1.2",
+        "umzug": "~2.3.0"
     },
     "devDependencies": {
         "@types/bcryptjs": "~2.4.2",

@@ -1,12 +1,12 @@
 'use strict';
 
 const chalk = require('chalk');
+const {sprintf} = require('sprintf-js');
 
 const Models = require('../db/models');
 const Cli = require('../cli');
 const LunchMoney = require('../lunchMoney');
 const ConfigProvider = require('../configProvider');
-const {sprintf} = require('sprintf-js');
 
 /**
  * @returns {Promise<number|null>}
@@ -46,11 +46,17 @@ async function savePaymentInfo(userId, paymentInfo) {
     }
 }
 
-console.log(chalk.bold('Update payment information'));
+/**
+ * Set payment information
+ *
+ * @returns {Promise<void>}
+ */
+async function setPaymentInfo() {
+    console.log(chalk.bold('Update payment information'));
 
-let lunchMoney = new LunchMoney({config: ConfigProvider.getMainConfig()});
+    let lunchMoney = new LunchMoney({config: await ConfigProvider.getMainConfig()});
+    await lunchMoney.waitReady();
 
-lunchMoney.sequelizePromise.then(async sequelize => {
     let cli = new Cli();
     try {
         let defaultRecipient = await fetchDefaultRecipient();
@@ -103,6 +109,10 @@ lunchMoney.sequelizePromise.then(async sequelize => {
     } catch (err) {
         console.error(err.message);
     }
+
     cli.close();
-    await sequelize.close();
-});
+    await lunchMoney.close();
+}
+
+// noinspection JSIgnoredPromiseFromCall
+setPaymentInfo();

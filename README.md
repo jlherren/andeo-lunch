@@ -24,7 +24,6 @@
 
 5. In the directory `backend/`, run:
 
-       yarn db:init
        yarn db:createUser  # This will prompt for a username & password
        yarn serve:watch    # Leave this running
 
@@ -77,12 +76,9 @@ Run these from the `backend/` folder.
 - `yarn lint:fix` Run linter and fix automatically
 - `yarn db:createUser` Create a new user
 - `yarn db:editUser` Edit a user
-- `yarn db:init` Initialize the database by creating all tables and essential data.
-  Note: This will do mostly nothing if already initialized.
 - `yarn db:rebuild` Rebuild all transactions and all balances
 - `yarn db:setPaymentInfo` Set up payment information for a user
-- `yarn db:update` Re-initialize the database, trying to update any out-of-date structure. Note that
-  it's a bit flaky.  **CURRENTLY BUGGY DUE TO A SEQUELIZE BUG**
+- `yarn db:validate` Validate the DB structure
 
 ## App scripts
 

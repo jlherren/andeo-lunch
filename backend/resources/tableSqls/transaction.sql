@@ -1,0 +1,20 @@
+CREATE TABLE `transaction` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `date` datetime NOT NULL,
+  `user` int(11) NOT NULL,
+  `contraUser` int(11) NOT NULL,
+  `event` int(11) NOT NULL,
+  `currency` tinyint(4) NOT NULL,
+  `amount` double NOT NULL,
+  `balance` double NOT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `transaction_user_idx` (`user`),
+  KEY `transaction_contraUser_idx` (`contraUser`),
+  KEY `transaction_event_idx` (`event`),
+  KEY `transaction_dateId_idx` (`date`,`id`),
+  CONSTRAINT `transaction_ibfk_1` FOREIGN KEY (`user`) REFERENCES `user` (`id`),
+  CONSTRAINT `transaction_ibfk_2` FOREIGN KEY (`contraUser`) REFERENCES `user` (`id`),
+  CONSTRAINT `transaction_ibfk_3` FOREIGN KEY (`event`) REFERENCES `event` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4

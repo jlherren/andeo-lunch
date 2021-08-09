@@ -60,7 +60,9 @@ exports.getTestConfig = async function getTestConfig() {
     let config = null;
 
     if (process.env.TEST_DB === 'mariadb') {
-        // If the environment defines a MariaDB database, use it
+        if (!process.env.TEST_DB_NAME) {
+            throw new Error('Running MariaDB tests requires TEST_DB_* environment variables to be set');
+        }
         config = /** @type {Config} */ {
             database: {
                 dialect:  'mariadb',

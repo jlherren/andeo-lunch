@@ -12,8 +12,11 @@ let lunchMoney = null;
 let request = null;
 
 beforeEach(async () => {
-    lunchMoney = new LunchMoney({config: await ConfigProvider.getTestConfig()});
-    await lunchMoney.initDb();
+    lunchMoney = new LunchMoney({
+        config: await ConfigProvider.getTestConfig(),
+        quiet:  true,
+    });
+    await lunchMoney.waitReady();
     request = supertest.agent(lunchMoney.listen());
 });
 

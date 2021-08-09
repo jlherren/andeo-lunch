@@ -18,8 +18,11 @@ let user = null;
 let inactiveUser = null;
 
 beforeEach(async () => {
-    lunchMoney = new LunchMoney({config: await ConfigProvider.getTestConfig()});
-    await lunchMoney.initDb();
+    lunchMoney = new LunchMoney({
+        config: await ConfigProvider.getTestConfig(),
+        quiet:  true,
+    });
+    await lunchMoney.waitReady();
     [user, inactiveUser] = await Models.User.bulkCreate([{
         username: 'testuser',
         password: await AuthUtils.hashPassword('abc123'),

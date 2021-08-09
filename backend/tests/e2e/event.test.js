@@ -18,8 +18,11 @@ let jwt = null;
 let user = null;
 
 beforeEach(async () => {
-    lunchMoney = new LunchMoney({config: await ConfigProvider.getTestConfig()});
-    await lunchMoney.initDb();
+    lunchMoney = new LunchMoney({
+        config: await ConfigProvider.getTestConfig(),
+        quiet:  true,
+    });
+    await lunchMoney.waitReady();
     let username = 'test-user';
     user = await Models.User.create({
         username,

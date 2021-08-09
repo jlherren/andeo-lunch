@@ -3634,6 +3634,7 @@ __metadata:
     eslint-plugin-jest: ~24.4.0
     eslint-plugin-jsdoc: ~36.0.6
     jest: ~27.0.6
+    jest-diff: ~27.0.6
     joi: ~17.4.2
     jsonwebtoken: ~8.5.1
     koa: ~2.13.1
@@ -3645,6 +3646,7 @@ __metadata:
     sprintf-js: ~1.1.2
     sqlite3: ~5.0.2
     supertest: ~6.1.4
+    umzug: ~2.3.0
   languageName: unknown
   linkType: soft
 
@@ -4636,7 +4638,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bluebird@npm:^3.1.1, bluebird@npm:^3.5.5":
+"bluebird@npm:^3.1.1, bluebird@npm:^3.5.5, bluebird@npm:^3.7.2":
   version: 3.7.2
   resolution: "bluebird@npm:3.7.2"
   checksum: 869417503c722e7dc54ca46715f70e15f4d9c602a423a02c825570862d12935be59ed9c7ba34a9b31f186c017c23cac6b54e35446f8353059c101da73eac22ef
@@ -10786,7 +10788,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"jest-diff@npm:^27.0.6":
+"jest-diff@npm:^27.0.6, jest-diff@npm:~27.0.6":
   version: 27.0.6
   resolution: "jest-diff@npm:27.0.6"
   dependencies:
@@ -17570,6 +17572,15 @@ typescript@~4.1.5:
   bin:
     uglifyjs: bin/uglifyjs
   checksum: dfc61c85b0660216432e021aac6a5f3ea0331720003d4d929b95f297daceb73bc9615875ca150516b49bc57ab60d3cf32415fc006cccf20f275c806f6686da0d
+  languageName: node
+  linkType: hard
+
+"umzug@npm:~2.3.0":
+  version: 2.3.0
+  resolution: "umzug@npm:2.3.0"
+  dependencies:
+    bluebird: ^3.7.2
+  checksum: 8cc2d5e373ad3f8bcb5021715df3ea7a67a10526b5fb97dd4783e3bda1f57e7f44f89c7d4f979b20fc17d3600538a5b070505cd675093720e4309034bfca0cd5
   languageName: node
   linkType: hard
 

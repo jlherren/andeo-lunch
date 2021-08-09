@@ -44,8 +44,11 @@ let participation2 = {
 };
 
 beforeEach(async () => {
-    lunchMoney = new LunchMoney({config: await ConfigProvider.getTestConfig()});
-    await lunchMoney.initDb();
+    lunchMoney = new LunchMoney({
+        config: await ConfigProvider.getTestConfig(),
+        quiet:  true,
+    });
+    await lunchMoney.waitReady();
     systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
     let username = 'test-user-1';
     [user1, user2] = await Models.User.bulkCreate([{

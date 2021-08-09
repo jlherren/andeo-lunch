@@ -1,7 +1,9 @@
 'use strict';
 
-const {Sequelize, ConnectionRefusedError} = require('sequelize');
 const fs = require('fs').promises;
+const path = require('path');
+const {Sequelize, ConnectionRefusedError} = require('sequelize');
+const Umzug = require('umzug');
 
 const Models = require('./models');
 
@@ -17,39 +19,42 @@ const ENV_FALLBACKS = {
 };
 
 /**
- * @param {Object<string, any>} options
+ * @param {object} options
+ * @param {boolean} [options.migrate]
+ * @param {boolean} [options.quiet]
+ * @param {Object<string, any>} sequelizeOptions
  * @returns {Promise<Sequelize>}
  */
-exports.connect = async function connect(options) {
-    options = {
-        logging: options.logSql ? console.log : false,
+exports.connect = async function connect(options, sequelizeOptions) {
+    sequelizeOptions = {
+        logging: sequelizeOptions.logSql ? console.log : false,
         define:  {
             freezeTableName: true,
             charset:         'utf8mb4',
             collate:         'utf8mb4_general_ci',
         },
-        ...options,
+        ...sequelizeOptions,
     };
 
     // Use environment for missing config
     for (let confKey in ENV_FALLBACKS) {
-        if (options[confKey] !== undefined) {
+        if (sequelizeOptions[confKey] !== undefined) {
             continue;
         }
         let envName = ENV_FALLBACKS[confKey];
         if (process.env[envName] !== undefined) {
             console.log(`Loading missing DB config '${confKey}' from environment variable ${envName}`);
-            options[confKey] = process.env[envName];
+            sequelizeOptions[confKey] = process.env[envName];
             continue;
         }
         if (process.env[`${envName}_FILE`] !== undefined) {
             console.log(`Loading missing DB config '${confKey}' from environment variable ${envName}_FILE`);
             let str = await fs.readFile(process.env[`${envName}_FILE`], 'utf-8');
-            options[confKey] = str.trim();
+            sequelizeOptions[confKey] = str.trim();
         }
     }
 
-    exports.sequelize = new Sequelize(options);
+    exports.sequelize = new Sequelize(sequelizeOptions);
 
     for (let attempt = 0; attempt < MAX_CONNECTION_ATTEMPTS; attempt++) {
         try {
@@ -69,7 +74,27 @@ exports.connect = async function connect(options) {
         }
     }
 
+    // Models need to be initialized before the migrations, since migrations may want to insert data.
     Models.initModels(exports.sequelize);
+
+    if (options.migrate) {
+        // Apply migrations
+        const umzug = new Umzug({
+            migrations:     {
+                path:    path.join(__dirname, '../../migrations'),
+                params:  [
+                    exports.sequelize,
+                ],
+                pattern: /^\d{4}-\d{2}-\d{2} \d{2} .*\.js$/u,
+            },
+            storage:        'sequelize',
+            storageOptions: {
+                sequelize: exports.sequelize,
+            },
+            logging:        options.quiet ? () => null : console.log,
+        });
+        await umzug.up();
+    }
 
     return exports.sequelize;
 };

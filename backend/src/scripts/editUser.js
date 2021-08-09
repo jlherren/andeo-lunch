@@ -1,20 +1,26 @@
 'use strict';
 
 const chalk = require('chalk');
+const {sprintf} = require('sprintf-js');
 
 const Models = require('../db/models');
 const Cli = require('../cli');
 const LunchMoney = require('../lunchMoney');
 const ConfigProvider = require('../configProvider');
-const {sprintf} = require('sprintf-js');
 const AuthUtils = require('../authUtils');
 
-console.log(chalk.bold('Edit user'));
+/**
+ * Edit user
+ *
+ * @returns {Promise<void>}
+ */
+async function editUser() {
+    console.log(chalk.bold('Edit user'));
 
-let lunchMoney = new LunchMoney({config: ConfigProvider.getMainConfig()});
-
-lunchMoney.sequelizePromise.then(async sequelize => {
+    let lunchMoney = new LunchMoney({config: await ConfigProvider.getMainConfig()});
+    await lunchMoney.waitReady();
     let cli = new Cli();
+
     try {
         let users = await Models.User.findAll({order: [['id', 'ASC']]});
         console.log('\nID  Username          Display name');
@@ -52,6 +58,10 @@ lunchMoney.sequelizePromise.then(async sequelize => {
     } catch (err) {
         console.error(err.message);
     }
+
     cli.close();
-    await sequelize.close();
-});
+    await lunchMoney.close();
+}
+
+// noinspection JSIgnoredPromiseFromCall
+editUser();

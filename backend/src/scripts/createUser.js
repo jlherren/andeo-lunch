@@ -8,12 +8,18 @@ const LunchMoney = require('../lunchMoney');
 const ConfigProvider = require('../configProvider');
 const AuthUtils = require('../authUtils');
 
-console.log(chalk.bold('Creating new user'));
+/**
+ * Create user
+ *
+ * @returns {Promise<void>}
+ */
+async function createUser() {
+    console.log(chalk.bold('Creating new user'));
 
-let lunchMoney = new LunchMoney({config: ConfigProvider.getMainConfig()});
-
-lunchMoney.sequelizePromise.then(async sequelize => {
+    let lunchMoney = new LunchMoney({config: await ConfigProvider.getMainConfig()});
+    await lunchMoney.waitReady();
     let cli = new Cli();
+
     try {
         let username = await cli.question('Username: ');
         if (username === '') {
@@ -43,6 +49,10 @@ lunchMoney.sequelizePromise.then(async sequelize => {
     } catch (err) {
         console.error(err.message);
     }
+
     cli.close();
-    await sequelize.close();
-});
+    await lunchMoney.close();
+}
+
+// noinspection JSIgnoredPromiseFromCall
+createUser();

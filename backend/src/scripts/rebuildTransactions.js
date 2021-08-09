@@ -6,15 +6,21 @@ const LunchMoney = require('../lunchMoney');
 const Transaction = require('../transactionRebuilder');
 const Models = require('../db/models');
 const ConfigProvider = require('../configProvider');
-const Db = require('../db');
 
-console.log(chalk.bold('Rebuilding transactions and balances...'));
+/**
+ * Rebuild all transactions
+ *
+ * @returns {Promise<void>}
+ */
+async function rebuildTransactions() {
+    console.log(chalk.bold('Rebuilding transactions and balances...'));
 
-let lunchMoney = new LunchMoney({config: ConfigProvider.getMainConfig()});
+    let lunchMoney = new LunchMoney({config: await ConfigProvider.getMainConfig()});
+    await lunchMoney.waitReady();
+    let sequelize = await lunchMoney.sequelizePromise;
 
-lunchMoney.waitReady()
-    .then(async () => {
-        await Db.sequelize.transaction(async transaction => {
+    try {
+        await sequelize.transaction(async transaction => {
             let events = await Models.Event.findAll({transaction});
             let overallEarliestDate = null;
             let nUpdatesTotal = 0;
@@ -37,5 +43,12 @@ lunchMoney.waitReady()
             console.log('Rebuilding final balances');
             await Transaction.rebuildUserBalances(transaction);
         });
-    })
-    .finally(() => lunchMoney.close());
+    } catch (err) {
+        console.error(err.message);
+    }
+
+    await lunchMoney.close();
+}
+
+// noinspection JSIgnoredPromiseFromCall
+rebuildTransactions();

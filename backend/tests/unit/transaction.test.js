@@ -10,8 +10,11 @@ const ConfigProvider = require('../../src/configProvider');
 let lunchMoney = null;
 
 beforeEach(async () => {
-    lunchMoney = new LunchMoney({config: await ConfigProvider.getTestConfig()});
-    await lunchMoney.initDb();
+    lunchMoney = new LunchMoney({
+        config: await ConfigProvider.getTestConfig(),
+        quiet:  true,
+    });
+    await lunchMoney.waitReady();
 });
 
 afterEach(async () => {

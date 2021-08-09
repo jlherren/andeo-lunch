@@ -4,9 +4,6 @@ version: '3.6'
 
 # You may remove the db container and use an existing database server.
 
-# Currently, after the *first* deployment, you will have to manually initialize the database:
-# docker exec -ti andeo-lunch-backend yarn db:init
-
 # To create users:
 # docker exec -ti andeo-lunch-backend yarn db:createUser
 
