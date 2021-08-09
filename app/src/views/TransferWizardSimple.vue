@@ -29,10 +29,10 @@
                     <v-col cols="6">
                         <v-text-field type="number" v-model="amount" label="Amount"
                                       min="0" :rules="amountRules"
-                                      class="no-spinner" :prepend-icon="$icons.money"/>
+                                      class="no-spinner" :prepend-icon="currency === 'money' ? $icons.money : $icons.points"/>
                     </v-col>
                     <v-col cols="6">
-                        <v-btn-toggle :value="currency" class="full-width" mandatory>
+                        <v-btn-toggle v-model="currency" class="full-width" mandatory>
                             <v-btn value="points">
                                 <v-icon left :large="$vuetify.breakpoint.mdAndUp">{{ $icons.points }}</v-icon>
                                 <span class="hidden-xs-only">Points</span>
