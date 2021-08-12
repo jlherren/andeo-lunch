@@ -53,10 +53,11 @@
 
         data() {
             return {
-                type:             this.event?.type,
-                name:             this.event?.name,
-                date:             this.event?.date ? DateUtils.isoDate(this.event.date) : null,
-                points:           this.event?.costs?.points,
+                type:   this.event?.type,
+                name:   this.event?.name,
+                date:   this.event?.date ? DateUtils.isoDate(this.event.date) : null,
+                points: this.event?.costs?.points,
+
                 /* eslint-disable-next-line no-extra-parens */
                 vegetarianFactor: (this.event?.factors?.vegetarian?.money ?? 0.5) * 100,
 

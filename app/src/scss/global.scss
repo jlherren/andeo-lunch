@@ -1,13 +1,13 @@
 // Since we disable the color pack, add back the only handful of colors we actually need
 
 .green--text {
-    color: #4CAF50 !important;
-    caret-color: #4CAF50 !important;
+    color: #4caf50 !important;
+    caret-color: #4caf50 !important;
 }
 
 .red--text {
-    color: #F44336 !important;
-    caret-color: #F44336 !important;
+    color: #f44336 !important;
+    caret-color: #f44336 !important;
 }
 
 .grey {
@@ -28,7 +28,7 @@
     // v-banner's default background is transparent, which is ugly on dark themes.
     // See https://github.com/vuetifyjs/vuetify/issues/12015
     &.v-banner.v-sheet {
-        background: #1E1E1E !important;
+        background: #1e1e1e !important;
     }
 
     // v-overlay's background looks too much like the regular background, making dialogs not stand out.  Also note

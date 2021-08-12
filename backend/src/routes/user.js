@@ -62,10 +62,10 @@ async function getUserPaymentInfo(ctx) {
  */
 async function getUserAbsences(ctx) {
     let absences = await Models.Absence.findAll({
-        where:   {
+        where: {
             user: ctx.params.user,
         },
-        order:   [
+        order: [
             ['start', 'ASC'],
         ],
     });

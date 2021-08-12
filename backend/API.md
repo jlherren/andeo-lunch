@@ -110,7 +110,8 @@ Response:
 ```
 
 The token remains valid for 30 days by default, but this can be configured.
-Most other request will require to receive this token in an authorization header:
+Most other request will require to receive this token in an authorization
+header:
 
 ```
 Authorization: Bearer <token>
@@ -120,10 +121,11 @@ Authorization: Bearer <token>
 
 The token expires after some time, after which a new login would be required.
 However, a token can be renewed before it expires, and it is recommended to do
-so at most once a day.  If desired, details about expiry can be found within
-the token itself, which follows the JSON web token standard.
+so at most once a day.  If desired, details about expiry can be found within the
+token itself, which follows the JSON web token standard.
 
 Request:
+
 ```
 POST /accout/renew
 Authorization: Bearer <current-token>
@@ -244,8 +246,9 @@ Response:
 
 *Note*: At most 100 events will be returned.
 
-*TODO*: Query parameters `from` and `to` may be specified with dates to limit the events returned.
-        The DB query condition will be "date >= from AND date < to".
+*TODO*: Query parameters `from` and `to` may be specified with dates to limit
+the events returned.  The DB query condition will be "date >= from AND date
+< to".
 
 ### Get single event
 
@@ -334,7 +337,8 @@ POST /events/<event-id>/participations/<user-id>
 <participation>
 ```
 
-*Note:* The participation should not contain the event ID and user ID as these are implied from the URL
+*Note:* The participation should not contain the event ID and user ID as these
+are implied from the URL
 
 Response:
 
