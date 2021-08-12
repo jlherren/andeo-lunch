@@ -16,6 +16,10 @@ async function up(sequelize) {
         onDelete: 'restrict',
         onUpdate: 'restrict',
     };
+    let tableDefaultOptions = {
+        charset: 'utf8mb4',
+        collate: 'utf8mb4_general_ci',
+    };
 
     await queryInterface.createTable('configuration', {
         id:        {
@@ -40,7 +44,7 @@ async function up(sequelize) {
             type:      DataTypes.DATE,
             allowNull: false,
         },
-    });
+    }, tableDefaultOptions);
     await queryInterface.addIndex('configuration', {
         name:   'configuration_name_idx',
         fields: ['name'],
@@ -96,7 +100,7 @@ async function up(sequelize) {
             type:      DataTypes.DATE,
             allowNull: false,
         },
-    });
+    }, tableDefaultOptions);
     await queryInterface.addIndex('user', {
         name:   'user_username_idx',
         fields: ['username'],
@@ -130,7 +134,7 @@ async function up(sequelize) {
             type:      DataTypes.DATE,
             allowNull: false,
         },
-    });
+    }, tableDefaultOptions);
 
     await queryInterface.createTable('lunch', {
         id:                    {
@@ -166,7 +170,7 @@ async function up(sequelize) {
             type:      DataTypes.DATE,
             allowNull: false,
         },
-    });
+    }, tableDefaultOptions);
     await queryInterface.addIndex('lunch', {
         name:   'lunch_event_idx',
         fields: ['event'],
@@ -202,7 +206,7 @@ async function up(sequelize) {
             type:      DataTypes.DATE,
             allowNull: false,
         },
-    });
+    }, tableDefaultOptions);
 
     await queryInterface.createTable('participation', {
         id:             {
@@ -241,7 +245,7 @@ async function up(sequelize) {
             type:      DataTypes.DATE,
             allowNull: false,
         },
-    });
+    }, tableDefaultOptions);
     await queryInterface.addIndex('participation', {
         name:   'participation_userEvent_idx',
         fields: ['user', 'event'],
@@ -321,7 +325,7 @@ async function up(sequelize) {
             type:      DataTypes.DATE,
             allowNull: false,
         },
-    });
+    }, tableDefaultOptions);
     await queryInterface.addIndex('transfer', {
         name:   'transfer_event_idx',
         fields: ['event'],
@@ -408,7 +412,7 @@ async function up(sequelize) {
             type:      DataTypes.DATE,
             allowNull: false,
         },
-    });
+    }, tableDefaultOptions);
     await queryInterface.addIndex('transaction', {
         name:   'transaction_user_idx',
         fields: ['user'],
@@ -485,7 +489,7 @@ async function up(sequelize) {
             type:      DataTypes.DATE,
             allowNull: false,
         },
-    });
+    }, tableDefaultOptions);
     await queryInterface.addIndex('absence', {
         name:   'absence_user_idx',
         fields: ['user'],
@@ -537,7 +541,7 @@ async function up(sequelize) {
             type:      DataTypes.DATE,
             allowNull: false,
         },
-    });
+    }, tableDefaultOptions);
     await queryInterface.addIndex('audit', {
         name:   'audit_actingUser_idx',
         fields: ['actingUser'],
