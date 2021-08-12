@@ -1,6 +1,6 @@
 <template>
     <v-list>
-        <v-list-item to="/profile">
+        <v-list-item to="/profile" two-line>
             <v-list-item-avatar color="primary">
                 <v-icon dark>{{ $icons.accountCircle }}</v-icon>
             </v-list-item-avatar>
