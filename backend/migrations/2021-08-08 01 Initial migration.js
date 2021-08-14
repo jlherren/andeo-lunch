@@ -1,3 +1,5 @@
+'use strict';
+
 const {DataTypes} = require('sequelize');
 
 const {ColumnHelper} = require('../src/db/columnHelper');
@@ -7,7 +9,7 @@ const AuthUtils = require('../src/authUtils');
 
 /**
  * @param {Sequelize} sequelize
- * @return {Promise<void>}
+ * @returns {Promise<void>}
  */
 async function up(sequelize) {
     let queryInterface = sequelize.getQueryInterface();
@@ -596,10 +598,9 @@ async function up(sequelize) {
 }
 
 /**
- * @param {Sequelize} sequelize
- * @return {Promise<void>}
+ * Undoing this migration is not supported
  */
-async function down(sequelize) {
+function down() {
     throw new Error('Migrating down from initial migration is not supported');
 }
 
