@@ -22,6 +22,7 @@ class Configuration extends Model {
 /**
  * @property {string} username
  * @property {string} [password]
+ * @property {Date|null} lastPasswordChange
  * @property {boolean} active Whether this user can log in, and can be added or removed from events
  * @property {boolean} hidden Whether the user should be displayed in a normal user listing
  * @property {string} name
@@ -308,14 +309,15 @@ exports.initModels = function initModels(sequelize) {
     });
 
     User.init({
-        username: {type: ch.ascii(64), allowNull: false, unique: 'user_username_idx'},
-        password: {type: ch.ascii(255), allowNull: true},
-        name:     {type: DataTypes.STRING(64), allowNull: false},
-        active:   {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
-        hidden:   {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
-        points:   {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
-        money:    {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
-        settings: {type: DataTypes.JSON, allowNull: true},
+        username:           {type: ch.ascii(64), allowNull: false, unique: 'user_username_idx'},
+        password:           {type: ch.ascii(255), allowNull: true},
+        lastPasswordChange: {type: DataTypes.DATE, allowNull: true},
+        name:               {type: DataTypes.STRING(64), allowNull: false},
+        active:             {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
+        hidden:             {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
+        points:             {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
+        money:              {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
+        settings:           {type: DataTypes.JSON, allowNull: true},
         // Note: Couldn't manage to set default on 'settings'
     }, {
         sequelize,

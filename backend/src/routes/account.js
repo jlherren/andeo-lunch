@@ -89,6 +89,7 @@ async function password(ctx) {
     }
 
     ctx.user.password = await AuthUtils.hashPassword(requestBody.newPassword);
+    ctx.user.lastPasswordChange = new Date();
     await ctx.user.save();
 
     ctx.body = {
