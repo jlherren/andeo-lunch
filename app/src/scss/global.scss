@@ -54,3 +54,11 @@
         background: transparent !important;
     }
 }
+
+.v-application.theme--light .v-app-bar.theme--dark {
+    background: $andeo-black;
+}
+
+.v-btn {
+    box-shadow: none !important;
+}

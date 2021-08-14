@@ -27,14 +27,14 @@
             </v-container>
 
             <v-container v-if="participations && event.type !== 'label' && ownParticipationMissing">
-                <v-banner elevation="2" :icon="$icons.alertCircle">
+                <v-banner elevation="2" :icon="$icons.undecided" icon-color="red">
                     Make up your mind!
                     <template v-slot:actions>
-                        <v-btn text color="error" class="ml-1" :disabled="isBusy" @click="optOut">
+                        <v-btn color="primary" class="ml-1" :disabled="isBusy" @click="optOut">
                             <v-icon small left>{{ $icons.optOut }}</v-icon>
                             Opt-out
                         </v-btn>
-                        <v-btn text color="primary" :disabled="isBusy" @click="optIn">
+                        <v-btn color="primary" :disabled="isBusy" @click="optIn">
                             <v-icon small left>{{ optInIcon }}</v-icon>
                             Opt-in
                         </v-btn>

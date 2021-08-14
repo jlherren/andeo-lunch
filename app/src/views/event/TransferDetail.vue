@@ -51,7 +51,7 @@
                 <v-card-actions>
                     <v-btn text @click="confirmDelete = false" :disabled="isBusy">Cancel</v-btn>
                     <v-spacer/>
-                    <v-btn text @click="deleteEvent" :disabled="isBusy" color="error">Delete</v-btn>
+                    <v-btn @click="deleteEvent" :disabled="isBusy" color="error">Delete</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>

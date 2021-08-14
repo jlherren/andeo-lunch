@@ -152,4 +152,33 @@
     html {
         overflow-y: auto
     }
+
+    .v-item-group.v-bottom-navigation {
+        box-shadow: none !important;
+    }
+
+    .v-bottom-navigation {
+        &.theme--light {
+            color: $andeo-black !important;
+
+            // Using a.v-btn to have higher specificity
+            a.v-btn:not(.v-btn--active) {
+                color: $andeo-black !important;
+            }
+            .v-btn--active {
+                background: #f0f0f0 !important;
+            }
+        }
+        &.theme--dark {
+            color: white !important;
+
+            a.v-btn:not(.v-btn--active) {
+                color: white !important;
+            }
+            .v-btn--active {
+                background: #404040 !important;
+            }
+        }
+    }
+
 </style>

@@ -4,7 +4,7 @@
             Custom transfer
 
             <template v-slot:buttons>
-                <v-btn text color="primary" disabled>Save</v-btn>
+                <v-btn color="primary" disabled>Save</v-btn>
             </template>
         </the-app-bar>
 

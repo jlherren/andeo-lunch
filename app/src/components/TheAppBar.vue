@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-app-bar app :extension-height="extensionHeight">
+        <v-app-bar app :extension-height="extensionHeight" flat dark>
             <v-app-bar-nav-icon v-if="!subPage" @click="toggleDrawer">
                 <template v-slot:default>
                     <v-badge :value="$global.hasUpdate" dot>

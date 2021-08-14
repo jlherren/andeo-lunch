@@ -1,6 +1,6 @@
 <template>
     <v-main>
-        <v-app-bar app>
+        <v-app-bar app dark flat>
             <v-toolbar-title>
                 Login
             </v-toolbar-title>

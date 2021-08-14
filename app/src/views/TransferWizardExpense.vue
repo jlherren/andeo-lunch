@@ -4,7 +4,7 @@
             Log an expense
 
             <template v-slot:buttons>
-                <v-btn text color="primary" @click="save()" :disabled="isBusy">Save</v-btn>
+                <v-btn color="primary" @click="save()" :disabled="isBusy">Save</v-btn>
             </template>
         </the-app-bar>
 

@@ -1,5 +1,7 @@
 const crypto = require('crypto');
 
+const {ANDEO_BLACK} = require('./src/constants');
+
 process.env.VUE_APP_VERSION = require('./package.json').version;
 
 if (!process.env.VUE_APP_BACKEND_URL) {
@@ -24,8 +26,8 @@ module.exports = {
     pwa: {
         name:          process.env.VUE_APP_BRANDING_TITLE,
         // Color used for the window title bar when installed as Chrome/Edge app.  We set it to the same color as the
-        // background of Vuetify's <v-app-bar>, to make it look seamless.
-        themeColor:    '#f5f5f5',
+        // background of Vuetify's <v-app-bar>, to make it look seamless.  Only on light theme though.
+        themeColor:    ANDEO_BLACK,
         msTileColor:   '#ffffff',
         assetsVersion: randomVersion,
         iconPaths:     {
