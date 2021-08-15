@@ -3656,7 +3656,7 @@ __metadata:
     axios: ~0.21.1
     babel-eslint: ~10.1.0
     core-js: ~3.16.1
-    cypress: ~7.7.0
+    cypress: ~8.2.0
     eslint: ~7.32.0
     eslint-plugin-cypress: ~2.11.3
     eslint-plugin-import: ~2.24.0
@@ -6520,9 +6520,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cypress@npm:~7.7.0":
-  version: 7.7.0
-  resolution: "cypress@npm:7.7.0"
+"cypress@npm:~8.2.0":
+  version: 8.2.0
+  resolution: "cypress@npm:8.2.0"
   dependencies:
     "@cypress/request": ^2.88.5
     "@cypress/xvfb": ^1.2.4
@@ -6567,7 +6567,7 @@ __metadata:
     yauzl: ^2.10.0
   bin:
     cypress: bin/cypress
-  checksum: 8ad8700d448949941801b6ff25549ef93e593b659b1605a936a8021032acb50f1849c9b8f8d1ba7df713de803b8203a1978231ccd0443f2e819bd9cf1b23d562
+  checksum: 571341e255ca2322b9fa196660099fcf7f7e2674ab47d98fcc6b72302fd24e1dc9c51e3588716ee5c2332a50db23efa180ec6ddf88af09197bb6b13e3bed7719
   languageName: node
   linkType: hard
 

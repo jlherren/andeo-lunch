@@ -109,12 +109,9 @@ Run these from the `app/` directory.
 ## Cypress setup
 
 1. Navigate to the `app` directory
-2. If you haven't already, install Cypress on your local machine by running:
 
-       yarn run cypress install
-
-4. Create a `cypress.env.json` file where you add this content, replacing "
-   TestUserName" and "TestUserPassword" with the values you entered when
+2. Create a `cypress.env.json` file where you add this content, replacing
+   "TestUserName" and "TestUserPassword" with the values you entered when
    running `db:createUser`:
 
         {
