@@ -1,12 +1,15 @@
 <template>
     <v-list>
-        <v-list-item>
+        <v-list-item to="/profile" two-line>
             <v-list-item-avatar color="primary">
                 <v-icon dark>{{ $icons.accountCircle }}</v-icon>
             </v-list-item-avatar>
 
             <v-list-item-content>
                 <v-list-item-title class="title">{{ ownUser.name }}</v-list-item-title>
+                <v-list-item-subtitle>
+                    Account settings
+                </v-list-item-subtitle>
             </v-list-item-content>
         </v-list-item>
 
@@ -47,6 +50,18 @@
             </v-list-item-icon>
             <v-list-item-content>
                 <v-list-item-title>About</v-list-item-title>
+            </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item v-if="$global.hasUpdate" @click="update()">
+            <v-list-item-icon>
+                <v-badge dot>
+                    <v-icon>{{ $icons.refresh }}</v-icon>
+                </v-badge>
+            </v-list-item-icon>
+            <v-list-item-content>
+                <v-list-item-title>Update app</v-list-item-title>
+                <v-list-item-subtitle>A new version is available</v-list-item-subtitle>
             </v-list-item-content>
         </v-list-item>
 
@@ -91,6 +106,10 @@
         methods: {
             logout() {
                 this.$store.dispatch('logout');
+            },
+
+            update() {
+                window.location.reload();
             },
         },
     };

@@ -1,0 +1,127 @@
+<template>
+    <v-main>
+        <the-app-bar sub-page>
+            Trade points
+
+            <template v-slot:buttons>
+                <v-btn color="primary" @click="save()" :disabled="isBusy">Save</v-btn>
+            </template>
+        </the-app-bar>
+
+        <shy-progress v-if="isBusy"/>
+
+        <v-container>
+            <p class="text-body-1 mt-4">
+                Buy points from, or sell points to another user for money.
+            </p>
+
+            <v-form ref="form" :disabled="isBusy" @submit.prevent="save()">
+                <v-select v-model="buyer" label="Buyer"
+                          :items="users" item-text="name" item-value="id"
+                          :rules="buyerRules"
+                          :prepend-icon="$icons.account"/>
+                <v-select v-model="seller" label="Seller"
+                          :items="users" item-text="name" item-value="id"
+                          :rules="sellerRules"
+                          :prepend-icon="$icons.account"/>
+
+                <v-text-field type="number" v-model="points" label="Points"
+                              min="0" :rules="positiveRules"
+                              class="no-spinner" :prepend-icon="$icons.points"/>
+
+                <v-text-field type="number" v-model="money" label="Total money"
+                              min="0" :rules="positiveRules"
+                              class="no-spinner" :prepend-icon="$icons.money"/>
+
+                <v-text-field type="number" :value="price" label="Price per point"
+                              disabled class="no-spinner" :prepend-icon="$icons.money"/>
+
+                <!-- Button is to make it submittable by pressing enter -->
+                <v-btn type="submit" :disabled="isBusy" v-show="false">Save</v-btn>
+            </v-form>
+        </v-container>
+    </v-main>
+</template>
+
+<script>
+    import ShyProgress from '@/components/ShyProgress';
+    import TheAppBar from '@/components/TheAppBar';
+    import {mapGetters} from 'vuex';
+
+    export default {
+        name: 'TransferWizardTrade',
+
+        components: {
+            ShyProgress,
+            TheAppBar,
+        },
+
+        data() {
+            return {
+                isBusy:        false,
+                buyer:         null,
+                seller:        null,
+                points:        null,
+                money:         null,
+                buyerRules:    [
+                    v => !!v,
+                ],
+                sellerRules:   [
+                    v => !!v && v !== this.buyer,
+                ],
+                positiveRules: [
+                    v => v > 0,
+                ],
+            };
+        },
+
+        created() {
+            this.$store.dispatch('fetchUsers');
+        },
+
+        computed: {
+            ...mapGetters([
+                'users',
+            ]),
+
+            price() {
+                return this.points > 0 && this.money > 0 ? this.money / this.points : null;
+            },
+        },
+
+        methods: {
+            async save() {
+                if (!this.$refs.form.validate()) {
+                    return;
+                }
+                try {
+                    this.isBusy = true;
+
+                    let eventId = await this.$store.dispatch('saveEvent', {
+                        name: 'Trade',
+                        date: new Date(),
+                        type: 'transfer',
+                    });
+
+                    let transfers = [{
+                        senderId:    this.buyer,
+                        recipientId: this.seller,
+                        amount:      this.money,
+                        currency:    'money',
+                    }, {
+                        senderId:    this.seller,
+                        recipientId: this.buyer,
+                        amount:      this.points,
+                        currency:    'points',
+                    }];
+                    await this.$store.dispatch('saveTransfers', {eventId, transfers});
+
+                    await this.$router.push(`/events/${eventId}`);
+                } catch (err) {
+                    this.isBusy = false;
+                    throw err;
+                }
+            },
+        },
+    };
+</script>

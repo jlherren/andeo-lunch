@@ -4,14 +4,14 @@ import * as mdi from '@mdi/js';
 // when we really only use a handful icons.
 
 export const icons = {
-    // Add icons here
+    // Add icons here.  Keep this list sorted!
+    account:       mdi.mdiAccount,
     accountCircle: mdi.mdiAccountCircle,
     alert:         mdi.mdiAlert,
     alertCircle:   mdi.mdiAlertCircle,
     arrowLeft:     mdi.mdiArrowLeft,
     arrowRight:    mdi.mdiArrowRight,
     calendar:      mdi.mdiCalendar,
-    cash:          mdi.mdiCash,
     chevronLeft:   mdi.mdiChevronLeft,
     chevronRight:  mdi.mdiChevronRight,
     close:         mdi.mdiClose,
@@ -25,10 +25,10 @@ export const icons = {
     plus:          mdi.mdiPlus,
     refresh:       mdi.mdiRefresh,
 
-    // Add semantic aliases here (this is encouraged)
+    // Add semantic aliases here (this is encouraged).  Keep this list sorted!
+    appMenu:        mdi.mdiMenu,
     balanceHistory: mdi.mdiScaleBalance,
     edit:           mdi.mdiPencil,
-    event:          mdi.mdiPartyPopper,
     log:            mdi.mdiNotebook,
     lunch:          mdi.mdiFoodVariant,
     menu:           mdi.mdiSilverware,
@@ -36,11 +36,20 @@ export const icons = {
     money:          mdi.mdiCashMultiple,
     omnivorous:     mdi.mdiHamburger,
     optOut:         mdi.mdiCancel,
+    password:       mdi.mdiLock,
     points:         mdi.mdiHandshake,
-    transfer:       mdi.mdiSwapHorizontalBold,
+    special:        mdi.mdiPartyPopper,
+    stats:          mdi.mdiChartBar,
+    transferCustom: mdi.mdiCogs,
+    transferFine:   mdi.mdiAccountAlert,
+    transferIn:     mdi.mdiAccountArrowLeft,
+    transferLunch:  mdi.mdiFoodVariant,
+    transferOut:    mdi.mdiAccountArrowRight,
+    transferPayUp:  mdi.mdiCreditCard,
+    transferTrade:  mdi.mdiSwapVerticalBold,
+    transfers:      mdi.mdiSwapHorizontalBold,
     undecided:      mdi.mdiHelpCircle,
     vegetarian:     mdi.mdiFoodApple,
-    stats:          mdi.mdiChartBar,
 };
 
 export default {

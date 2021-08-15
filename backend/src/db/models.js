@@ -3,6 +3,7 @@
 const jsonWebToken = require('jsonwebtoken');
 const {Model, DataTypes} = require('sequelize');
 const Constants = require('../constants');
+const {ColumnHelper} = require('./columnHelper');
 
 /**
  * @class Model
@@ -21,6 +22,7 @@ class Configuration extends Model {
 /**
  * @property {string} username
  * @property {string} [password]
+ * @property {Date|null} lastPasswordChange
  * @property {boolean} active Whether this user can log in, and can be added or removed from events
  * @property {boolean} hidden Whether the user should be displayed in a normal user listing
  * @property {string} name
@@ -61,7 +63,7 @@ class User extends Model {
  * @property {Date} date
  * @property {string} name
  * @property {Lunch} [Lunch]
- * @property {Transfer} [Transfer]
+ * @property {Array<Transfer>} [Transfers]
  */
 class Event extends Model {
     /**
@@ -71,19 +73,20 @@ class Event extends Model {
      */
     toApi() {
         return {
-            id:      this.id,
-            type:    Constants.EVENT_TYPE_NAMES[this.type],
-            date:    this.date,
-            name:    this.name,
-            costs:   this.Lunch && {
+            id:        this.id,
+            type:      Constants.EVENT_TYPE_NAMES[this.type],
+            date:      this.date,
+            name:      this.name,
+            costs:     this.Lunch && {
                 points: this.Lunch.pointsCost,
                 money:  this.Lunch.moneyCost,
             },
-            factors: this.Lunch && {
+            factors:   this.Lunch && {
                 [Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.VEGETARIAN]]: {
                     [Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY]]: this.Lunch.vegetarianMoneyFactor,
                 },
             },
+            transfers: this.Transfers?.map(transfer => transfer.toApi()),
         };
     }
 }
@@ -105,10 +108,26 @@ class Lunch extends Model {
  * @property {User} [Sender]
  * @property {number} recipient
  * @property {User} [Recipient]
- * @property {number} points
- * @property {number} money
+ * @property {number} currency
+ * @property {number} amount
  */
 class Transfer extends Model {
+    /**
+     * Map to an object suitable to return over the API
+     *
+     * @returns {ApiTransfer}
+     */
+    toApi() {
+        return {
+            id:          this.id,
+            eventId:     this.event,
+            eventName:   this.Event?.name,
+            senderId:    this.sender,
+            recipientId: this.recipient,
+            currency:    Constants.CURRENCY_NAMES[this.currency],
+            amount:      this.amount,
+        };
+    }
 }
 
 /**
@@ -207,7 +226,7 @@ class Absence extends Model {
  * @property {Event|null} Event
  * @property {number|null} affectedUser
  * @property {User|null} AffectedUser
- * @property {string|null} details
+ * @property {object|null} values
  */
 class Audit extends Model {
     /**
@@ -226,7 +245,7 @@ class Audit extends Model {
             eventName:        this.getEventName(),
             affectedUserId:   this.affectedUser,
             affectedUserName: this.getAffectedUserName(),
-            details:          this.details,
+            values:           this.values,
         };
     }
 
@@ -273,117 +292,183 @@ exports.Audit = Audit;
  * @param {Sequelize} sequelize
  */
 exports.initModels = function initModels(sequelize) {
-    /**
-     * @param {number} len
-     * @returns {any}
-     */
-    function ascii(len) {
-        switch (sequelize.getDialect()) {
-            case 'mysql':
-            case 'mariadb':
-                return `${DataTypes.STRING(len)} CHARSET ascii COLLATE ascii_bin`;
-            default:
-                return DataTypes.STRING(len);
-        }
-    }
+    let ch = new ColumnHelper(sequelize);
+
+    // Default cascading options
+    let cascade = {
+        onDelete: 'restrict',
+        onUpdate: 'restrict',
+    };
 
     Configuration.init({
-        name:  {type: ascii(32), allowNull: false, unique: true},
+        name:  {type: ch.ascii(32), allowNull: false, unique: 'configuration_name_idx'},
         value: {type: DataTypes.STRING(255), allowNull: false},
-    }, {sequelize, modelName: 'configuration'});
+    }, {
+        sequelize,
+        modelName: 'configuration',
+    });
 
     User.init({
-        username: {type: ascii(64), allowNull: false, unique: true},
-        password: {type: ascii(255), allowNull: true},
-        name:     {type: DataTypes.STRING(64), allowNull: false},
-        active:   {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
-        hidden:   {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
-        points:   {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
-        money:    {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
-        settings: {type: DataTypes.JSON, allowNull: true},
-        // Note: Couldn't manage to set default on 'settins'
-    }, {sequelize, modelName: 'user'});
+        username:           {type: ch.ascii(64), allowNull: false, unique: 'user_username_idx'},
+        password:           {type: ch.ascii(255), allowNull: true},
+        lastPasswordChange: {type: DataTypes.DATE, allowNull: true},
+        name:               {type: DataTypes.STRING(64), allowNull: false},
+        active:             {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
+        hidden:             {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
+        points:             {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
+        money:              {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
+        settings:           {type: DataTypes.JSON, allowNull: true},
+        // Note: Couldn't manage to set default on 'settings'
+    }, {
+        sequelize,
+        modelName: 'user',
+    });
 
     Event.init({
         type: {type: DataTypes.TINYINT, allowNull: false},
         date: {type: DataTypes.DATE, allowNull: false},
         name: {type: DataTypes.STRING(255), allowNull: false},
-    }, {sequelize, modelName: 'event'});
+    }, {
+        sequelize,
+        modelName: 'event',
+    });
 
     Lunch.init({
+        event:      {type: DataTypes.INTEGER, allowNull: false, unique: 'lunch_event_idx'},
         pointsCost: {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
 
         // Note: moneyCost is purely informational and won't affect calculations!  The moneyCredited field
         // of participations is what will actually be used for calculations.
         moneyCost:             {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
         vegetarianMoneyFactor: {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 1},
-    }, {sequelize, modelName: 'lunch'});
-    Lunch.belongsTo(Event, {foreignKey: {name: 'event', allowNull: false, unique: true}, as: 'Event'});
-    Event.hasOne(Lunch, {foreignKey: {name: 'event', allowNull: false, unique: true}, as: 'Lunch'});
+    }, {
+        sequelize,
+        modelName: 'lunch',
+    });
+    Lunch.belongsTo(Event, {foreignKey: {name: 'event'}, as: 'Event', ...cascade});
+    Event.hasOne(Lunch, {foreignKey: {name: 'event'}, as: 'Lunch', ...cascade});
 
     Transfer.init({
-        points: {type: DataTypes.DOUBLE, allowNull: false},
-        money:  {type: DataTypes.DOUBLE, allowNull: false},
-    }, {sequelize, modelName: 'transfer'});
-    Transfer.belongsTo(User, {foreignKey: {name: 'sender', allowNull: false}, as: 'Sender'});
-    Transfer.belongsTo(User, {foreignKey: {name: 'recipient', allowNull: false}, as: 'Recipient'});
-    Transfer.belongsTo(Event, {foreignKey: {name: 'event', allowNull: false, unique: true}, as: 'Event'});
-    Event.hasOne(Transfer, {foreignKey: {name: 'event', allowNull: false, unique: true}, as: 'Transfer'});
+        event:     {type: DataTypes.INTEGER, allowNull: false},
+        sender:    {type: DataTypes.INTEGER, allowNull: false},
+        recipient: {type: DataTypes.INTEGER, allowNull: false},
+        amount:    {type: DataTypes.DOUBLE, allowNull: false},
+        currency:  {type: DataTypes.TINYINT, allowNull: false},
+    }, {
+        sequelize,
+        modelName: 'transfer',
+        indexes:   [{
+            name:   'transfer_event_idx',
+            fields: ['event'],
+        }, {
+            name:   'transfer_sender_idx',
+            fields: ['sender'],
+        }, {
+            name:   'transfer_recipient_idx',
+            fields: ['recipient'],
+        }],
+    });
+    Transfer.belongsTo(User, {foreignKey: {name: 'sender'}, as: 'Sender', ...cascade});
+    Transfer.belongsTo(User, {foreignKey: {name: 'recipient'}, as: 'Recipient', ...cascade});
+    Transfer.belongsTo(Event, {foreignKey: {name: 'event'}, as: 'Event', ...cascade});
+    Event.hasMany(Transfer, {foreignKey: {name: 'event'}, as: 'Transfers', ...cascade});
 
     ParticipationType.init({
         label: {type: DataTypes.STRING(64), allowNull: false},
     }, {sequelize, modelName: 'participationType'});
 
     Participation.init({
+        event:          {type: DataTypes.INTEGER, allowNull: false},
+        user:           {type: DataTypes.INTEGER, allowNull: false},
+        type:           {type: DataTypes.INTEGER, allowNull: false},
         pointsCredited: {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
         moneyCredited:  {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
     }, {
         sequelize,
         modelName: 'participation',
-        indexes:   [
-            {
-                unique: true,
-                fields: ['user', 'event'],
-            },
-        ],
+        indexes:   [{
+            name:   'participation_userEvent_idx',
+            fields: ['user', 'event'],
+            unique: true,
+        }, {
+            name:   'participation_event_idx',
+            fields: ['event'],
+        }, {
+            name:   'participation_type_idx',
+            fields: ['type'],
+        }],
     });
-    Participation.belongsTo(ParticipationType, {foreignKey: {name: 'type', allowNull: false}, as: 'ParticipationType'});
-    Participation.belongsTo(User, {foreignKey: {name: 'user', allowNull: false}, as: 'User'});
-    Participation.belongsTo(Event, {foreignKey: {name: 'event', allowNull: false}, as: 'Event'});
-    Event.hasMany(Participation, {foreignKey: {name: 'event', allowNull: false}, as: 'Participations'});
+    Participation.belongsTo(ParticipationType, {foreignKey: {name: 'type'}, as: 'ParticipationType', ...cascade});
+    Participation.belongsTo(User, {foreignKey: {name: 'user'}, as: 'User', ...cascade});
+    Participation.belongsTo(Event, {foreignKey: {name: 'event'}, as: 'Event', ...cascade});
+    Event.hasMany(Participation, {foreignKey: {name: 'event'}, as: 'Participations', ...cascade});
 
     Transaction.init({
-        date:     {type: DataTypes.DATE, allowNull: false},
-        currency: {type: DataTypes.TINYINT, allowNull: false},
-        amount:   {type: DataTypes.DOUBLE, allowNull: false},
-        balance:  {type: DataTypes.DOUBLE, allowNull: false},
+        date:       {type: DataTypes.DATE, allowNull: false},
+        user:       {type: DataTypes.INTEGER, allowNull: false},
+        contraUser: {type: DataTypes.INTEGER, allowNull: false},
+        event:      {type: DataTypes.INTEGER, allowNull: false},
+        currency:   {type: DataTypes.TINYINT, allowNull: false},
+        amount:     {type: DataTypes.DOUBLE, allowNull: false},
+        balance:    {type: DataTypes.DOUBLE, allowNull: false},
     }, {
         sequelize,
         modelName: 'transaction',
-        indexes:   [
-            {
-                name:   'dateId',
-                fields: ['date', 'id'],
-            },
-        ],
+        indexes:   [{
+            name:   'transaction_user_idx',
+            fields: ['user'],
+        }, {
+            name:   'transaction_contraUser_idx',
+            fields: ['contraUser'],
+        }, {
+            name:   'transaction_event_idx',
+            fields: ['event'],
+        }, {
+            name:   'transaction_dateId_idx',
+            fields: ['date', 'id'],
+        }],
     });
-    Transaction.belongsTo(Event, {foreignKey: {name: 'event', allowNull: false}, as: 'Event'});
-    Transaction.belongsTo(User, {foreignKey: {name: 'user', allowNull: false}, as: 'User'});
-    Transaction.belongsTo(User, {foreignKey: {name: 'contraUser', allowNull: false}, as: 'ContraUser'});
+    Transaction.belongsTo(Event, {foreignKey: {name: 'event'}, as: 'Event', ...cascade});
+    Transaction.belongsTo(User, {foreignKey: {name: 'user'}, as: 'User', ...cascade});
+    Transaction.belongsTo(User, {foreignKey: {name: 'contraUser'}, as: 'ContraUser', ...cascade});
 
     Absence.init({
+        user:  {type: DataTypes.INTEGER, allowNull: false},
         start: {type: DataTypes.DATEONLY, allowNull: true},
         end:   {type: DataTypes.DATEONLY, allowNull: true},
-    }, {sequelize, modelName: 'absence'});
-    Absence.belongsTo(User, {foreignKey: {name: 'user', allowNull: false}, as: 'User'});
+    }, {
+        sequelize,
+        modelName: 'absence',
+        indexes:   [{
+            name:   'absence_user_idx',
+            fields: ['user'],
+        }],
+    });
+    Absence.belongsTo(User, {foreignKey: {name: 'user'}, as: 'User', ...cascade});
 
     Audit.init({
-        date:    {type: DataTypes.DATE, allowNull: false},
-        type:    {type: ascii(32), allowNull: false},
-        details: {type: DataTypes.STRING(255), allowNull: true},
-    }, {sequelize, modelName: 'audit'});
+        date:         {type: DataTypes.DATE, allowNull: false},
+        type:         {type: ch.ascii(32), allowNull: false},
+        actingUser:   {type: DataTypes.INTEGER, allowNull: false},
+        event:        {type: DataTypes.INTEGER, allowNull: true},
+        affectedUser: {type: DataTypes.INTEGER, allowNull: true},
+        values:       {type: DataTypes.JSON, allowNull: true},
+    }, {
+        sequelize,
+        modelName: 'audit',
+        indexes:   [{
+            name:   'audit_actingUser_idx',
+            fields: ['actingUser'],
+        }, {
+            name:   'audit_event_idx',
+            fields: ['event'],
+        }, {
+            name:   'audit_affectedUser_idx',
+            fields: ['affectedUser'],
+        }],
+    });
     // These do not enforce the FK constraint on purpose, to allow deleting objects but keeping the audits for it
-    Audit.belongsTo(User, {foreignKey: {name: 'actingUser', allowNull: false}, constraints: false, as: 'ActingUser'});
-    Audit.belongsTo(Event, {foreignKey: {name: 'event', allowNull: true}, constraints: false, as: 'Event'});
-    Audit.belongsTo(User, {foreignKey: {name: 'affectedUser', allowNull: true}, constraints: false, as: 'AffectedUser'});
+    Audit.belongsTo(User, {foreignKey: {name: 'actingUser'}, constraints: false, as: 'ActingUser'});
+    Audit.belongsTo(Event, {foreignKey: {name: 'event'}, constraints: false, as: 'Event'});
+    Audit.belongsTo(User, {foreignKey: {name: 'affectedUser'}, constraints: false, as: 'AffectedUser'});
 };

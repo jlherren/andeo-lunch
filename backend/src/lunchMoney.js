@@ -15,10 +15,7 @@ const AuditRoutes = require('./routes/audit');
 const SettingsRoutes = require('./routes/settings');
 const RouteUtils = require('./routes/route-utils');
 const Db = require('./db');
-const Constants = require('./constants');
-const Models = require('./db/models');
 const ConfigProvider = require('./configProvider');
-const AuthUtils = require('./authUtils');
 
 /**
  * Main app class
@@ -28,13 +25,21 @@ class LunchMoney {
      * @param {Object<string, any>} [options]
      * @param {Config} options.config
      * @param {boolean} [options.logging]
+     * @param {boolean} [options.migrate]
+     * @param {boolean} [options.quiet]
      */
     constructor(options) {
         this.options = {
             logging: false,
+            migrate: true,
+            quiet:   false,
             ...options || {},
         };
-        this.sequelizePromise = Db.connect(this.options.config.database);
+        let connectOptions = {
+            migrate: this.options.migrate,
+            quiet:   this.options.quiet,
+        };
+        this.sequelizePromise = Db.connect(connectOptions, this.options.config.database);
         /** @type {Server|null} */
         this.server = null;
 
@@ -101,63 +106,6 @@ class LunchMoney {
     }
 
     /**
-     * Initialize an empty DB with tables and defaults
-     *
-     * @returns {Promise<void>}
-     */
-    async initDb() {
-        // Create tables
-        let sequelize = await this.sequelizePromise;
-        await sequelize.sync();
-
-        await sequelize.transaction(async transaction => {
-            // Insert system user
-            await Models.User.create(
-                {
-                    username: Constants.SYSTEM_USER_USERNAME,
-                    name:     'System user',
-                    active:   false,
-                    hidden:   true,
-                    password: null,
-                }, {
-                    transaction,
-                    // Ignore if it exists already
-                    ignoreDuplicates: true,
-                });
-
-            // Insert participation types
-            await Models.ParticipationType.bulkCreate([
-                {
-                    id:    Constants.PARTICIPATION_TYPES.OMNIVOROUS,
-                    label: 'Omnivorous',
-                }, {
-                    id:    Constants.PARTICIPATION_TYPES.VEGETARIAN,
-                    label: 'Vegetarian',
-                }, {
-                    id:    Constants.PARTICIPATION_TYPES.OPT_OUT,
-                    label: 'Opt-out',
-                }, {
-                    id:    Constants.PARTICIPATION_TYPES.UNDECIDED,
-                    label: 'Undecided',
-                },
-            ], {
-                transaction,
-                // Ignore if they exist already
-                ignoreDuplicates: true,
-            });
-
-            let secret = await Models.Configuration.findOne({where: {name: 'secret'}, transaction});
-            if (!secret) {
-                let object = {
-                    name:  'secret',
-                    value: await AuthUtils.generateSecret(),
-                };
-                await Models.Configuration.create(object, {transaction});
-            }
-        });
-    }
-
-    /**
      * Returns a promise that is resolved as soon as the app is ready
      *
      * @returns {Promise<void>}
@@ -219,17 +167,25 @@ class LunchMoney {
             this.server.close();
         }
         let sequelize = await this.sequelizePromise;
-        sequelize.close();
+        await sequelize.close();
     }
 }
 
+/**
+ * Main entry point
+ */
 async function main() {
     console.log(chalk.bold('Starting Andeo Lunch backend...'));
 
-    let mainConfig = ConfigProvider.getMainConfig();
+    let mainConfig = await ConfigProvider.getMainConfig();
     let lm = new LunchMoney({
         config:  mainConfig,
         logging: true,
+    });
+
+    process.on('SIGTERM', () => {
+        console.log('Received SIGTERM, shutting down');
+        lm.close();
     });
 
     try {

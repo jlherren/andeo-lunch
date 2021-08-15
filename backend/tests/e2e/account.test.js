@@ -18,20 +18,22 @@ let user = null;
 let inactiveUser = null;
 
 beforeEach(async () => {
-    lunchMoney = new LunchMoney({config: ConfigProvider.getTestConfig()});
-    await lunchMoney.initDb();
-    user = await Models.User.create({
+    lunchMoney = new LunchMoney({
+        config: await ConfigProvider.getTestConfig(),
+        quiet:  true,
+    });
+    await lunchMoney.waitReady();
+    [user, inactiveUser] = await Models.User.bulkCreate([{
         username: 'testuser',
         password: await AuthUtils.hashPassword('abc123'),
         active:   true,
         name:     'Test User',
-    });
-    inactiveUser = await Models.User.create({
+    }, {
         username: 'inactiveuser',
         password: await AuthUtils.hashPassword('qwe456'),
         active:   false,
         name:     'Inactive User',
-    });
+    }]);
     request = supertest(lunchMoney.listen());
 });
 
@@ -118,13 +120,13 @@ describe('account check route', () => {
     it('works when not providing a token', async () => {
         let response = await request.get('/api/account/check');
         expect(response.status).toEqual(200);
-        expect(response.body).toEqual({userId: null});
+        expect(response.body).toEqual({});
     });
 
     it('works when providing a non-parsable token', async () => {
         let response = await request.get('/api/account/check').set('Authorization', 'Bearer WHATEVER');
         expect(response.status).toEqual(200);
-        expect(response.body).toEqual({userId: null});
+        expect(response.body).toEqual({});
     });
 
     it('works when providing an expired token', async () => {
@@ -133,7 +135,7 @@ describe('account check route', () => {
         let token = await user.generateToken(secret, {expiresIn: '-1 day'});
         let response = await request.get('/api/account/check').set('Authorization', `Bearer ${token}`);
         expect(response.status).toEqual(200);
-        expect(response.body).toEqual({userId: null});
+        expect(response.body).toEqual({});
     });
 
     it('works when providing a valid token', async () => {
@@ -142,6 +144,49 @@ describe('account check route', () => {
         let token = await user.generateToken(secret);
         let response = await request.get('/api/account/check').set('Authorization', `Bearer ${token}`);
         expect(response.status).toEqual(200);
-        expect(response.body).toEqual({userId: user.id});
+        expect(response.body).toEqual({userId: user.id, username: 'testuser'});
+    });
+});
+
+describe('Change password', () => {
+    let token = null;
+
+    beforeEach(async () => {
+        let secret = await AuthUtils.getSecret();
+        token = await user.generateToken(secret);
+    });
+
+    it('allows to change password', async () => {
+        let response = await request.post('/api/account/password')
+            .set('Authorization', `Bearer ${token}`)
+            .send({oldPassword: 'abc123', newPassword: 'qwe456'});
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual({success: true});
+
+        // Login with old password does not work anymore
+        response = await request.post('/api/account/login')
+            .send({username: 'testuser', password: 'abc123'});
+        expect(response.status).toEqual(401);
+
+        // Login with new password works
+        response = await request.post('/api/account/login')
+            .send({username: 'testuser', password: 'qwe456'});
+        expect(response.status).toEqual(200);
+    });
+
+    it('rejects wrong old password', async () => {
+        let response = await request.post('/api/account/password')
+            .set('Authorization', `Bearer ${token}`)
+            .send({oldPassword: 'wrong', newPassword: 'qwe456'});
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual({success: false, reason: 'old-password-invalid'});
+    });
+
+    it('rejects short new password', async () => {
+        let response = await request.post('/api/account/password')
+            .set('Authorization', `Bearer ${token}`)
+            .send({oldPassword: 'abc123', newPassword: 'lol'});
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual({success: false, reason: 'new-password-too-short'});
     });
 });

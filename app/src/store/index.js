@@ -9,35 +9,30 @@ export default new Vuex.Store({
     state: {
         globalSnackbar: null,
 
-        backendVersion:  'unknown',
-        frontendVersion: process.env.VUE_APP_VERSION,
+        backendVersion:        'unknown',
+        frontendVersion:       process.env.VUE_APP_VERSION,
+        payUpDefaultRecipient: null,
 
         account: {
             initialCheckCompleted: false,
             userId:                null,
-        },
-
-        // To be deprecated:
-        user: {
-            displayName: 'Oliver Wiedemann',
-            points:      7.52,
-            money:       -218.15,
-            settings:    {
-                weekdays:     {
-                    monday:    true,
-                    tuesday:   true,
-                    wednesday: true,
-                    thursday:  false,
-                    friday:    false,
-                },
-                isVegetarian: false,
-                generalInfo:  null,
-            },
+            username:              null,
         },
 
         users: {
             // Users by ID
         },
+
+        paymentInfos: {
+            // By user ID
+        },
+
+        absences: {
+            // By user ID
+        },
+
+        // All user IDs
+        allUserIds: [],
 
         events: {
             // Events by ID
@@ -49,6 +44,10 @@ export default new Vuex.Store({
 
         singleParticipations: {
             // Single participations by event ID and user ID.  Key format `${eventId}/${userId}`
+        },
+
+        transfers: {
+            // Transfers by event ID
         },
 
         transactions: {
@@ -68,27 +67,32 @@ export default new Vuex.Store({
         backendVersion:  state => state.backendVersion,
 
         // Users and account
-        user:  state => userId => state.users[userId],
-        users: state => Object.values(state.users),
+        user:        state => userId => state.users[userId],
+        users:       (state, getters) => state.allUserIds.map(userId => getters.user(userId)),
+        paymentInfo: state => userId => state.paymentInfos[userId] ?? null,
+        absences:    state => userId => state.absences[userId] ?? null,
 
         // Own user
-        isLoggedIn: state => state.account.userId !== null,
-        ownUserId:  state => state.account.userId,
-        ownUser:    (state, getters) => getters.user(getters.ownUserId),
+        isLoggedIn:  state => state.account.userId !== null,
+        ownUserId:   state => state.account.userId,
+        ownUsername: state => state.account.username,
+        ownUser:     (state, getters) => getters.user(getters.ownUserId),
 
         // Events
         events:         state => Object.values(state.events),
         event:          state => eventId => state.events[eventId],
         participations: state => eventId => state.participations[eventId],
         participation:  state => (eventId, userId) => state.singleParticipations[`${eventId}/${userId}`],
+        transfers:      state => eventId => state.transfers[eventId],
 
         // Transactions
         transactions: state => userId => state.transactions[userId],
 
         // Misc
-        globalSnackbar: state => state.globalSnackbar,
-        audits:         state => state.audits,
-        settings:       state => state.settings,
+        globalSnackbar:        state => state.globalSnackbar,
+        audits:                state => state.audits,
+        settings:              state => state.settings,
+        payUpDefaultRecipient: state => state.payUpDefaultRecipient,
     },
 
     mutations: {
@@ -118,6 +122,7 @@ export default new Vuex.Store({
             await context.dispatch('fetchUser', {userId: response.data.userId});
             // Don't set the following until after the user is fetched, otherwise 'ownUser' won't be reliable
             context.state.account.userId = response.data.userId;
+            context.state.account.username = response.data.username;
         },
 
         logout(context) {
@@ -130,15 +135,32 @@ export default new Vuex.Store({
             let response = await Backend.get('/account/check');
             let userId = response.data.userId;
 
-            if (userId !== null) {
+            if (userId) {
                 await context.dispatch('fetchUser', {userId});
                 // Don't set the following until after the user is fetched, otherwise 'ownUser' won't be reliable
                 context.state.account.userId = userId;
+                context.state.account.username = response.data.username;
             } else {
                 context.state.account.userId = null;
+                context.state.account.username = null;
             }
 
             context.state.account.initialCheckCompleted = true;
+        },
+
+        /**
+         * Change the password
+         *
+         * @param {ActionContext} context
+         * @param {object} data
+         * @returns {Promise<boolean|string>} True if successful, or a reason if not
+         */
+        async changePassword(context, data) {
+            let response = await Backend.post('/account/password', data);
+            if (response.data.success) {
+                return true;
+            }
+            return response.data.reason;
         },
 
         // Users
@@ -151,13 +173,14 @@ export default new Vuex.Store({
         },
 
         fetchUsers(context) {
-            return Cache.ifNotFresh('users', null, 10000, async () => {
+            return Cache.ifNotFresh('users', 0, 10000, async () => {
                 let response = await Backend.get('/users');
                 let users = {};
                 for (let user of response.data.users) {
                     users[user.id] = user;
                 }
                 Vue.set(context.state, 'users', users);
+                context.state.allUserIds = response.data.users.map(user => user.id);
             });
         },
 
@@ -200,27 +223,13 @@ export default new Vuex.Store({
                 }
             });
 
-            let promises = context.state.participations[eventId].map(p => context.dispatch('fetchUser', {userId: p.userId}));
-            await Promise.all(promises);
-        },
-
-        async fetchSingleParticipation(context, {eventId, userId}) {
-            let key = `${eventId}/${userId}`;
-            await Cache.ifNotFresh('participation', key, 10000, async () => {
-                // Don't show an error if there is no participation
-                let config = {
-                    validateStatus: status => status >= 200 && status < 300 || status === 404,
-                };
-                let response = await Backend.get(`/events/${eventId}/participations/${userId}`, config);
-                if (response.status === 404) {
-                    // Note that negative answers will also be cached
-                    return;
-                }
-                let participation = response.data.participation;
-                Vue.set(context.state.singleParticipations, `${eventId}/${userId}`, participation);
-            });
-
-            await context.dispatch('fetchUser', {userId});
+            let participations = context.state.participations[eventId];
+            // Participations may sometimes not be available here, due to multiple fetchParticipations being called
+            // concurrently
+            if (participations) {
+                let promises = participations.map(p => context.dispatch('fetchUser', {userId: p.userId}));
+                await Promise.all(promises);
+            }
         },
 
         async saveParticipation(context, {eventId, userId, ...data}) {
@@ -231,6 +240,30 @@ export default new Vuex.Store({
             Cache.invalidate('user');
             Cache.invalidate('users');
             await context.dispatch('fetchParticipations', {eventId});
+        },
+
+        async fetchTransfers(context, {eventId}) {
+            await Cache.ifNotFresh('transfers', eventId, 10000, async () => {
+                let response = await Backend.get(`/events/${eventId}/transfers`);
+                let transfers = response.data.transfers;
+                Vue.set(context.state.transfers, eventId, transfers);
+            });
+
+            let promises = context.state.transfers[eventId]
+                .map(t => Promise.all([
+                    context.dispatch('fetchUser', {userId: t.senderId}),
+                    context.dispatch('fetchUser', {userId: t.recipientId}),
+                ]));
+            await Promise.all(promises);
+        },
+
+        async saveTransfers(context, {eventId, transfers}) {
+            await Backend.post(`/events/${eventId}/transfers`, transfers);
+            Cache.invalidate('event', eventId);
+            Cache.invalidate('transfers', eventId);
+            Cache.invalidate('user');
+            Cache.invalidate('users');
+            await context.dispatch('fetchTransfers', {eventId});
         },
 
         async saveEvent(context, data) {
@@ -249,9 +282,9 @@ export default new Vuex.Store({
                 Cache.invalidate('participations', eventId);
             } else {
                 let location = response.headers.location;
-                let match = location.match(/^\/events\/(?<id>\d+)$/u);
+                let match = location.match(/^\/api\/events\/(?<id>\d+)$/u);
                 if (match) {
-                    eventId = match.groups.id;
+                    eventId = parseInt(match.groups.id, 10);
                 }
             }
 
@@ -259,6 +292,8 @@ export default new Vuex.Store({
                 await context.dispatch('fetchEvent', {eventId});
                 await context.dispatch('fetchParticipations', {eventId});
             }
+
+            return eventId;
         },
 
         async deleteEvent(context, {eventId}) {
@@ -314,6 +349,27 @@ export default new Vuex.Store({
             await Backend.post('/settings', settings);
             Cache.invalidate('settings');
             await context.dispatch('fetchSettings');
+        },
+
+        fetchPayUpDefaultRecipient(context) {
+            return Cache.ifNotFresh('payUp.defaultRecipient', 0, 60000, async () => {
+                let response = await Backend.get('/pay-up/default-recipient');
+                context.state.payUpDefaultRecipient = response.data.defaultRecipient;
+            });
+        },
+
+        fetchUserPaymentInfo(context, {userId}) {
+            return Cache.ifNotFresh('paymentInfo', userId, 60000, async () => {
+                let response = await Backend.get(`/users/${userId}/payment-info`);
+                Vue.set(context.state.paymentInfos, userId, response.data.paymentInfo);
+            });
+        },
+
+        fetchAbsences(context, {userId}) {
+            return Cache.ifNotFresh('absences', userId, 60000, async () => {
+                let response = await Backend.get(`/users/${userId}/absences`);
+                Vue.set(context.state.absences, userId, response.data.absences);
+            });
         },
     },
 });

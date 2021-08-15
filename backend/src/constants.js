@@ -17,13 +17,13 @@ exports.CURRENCY_IDS = Object.freeze(Utils.objectFlip(exports.CURRENCY_NAMES, tr
 
 exports.EVENT_TYPES = Object.freeze({
     LUNCH:    1,
-    EVENT:    2,
+    SPECIAL:  2,
     LABEL:    3,
     TRANSFER: 4,
 });
 exports.EVENT_TYPE_NAMES = Object.freeze({
     [exports.EVENT_TYPES.LUNCH]:    'lunch',
-    [exports.EVENT_TYPES.EVENT]:    'event',
+    [exports.EVENT_TYPES.SPECIAL]:  'special',
     [exports.EVENT_TYPES.LABEL]:    'label',
     [exports.EVENT_TYPES.TRANSFER]: 'transfer',
 });

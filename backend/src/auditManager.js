@@ -17,3 +17,24 @@ exports.log = async function log(transaction, actingUser, type, rest) {
         ...rest,
     }, {transaction});
 };
+
+/**
+ * @param {Transaction} transaction
+ * @param {User} actingUser
+ * @param {Array<{type: string, rest: Array}>} entries
+ * @returns {Promise<void>}
+ */
+exports.logMultiple = async function logMultiple(transaction, actingUser, entries) {
+    let inserts = [];
+    let date = Date.now();
+
+    for (let entry of entries) {
+        inserts.push({
+            date:       date,
+            actingUser: actingUser.id,
+            ...entry,
+        });
+    }
+
+    await Models.Audit.bulkCreate(inserts, {transaction});
+};

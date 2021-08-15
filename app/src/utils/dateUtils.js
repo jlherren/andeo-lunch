@@ -56,6 +56,19 @@ export function previousMonday(date) {
 }
 
 /**
+ * Get the first of the month relative to a given date
+ *
+ * @param {Date} date
+ * @returns {Date}
+ */
+export function previousFirstOfMonth(date) {
+    date = previousMidnight(date);
+    date.setDate(1);
+    date.setHours(0, 0, 0, 0);
+    return date;
+}
+
+/**
  * Add/subtract days to/from a date.  Note that the time of day is NOT preserved, because this may not be possible
  * to do during daylight saving changes.  The time will be reset to midnight.
  *
@@ -120,7 +133,6 @@ export function isoDateTime(date) {
  *
  * @param {Date} date1
  * @param {Date} date2
- *
  * @returns {boolean}
  */
 export function isSuccessiveDays(date1, date2) {
@@ -132,7 +144,6 @@ export function isSuccessiveDays(date1, date2) {
  *
  * @param {Date} date1
  * @param {Date} date2
- *
  * @returns {boolean}
  */
 export function isSameDay(date1, date2) {

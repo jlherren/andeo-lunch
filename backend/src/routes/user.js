@@ -42,6 +42,39 @@ async function getSystemUser(ctx) {
 }
 
 /**
+ * @param {Application.Context} ctx
+ * @returns {Promise<void>}
+ */
+async function getUserPaymentInfo(ctx) {
+    let config = await Models.Configuration.findOne({
+        where: {
+            name: `paymentInfo.${ctx.params.user}`,
+        },
+    });
+    ctx.body = {
+        paymentInfo: config ? config.value : null,
+    };
+}
+
+/**
+ * @param {Application.Context} ctx
+ * @returns {Promise<void>}
+ */
+async function getUserAbsences(ctx) {
+    let absences = await Models.Absence.findAll({
+        where: {
+            user: ctx.params.user,
+        },
+        order: [
+            ['start', 'ASC'],
+        ],
+    });
+    ctx.body = {
+        absences: absences.map(absence => absence.toApi()),
+    };
+}
+
+/**
  * @param {Router} router
  */
 exports.register = function register(router) {
@@ -55,5 +88,7 @@ exports.register = function register(router) {
     router.get('/users', Factory.makeObjectListController(opts));
     router.get('/users/:user(\\d+)', Factory.makeSingleObjectController(opts));
     router.get('/users/:user(\\d+)/transactions', getUserTransactionLists);
+    router.get('/users/:user(\\d+)/payment-info', getUserPaymentInfo);
+    router.get('/users/:user(\\d+)/absences', getUserAbsences);
     router.get('/users/system', getSystemUser);
 };

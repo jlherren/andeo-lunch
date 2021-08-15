@@ -1,4 +1,3 @@
-
 // Api classes
 
 /**
@@ -14,7 +13,7 @@
  * @property {Date} date
  * @property {number} userId
  * @property {number} contraUserId
- * @property {number} currency
+ * @property {string} currency
  * @property {number} amount
  * @property {number} balance
  * @property {number} eventId
@@ -29,6 +28,7 @@
  * @property {string} name
  * @property {{points: number, money: number}} costs
  * @property {{vegetarian: number}} factors
+ * @property {Array<ApiTransfer>} [transfers]
  */
 
 /**
@@ -50,7 +50,7 @@
  * @property {string|null} affectedUserName
  * @property {number|null} eventId
  * @property {string|null} eventName
- * @property {string|null} details
+ * @property {object|null} values
  */
 
 /**
@@ -61,3 +61,13 @@
  * @property {Date} end
  */
 
+/**
+ * @typedef {Object} ApiTransfer
+ * @property {number} id
+ * @property {number} senderId
+ * @property {number} recipientId
+ * @property {string} currency
+ * @property {number} amount
+ * @property {number} eventId
+ * @property {string} [eventName]
+ */

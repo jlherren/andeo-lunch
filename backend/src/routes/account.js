@@ -11,6 +11,11 @@ const loginSchema = Joi.object({
     password: Joi.string().required().min(1),
 });
 
+const changePasswordSchema = Joi.object({
+    oldPassword: Joi.string().required().min(1),
+    newPassword: Joi.string().required().min(1),
+});
+
 /**
  * @param {Application.Context} ctx
  * @returns {Promise<void>}
@@ -25,7 +30,8 @@ async function login(ctx) {
             let token = await user.generateToken(secret, {expiresIn: config.tokenExpiry});
             ctx.body = {
                 token,
-                userId: user.id,
+                userId:   user.id,
+                username: user.username,
             };
             return;
         }
@@ -53,9 +59,41 @@ async function renew(ctx) {
  */
 async function check(ctx) {
     let user = await RouteUtils.getUser(ctx);
-    let userId = user !== null ? user.id : null;
     ctx.body = {
-        userId,
+        userId:   user?.id,
+        username: user?.username,
+    };
+}
+
+/**
+ * @param {Application.Context} ctx
+ * @returns {Promise<void>}
+ */
+async function password(ctx) {
+    let requestBody = RouteUtils.validateBody(ctx, changePasswordSchema);
+
+    if (!await AuthUtils.comparePassword(requestBody.oldPassword, ctx.user.password)) {
+        ctx.body = {
+            success: false,
+            reason:  'old-password-invalid',
+        };
+        return;
+    }
+
+    if (requestBody.newPassword.length < 6) {
+        ctx.body = {
+            success: false,
+            reason:  'new-password-too-short',
+        };
+        return;
+    }
+
+    ctx.user.password = await AuthUtils.hashPassword(requestBody.newPassword);
+    ctx.user.lastPasswordChange = new Date();
+    await ctx.user.save();
+
+    ctx.body = {
+        success: true,
     };
 }
 
@@ -66,4 +104,5 @@ exports.register = function register(router) {
     router.post('/account/login', login);
     router.post('/account/renew', renew);
     router.get('/account/check', check);
+    router.post('/account/password', password);
 };

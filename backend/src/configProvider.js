@@ -1,13 +1,14 @@
 'use strict';
 
-const fs = require('fs');
+const path = require('path');
+const fs = require('fs').promises;
 const Joi = require('joi');
+const MariaDB = require('mariadb');
 
 /**
  * @typedef {Object} Config
  * @property {Object<string, any>} database
  * @property {number} [port]
- * @property {string} secret
  * @property {string} tokenExpiry
  */
 const configSchema = Joi.object({
@@ -35,34 +36,68 @@ function validateConfig(config) {
 /**
  * Return the main configuration file (config.json)
  *
- * @returns {Config}
+ * @returns {Promise<Config>}
  */
-exports.getMainConfig = function getMainConfig() {
-    let filename = 'config.json';
-    let fullPath = `${__dirname}/../${filename}`;
+exports.getMainConfig = async function getMainConfig() {
+    let fullPath = path.resolve(`${__dirname}/../config.json`);
 
-    if (!fs.existsSync(fullPath)) {
-        throw new Error('No configuration file found!  Please read README.md first');
+    try {
+        let fileContent = await fs.readFile(fullPath);
+        let config = JSON.parse(fileContent.toString('UTF-8'));
+        return validateConfig(config);
+    } catch (err) {
+        throw new Error(`No configuration file found at ${fullPath}!  Please read README.md first`);
     }
-
-    let config = JSON.parse(fs.readFileSync(fullPath).toString('UTF-8'));
-    return validateConfig(config);
 };
 
 /**
- * Return the testing configuration (in-memory sqlite database)
+ * Return the testing configuration, either using a MariaDB database from the environment, or an
+ * in-memory sqlite database.
  *
- * @returns {Config}
+ * @returns {Promise<Config>}
  */
-exports.getTestConfig = function getTestConfig() {
-    // noinspection SpellCheckingInspection
-    let config = /** @type {Config} */ {
-        database:    {
-            dialect: 'sqlite',
-            storage: ':memory:',
-        },
-        port:        null,
-        secret:      'O1KQvnQKnlfPRn5c/N+tBerGlG+BIUOM7eOilKx2vj+8ykcaGyGMFR3AMuGtcoatH3C+r8zl03U/wNND',
-    };
-    return validateConfig(config);
+exports.getTestConfig = async function getTestConfig() {
+    let config = null;
+
+    if (process.env.TEST_DB === 'mariadb') {
+        if (!process.env.TEST_DB_NAME) {
+            throw new Error('Running MariaDB tests requires TEST_DB_* environment variables to be set');
+        }
+        config = /** @type {Config} */ {
+            database: {
+                dialect:  'mariadb',
+                host:     process.env.TEST_DB_HOST,
+                post:     process.env.TEST_DB_PORT,
+                database: process.env.TEST_DB_NAME,
+                username: process.env.TEST_DB_USERNAME,
+                password: process.env.TEST_DB_PASSWORD,
+            },
+            port:     null,
+        };
+        config = validateConfig(config);
+
+        // Truncate the DB first
+        const connection = await MariaDB.createConnection({
+            host:     config.database.host,
+            port:     config.database.port,
+            database: config.database.database,
+            user:     config.database.username,
+            password: config.database.password,
+        });
+        await connection.query(`DROP DATABASE ${config.database.database}`);
+        await connection.query(`CREATE DATABASE ${config.database.database}`);
+        await connection.end();
+    } else {
+        // Otherwise use an in-memory SQLite DB
+        config = /** @type {Config} */ {
+            database: {
+                dialect: 'sqlite',
+                storage: ':memory:',
+            },
+            port:     null,
+        };
+        config = validateConfig(config);
+    }
+
+    return config;
 };

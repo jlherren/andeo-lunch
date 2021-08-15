@@ -17,12 +17,17 @@
             </v-banner>
         </v-container>
 
-        <v-virtual-scroll item-height="30" :items="audits" ref="scroll">
+        <v-virtual-scroll :item-height="$vuetify.breakpoint.smAndDown ? 60 : 30" :items="audits" ref="scroll" bench="1">
             <template v-slot:default="{item: audit}">
                 <v-list-item :key="audit.id" :class="audit.class">
                     <span>{{ formatDate(audit.date) }}</span>
                     <span>{{ audit.actingUserName }}</span>
                     <span>{{ audit.display }}</span>
+                    <span>
+                        <v-chip small outlined label v-for="element of audit.details" :key="element.name">
+                            {{ element.name }} <b>{{ element.value }}</b>
+                        </v-chip>
+                    </span>
                 </v-list-item>
             </template>
         </v-virtual-scroll>
@@ -42,6 +47,13 @@
         'participation.create': 'Participation created',
         'participation.update': 'Participation updated',
         'participation.delete': 'Participation deleted',
+        'transfer.create':      'Transfer created',
+        'transfer.update':      'Transfer updated',
+        'transfer.delete':      'Transfer deleted',
+    };
+
+    const VALUES = {
+        participationType: 'Type',
     };
 
     export default {
@@ -68,7 +80,8 @@
                 return audits.map((audit, i) => {
                     return {
                         ...audit,
-                        display: this.getDisplayString(audit),
+                        display: AUDIT_TYPES[audit.type] ?? audit.type,
+                        details: this.getDetails(audit),
                         class:   i % 2 ? 'odd' : null,
                     };
                 });
@@ -87,18 +100,29 @@
                 });
             },
 
-            getDisplayString(audit) {
-                let base = AUDIT_TYPES[audit.type] ?? audit.type;
+            getDetails(audit) {
+                let parts = [];
                 if (audit.type !== 'event.delete' && audit.eventName !== null) {
-                    base += `, event "${audit.eventName}"`;
+                    parts.push({
+                        name:  'Event',
+                        value: audit.eventName,
+                    });
                 }
                 if (audit.affectedUserName !== null) {
-                    base += `, affected user "${audit.affectedUserName}"`;
+                    parts.push({
+                        name:  'Affected user',
+                        value: audit.affectedUserName,
+                    });
                 }
-                if (audit.details !== null) {
-                    base += ` / ${audit.details}`;
+                if (audit.values) {
+                    for (let key in audit.values) {
+                        parts.push({
+                            name:  VALUES[key] ?? key,
+                            value: audit.values[key],
+                        });
+                    }
                 }
-                return base;
+                return parts;
             },
 
             async refresh() {
@@ -126,9 +150,10 @@
         height: 30px;
         min-height: auto;
         display: flex;
+        align-items: flex-start;
         max-width: 1200px;
         margin: 0 auto;
-        font-size: 11pt;
+        font-size: 14px;
 
         & > span {
             display: block;
@@ -138,21 +163,79 @@
         }
 
         & > span:nth-child(1) {
-            flex: 1 0 150px;
+            flex: 0 0 150px;
+            color: gray;
         }
 
         & > span:nth-child(2) {
-            flex: 2 0 100px;
+            flex: 0 0 120px;
+            font-weight: bold;
         }
 
         & > span:nth-child(3) {
-            flex: 20 0 200px;
+            flex: 1 0 100px;
+        }
+
+        & > span:nth-child(4) {
+            flex: 2 0 200px;
         }
     }
 
     .v-virtual-scroll__item {
-        .odd {
+        .theme--light.odd {
             background: #f5f5f5;
+        }
+
+        .theme--dark.odd {
+            background: #000000;
+        }
+    }
+
+    .v-chip {
+        margin-right: 0.5em;
+        color: gray !important;
+
+        b {
+            margin-left: 0.33em;
+        }
+    }
+
+    .theme--light.v-chip {
+        b {
+            color: black;
+        }
+    }
+
+    .theme--dark.v-chip {
+        b {
+            color: white;
+        }
+    }
+
+    @media #{map-get($display-breakpoints, 'sm-and-down')} {
+        .v-list-item {
+            height: 60px;
+            flex-wrap: wrap;
+
+            & > span:nth-child(1) {
+                flex: 0 0 35%;
+            }
+
+            & > span:nth-child(2) {
+                flex: 0 0 25%;
+            }
+
+            & > span:nth-child(3) {
+                flex: 0 0 40%;
+            }
+
+            & > span:nth-child(4) {
+                flex: 1 0 100%;
+            }
+
+            .v-chip {
+                padding: 0 0.5em;
+            }
         }
     }
 </style>

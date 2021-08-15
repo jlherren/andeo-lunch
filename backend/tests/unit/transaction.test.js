@@ -10,8 +10,11 @@ const ConfigProvider = require('../../src/configProvider');
 let lunchMoney = null;
 
 beforeEach(async () => {
-    lunchMoney = new LunchMoney({config: ConfigProvider.getTestConfig()});
-    await lunchMoney.initDb();
+    lunchMoney = new LunchMoney({
+        config: await ConfigProvider.getTestConfig(),
+        quiet:  true,
+    });
+    await lunchMoney.waitReady();
 });
 
 afterEach(async () => {
@@ -24,17 +27,17 @@ afterEach(async () => {
  * @param {number} n
  * @returns {Promise<Array<User>>}
  */
-async function createUsers(n) {
-    let users = [];
+function createUsers(n) {
+    let inserts = [];
     for (let i = 0; i < n; i++) {
-        users.push(await Models.User.create({
+        inserts.push({
             username: `user-${i}`,
             password: null,
             active:   true,
             name:     `User ${i}`,
-        }));
+        });
     }
-    return users;
+    return Models.User.bulkCreate(inserts);
 }
 
 /**
@@ -301,5 +304,20 @@ describe('transaction tests', () => {
         expect(user2.points).toEqual(0);
         expect(user1.money).toEqual(30);
         expect(user2.money).toEqual(-30);
+    });
+
+    it('Correctly ignores money calculation if there is no paying participant', async () => {
+        let [user] = await createUsers(1);
+        let event = await createLunch();
+        await Models.Participation.create({
+            user:           user.id,
+            event:          event.id,
+            type:           Constants.PARTICIPATION_TYPES.OPT_OUT,
+            pointsCredited: 12,
+            moneyCredited:  event.Lunch.moneyCost,
+        });
+        await TransactionRebuilder.rebuildEvent(null, event);
+        await user.reload();
+        expect(user.money).toEqual(0);
     });
 });

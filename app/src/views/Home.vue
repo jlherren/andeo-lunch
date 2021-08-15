@@ -11,10 +11,15 @@
 
         <shy-progress v-if="loading"/>
 
-        <v-list v-if="!loading && events.length > 0">
-            <template v-for="event of events">
-                <v-divider v-if="event.hasGap" :key="event.id + '-divider'"/>
-                <event-list-item :key="event.id" :event="event" :prominent="event.prominent"/>
+        <v-list>
+            <template v-if="hasData">
+                <template v-for="event of events">
+                    <v-divider v-if="event.hasGap" :key="event.id + '-divider'"/>
+                    <lunch-list-item :key="event.id" :event="event" :prominent="event.prominent"/>
+                </template>
+            </template>
+            <template v-else>
+                <v-skeleton-loader type="list-item-avatar"/>
             </template>
         </v-list>
 
@@ -28,7 +33,7 @@
 
 <script>
     import * as DateUtils from '@/utils/dateUtils';
-    import EventListItem from '@/components/event/EventListItem';
+    import LunchListItem from '@/components/event/LunchListItem';
     import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
     import UserStats from '@/components/UserStats';
@@ -39,7 +44,7 @@
 
         components: {
             TheAppBar,
-            EventListItem,
+            LunchListItem,
             UserStats,
             ShyProgress,
         },
@@ -62,9 +67,14 @@
                 'ownUser',
             ]),
 
+            hasData() {
+                return this.events.length || !this.loading;
+            },
+
             events() {
                 let events = this.$store.getters.events.filter(event => {
-                    return event.date >= this.startDate && event.date < this.endDate;
+                    return ['lunch', 'special'].includes(event.type) &&
+                        event.date >= this.startDate && event.date < this.endDate;
                 });
 
                 events.sort((a, b) => a.date.getTime() - b.date.getTime());

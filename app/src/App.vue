@@ -35,29 +35,12 @@
                 </v-btn>
             </template>
         </v-snackbar>
-
-        <v-dialog v-model="updateAvailable">
-            <v-card>
-                <v-card-title>
-                    Update available
-                </v-card-title>
-                <v-card-text>
-                    A new version is available.  Reload to update?
-                </v-card-text>
-                <v-card-actions>
-                    <v-btn text @click.prevent="updateAvailable = false">Cancel</v-btn>
-                    <v-spacer/>
-                    <v-btn text color="primary" @click.prevent="reload()">Update</v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
     </v-app>
 </template>
 
 <script>
     import {ErrorService} from '@/services/errorService';
     import Login from '@/views/Login';
-    import {UpdateService} from '@/services/updateService';
     import {mapGetters} from 'vuex';
 
     export default {
@@ -86,9 +69,9 @@
                     //     icon:  this.$icons.menu,
                     // },
                     {
-                        url:   '/transfer',
-                        title: 'Transfer',
-                        icon:  this.$icons.transfer,
+                        url:   '/transfers',
+                        title: 'Transfers',
+                        icon:  this.$icons.transfers,
                     },
                     {
                         url:   '/stats',
@@ -97,7 +80,6 @@
                     },
                 ],
                 drawerOpen:      false,
-                updateAvailable: false,
             };
         },
 
@@ -109,10 +91,6 @@
                 this.$store.commit('globalSnackbar', `Error: ${error.message}`);
             });
             this.$store.dispatch('checkLogin');
-
-            this.unregisterUpdateHandler = UpdateService.instance.register(() => {
-                this.updateAvailable = true;
-            });
         },
 
         computed: {
@@ -130,15 +108,10 @@
             closeSnackbar() {
                 this.$store.commit('globalSnackbar', null);
             },
-
-            reload() {
-                window.location.reload();
-            },
         },
 
         beforeDestroy() {
             this.unregisterErrors();
-            this.unregisterUpdateHandler();
         },
     };
 </script>
@@ -179,4 +152,33 @@
     html {
         overflow-y: auto
     }
+
+    .v-item-group.v-bottom-navigation {
+        box-shadow: none !important;
+    }
+
+    .v-bottom-navigation {
+        &.theme--light {
+            color: $andeo-black !important;
+
+            // Using a.v-btn to have higher specificity
+            a.v-btn:not(.v-btn--active) {
+                color: $andeo-black !important;
+            }
+            .v-btn--active {
+                background: #f0f0f0 !important;
+            }
+        }
+        &.theme--dark {
+            color: white !important;
+
+            a.v-btn:not(.v-btn--active) {
+                color: white !important;
+            }
+            .v-btn--active {
+                background: #404040 !important;
+            }
+        }
+    }
+
 </style>

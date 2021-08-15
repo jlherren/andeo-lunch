@@ -25,7 +25,7 @@
             </v-btn>
             <v-spacer/>
             <v-progress-circular v-if="isBusy" indeterminate size="20" width="2"/>
-            <v-btn text :disabled="isBusy" @click.prevent="save()" color="primary">
+            <v-btn :disabled="isBusy" @click.prevent="save()" color="primary">
                 Save
             </v-btn>
         </v-card-actions>
@@ -100,6 +100,7 @@
                     this.close();
                 } catch (err) {
                     this.isBusy = false;
+                    throw err;
                 }
             },
 

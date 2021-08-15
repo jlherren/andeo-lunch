@@ -14,22 +14,27 @@
 
         <shy-progress v-if="loading"/>
 
-        <v-list v-if="!loading">
-            <template v-for="event of entries">
-                <event-list-item v-if="event.type !== 'placeholder'" :key="event.id" :event="event"/>
+        <v-list>
+            <template v-if="hasData">
+                <template v-for="event of entries">
+                    <lunch-list-item v-if="event.type !== 'placeholder'" :key="event.id" :event="event"/>
 
-                <v-list-item v-if="event.type === 'placeholder'" :key="event.id">
-                    <v-list-item-icon/>
-                    <v-list-item-content>
-                        <v-list-item-title class="text--secondary">No event</v-list-item-title>
-                        <v-list-item-subtitle>{{ formatDate(event.date) }}</v-list-item-subtitle>
-                    </v-list-item-content>
-                    <v-list-item-action>
-                        <v-btn icon @click="openCreateDialog('lunch', event.date)">
-                            <v-icon>{{ $icons.plus }}</v-icon>
-                        </v-btn>
-                    </v-list-item-action>
-                </v-list-item>
+                    <v-list-item v-if="event.type === 'placeholder'" :key="event.id">
+                        <v-list-item-icon/>
+                        <v-list-item-content>
+                            <v-list-item-title class="text--secondary">No event</v-list-item-title>
+                            <v-list-item-subtitle>{{ formatDate(event.date) }}</v-list-item-subtitle>
+                        </v-list-item-content>
+                        <v-list-item-action>
+                            <v-btn icon @click="openCreateDialog('lunch', event.date)">
+                                <v-icon>{{ $icons.plus }}</v-icon>
+                            </v-btn>
+                        </v-list-item-action>
+                    </v-list-item>
+                </template>
+            </template>
+            <template v-else>
+                <v-skeleton-loader type="list-item-avatar"/>
             </template>
         </v-list>
 
@@ -43,8 +48,8 @@
             <v-btn color="primary" fab small @click="openCreateDialog('lunch', null)">
                 <v-icon>{{ $icons.lunch }}</v-icon>
             </v-btn>
-            <v-btn color="primary" fab small @click="openCreateDialog('event', null)">
-                <v-icon>{{ $icons.event }}</v-icon>
+            <v-btn color="primary" fab small @click="openCreateDialog('special', null)">
+                <v-icon>{{ $icons.special }}</v-icon>
             </v-btn>
             <v-btn color="primary" fab small @click="openCreateDialog('label', null)">
                 <v-icon>{{ $icons.label }}</v-icon>
@@ -52,15 +57,15 @@
         </v-speed-dial>
 
         <v-dialog v-model="createDialog" persistent>
-            <event-edit ref="createEvent" :event="newEvent" @close="createDialogClosed()"/>
+            <lunch-edit ref="createEvent" :event="newEvent" @close="createDialogClosed()"/>
         </v-dialog>
     </v-main>
 </template>
 
 <script>
     import * as DateUtils from '@/utils/dateUtils';
-    import EventEdit from '@/components/event/EventEdit';
-    import EventListItem from '@/components/event/EventListItem';
+    import LunchEdit from '@/components/event/LunchEdit';
+    import LunchListItem from '@/components/event/LunchListItem';
     import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
     import Vue from 'vue';
@@ -70,8 +75,8 @@
 
         components: {
             TheAppBar,
-            EventListItem,
-            EventEdit,
+            LunchListItem,
+            LunchEdit,
             ShyProgress,
         },
 
@@ -105,11 +110,20 @@
                 return `Week of ${formatted}`;
             },
 
-            entries() {
+            events() {
                 // TODO: This is a bit cheap, since potentially many events may be loaded at the time
-                let events = this.$store.getters.events.filter(event => {
-                    return event.date >= this.startDate && event.date < this.endDate;
+                return this.$store.getters.events.filter(event => {
+                    return ['lunch', 'special'].includes(event.type) &&
+                        event.date >= this.startDate && event.date < this.endDate;
                 });
+            },
+
+            hasData() {
+                return this.events.length || !this.loading;
+            },
+
+            entries() {
+                let events = this.events.slice();
 
                 // Add placeholders for missing weekdays
                 let weekdaysWithLunchOrLabel = new Array(7).fill(false);

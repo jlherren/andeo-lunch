@@ -1,5 +1,7 @@
 const crypto = require('crypto');
 
+const {ANDEO_BLACK} = require('./src/constants');
+
 process.env.VUE_APP_VERSION = require('./package.json').version;
 
 if (!process.env.VUE_APP_BACKEND_URL) {
@@ -23,7 +25,9 @@ module.exports = {
 
     pwa: {
         name:          process.env.VUE_APP_BRANDING_TITLE,
-        themeColor:    '#ffffff',
+        // Color used for the window title bar when installed as Chrome/Edge app.  We set it to the same color as the
+        // background of Vuetify's <v-app-bar>, to make it look seamless.  Only on light theme though.
+        themeColor:    ANDEO_BLACK,
         msTileColor:   '#ffffff',
         assetsVersion: randomVersion,
         iconPaths:     {
@@ -35,18 +39,29 @@ module.exports = {
         },
 
         manifestOptions: {
+            // eslint-disable-next-line camelcase
             background_color: '#ffffff',
             display:          'standalone',
             lang:             'en-US',
             icons:            [
                 {
                     src:   `img/icons/icon.svg?v=${randomVersion}`,
-                    sizes: 'any',
+                    // Chromium does not support "any" for size specification.
+                    // See https://bugs.chromium.org/p/chromium/issues/detail?id=1107123
+                    // Size *must* be larger than 144x144, or Chrome won't accept it.
+                    sizes: '256x256',
                     type:  'image/svg+xml',
                 },
                 {
+                    // Sadly, the SVG will not be used in some places, so add a PNG as well.  (One example is the
+                    // install prompt from Chrome and the tile icon once it's installed)
+                    src:   `img/icons/icon256.png?v=${randomVersion}`,
+                    sizes: '256x256',
+                    type:  'image/png',
+                },
+                {
                     src:     `img/icons/icon-maskable.svg?v=${randomVersion}`,
-                    sizes:   'any',
+                    sizes:   '256x256',
                     type:    'image/svg+xml',
                     purpose: 'maskable',
                 },

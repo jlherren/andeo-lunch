@@ -1,0 +1,10 @@
+{
+    "name": "andeo-lunch",
+    "workspaces": [
+        "app",
+        "backend"
+    ],
+    "scripts": {
+        "check": "yarn dedupe --check && yarn workspace andeo-lunch-app run lint && yarn workspace andeo-lunch-backend run lint && yarn workspace andeo-lunch-backend run test"
+    }
+}

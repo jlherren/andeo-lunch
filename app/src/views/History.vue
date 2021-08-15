@@ -25,7 +25,7 @@
             </v-banner>
         </v-container>
 
-        <v-virtual-scroll ref="scroll" :items="transactions" item-height="30">
+        <v-virtual-scroll ref="scroll" :items="transactions" item-height="30" bench="1">
             <template v-if="!loading" v-slot:default="{item: transaction}">
                 <v-list-item :key="transaction.id" :class="transaction.class" :to="'/events/' + transaction.eventId">
                     <span>{{ formatDate(transaction.date) }}</span>
@@ -74,11 +74,19 @@
             transactions() {
                 let currency = ['points', 'money'][this.tab];
                 let transactions = this.$store.getters.transactions(this.ownUserId) || [];
+                let now = new Date();
                 return transactions.filter(t => t.currency === currency)
                     .map((t, i) => {
+                        let classes = [];
+                        if (i % 2) {
+                            classes.push('odd');
+                        }
+                        if (t.date > now) {
+                            classes.push('future');
+                        }
                         return {
                             ...t,
-                            class: i % 2 ? 'odd' : null,
+                            class: classes.join(' '),
                         };
                     });
             },
@@ -147,9 +155,16 @@
         }
     }
 
-    .v-virtual-scroll__item {
-        .odd {
-            background: #f5f5f5;
-        }
+    .theme--light.odd {
+        background: #f5f5f5;
+    }
+
+    .theme--dark.odd {
+        background: #000000;
+    }
+
+    // Need extra specificity to override color
+    .theme--light.future.v-list-item, .theme--dark.future.v-list-item {
+        color: gray !important;
     }
 </style>

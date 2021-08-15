@@ -6,7 +6,6 @@ const LunchMoney = require('../../src/lunchMoney');
 const ConfigProvider = require('../../src/configProvider');
 const Constants = require('../../src/constants');
 const Models = require('../../src/db/models');
-const AuthUtils = require('../../src/authUtils');
 const Helper = require('./helper');
 
 /** @type {LunchMoney|null} */
@@ -19,6 +18,12 @@ let user1 = null;
 let user2 = null;
 /** @type {string|null} */
 let jwt = null;
+
+const minimalEvent = {
+    name: 'Lunch',
+    type: 'lunch',
+    date: '2020-01-15T11:00:00.000Z',
+};
 
 let sampleParticipation1 = {
     type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OMNIVOROUS],
@@ -45,23 +50,25 @@ let sampleParticipation3 = {
 };
 
 beforeEach(async () => {
-    lunchMoney = new LunchMoney({config: ConfigProvider.getTestConfig()});
-    await lunchMoney.initDb();
-    let password = 'abc123';
-    user1 = await Models.User.create({
+    lunchMoney = new LunchMoney({
+        config: await ConfigProvider.getTestConfig(),
+        quiet:  true,
+    });
+    await lunchMoney.waitReady();
+    [user1, user2] = await Models.User.bulkCreate([{
         username: 'test-user-1',
-        password: await AuthUtils.hashPassword(password),
+        password: Helper.passwordHash,
         active:   true,
         name:     'Test User',
-    });
-    user2 = await Models.User.create({
+    }, {
         username: 'test-user-2',
-        password: await AuthUtils.hashPassword(password),
+        password: Helper.passwordHash,
         active:   true,
         name:     'Test User',
-    });
+    }]);
     request = supertest.agent(lunchMoney.listen());
-    let response = await request.post('/api/account/login').send({username: user1.username, password});
+    let response = await request.post('/api/account/login')
+        .send({username: user1.username, password: Helper.password});
     jwt = response.body.token;
     request.set('Authorization', `Bearer ${jwt}`);
 });
@@ -190,5 +197,155 @@ describe('A label event', () => {
         let url = `/api/events/${eventId}/participations/${user1.id}`;
         let response = await request.post(url).send(sampleParticipation1);
         expect(response.status).toEqual(400);
+        expect(response.text).toEqual('This type of event cannot have participations');
+    });
+});
+
+describe('Default opt-in', () => {
+    it('Does not set default opt-ins on past event', async () => {
+        let settings = {
+            defaultOptIn1: 'omnivorous',
+        };
+        await request.post('/api/settings')
+            .send(settings);
+        let eventId = await Helper.createEvent(request, {...minimalEvent, date: '1980-01-07T12:00:00Z'});
+        let response = await request.get(`/api/events/${eventId}/participations/${user1.id}`);
+        expect(response.status).toEqual(404);
+    });
+
+    it('Sets default opt-ins when saving an event', async () => {
+        let settings = {
+            defaultOptIn1: 'omnivorous',
+            defaultOptIn2: 'vegetarian',
+            defaultOptIn3: 'opt-out',
+            defaultOptIn4: 'undecided',
+        };
+        await request.post('/api/settings')
+            .send(settings);
+        let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
+        let response = await request.get(`/api/events/${eventId}/participations/${user1.id}`);
+        expect(response.status).toEqual(200);
+        expect(response.body.participation.type).toEqual('omnivorous');
+    });
+
+    it('Preserves default opt-in when changing to day with the same opt-in', async () => {
+        let settings = {
+            defaultOptIn1: 'omnivorous',
+            defaultOptIn2: 'omnivorous',
+        };
+        await request.post('/api/settings')
+            .send(settings);
+        let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
+        await request.post(`/api/events/${eventId}`)
+            .send({date: '2036-01-08T12:00:00Z'});
+        let response = await request.get(`/api/events/${eventId}/participations/${user1.id}`);
+        expect(response.status).toEqual(200);
+        expect(response.body.participation.type).toEqual('omnivorous');
+    });
+
+    it('Adds default opt-in when changing to day with different opt-in', async () => {
+        let settings = {
+            defaultOptIn2: 'omnivorous',
+        };
+        await request.post('/api/settings')
+            .send(settings);
+        let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
+        await request.post(`/api/events/${eventId}`)
+            .send({date: '2036-01-08T12:00:00Z'});
+        let response = await request.get(`/api/events/${eventId}/participations/${user1.id}`);
+        expect(response.status).toEqual(200);
+        expect(response.body.participation.type).toEqual('omnivorous');
+    });
+
+    it('Adjusts default opt-in when changing to day with different opt-in', async () => {
+        let settings = {
+            defaultOptIn1: 'omnivorous',
+            defaultOptIn2: 'vegetarian',
+        };
+        await request.post('/api/settings')
+            .send(settings);
+        let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
+        await request.post(`/api/events/${eventId}`)
+            .send({date: '2036-01-08T12:00:00Z'});
+        let response = await request.get(`/api/events/${eventId}/participations/${user1.id}`);
+        expect(response.status).toEqual(200);
+        expect(response.body.participation.type).toEqual('vegetarian');
+    });
+
+    it('Deletes default opt-in when changing to day without default opt-in', async () => {
+        let settings = {
+            defaultOptIn1: 'omnivorous',
+        };
+        await request.post('/api/settings')
+            .send(settings);
+        let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
+        await request.post(`/api/events/${eventId}`)
+            .send({date: '2036-01-08T12:00:00Z'});
+        let response = await request.get(`/api/events/${eventId}/participations/${user1.id}`);
+        expect(response.status).toEqual(404);
+    });
+
+    it('Does not set any default opt-in on disabled user', async () => {
+        let bob = await Models.User.create({
+            username: 'bob',
+            password: '',
+            active:   false,
+            name:     'Bob',
+            settings: {defaultOptIn1: 'omnivorous'},
+        });
+        let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
+        let response = await request.get(`/api/events/${eventId}/participations/${bob.id}`);
+        expect(response.status).toEqual(404);
+    });
+
+    it('Opt-outs a user during an absence, even if usually auto-opt-in for the day', async () => {
+        await Models.Absence.create({
+            user:  user1.id,
+            start: '2036-01-07',
+            end:   '2036-01-07',
+        });
+        let settings = {
+            defaultOptIn1: 'omnivorous',
+        };
+        await request.post('/api/settings')
+            .send(settings);
+        let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
+        let response = await request.get(`/api/events/${eventId}/participations/${user1.id}`);
+        expect(response.status).toEqual(200);
+        expect(response.body.participation.type).toEqual('opt-out');
+    });
+
+    it('Does set default opt-in after user absence', async () => {
+        await Models.Absence.create({
+            user:  user1.id,
+            start: '2036-01-04',
+            end:   '2036-01-06',
+        });
+        let settings = {
+            defaultOptIn1: 'omnivorous',
+        };
+        await request.post('/api/settings')
+            .send(settings);
+        let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
+        let response = await request.get(`/api/events/${eventId}/participations/${user1.id}`);
+        expect(response.status).toEqual(200);
+        expect(response.body.participation.type).toEqual('omnivorous');
+    });
+
+    it('Does set default opt-in before user absence', async () => {
+        await Models.Absence.create({
+            user:  user1.id,
+            start: '2036-01-08',
+            end:   '2036-01-09',
+        });
+        let settings = {
+            defaultOptIn1: 'omnivorous',
+        };
+        await request.post('/api/settings')
+            .send(settings);
+        let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
+        let response = await request.get(`/api/events/${eventId}/participations/${user1.id}`);
+        expect(response.status).toEqual(200);
+        expect(response.body.participation.type).toEqual('omnivorous');
     });
 });
