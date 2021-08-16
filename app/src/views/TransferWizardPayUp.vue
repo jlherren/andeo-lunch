@@ -58,7 +58,7 @@
                 amount:         null,
                 recipient:      null,
                 recipientRules: [
-                    v => !!v,
+                    v => !!v && v !== this.$store.getters.ownUserId,
                 ],
                 amountRules:    [
                     v => v > 0,
@@ -74,7 +74,7 @@
             if (this.recipient === null) {
                 let defaultRecipient = this.$store.getters.payUpDefaultRecipient;
                 // Do not set if it is null/undefined, otherwise it triggers validation
-                if (defaultRecipient) {
+                if (defaultRecipient && defaultRecipient !== this.$store.getters.ownUserId) {
                     this.recipient = defaultRecipient;
                 }
             }
