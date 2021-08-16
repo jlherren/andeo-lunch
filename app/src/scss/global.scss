@@ -43,7 +43,7 @@
     }
 
     // For unknown reasons lists in dark mode have a non-default background, but in light mode it's default.
-    &.v-list.v-sheet {
+    &.v-list.v-sheet:not(.v-select-list) {
         // The :active and :focus colors are not adjusted accordingly, since we plan to move to Vuetify 3
         // as soon as possible.
         background: transparent;
