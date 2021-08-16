@@ -44,7 +44,7 @@
             </v-list-item-content>
         </v-list-item>
 
-        <v-list-item @click="aboutDialog = true">
+        <v-list-item to="/about">
             <v-list-item-icon>
                 <v-icon>{{ $icons.information }}</v-icon>
             </v-list-item-icon>
@@ -73,29 +73,14 @@
                 <v-list-item-title>Logout</v-list-item-title>
             </v-list-item-content>
         </v-list-item>
-
-        <v-dialog v-model="aboutDialog">
-            <about-content @close="aboutDialog = false"/>
-        </v-dialog>
     </v-list>
 </template>
 
 <script>
-    import AboutContent from '@/components/AboutContent';
     import {mapGetters} from 'vuex';
 
     export default {
         name: 'navigationDrawerContent',
-
-        components: {
-            AboutContent,
-        },
-
-        data() {
-            return {
-                aboutDialog: false,
-            };
-        },
 
         computed: {
             ...mapGetters([

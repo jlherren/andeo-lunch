@@ -1,3 +1,4 @@
+import About from '@/views/settings/About';
 import Absences from '@/views/settings/Absences';
 import AuditLog from '@/views/AuditLog';
 import Calendar from '@/views/Calendar.vue';
@@ -98,6 +99,10 @@ const routes = [
     {
         path:      '/stats',
         component: Stats,
+    },
+    {
+        path:      '/about',
+        component: About,
     },
 ];
 
