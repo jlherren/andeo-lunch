@@ -68,7 +68,7 @@
                 amount:      null,
                 reason:      '',
                 senderRules: [
-                    v => !!v,
+                    v => !!v && v !== this.$store.getters.ownUserId,
                 ],
                 amountRules: [
                     v => v > 0,
