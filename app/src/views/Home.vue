@@ -2,16 +2,27 @@
     <v-main>
         <the-app-bar>
             {{ ownUser.name }}
-            <template v-slot:buttons>
-                <router-link to="/history">
-                    <user-stats/>
-                </router-link>
-            </template>
         </the-app-bar>
 
         <shy-progress v-if="loading"/>
 
-        <v-list>
+        <v-subheader>Your balance</v-subheader>
+        <v-list fluid>
+            <v-list-item to="/history">
+                <v-list-item-content>
+                    <user-stats/>
+                </v-list-item-content>
+            </v-list-item>
+        </v-list>
+
+        <v-subheader>Upcoming events</v-subheader>
+
+        <v-container v-if="!loading && events.length === 0">
+            <v-banner elevation="2" single-line :icon="$icons.information">
+                No upcoming events
+            </v-banner>
+        </v-container>
+        <v-list v-else>
             <template v-if="hasData">
                 <template v-for="event of events">
                     <v-divider v-if="event.hasGap" :key="event.id + '-divider'"/>
@@ -22,12 +33,6 @@
                 <v-skeleton-loader type="list-item-avatar"/>
             </template>
         </v-list>
-
-        <v-container v-if="!loading && events.length === 0">
-            <v-banner elevation="2" single-line :icon="$icons.information">
-                No upcoming events
-            </v-banner>
-        </v-container>
     </v-main>
 </template>
 
@@ -78,6 +83,7 @@
                 });
 
                 events.sort((a, b) => a.date.getTime() - b.date.getTime());
+                events = events.slice(0, 3);
 
                 // Add information about divider lines and prominent display
                 let prev = null;
