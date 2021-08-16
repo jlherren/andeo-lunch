@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 
-const {ANDEO_BLACK} = require('./src/constants');
+const {LUNCH_BLUE} = require('./src/constants');
 
 process.env.VUE_APP_VERSION = require('./package.json').version;
 
@@ -26,8 +26,8 @@ module.exports = {
     pwa: {
         name:          process.env.VUE_APP_BRANDING_TITLE,
         // Color used for the window title bar when installed as Chrome/Edge app.  We set it to the same color as the
-        // background of Vuetify's <v-app-bar>, to make it look seamless.  Only on light theme though.
-        themeColor:    ANDEO_BLACK,
+        // background of Vuetify's <v-app-bar>, to make it look seamless.
+        themeColor:    LUNCH_BLUE,
         msTileColor:   '#ffffff',
         assetsVersion: randomVersion,
         iconPaths:     {
@@ -54,9 +54,10 @@ module.exports = {
                 },
                 {
                     // Sadly, the SVG will not be used in some places, so add a PNG as well.  (One example is the
-                    // install prompt from Chrome and the tile icon once it's installed)
-                    src:   `img/icons/icon256.png?v=${randomVersion}`,
-                    sizes: '256x256',
+                    // install prompt from Chrome and the tile icon once it's installed).  Some sources say that for
+                    // the PWA splash screen, we need at least 512x512 & PNG.
+                    src:   `img/icons/icon512.png?v=${randomVersion}`,
+                    sizes: '512x512',
                     type:  'image/png',
                 },
                 {

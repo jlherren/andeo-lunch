@@ -1,14 +1,7 @@
 <template>
     <v-main>
-        <v-app-bar app dark flat>
-            <v-toolbar-title>
-                Login
-            </v-toolbar-title>
-        </v-app-bar>
-
         <v-container>
-            <img src="/img/icons/icon.svg" alt="Application logo">
-            <h1>{{ appTitle }}</h1>
+            <img src="/img/login.svg" alt="Application logo">
 
             <v-form v-model="formValid" :disabled="isBusy" @submit.prevent="login">
                 <v-text-field v-model="username" type="text" required
@@ -80,9 +73,9 @@
     }
 
     img {
-        width: 25%;
-        max-width: 150px;
+        width: 33%;
+        max-width: 250px;
         display: block;
-        margin: 0 auto;
+        margin: 50px auto;
     }
 </style>

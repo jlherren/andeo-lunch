@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
-    <rect fill="#ffffff" width="40" height="40"/>
-    <path fill="#1e1617" d="M30,26a4,4 0 0,1 -4,4h-3a4,4 0 0,1 -4,-4v-2h6.79l2.76,-4.77l1.56,0.9l-2.24,3.87h2.13Z"/>
-    <path fill="#005b90" d="M17,30h-7c0,-3 0,-6 .33,-9.17c.27,-2.53 .75,-5.17 1.27,-7.83h-.6v-2h1h3h1v2h-.6c.52,2.66 1,5.3 1.27,7.83c.33,3.17 .33,6.17 .33,9.17Z"/>
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 52 52" version="1.1">
+    <rect x="0" y="0" width="52" height="52" fill="#043951"/>
+    <path d="m 22.6,10.2 c 1,-3 5.8,-3 6.8,0 v 0 l 12,30.2 H 36.6 L 26,14 v 0 L 15.3,40.4 h -4.8 z" fill="#ffffff"/>
+    <polygon points="27.7,33.8 31.5,34.4 28.7,37.1 29.4,40.9 26,39.1 22.5,40.9 23.2,37.1 20.4,34.4 24.3,33.8 26,30.3" fill="#E4C060"/>
 </svg>
