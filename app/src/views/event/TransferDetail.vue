@@ -3,11 +3,11 @@
         <the-app-bar sub-page>
             {{ name }}
             <template v-if="event" slot="buttons">
-                <v-btn icon disabled>
-                    <v-icon>{{ $icons.edit }}</v-icon>
-                </v-btn>
                 <v-btn icon @click="openAddTransferDialog()" :disabled="isBusy">
                     <v-icon>{{ $icons.plus }}</v-icon>
+                </v-btn>
+                <v-btn icon disabled>
+                    <v-icon>{{ $icons.edit }}</v-icon>
                 </v-btn>
                 <v-btn icon @click="openDeleteEventDialog" :disabled="isBusy">
                     <v-icon>{{ $icons.delete }}</v-icon>

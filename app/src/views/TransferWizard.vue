@@ -59,17 +59,13 @@
                 </v-list-item-content>
             </v-list-item>
 
-            <v-list-item to="/transfers/new/custom" disabled>
+            <v-list-item to="/transfers/new/custom">
                 <v-list-item-icon>
                     <v-icon>{{ $icons.transferCustom }}</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                     <v-list-item-title>Custom</v-list-item-title>
                     <v-list-item-subtitle>Custom transfer with arbitrary transactions</v-list-item-subtitle>
-                    <v-list-item-subtitle>
-                        <v-icon small>{{ $icons.alert }}</v-icon>
-                        Not implemented
-                    </v-list-item-subtitle>
                 </v-list-item-content>
             </v-list-item>
         </v-list>
