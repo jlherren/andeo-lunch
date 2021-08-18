@@ -17,7 +17,6 @@
         <v-list>
             <template v-if="hasData">
                 <template v-for="event of events">
-                    <v-divider v-if="event.hasGap" :key="event.id + '-divider'"/>
                     <transfer-list-item :key="event.id" :event="event" :prominent="event.prominent"/>
                 </template>
             </template>
