@@ -6,6 +6,9 @@
                 <v-btn icon disabled>
                     <v-icon>{{ $icons.edit }}</v-icon>
                 </v-btn>
+                <v-btn icon @click="openAddTransferDialog()" :disabled="isBusy">
+                    <v-icon>{{ $icons.plus }}</v-icon>
+                </v-btn>
                 <v-btn icon @click="openDeleteEventDialog" :disabled="isBusy">
                     <v-icon>{{ $icons.delete }}</v-icon>
                 </v-btn>
@@ -42,6 +45,14 @@
                 </v-list-item-action>
             </v-list-item>
 
+            <v-list-item v-if="transfers && transfers.length === 0">
+                <v-list-item-content>
+                    <v-list-item-title>
+                        <i>No transfers</i>
+                    </v-list-item-title>
+                </v-list-item-content>
+            </v-list-item>
+
             <v-skeleton-loader v-if="!transfers" type="list-item-avatar"/>
         </v-list>
 
@@ -76,6 +87,10 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+
+        <v-dialog v-model="addTransferDialog">
+            <transfer-edit :event="event" @close="addTransferDialog = false" ref="addDialog"/>
+        </v-dialog>
     </v-main>
 </template>
 
@@ -84,11 +99,14 @@
     import Balance from '@/components/Balance';
     import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
+    import TransferEdit from '@/components/event/TransferEdit';
+    import Vue from 'vue';
 
     export default {
         name: 'TransferDetail',
 
         components: {
+            TransferEdit,
             Balance,
             ShyProgress,
             TheAppBar,
@@ -102,6 +120,7 @@
                 deleteEventDialog:              false,
                 deleteTransferDialog:           false,
                 deleteTransferDialogTransferId: null,
+                addTransferDialog:              false,
             };
         },
 
@@ -168,6 +187,11 @@
                 } finally {
                     this.isBusy = false;
                 }
+            },
+
+            openAddTransferDialog() {
+                this.addTransferDialog = true;
+                Vue.nextTick(() => this.$refs.addDialog.reset());
             },
         },
     };
