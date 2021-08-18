@@ -6,7 +6,9 @@
             <v-card-text>
                 <v-row>
                     <v-col>
-                        <v-text-field v-model="name" :rules="nameRules" label="Name" autofocus required/>
+                        <v-text-field v-model="name" :rules="nameRules" label="Name" autofocus required
+                                      :append-icon="$icons.label"
+                        />
                     </v-col>
                     <v-col>
                         <lm-date-picker v-model="date" required/>
@@ -15,7 +17,7 @@
 
                 <v-row>
                     <v-col v-if="type !== 'label'">
-                        <number-field v-model="points" label="Points" :min="0"/>
+                        <number-field v-model="points" label="Points" :min="0" :icon="$icons.points"/>
                     </v-col>
                     <v-col>
                         <number-field v-model="vegetarianFactor" label="Vegetarian factor" suffix="%"

@@ -20,10 +20,10 @@
                 <v-select v-model="recipient" label="Recipient of real money"
                           :items="users" item-text="name" item-value="id"
                           :rules="recipientRules"
-                          :prepend-icon="$icons.account"/>
+                          :append-icon="$icons.account"/>
                 <v-text-field type="number" v-model="amount" label="Amount in CHF"
                               min="0" :rules="amountRules"
-                              class="no-spinner" :prepend-icon="$icons.money"/>
+                              class="no-spinner" :append-icon="$icons.money"/>
 
                 <v-card v-if="recipientPaymentInfo !== null">
                     <v-card-title class="subtitle-2">

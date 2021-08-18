@@ -19,22 +19,22 @@
                 <v-select v-model="buyer" label="Buyer"
                           :items="users" item-text="name" item-value="id"
                           :rules="buyerRules"
-                          :prepend-icon="$icons.account"/>
+                          :append-icon="$icons.account"/>
                 <v-select v-model="seller" label="Seller"
                           :items="users" item-text="name" item-value="id"
                           :rules="sellerRules"
-                          :prepend-icon="$icons.account"/>
+                          :append-icon="$icons.account"/>
 
                 <v-text-field type="number" v-model="points" label="Points"
                               min="0" :rules="positiveRules"
-                              class="no-spinner" :prepend-icon="$icons.points"/>
+                              class="no-spinner" :append-icon="$icons.points"/>
 
                 <v-text-field type="number" v-model="money" label="Total money"
                               min="0" :rules="positiveRules"
-                              class="no-spinner" :prepend-icon="$icons.money"/>
+                              class="no-spinner" :append-icon="$icons.money"/>
 
                 <v-text-field type="number" :value="price" label="Price per point"
-                              disabled class="no-spinner" :prepend-icon="$icons.money"/>
+                              disabled class="no-spinner" :append-icon="$icons.money"/>
 
                 <!-- Button is to make it submittable by pressing enter -->
                 <v-btn type="submit" :disabled="isBusy" v-show="false">Save</v-btn>

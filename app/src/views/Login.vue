@@ -6,11 +6,11 @@
             <v-form v-model="formValid" :disabled="isBusy" @submit.prevent="login">
                 <v-text-field v-model="username" type="text" required
                               :rules="requiredRule" autofocus label="Username"
-                              :prepend-icon="$icons.account"
+                              :append-icon="$icons.account"
                 />
                 <v-text-field v-model="password" type="password" required
                               :rules="requiredRule" label="Password"
-                              :prepend-icon="$icons.password"
+                              :append-icon="$icons.password"
                 />
 
                 <v-btn type="submit" :disabled="!formValid || isBusy" color="primary" block>

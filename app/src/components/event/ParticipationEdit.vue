@@ -13,10 +13,10 @@
 
             <v-row>
                 <v-col cols="6">
-                    <number-field v-model="points" label="Points credited" :disabled="isBusy"/>
+                    <number-field v-model="points" label="Points credited" :disabled="isBusy" :icon="$icons.points"/>
                 </v-col>
                 <v-col cols="6">
-                    <v-text-field v-model="money" type="number" min="0" label="Money credited" :disabled="isBusy"/>
+                    <v-text-field v-model="money" type="number" min="0" label="Money credited" :disabled="isBusy" :append-icon="$icons.money"/>
                 </v-col>
             </v-row>
         </v-card-text>
