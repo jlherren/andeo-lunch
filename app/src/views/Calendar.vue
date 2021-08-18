@@ -106,7 +106,7 @@
 
         computed: {
             title() {
-                let formatted = DateUtils.displayFormat(this.startDate);
+                let formatted = DateUtils.displayFormatNoWeekday(this.startDate);
                 return `Week of ${formatted}`;
             },
 
