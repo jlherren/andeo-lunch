@@ -165,6 +165,6 @@
 
     // Need extra specificity to override color
     .theme--light.future.v-list-item, .theme--dark.future.v-list-item {
-        color: gray !important;
+        color: #c0c0c0 !important;
     }
 </style>
