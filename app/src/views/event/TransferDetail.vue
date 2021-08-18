@@ -6,7 +6,7 @@
                 <v-btn icon disabled>
                     <v-icon>{{ $icons.edit }}</v-icon>
                 </v-btn>
-                <v-btn icon @click="openConfirmDelete">
+                <v-btn icon @click="openDeleteEventDialog" :disabled="isBusy">
                     <v-icon>{{ $icons.delete }}</v-icon>
                 </v-btn>
             </template>
@@ -31,27 +31,48 @@
                         <balance :value="transfer.amount"
                                  :points="transfer.currency === 'points'"
                                  :money="transfer.currency === 'money'"
-                                 precise small
+                                 precise small no-sign
                         />
                     </v-list-item-subtitle>
                 </v-list-item-content>
+                <v-list-item-action>
+                    <v-btn icon @click="openDeleteTransferDialog(transfer.id)" :disabled="isBusy">
+                        <v-icon>{{ $icons.delete }}</v-icon>
+                    </v-btn>
+                </v-list-item-action>
             </v-list-item>
 
             <v-skeleton-loader v-if="!transfers" type="list-item-avatar"/>
         </v-list>
 
-        <v-dialog v-model="confirmDelete">
+        <v-dialog v-model="deleteEventDialog">
             <v-card>
                 <v-card-title>
                     Confirm
                 </v-card-title>
                 <v-card-text>
-                    Really delete this transfer? This cannot be undone.
+                    Really delete this transfer event? This cannot be undone.
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn text @click="confirmDelete = false" :disabled="isBusy">Cancel</v-btn>
+                    <v-btn text @click="deleteEventDialog = false" :disabled="isBusy">Cancel</v-btn>
                     <v-spacer/>
                     <v-btn @click="deleteEvent" :disabled="isBusy" color="error">Delete</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
+        <v-dialog v-model="deleteTransferDialog">
+            <v-card>
+                <v-card-title>
+                    Confirm
+                </v-card-title>
+                <v-card-text>
+                    Really delete this single transfer? This cannot be undone.
+                </v-card-text>
+                <v-card-actions>
+                    <v-btn text @click="deleteTransferDialog = false" :disabled="isBusy">Cancel</v-btn>
+                    <v-spacer/>
+                    <v-btn @click="deleteTransfer(deleteTransferDialogTransferId)" :disabled="isBusy" color="error">Delete</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -77,8 +98,10 @@
             let eventId = parseInt(this.$route.params.id, 10);
             return {
                 eventId,
-                isBusy:        false,
-                confirmDelete: false,
+                isBusy:                         false,
+                deleteEventDialog:              false,
+                deleteTransferDialog:           false,
+                deleteTransferDialogTransferId: null,
             };
         },
 
@@ -116,19 +139,34 @@
         },
 
         methods: {
-            openConfirmDelete() {
-                this.confirmDelete = true;
+            openDeleteEventDialog() {
+                this.deleteEventDialog = true;
             },
 
             async deleteEvent() {
                 try {
                     this.isBusy = true;
                     await this.$store.dispatch('deleteEvent', {eventId: this.eventId});
-                    this.confirmDelete = false;
+                    this.deleteEventDialog = false;
                     this.$router.go(-1);
                 } catch (err) {
                     this.isBusy = false;
                     throw err;
+                }
+            },
+
+            openDeleteTransferDialog(transferId) {
+                this.deleteTransferDialogTransferId = transferId;
+                this.deleteTransferDialog = true;
+            },
+
+            async deleteTransfer(transferId) {
+                try {
+                    this.isBusy = true;
+                    await this.$store.dispatch('deleteTransfer', {eventId: this.event.id, transferId});
+                    this.deleteTransferDialog = false;
+                } finally {
+                    this.isBusy = false;
                 }
             },
         },

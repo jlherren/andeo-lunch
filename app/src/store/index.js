@@ -263,6 +263,17 @@ export default new Vuex.Store({
             Cache.invalidate('transfers', eventId);
             Cache.invalidate('user');
             Cache.invalidate('users');
+            await context.dispatch('fetchEvent', {eventId});
+            await context.dispatch('fetchTransfers', {eventId});
+        },
+
+        async deleteTransfer(context, {eventId, transferId}) {
+            await Backend.delete(`/events/${eventId}/transfers/${transferId}`);
+            Cache.invalidate('event', eventId);
+            Cache.invalidate('transfers', eventId);
+            Cache.invalidate('user');
+            Cache.invalidate('users');
+            await context.dispatch('fetchEvent', {eventId});
             await context.dispatch('fetchTransfers', {eventId});
         },
 
