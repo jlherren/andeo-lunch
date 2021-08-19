@@ -1,7 +1,7 @@
 <template>
     <v-main>
         <v-container>
-            <img src="/img/login.svg" alt="Application logo">
+            <img src="/img/logo-large.svg" alt="Andeo Lunch logo">
 
             <v-form v-model="formValid" :disabled="isBusy" @submit.prevent="login">
                 <v-text-field v-model="username" type="text" required
