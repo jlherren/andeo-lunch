@@ -42,6 +42,14 @@
                 </v-banner>
             </v-container>
 
+            <v-container v-if="pointsAreMismatched">
+                <v-banner elevation="2" single-line :icon="$icons.alert" icon-color="red">
+                    Lunch costs
+                    {{ event.costs.points }} <v-icon small>{{ $icons.points }}</v-icon>, but
+                    {{ sumOfPointsCredited }} <v-icon small>{{ $icons.points }}</v-icon> have been distributed.
+                </v-banner>
+            </v-container>
+
             <v-list v-if="event.type !== 'label'">
                 <v-skeleton-loader v-if="!participations" type="list-item-avatar"/>
 
@@ -166,6 +174,22 @@
                         money:  0,
                     },
                 };
+            },
+
+            sumOfPointsCredited() {
+                let participations = this.participations;
+                if (!participations) {
+                    return 0;
+                }
+                return participations.map(p => p.credits.points)
+                    .reduce((acc, value) => acc + value, 0);
+            },
+
+            pointsAreMismatched() {
+                return this.event &&
+                    this.participations &&
+                    this.participations.length &&
+                    Math.abs(this.sumOfPointsCredited - this.event.costs.points) > 1e-6;
             },
 
             formattedDate() {
