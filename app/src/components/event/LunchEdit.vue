@@ -15,8 +15,8 @@
                     </v-col>
                 </v-row>
 
-                <v-row>
-                    <v-col v-if="type !== 'label'">
+                <v-row v-if="type !== 'label'">
+                    <v-col>
                         <number-field v-model="points" label="Points" :min="0" :icon="$icons.points"/>
                     </v-col>
                     <v-col>
