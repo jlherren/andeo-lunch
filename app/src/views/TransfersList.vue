@@ -17,7 +17,7 @@
         <v-list>
             <template v-if="hasData">
                 <template v-for="event of events">
-                    <transfer-list-item :key="event.id" :event="event" :prominent="event.prominent"/>
+                    <transfer-list-item :key="event.id" :event="event"/>
                 </template>
             </template>
             <template v-else>

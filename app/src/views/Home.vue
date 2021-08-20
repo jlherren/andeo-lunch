@@ -26,7 +26,7 @@
             <template v-if="hasData">
                 <template v-for="event of events">
                     <v-divider v-if="event.hasGap" :key="event.id + '-divider'"/>
-                    <lunch-list-item :key="event.id" :event="event" :prominent="event.prominent"/>
+                    <lunch-list-item :key="event.id" :event="event"/>
                 </template>
             </template>
             <template v-else>
@@ -86,19 +86,16 @@
                 events.sort((a, b) => a.date.getTime() - b.date.getTime());
                 events = events.slice(0, 3);
 
-                // Add information about divider lines and prominent display
+                // Add information about divider lines
                 let prev = null;
-                let today = new Date();
                 events = events.map(event => {
                     let hasGap = prev !== null &&
                         !DateUtils.isSameDay(prev.date, event.date) &&
                         !DateUtils.isSuccessiveDays(prev.date, event.date);
-                    let prominent = prev === null && DateUtils.isSameDay(today, event.date);
                     prev = event;
                     return {
                         ...event,
                         hasGap,
-                        prominent,
                     };
                 });
 
