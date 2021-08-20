@@ -593,15 +593,21 @@ async function createTransfers(ctx) {
 
             transactionInserts.push({
                 event:     event.id,
-                currency:  Constants.CURRENCY_IDS[apiTransfer.currency],
-                amount:    apiTransfer.amount,
                 sender:    sender.id,
                 recipient: recipient.id,
+                amount:    apiTransfer.amount,
+                currency:  Constants.CURRENCY_IDS[apiTransfer.currency],
             });
 
             logEntries.push({
-                type:  'transfer.create',
-                event: event.id,
+                type:   'transfer.create',
+                event:  event.id,
+                values: {
+                    sender:    sender.id,
+                    recipient: recipient.id,
+                    amount:    apiTransfer.amount,
+                    currency:  Constants.CURRENCY_IDS[apiTransfer.currency],
+                },
             });
         }
 
@@ -640,7 +646,15 @@ async function saveTransfer(ctx) {
             recipient: recipient.id,
         }, {transaction});
         await TransactionRebuilder.rebuildEvent(transaction, event);
-        await AuditManager.log(transaction, ctx.user, 'transfer.update', {event: event.id});
+        await AuditManager.log(transaction, ctx.user, 'transfer.update', {
+            event:  event.id,
+            values: {
+                sender:    transfer.sender,
+                recipient: transfer.recipient,
+                amount:    transfer.amount,
+                currency:  transfer.currency,
+            },
+        });
     });
     ctx.status = 204;
 }
@@ -660,7 +674,15 @@ async function deleteTransfer(ctx) {
 
         await transfer.destroy({transaction});
         await TransactionRebuilder.rebuildEvent(transaction, event);
-        await AuditManager.log(transaction, ctx.user, 'transfer.delete', {event: event.id});
+        await AuditManager.log(transaction, ctx.user, 'transfer.delete', {
+            event:  event.id,
+            values: {
+                sender:    transfer.sender,
+                recipient: transfer.recipient,
+                amount:    transfer.amount,
+                currency:  transfer.currency,
+            },
+        });
     });
     ctx.status = 204;
 }
