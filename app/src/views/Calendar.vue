@@ -74,10 +74,10 @@
         name: 'Calendar',
 
         components: {
-            TheAppBar,
-            LunchListItem,
             LunchEdit,
+            LunchListItem,
             ShyProgress,
+            TheAppBar,
         },
 
         created() {

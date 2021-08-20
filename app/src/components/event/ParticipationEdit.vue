@@ -42,8 +42,8 @@
         name: 'ParticipationEdit',
 
         components: {
-            ParticipationTypeWidget,
             NumberField,
+            ParticipationTypeWidget,
         },
 
         props: {

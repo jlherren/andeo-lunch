@@ -47,9 +47,9 @@
         name: 'Transfers',
 
         components: {
-            TransferListItem,
             ShyProgress,
             TheAppBar,
+            TransferListItem,
         },
 
         data() {

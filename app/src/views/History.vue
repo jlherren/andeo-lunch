@@ -50,8 +50,8 @@
         name: 'History',
 
         components: {
-            ShyProgress,
             Balance,
+            ShyProgress,
             TheAppBar,
             UserStats,
         },

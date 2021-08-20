@@ -51,10 +51,10 @@
         name: 'Home',
 
         components: {
-            TheAppBar,
             LunchListItem,
-            UserStats,
             ShyProgress,
+            TheAppBar,
+            UserStats,
         },
 
         data() {

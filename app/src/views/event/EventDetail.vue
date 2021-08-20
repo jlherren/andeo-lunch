@@ -11,8 +11,8 @@
         name: 'EventDetail',
 
         components: {
-            TransferDetail,
             LunchDetail,
+            TransferDetail,
         },
 
         data() {

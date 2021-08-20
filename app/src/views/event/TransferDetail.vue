@@ -106,10 +106,10 @@
         name: 'TransferDetail',
 
         components: {
-            TransferEdit,
             Balance,
             ShyProgress,
             TheAppBar,
+            TransferEdit,
         },
 
         data() {

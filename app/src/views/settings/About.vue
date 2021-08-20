@@ -53,7 +53,9 @@
     import {mapGetters} from 'vuex';
 
     export default {
-        components: {TheAppBar},
+        components: {
+            TheAppBar,
+        },
 
         data() {
             return {

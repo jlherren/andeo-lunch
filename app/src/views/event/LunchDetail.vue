@@ -94,12 +94,12 @@
         name: 'LunchDetail',
 
         components: {
-            ShyProgress,
-            TheAppBar,
             Balance,
+            LunchEdit,
             ParticipationListItem,
             ParticipationSummary,
-            LunchEdit,
+            ShyProgress,
+            TheAppBar,
         },
 
         data() {
