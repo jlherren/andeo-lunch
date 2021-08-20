@@ -38,6 +38,7 @@
 
 <script>
     import * as DateUtils from '@/utils/dateUtils';
+    import {EVENT_TYPES} from '@/views/Calendar';
     import LunchListItem from '@/components/event/LunchListItem';
     import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
@@ -78,7 +79,7 @@
 
             events() {
                 let events = this.$store.getters.events.filter(event => {
-                    return ['lunch', 'special'].includes(event.type) &&
+                    return EVENT_TYPES.includes(event.type) &&
                         event.date >= this.startDate && event.date < this.endDate;
                 });
 

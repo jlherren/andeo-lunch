@@ -1,5 +1,5 @@
 <template>
-    <lunch-detail v-if="eventType === 'lunch' || eventType === 'special'"/>
+    <lunch-detail v-if="eventType === 'lunch' || eventType === 'special' || eventType === 'label'"/>
     <transfer-detail v-else-if="eventType === 'transfer'"/>
     <loading v-else/>
 </template>
