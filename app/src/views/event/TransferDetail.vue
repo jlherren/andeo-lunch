@@ -3,9 +3,6 @@
         <the-app-bar sub-page>
             {{ name }}
             <template v-if="event" slot="buttons">
-                <v-btn icon @click="openAddTransferDialog()" :disabled="isBusy">
-                    <v-icon>{{ $icons.plus }}</v-icon>
-                </v-btn>
                 <v-btn icon disabled>
                     <v-icon>{{ $icons.edit }}</v-icon>
                 </v-btn>
@@ -26,6 +23,11 @@
 
         <v-list>
             <v-list-item v-for="transfer of transfers" :key="transfer.id">
+                <v-list-item-icon>
+                    <v-icon>
+                        {{ transfer.icon }}
+                    </v-icon>
+                </v-list-item-icon>
                 <v-list-item-content>
                     <v-list-item-title>
                         {{ transfer.senderName }} &rarr; {{ transfer.recipientName }}
@@ -54,6 +56,17 @@
             </v-list-item>
 
             <v-skeleton-loader v-if="!transfers" type="list-item-avatar"/>
+
+            <v-list-item v-else @click="openAddTransferDialog()" :disabled="isBusy">
+                <v-list-item-icon>
+                    <v-icon>{{ $icons.plus }}</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                    <v-list-item-title>
+                        Add transfer entry
+                    </v-list-item-title>
+                </v-list-item-content>
+            </v-list-item>
         </v-list>
 
         <v-dialog v-model="deleteEventDialog">
@@ -144,6 +157,7 @@
                         ...transfer,
                         senderName:    this.$store.getters.user(transfer.senderId)?.name,
                         recipientName: this.$store.getters.user(transfer.recipientId)?.name,
+                        icon:          transfer.currency === 'points' ? this.$icons.points : this.$icons.money,
                     };
                 });
             },
