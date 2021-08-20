@@ -1,9 +1,9 @@
-FROM node:14-buster-slim AS backend-build
+FROM node:16-bullseye-slim AS backend-build
 WORKDIR /build
 COPY . .
 RUN yarn workspaces focus andeo-lunch-backend
 
-FROM node:14-buster-slim
+FROM node:16-bullseye-slim
 RUN mkdir -p /srv/andeo-lunch/backend
 WORKDIR /srv/andeo-lunch/backend
 COPY --from=backend-build /build/node_modules /srv/andeo-lunch/node_modules
