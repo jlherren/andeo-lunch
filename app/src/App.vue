@@ -1,13 +1,7 @@
 <template>
     <v-app>
         <!-- Shown briefly while the initial login check is still running -->
-        <v-main v-if="!initialCheckCompleted">
-            <v-container fill-height>
-                <v-row justify="center">
-                    <v-progress-circular indeterminate size="100"/>
-                </v-row>
-            </v-container>
-        </v-main>
+        <loading v-if="!initialCheckCompleted"/>
 
         <!-- If logged in, show app contents -->
         <template v-else-if="isLoggedIn">
@@ -40,6 +34,7 @@
 
 <script>
     import {ErrorService} from '@/services/errorService';
+    import Loading from '@/views/Loading';
     import Login from '@/views/Login';
     import {mapGetters} from 'vuex';
 
@@ -47,6 +42,7 @@
         name: 'App',
 
         components: {
+            Loading,
             Login,
         },
 
@@ -180,5 +176,4 @@
             }
         }
     }
-
 </style>

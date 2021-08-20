@@ -1,10 +1,7 @@
 <template>
     <v-main>
-        <the-app-bar>
+        <the-app-bar logo>
             {{ ownUser.name }}
-            <template v-slot:buttons>
-                <img src="/img/app-bar.svg" alt="">
-            </template>
         </the-app-bar>
 
         <shy-progress v-if="loading"/>
@@ -128,9 +125,3 @@
         },
     };
 </script>
-
-<style lang="scss" scoped>
-    .v-app-bar img {
-        height: 42px;
-    }
-</style>

@@ -1,7 +1,7 @@
 <template>
     <div>
         <v-app-bar app :extension-height="extensionHeight" flat dark>
-            <v-app-bar-nav-icon v-if="!subPage" @click="toggleDrawer">
+            <v-app-bar-nav-icon v-if="!subPage && !noMenu" @click="toggleDrawer">
                 <template v-slot:default>
                     <v-badge :value="$global.hasUpdate" dot>
                         <v-icon>{{ $icons.appMenu }}</v-icon>
@@ -16,6 +16,7 @@
             </v-app-bar-title>
             <v-spacer/>
             <slot name="buttons"/>
+            <img v-if="logo" src="/img/app-bar.svg" alt="">
             <template v-if="$slots.extension" v-slot:extension>
                 <slot name="extension"/>
             </template>
@@ -38,13 +39,12 @@
         },
 
         props: {
-            subPage:         {
-                type:    Boolean,
-                default: false,
-            },
+            subPage:         Boolean,
             extensionHeight: {
                 type: [Number, String],
             },
+            logo:            Boolean,
+            noMenu:          Boolean,
         },
 
         data() {
@@ -64,3 +64,9 @@
         },
     };
 </script>
+
+<style lang="scss" scoped>
+    .v-app-bar img {
+        height: 42px;
+    }
+</style>

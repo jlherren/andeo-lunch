@@ -132,19 +132,20 @@ export default new Vuex.Store({
         },
 
         async checkLogin(context) {
-            let response = await Backend.get('/account/check');
-            let userId = response.data.userId;
+            let userId = null;
+            let username = null;
+            if (Backend.hasToken()) {
+                let response = await Backend.get('/account/check');
+                ({userId, username} = response.data);
+            }
 
             if (userId) {
                 await context.dispatch('fetchUser', {userId});
-                // Don't set the following until after the user is fetched, otherwise 'ownUser' won't be reliable
-                context.state.account.userId = userId;
-                context.state.account.username = response.data.username;
-            } else {
-                context.state.account.userId = null;
-                context.state.account.username = null;
             }
 
+            // This should not be set before the above fetchUser is finished, otherwise 'ownUser' won't be reliable
+            context.state.account.userId = userId;
+            context.state.account.username = username;
             context.state.account.initialCheckCompleted = true;
         },
 
