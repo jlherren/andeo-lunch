@@ -19,15 +19,15 @@
             <v-form ref="form" :disabled="isBusy" @submit.prevent="save()">
                 <v-text-field type="password" v-model="oldPassword" label="Current password" autofocus
                               min="0" :rules="oldRules"
-                              :prepend-icon="$icons.password"/>
+                              :append-icon="$icons.password"/>
 
                 <v-text-field type="password" v-model="newPassword" label="New password"
                               min="0" :rules="newRules"
-                              :prepend-icon="$icons.password"/>
+                              :append-icon="$icons.password"/>
 
                 <v-text-field type="password" v-model="confirmPassword" label="Confirm new password"
                               min="0" :rules="confirmRules"
-                              :prepend-icon="$icons.password"/>
+                              :append-icon="$icons.password"/>
 
                 <!-- Button is to make it submittable by pressing enter -->
                 <v-btn type="submit" :disabled="isBusy" v-show="false">Save</v-btn>
