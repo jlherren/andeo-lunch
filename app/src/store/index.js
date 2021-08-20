@@ -67,7 +67,7 @@ export default new Vuex.Store({
         backendVersion:  state => state.backendVersion,
 
         // Users and account
-        user:        state => userId => state.users[userId],
+        user:        state => userId => state.users[userId] ?? {id: userId},
         users:       (state, getters) => state.allUserIds.map(userId => getters.user(userId)),
         paymentInfo: state => userId => state.paymentInfos[userId] ?? null,
         absences:    state => userId => state.absences[userId] ?? null,

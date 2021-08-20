@@ -1,36 +1,46 @@
 <template>
     <v-card>
-        <v-card-title>
-            Edit participation
-        </v-card-title>
+        <v-form :disabled="isBusy" @submit.prevent="save()" ref="form">
+            <v-card-title>
+                Edit participation
+            </v-card-title>
 
-        <v-card-text>
-            <v-row>
-                <v-col>
-                    <participation-type-widget v-model="type" :disabled="isBusy"/>
-                </v-col>
-            </v-row>
+            <v-card-text>
+                <v-select v-model="user" label="User" :disabled="!!this.participation"
+                          :items="eligibleUsers" item-text="name" item-value="id"
+                          :rules="userRules"
+                          :append-icon="$icons.account"/>
 
-            <v-row>
-                <v-col cols="6">
-                    <number-field v-model="points" label="Points credited" :disabled="isBusy" :icon="$icons.points"/>
-                </v-col>
-                <v-col cols="6">
-                    <v-text-field v-model="money" type="number" min="0" label="Money credited" :disabled="isBusy" :append-icon="$icons.money"/>
-                </v-col>
-            </v-row>
-        </v-card-text>
+                <v-row>
+                    <v-col>
+                        <participation-type-widget v-model="type" :disabled="isBusy"/>
+                    </v-col>
+                </v-row>
 
-        <v-card-actions>
-            <v-btn text :disabled="isBusy" @click="cancel">
-                Cancel
-            </v-btn>
-            <v-spacer></v-spacer>
-            <v-progress-circular v-if="isBusy" indeterminate size="20" width="2"/>
-            <v-btn color="primary" :disabled="isBusy" @click="save">
-                Save
-            </v-btn>
-        </v-card-actions>
+                <v-row>
+                    <v-col cols="6">
+                        <number-field v-model="points" label="Points credited" :icon="$icons.points"/>
+                    </v-col>
+                    <v-col cols="6">
+                        <v-text-field v-model="money" type="number" min="0" label="Money credited" :append-icon="$icons.money"/>
+                    </v-col>
+                </v-row>
+
+                <!-- Button is to make it submittable by pressing enter -->
+                <v-btn type="submit" :disabled="isBusy" v-show="false">Save</v-btn>
+            </v-card-text>
+
+            <v-card-actions>
+                <v-btn text :disabled="isBusy" @click="cancel">
+                    Cancel
+                </v-btn>
+                <v-spacer></v-spacer>
+                <v-progress-circular v-if="isBusy" indeterminate size="20" width="2"/>
+                <v-btn color="primary" :disabled="isBusy" @click="save">
+                    Save
+                </v-btn>
+            </v-card-actions>
+        </v-form>
     </v-card>
 </template>
 
@@ -47,24 +57,49 @@
         },
 
         props: {
-            participation: {
+            event:         {
                 type:     Object,
                 required: true,
             },
+            participation: Object,
         },
 
         data() {
             return {
-                points: this.participation.credits.points,
-                money:  this.participation.credits.money,
-                type:   this.participation.type,
-                isBusy: false,
+                user:      this.participation?.userId,
+                points:    this.participation?.credits?.points ?? 0,
+                money:     this.participation?.credits?.money ?? 0,
+                type:      this.participation?.type ?? 'undecided',
+                isBusy:    false,
+                userRules: [
+                    user => !!user,
+                ],
             };
         },
 
+        created() {
+            if (this.participation) {
+                this.$store.dispatch('fetchUser', {userId: this.participation.userId});
+            } else {
+                this.$store.dispatch('fetchUsers');
+                // Existing participations need to be refreshed for eligibleUsers to be correct
+                this.$store.dispatch('fetchParticipations', {eventId: this.event.id});
+            }
+        },
+
         computed: {
-            mdAndUp() {
-                return this.$vuetify.breakpoint.mdAndUp;
+            eligibleUsers() {
+                if (this.participation) {
+                    // Don't bother listing all users, since the dropdown is disabled anyway
+                    return [
+                        this.$store.getters.user(this.participation.userId),
+                    ];
+                }
+                let substantialExistingParticipationUserIds = this.$store.getters.participations(this.event.id)
+                    .filter(p => p.type !== 'undecided' || p.credits.points > 0 || p.credits.money > 0)
+                    .map(p => p.userId);
+                return this.$store.getters.users
+                    .filter(u => !substantialExistingParticipationUserIds.includes(u.id));
             },
         },
 
@@ -78,11 +113,14 @@
             },
 
             async save() {
+                if (!this.$refs.form.validate()) {
+                    return;
+                }
                 this.isBusy = true;
                 try {
                     await this.$store.dispatch('saveParticipation', {
-                        userId:  this.participation.userId,
-                        eventId: this.participation.eventId,
+                        userId:  this.user,
+                        eventId: this.event.id,
                         type:    this.type,
                         credits: {
                             points: this.points,

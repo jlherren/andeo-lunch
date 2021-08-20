@@ -53,13 +53,25 @@
             <v-list v-if="event.type !== 'label'">
                 <v-skeleton-loader v-if="!participations" type="list-item-avatar"/>
 
-                <participation-list-item v-if="participations" :participation="myParticipation"
+                <participation-list-item v-if="participations" :event="event" :participation="myParticipation"
                                          @saved="refreshEvent()"/>
 
                 <participation-list-item v-for="participation of foreignParticipations"
                                          :key="participation.userId"
-                                         :participation="participation"
+                                         :event="event" :participation="participation"
                                          @saved="refreshEvent()"/>
+
+                <v-list-item @click="openAddParticipationDialog()">
+                    <v-list-item-avatar>
+                        <v-icon>{{ $icons.plus }}</v-icon>
+                    </v-list-item-avatar>
+
+                    <v-list-item-content>
+                        <v-list-item-title>
+                            Add participation
+                        </v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
             </v-list>
 
             <v-dialog v-model="edit" persistent>
@@ -78,9 +90,13 @@
                     <v-card-actions>
                         <v-btn text @click="confirmDelete = false" :disabled="isBusy">Cancel</v-btn>
                         <v-spacer/>
-                        <v-btn text @click="deleteEvent" :disabled="isBusy" color="error">Delete</v-btn>
+                        <v-btn @click="deleteEvent" :disabled="isBusy" color="error">Delete</v-btn>
                     </v-card-actions>
                 </v-card>
+            </v-dialog>
+
+            <v-dialog v-model="addParticipationDialog">
+                <participation-edit :event="event" @close="addParticipationDialog = false" @saved="refreshEvent()" ref="editForm"/>
             </v-dialog>
         </div>
     </v-main>
@@ -90,18 +106,20 @@
     import * as DateUtils from '@/utils/dateUtils';
     import Balance from '@/components/Balance';
     import LunchEdit from '@/components/event/LunchEdit';
+    import ParticipationEdit from '@/components/event/ParticipationEdit';
     import ParticipationListItem from '@/components/event/ParticipationListItem';
     import ParticipationSummary from '@/components/event/ParticipationSummary';
     import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
     import Vue from 'vue';
 
-    const PASSIVE_TYPES = ['opt-out', 'undecided'];
+    const PASSIVE_TYPES = ['undecided'];
 
     export default {
         name: 'LunchDetail',
 
         components: {
+            ParticipationEdit,
             Balance,
             LunchEdit,
             ParticipationListItem,
@@ -114,10 +132,12 @@
             let eventId = parseInt(this.$route.params.id, 10);
             return {
                 eventId,
-                ownUserId:     this.$store.getters.ownUserId,
-                edit:          false,
-                confirmDelete: false,
-                isBusy:        false,
+                ownUserId:              this.$store.getters.ownUserId,
+                edit:                   false,
+                confirmDelete:          false,
+                isBusy:                 false,
+                addParticipationDialog: false,
+                userToAdd:              null,
             };
         },
 
@@ -256,6 +276,12 @@
 
             async refreshEvent() {
                 await this.$store.dispatch('fetchEvent', {eventId: this.eventId});
+            },
+
+            openAddParticipationDialog() {
+                this.$store.dispatch('fetchUsers');
+                this.addParticipationDialog = true;
+                Vue.nextTick(() => this.$refs.editForm.reset());
             },
         },
     };

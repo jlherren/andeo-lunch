@@ -1,6 +1,6 @@
 <template>
     <v-card>
-        <v-form v-model="valid" :disabled="isBusy" @submit.prevent="save()" ref="form">
+        <v-form :disabled="isBusy" @submit.prevent="save()" ref="form">
             <v-card-title>{{ title }}</v-card-title>
 
             <v-card-text>
@@ -68,7 +68,6 @@
                 ],
 
                 isBusy: false,
-                valid:  false,
             };
         },
 
