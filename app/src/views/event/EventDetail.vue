@@ -1,9 +1,11 @@
 <template>
     <lunch-detail v-if="eventType === 'lunch' || eventType === 'special'"/>
     <transfer-detail v-else-if="eventType === 'transfer'"/>
+    <loading v-else/>
 </template>
 
 <script>
+    import Loading from '@/views/Loading';
     import LunchDetail from '@/views/event/LunchDetail';
     import TransferDetail from '@/views/event/TransferDetail';
 
@@ -11,6 +13,7 @@
         name: 'EventDetail',
 
         components: {
+            Loading,
             LunchDetail,
             TransferDetail,
         },
