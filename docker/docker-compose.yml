@@ -30,6 +30,7 @@ services:
         container_name: andeo-lunch-backend
         restart: unless-stopped
         environment:
+            MARIADB_HOST: db
             MARIADB_DATABASE: andeolunch
             MARIADB_USER: andeolunch
             MARIADB_PASSWORD_FILE: /run/secrets/db-user-password

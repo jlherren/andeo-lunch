@@ -19,15 +19,15 @@
                 <v-select v-model="sender" label="At the expense of"
                           :items="users" item-text="name" item-value="id"
                           :rules="senderRules"
-                          :prepend-icon="$icons.account"/>
+                          :append-icon="$icons.account"/>
 
                 <v-text-field type="number" v-model="amount" label="Amount in CHF"
                               min="0" :rules="amountRules"
-                              class="no-spinner" :prepend-icon="$icons.money"/>
+                              class="no-spinner" :append-icon="$icons.money"/>
 
                 <v-text-field v-model="reason" label="Reason"
                               :rules="reasonRules"
-                              :prepend-icon="$icons.label"/>
+                              :append-icon="$icons.label"/>
 
                 <v-checkbox label="This expense is related to an event" disabled>
                     <template v-slot:label>
@@ -38,7 +38,7 @@
                 </v-checkbox>
 
                 <v-select label="Related event" disabled
-                          :prepend-icon="$icons.lunch"
+                          :append-icon="$icons.lunch"
                 />
 
                 <!-- Button is to make it submittable by pressing enter -->
@@ -68,7 +68,7 @@
                 amount:      null,
                 reason:      '',
                 senderRules: [
-                    v => !!v,
+                    v => !!v && v !== this.$store.getters.ownUserId,
                 ],
                 amountRules: [
                     v => v > 0,

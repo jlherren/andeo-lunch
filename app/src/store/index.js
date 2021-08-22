@@ -67,7 +67,7 @@ export default new Vuex.Store({
         backendVersion:  state => state.backendVersion,
 
         // Users and account
-        user:        state => userId => state.users[userId],
+        user:        state => userId => state.users[userId] ?? {id: userId},
         users:       (state, getters) => state.allUserIds.map(userId => getters.user(userId)),
         paymentInfo: state => userId => state.paymentInfos[userId] ?? null,
         absences:    state => userId => state.absences[userId] ?? null,
@@ -132,19 +132,20 @@ export default new Vuex.Store({
         },
 
         async checkLogin(context) {
-            let response = await Backend.get('/account/check');
-            let userId = response.data.userId;
+            let userId = null;
+            let username = null;
+            if (Backend.hasToken()) {
+                let response = await Backend.get('/account/check');
+                ({userId, username} = response.data);
+            }
 
             if (userId) {
                 await context.dispatch('fetchUser', {userId});
-                // Don't set the following until after the user is fetched, otherwise 'ownUser' won't be reliable
-                context.state.account.userId = userId;
-                context.state.account.username = response.data.username;
-            } else {
-                context.state.account.userId = null;
-                context.state.account.username = null;
             }
 
+            // This should not be set before the above fetchUser is finished, otherwise 'ownUser' won't be reliable
+            context.state.account.userId = userId;
+            context.state.account.username = username;
             context.state.account.initialCheckCompleted = true;
         },
 
@@ -263,6 +264,17 @@ export default new Vuex.Store({
             Cache.invalidate('transfers', eventId);
             Cache.invalidate('user');
             Cache.invalidate('users');
+            await context.dispatch('fetchEvent', {eventId});
+            await context.dispatch('fetchTransfers', {eventId});
+        },
+
+        async deleteTransfer(context, {eventId, transferId}) {
+            await Backend.delete(`/events/${eventId}/transfers/${transferId}`);
+            Cache.invalidate('event', eventId);
+            Cache.invalidate('transfers', eventId);
+            Cache.invalidate('user');
+            Cache.invalidate('users');
+            await context.dispatch('fetchEvent', {eventId});
             await context.dispatch('fetchTransfers', {eventId});
         },
 

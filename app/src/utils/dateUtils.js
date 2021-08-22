@@ -95,8 +95,18 @@ export function addDays(date, days) {
  */
 export function displayFormat(date) {
     let weekday = date.toLocaleDateString(undefined, {weekday: 'short'});
-    let formattedDate = date.toLocaleDateString(undefined, {dateStyle: 'medium'});
+    let formattedDate = displayFormatNoWeekday(date);
     return `${weekday}, ${formattedDate}`;
+}
+
+/**
+ * Format a date in a sensible displayFormat for displaying
+ *
+ * @param {Date} date
+ * @returns {string}
+ */
+export function displayFormatNoWeekday(date) {
+    return date.toLocaleDateString(undefined, {dateStyle: 'medium'});
 }
 
 /**

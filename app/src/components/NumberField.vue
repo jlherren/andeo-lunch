@@ -8,6 +8,7 @@
             <v-btn small icon @click="addPoints(step)" :disabled="max !== undefined && value >= max">
                 <v-icon small>{{ $icons.plus }}</v-icon>
             </v-btn>
+            <v-icon>{{ icon }}</v-icon>
         </template>
     </v-text-field>
 </template>
@@ -47,6 +48,10 @@
             },
 
             suffix: {
+                type: String,
+            },
+
+            icon: {
                 type: String,
             },
         },

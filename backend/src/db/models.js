@@ -58,6 +58,9 @@ class User extends Model {
     }
 }
 
+class EventType extends Model {
+}
+
 /**
  * @property {number} type
  * @property {Date} date
@@ -279,6 +282,7 @@ class Audit extends Model {
 
 exports.Configuration = Configuration;
 exports.User = User;
+exports.EventType = EventType;
 exports.Event = Event;
 exports.Lunch = Lunch;
 exports.ParticipationType = ParticipationType;
@@ -324,6 +328,14 @@ exports.initModels = function initModels(sequelize) {
         modelName: 'user',
     });
 
+    EventType.init({
+        id: {type: DataTypes.TINYINT, allowNull: false, primaryKey: true, autoIncrement: true},
+        // API names should eventually be moved into this table
+    }, {
+        sequelize,
+        modelName: 'eventType',
+    });
+
     Event.init({
         type: {type: DataTypes.TINYINT, allowNull: false},
         date: {type: DataTypes.DATE, allowNull: false},
@@ -331,7 +343,12 @@ exports.initModels = function initModels(sequelize) {
     }, {
         sequelize,
         modelName: 'event',
+        indexes:   [{
+            name:   'event_type_idx',
+            fields: ['type'],
+        }],
     });
+    Event.belongsTo(EventType, {foreignKey: {name: 'type'}, as: 'EventType', ...cascade});
 
     Lunch.init({
         event:      {type: DataTypes.INTEGER, allowNull: false, unique: 'lunch_event_idx'},

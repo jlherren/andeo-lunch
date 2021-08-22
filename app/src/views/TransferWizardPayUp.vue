@@ -20,10 +20,10 @@
                 <v-select v-model="recipient" label="Recipient of real money"
                           :items="users" item-text="name" item-value="id"
                           :rules="recipientRules"
-                          :prepend-icon="$icons.account"/>
+                          :append-icon="$icons.account"/>
                 <v-text-field type="number" v-model="amount" label="Amount in CHF"
                               min="0" :rules="amountRules"
-                              class="no-spinner" :prepend-icon="$icons.money"/>
+                              class="no-spinner" :append-icon="$icons.money"/>
 
                 <v-card v-if="recipientPaymentInfo !== null">
                     <v-card-title class="subtitle-2">
@@ -58,7 +58,7 @@
                 amount:         null,
                 recipient:      null,
                 recipientRules: [
-                    v => !!v,
+                    v => !!v && v !== this.$store.getters.ownUserId,
                 ],
                 amountRules:    [
                     v => v > 0,
@@ -74,7 +74,7 @@
             if (this.recipient === null) {
                 let defaultRecipient = this.$store.getters.payUpDefaultRecipient;
                 // Do not set if it is null/undefined, otherwise it triggers validation
-                if (defaultRecipient) {
+                if (defaultRecipient && defaultRecipient !== this.$store.getters.ownUserId) {
                     this.recipient = defaultRecipient;
                 }
             }

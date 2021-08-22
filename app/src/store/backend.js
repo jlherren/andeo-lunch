@@ -6,10 +6,29 @@ const BACKEND_URL = process.env.VUE_APP_BACKEND_URL;
 let axios = Axios.create();
 
 /**
+ * Check whether an authorization token exists at all
+ *
+ * @returns {boolean}
+ */
+function hasToken() {
+    // TODO: Validate the token here?
+    return !!getToken();
+}
+
+/**
+ * Get the authorization token
+ *
+ * @returns {string|null}
+ */
+function getToken() {
+    return localStorage.getItem('token');
+}
+
+/**
  * @param {object} config
  */
 function addAuthorizationHeader(config) {
-    let token = localStorage.getItem('token');
+    let token = getToken();
     // TODO: Validate the token locally before sending it?
     if (token !== null) {
         config.headers ??= {};
@@ -89,4 +108,5 @@ export default {
     get,
     post,
     delete: delete0,
+    hasToken,
 };

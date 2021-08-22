@@ -52,8 +52,12 @@
         'transfer.delete':      'Transfer deleted',
     };
 
-    const VALUES = {
+    const NAMES = {
         participationType: 'Type',
+        sender:            'Sender',
+        recipient:         'Recipient',
+        amount:            'Amount',
+        currency:          'Currency',
     };
 
     export default {
@@ -117,12 +121,26 @@
                 if (audit.values) {
                     for (let key in audit.values) {
                         parts.push({
-                            name:  VALUES[key] ?? key,
-                            value: audit.values[key],
+                            name:  NAMES[key] ?? key,
+                            value: this.prettifyValue(key, audit.values[key]),
                         });
                     }
                 }
                 return parts;
+            },
+
+            prettifyValue(key, value) {
+                switch (key) {
+                    case 'sender':
+                    case 'recipient':
+                        return this.$store.getters.user(value)?.name;
+
+                    case 'currency':
+                        return value === 1 ? 'points' : 'money';
+
+                    default:
+                        return value;
+                }
             },
 
             async refresh() {

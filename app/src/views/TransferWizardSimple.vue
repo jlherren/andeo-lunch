@@ -19,17 +19,17 @@
                 <v-select v-model="sender" label="Sender"
                           :items="users" item-text="name" item-value="id"
                           :rules="senderRules"
-                          :prepend-icon="$icons.account"/>
+                          :append-icon="$icons.account"/>
                 <v-select v-model="recipient" label="Recipient"
                           :items="users" item-text="name" item-value="id"
                           :rules="recipientRules"
-                          :prepend-icon="$icons.account"/>
+                          :append-icon="$icons.account"/>
 
                 <v-row>
                     <v-col cols="6">
                         <v-text-field type="number" v-model="amount" label="Amount"
                                       min="0" :rules="amountRules"
-                                      class="no-spinner" :prepend-icon="currency === 'money' ? $icons.money : $icons.points"/>
+                                      class="no-spinner" :append-icon="currency === 'money' ? $icons.money : $icons.points"/>
                     </v-col>
                     <v-col cols="6">
                         <v-btn-toggle v-model="currency" class="full-width" mandatory>
@@ -47,7 +47,7 @@
 
                 <v-text-field v-model="reason" label="Reason"
                               :rules="reasonRules"
-                              :prepend-icon="$icons.label"/>
+                              :append-icon="$icons.label"/>
 
                 <!-- Button is to make it submittable by pressing enter -->
                 <v-btn type="submit" :disabled="isBusy" v-show="false">Save</v-btn>

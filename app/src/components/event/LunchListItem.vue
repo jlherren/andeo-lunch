@@ -1,39 +1,22 @@
 <template>
     <v-list-item :to="link">
-        <template v-if="prominent">
-            <v-list-item-content class="center-text">
-                <v-list-item-title class="headline">{{ event.name }}</v-list-item-title>
-                <v-list-item-subtitle>{{ formattedDate }}</v-list-item-subtitle>
+        <v-list-item-icon>
+            <v-icon>{{ icon }}</v-icon>
+        </v-list-item-icon>
 
-                <v-list-item-content>
-                    <participation-summary :participations="participations" class="justify-center"/>
-                </v-list-item-content>
-            </v-list-item-content>
+        <v-list-item-content>
+            <v-list-item-title>
+                {{ event.name }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+                <span>{{ formattedDate }}</span>
+                <participation-summary :participations="participations"/>
+            </v-list-item-subtitle>
+        </v-list-item-content>
 
-            <v-list-item-action v-if="ownParticipationIcon">
-                <v-icon :color="ownParticipationIconColor">{{ ownParticipationIcon }}</v-icon>
-            </v-list-item-action>
-        </template>
-
-        <template v-else>
-            <v-list-item-icon>
-                <v-icon>{{ icon }}</v-icon>
-            </v-list-item-icon>
-
-            <v-list-item-content>
-                <v-list-item-title>
-                    {{ event.name }}
-                </v-list-item-title>
-                <v-list-item-subtitle>
-                    <span>{{ formattedDate }}</span>
-                    <participation-summary :participations="participations"/>
-                </v-list-item-subtitle>
-            </v-list-item-content>
-
-            <v-list-item-action v-if="ownParticipationIcon">
-                <v-icon :color="ownParticipationIconColor">{{ ownParticipationIcon }}</v-icon>
-            </v-list-item-action>
-        </template>
+        <v-list-item-action v-if="ownParticipationIcon">
+            <v-icon :color="ownParticipationIconColor">{{ ownParticipationIcon }}</v-icon>
+        </v-list-item-action>
     </v-list-item>
 </template>
 
@@ -54,7 +37,6 @@
                 type:     Object,
                 required: true,
             },
-            prominent: Boolean,
         },
 
         data() {

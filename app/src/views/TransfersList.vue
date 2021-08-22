@@ -17,8 +17,7 @@
         <v-list>
             <template v-if="hasData">
                 <template v-for="event of events">
-                    <v-divider v-if="event.hasGap" :key="event.id + '-divider'"/>
-                    <transfer-list-item :key="event.id" :event="event" :prominent="event.prominent"/>
+                    <transfer-list-item :key="event.id" :event="event"/>
                 </template>
             </template>
             <template v-else>
@@ -48,9 +47,9 @@
         name: 'Transfers',
 
         components: {
-            TransferListItem,
             ShyProgress,
             TheAppBar,
+            TransferListItem,
         },
 
         data() {

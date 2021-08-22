@@ -1,21 +1,23 @@
 <template>
     <v-card>
-        <v-form v-model="valid" :disabled="isBusy" @submit.prevent="save()" ref="form">
+        <v-form :disabled="isBusy" @submit.prevent="save()" ref="form">
             <v-card-title>{{ title }}</v-card-title>
 
             <v-card-text>
                 <v-row>
                     <v-col>
-                        <v-text-field v-model="name" :rules="nameRules" label="Name" autofocus required/>
+                        <v-text-field v-model="name" :rules="nameRules" label="Name" autofocus required
+                                      :append-icon="$icons.label"
+                        />
                     </v-col>
                     <v-col>
                         <lm-date-picker v-model="date" required/>
                     </v-col>
                 </v-row>
 
-                <v-row>
-                    <v-col v-if="type !== 'label'">
-                        <number-field v-model="points" label="Points" :min="0"/>
+                <v-row v-if="type !== 'label'">
+                    <v-col>
+                        <number-field v-model="points" label="Points" :min="0" :icon="$icons.points"/>
                     </v-col>
                     <v-col>
                         <number-field v-model="vegetarianFactor" label="Vegetarian factor" suffix="%"
@@ -66,7 +68,6 @@
                 ],
 
                 isBusy: false,
-                valid:  false,
             };
         },
 

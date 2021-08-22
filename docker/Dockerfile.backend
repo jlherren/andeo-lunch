@@ -1,13 +1,13 @@
-FROM node:14-buster-slim AS backend-build
+FROM node:16.7-bullseye-slim AS backend-build
 WORKDIR /build
 COPY . .
 RUN yarn workspaces focus andeo-lunch-backend
 
-FROM node:14-buster-slim
+FROM node:16.7-bullseye-slim
 RUN mkdir -p /srv/andeo-lunch/backend
 WORKDIR /srv/andeo-lunch/backend
 COPY --from=backend-build /build/node_modules /srv/andeo-lunch/node_modules
 COPY --from=backend-build /build/backend      /srv/andeo-lunch/backend
-RUN mv config-docker.json config.json
+RUN echo '{"database": {"dialect": "mariadb"}, "bind": "0.0.0.0"}' > config.json
 EXPOSE 3000
 CMD ["node", "src/lunchMoney.js"]

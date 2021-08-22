@@ -5,5 +5,7 @@ CREATE TABLE `event` (
   `name` varchar(255) NOT NULL,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `event_type_idx` (`type`),
+  CONSTRAINT `event_ibfk_1` FOREIGN KEY (`type`) REFERENCES `eventType` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4

@@ -1,22 +1,4 @@
-import Absences from '@/views/settings/Absences';
-import AuditLog from '@/views/AuditLog';
-import Calendar from '@/views/Calendar.vue';
-import ChangePassword from '@/views/settings/ChangePassword';
-import EventDetail from '@/views/event/EventDetail';
-import History from '@/views/History.vue';
 import Home from '@/views/Home.vue';
-import Menus from '@/views/Menus.vue';
-import Preferences from '@/views/settings/Preferences';
-import Profile from '@/views/settings/Profile';
-import Stats from '@/views/Stats';
-import TransferList from '@/views/TransfersList.vue';
-import TransferWizard from '@/views/TransferWizard';
-import TransferWizardCustom from '@/views/TransferWizardCustom';
-import TransferWizardExpense from '@/views/TransferWizardExpense';
-import TransferWizardFine from '@/views/TransferWizardFine';
-import TransferWizardPayUp from '@/views/TransferWizardPayUp';
-import TransferWizardSimple from '@/views/TransferWizardSimple';
-import TransferWizardTrade from '@/views/TransferWizardTrade';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
@@ -29,75 +11,79 @@ const routes = [
     },
     {
         path:      '/calendar/:date([-0-9]{10})?',
-        component: Calendar,
+        component: () => import('@/views/Calendar.vue'),
     },
     {
         path:      '/menus',
-        component: Menus,
+        component: () => import('@/views/Menus.vue'),
     },
     {
         path:      '/transfers/:date([-0-9]{10})?',
-        component: TransferList,
+        component: () => import('@/views/TransfersList.vue'),
     },
     {
         path:      '/transfers/new',
-        component: TransferWizard,
+        component: () => import(/* webpackChunkName: "wizards" */ '@/views/TransferWizard'),
     },
     {
         path:      '/transfers/new/pay-up',
-        component: TransferWizardPayUp,
+        component: () => import(/* webpackChunkName: "wizards" */ '@/views/TransferWizardPayUp'),
     },
     {
         path:      '/transfers/new/simple',
-        component: TransferWizardSimple,
+        component: () => import(/* webpackChunkName: "wizards" */ '@/views/TransferWizardSimple'),
     },
     {
         path:      '/transfers/new/trade',
-        component: TransferWizardTrade,
+        component: () => import(/* webpackChunkName: "wizards" */ '@/views/TransferWizardTrade'),
     },
     {
         path:      '/transfers/new/expense',
-        component: TransferWizardExpense,
+        component: () => import(/* webpackChunkName: "wizards" */ '@/views/TransferWizardExpense'),
     },
     {
         path:      '/transfers/new/fine',
-        component: TransferWizardFine,
+        component: () => import(/* webpackChunkName: "wizards" */ '@/views/TransferWizardFine'),
     },
     {
         path:      '/transfers/new/custom',
-        component: TransferWizardCustom,
+        component: () => import(/* webpackChunkName: "wizards" */ '@/views/TransferWizardCustom'),
     },
     {
         path:      '/history',
-        component: History,
+        component: () => import('@/views/History.vue'),
     },
     {
         path:      '/events/:id(\\d+)',
-        component: EventDetail,
+        component: () => import('@/views/event/EventDetail'),
     },
     {
         path:      '/profile',
-        component: Profile,
+        component: () => import(/* webpackChunkName: "profile" */ '@/views/settings/Profile'),
     },
     {
         path:      '/profile/password',
-        component: ChangePassword,
+        component: () => import(/* webpackChunkName: "profile" */ '@/views/settings/ChangePassword'),
     },
     {
         path:      '/profile/absences',
-        component: Absences,
+        component: () => import(/* webpackChunkName: "profile" */ '@/views/settings/Absences'),
     },
     {
         path:      '/preferences',
-        component: Preferences,
+        component: () => import('@/views/settings/Preferences'),
     },
     {
         path:      '/log',
-        component: AuditLog,
+        component: () => import('@/views/AuditLog'),
     },
     {
         path:      '/stats',
-        component: Stats,
+        component: () => import('@/views/Stats'),
+    },
+    {
+        path:      '/about',
+        component: () => import('@/views/settings/About'),
     },
 ];
 

@@ -1,38 +1,44 @@
 <template>
     <v-main>
-        <the-app-bar>
+        <the-app-bar logo>
             {{ ownUser.name }}
-            <template v-slot:buttons>
-                <router-link to="/history">
-                    <user-stats/>
-                </router-link>
-            </template>
         </the-app-bar>
 
         <shy-progress v-if="loading"/>
 
-        <v-list>
-            <template v-if="hasData">
-                <template v-for="event of events">
-                    <v-divider v-if="event.hasGap" :key="event.id + '-divider'"/>
-                    <lunch-list-item :key="event.id" :event="event" :prominent="event.prominent"/>
-                </template>
-            </template>
-            <template v-else>
-                <v-skeleton-loader type="list-item-avatar"/>
-            </template>
+        <v-subheader>Your balance</v-subheader>
+        <v-list fluid>
+            <v-list-item to="/history">
+                <v-list-item-content>
+                    <user-stats/>
+                </v-list-item-content>
+            </v-list-item>
         </v-list>
+
+        <v-subheader>Upcoming events</v-subheader>
 
         <v-container v-if="!loading && events.length === 0">
             <v-banner elevation="2" single-line :icon="$icons.information">
                 No upcoming events
             </v-banner>
         </v-container>
+        <v-list v-else>
+            <template v-if="hasData">
+                <template v-for="event of events">
+                    <v-divider v-if="event.hasGap" :key="event.id + '-divider'"/>
+                    <lunch-list-item :key="event.id" :event="event"/>
+                </template>
+            </template>
+            <template v-else>
+                <v-skeleton-loader type="list-item-avatar"/>
+            </template>
+        </v-list>
     </v-main>
 </template>
 
 <script>
     import * as DateUtils from '@/utils/dateUtils';
+    import {EVENT_TYPES} from '@/views/Calendar';
     import LunchListItem from '@/components/event/LunchListItem';
     import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
@@ -43,10 +49,10 @@
         name: 'Home',
 
         components: {
-            TheAppBar,
             LunchListItem,
-            UserStats,
             ShyProgress,
+            TheAppBar,
+            UserStats,
         },
 
         data() {
@@ -73,25 +79,23 @@
 
             events() {
                 let events = this.$store.getters.events.filter(event => {
-                    return ['lunch', 'special'].includes(event.type) &&
+                    return EVENT_TYPES.includes(event.type) &&
                         event.date >= this.startDate && event.date < this.endDate;
                 });
 
                 events.sort((a, b) => a.date.getTime() - b.date.getTime());
+                events = events.slice(0, 3);
 
-                // Add information about divider lines and prominent display
+                // Add information about divider lines
                 let prev = null;
-                let today = new Date();
                 events = events.map(event => {
                     let hasGap = prev !== null &&
                         !DateUtils.isSameDay(prev.date, event.date) &&
                         !DateUtils.isSuccessiveDays(prev.date, event.date);
-                    let prominent = prev === null && DateUtils.isSameDay(today, event.date);
                     prev = event;
                     return {
                         ...event,
                         hasGap,
-                        prominent,
                     };
                 });
 
@@ -119,9 +123,3 @@
         },
     };
 </script>
-
-<style lang="scss" scoped>
-    a {
-        text-decoration: none;
-    }
-</style>

@@ -70,14 +70,16 @@
     import TheAppBar from '@/components/TheAppBar';
     import Vue from 'vue';
 
+    export const EVENT_TYPES = ['lunch', 'special', 'label'];
+
     export default {
         name: 'Calendar',
 
         components: {
-            TheAppBar,
-            LunchListItem,
             LunchEdit,
+            LunchListItem,
             ShyProgress,
+            TheAppBar,
         },
 
         created() {
@@ -106,14 +108,14 @@
 
         computed: {
             title() {
-                let formatted = DateUtils.displayFormat(this.startDate);
+                let formatted = DateUtils.displayFormatNoWeekday(this.startDate);
                 return `Week of ${formatted}`;
             },
 
             events() {
                 // TODO: This is a bit cheap, since potentially many events may be loaded at the time
                 return this.$store.getters.events.filter(event => {
-                    return ['lunch', 'special'].includes(event.type) &&
+                    return EVENT_TYPES.includes(event.type) &&
                         event.date >= this.startDate && event.date < this.endDate;
                 });
             },

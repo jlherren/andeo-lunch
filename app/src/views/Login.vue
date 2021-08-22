@@ -1,23 +1,16 @@
 <template>
     <v-main>
-        <v-app-bar app dark flat>
-            <v-toolbar-title>
-                Login
-            </v-toolbar-title>
-        </v-app-bar>
-
         <v-container>
-            <img src="/img/icons/icon.svg" alt="Application logo">
-            <h1>{{ appTitle }}</h1>
+            <img src="/img/logo-large.svg" alt="Andeo Lunch logo">
 
             <v-form v-model="formValid" :disabled="isBusy" @submit.prevent="login">
                 <v-text-field v-model="username" type="text" required
                               :rules="requiredRule" autofocus label="Username"
-                              :prepend-icon="$icons.account"
+                              :append-icon="$icons.account"
                 />
                 <v-text-field v-model="password" type="password" required
                               :rules="requiredRule" label="Password"
-                              :prepend-icon="$icons.password"
+                              :append-icon="$icons.password"
                 />
 
                 <v-btn type="submit" :disabled="!formValid || isBusy" color="primary" block>
@@ -80,9 +73,9 @@
     }
 
     img {
-        width: 25%;
-        max-width: 150px;
+        width: 33%;
+        max-width: 250px;
         display: block;
-        margin: 0 auto;
+        margin: 50px auto;
     }
 </style>
