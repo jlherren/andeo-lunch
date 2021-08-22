@@ -67,7 +67,7 @@ exports.getTestConfig = async function getTestConfig() {
             database: {
                 dialect:  'mariadb',
                 host:     process.env.TEST_DB_HOST,
-                post:     process.env.TEST_DB_PORT,
+                port:     process.env.TEST_DB_PORT,
                 database: process.env.TEST_DB_NAME,
                 username: process.env.TEST_DB_USERNAME,
                 password: process.env.TEST_DB_PASSWORD,

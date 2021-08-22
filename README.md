@@ -84,8 +84,6 @@ Run these from the `backend/` directory.
 - `yarn serve` Launch backend
 - `yarn serve:watch` Launch backend with auto-reload on file changes
 - `yarn test` Run test suite using SQLite
-- `yarn test:mariadb` Run test suite using MariaDB (this requires some
-  environment variables to work)
 - `yarn test:watch` Run test suite and re-run on every file change
 - `yarn lint` Run linter
 - `yarn lint:fix` Run linter and fix automatically
@@ -94,6 +92,7 @@ Run these from the `backend/` directory.
 - `yarn db:rebuild` Rebuild all transactions and all balances
 - `yarn db:setPaymentInfo` Set up payment information for a user
 - `yarn db:validate` Validate the DB structure
+- `tests/run-tests-with-mariadb.sh` Run test suite using MariaDB
 
 ## App scripts
 
