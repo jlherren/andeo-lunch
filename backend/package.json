@@ -23,7 +23,7 @@
     },
     "dependencies": {
         "@koa/cors": "~3.1.0",
-        "@koa/router": "~10.1.0",
+        "@koa/router": "~10.1.1",
         "bcryptjs": "~2.4.3",
         "chalk": "~4.1.2",
         "jest-diff": "~27.0.6",
@@ -39,17 +39,17 @@
     },
     "devDependencies": {
         "@types/bcryptjs": "~2.4.2",
-        "@types/jsonwebtoken": "~8.5.4",
+        "@types/jsonwebtoken": "~8.5.5",
         "@types/koa": "~2.13.4",
         "@types/koa-logger": "~3.1.1",
         "@types/koa-router": "~7.4.4",
         "@types/supertest": "~2.0.11",
         "eslint": "~7.32.0",
         "eslint-plugin-jest": "~24.4.0",
-        "eslint-plugin-jsdoc": "~36.0.6",
+        "eslint-plugin-jsdoc": "~36.0.7",
         "jest": "~27.0.6",
         "nodemon": "~2.0.12",
         "sqlite3": "~5.0.2",
-        "supertest": "~6.1.4"
+        "supertest": "~6.1.6"
     }
 }

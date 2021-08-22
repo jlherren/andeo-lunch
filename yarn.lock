@@ -1847,16 +1847,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@koa/router@npm:~10.1.0":
-  version: 10.1.0
-  resolution: "@koa/router@npm:10.1.0"
+"@koa/router@npm:~10.1.1":
+  version: 10.1.1
+  resolution: "@koa/router@npm:10.1.1"
   dependencies:
     debug: ^4.1.1
     http-errors: ^1.7.3
     koa-compose: ^4.1.0
     methods: ^1.1.2
     path-to-regexp: ^6.1.0
-  checksum: 38397372d025e8ec9d9cca6521117edaf741c72b767653759582d08b0abf4bb93f66392c7bb581d2a6b8d8837a5dcdab8b46d1300eeaefe03b49e7bd316ef29c
+  checksum: 3475f4235576d24eaa218d55e845fb81946288d65b87aa8aeda1a23b11b5556a02b9a8ff1ea520bb988ec7201523c41cff5abce9285fd12b9e839d7590cd2ce1
   languageName: node
   linkType: hard
 
@@ -2355,12 +2355,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jsonwebtoken@npm:~8.5.4":
-  version: 8.5.4
-  resolution: "@types/jsonwebtoken@npm:8.5.4"
+"@types/jsonwebtoken@npm:~8.5.5":
+  version: 8.5.5
+  resolution: "@types/jsonwebtoken@npm:8.5.5"
   dependencies:
     "@types/node": "*"
-  checksum: 541d41eb8115afd422e0333d7ba79399febc86818015b3ecb7c36b2b7f9b4476a33aa13a4f23f81a08b201c5cdacbe2903b6d03cd4930abf83a4e14be3696719
+  checksum: 33c30354641bc7849be7507e9f48685b1f487e944321a932650eac6c247c85184667f5e207ccfcab0da8cb24bde93a8372c09cacf1849e976bbf2cb90b26ce90
   languageName: node
   linkType: hard
 
@@ -3655,14 +3655,14 @@ __metadata:
     "@vue/eslint-config-standard": ~6.1.0
     axios: ~0.21.1
     babel-eslint: ~10.1.0
-    core-js: ~3.16.1
+    core-js: ~3.16.2
     eslint: ~7.32.0
-    eslint-plugin-import: ~2.24.0
-    eslint-plugin-jsdoc: ~36.0.6
+    eslint-plugin-import: ~2.24.1
+    eslint-plugin-jsdoc: ~36.0.7
     eslint-plugin-node: ~11.1.0
     eslint-plugin-promise: ~5.1.0
     eslint-plugin-standard: ~5.0.0
-    eslint-plugin-vue: ~7.15.1
+    eslint-plugin-vue: ~7.16.0
     node-sass: ~6.0.1
     register-service-worker: ~1.7.2
     sass: ~1.32.13
@@ -3682,9 +3682,9 @@ __metadata:
   resolution: "andeo-lunch-backend@workspace:backend"
   dependencies:
     "@koa/cors": ~3.1.0
-    "@koa/router": ~10.1.0
+    "@koa/router": ~10.1.1
     "@types/bcryptjs": ~2.4.2
-    "@types/jsonwebtoken": ~8.5.4
+    "@types/jsonwebtoken": ~8.5.5
     "@types/koa": ~2.13.4
     "@types/koa-logger": ~3.1.1
     "@types/koa-router": ~7.4.4
@@ -3693,7 +3693,7 @@ __metadata:
     chalk: ~4.1.2
     eslint: ~7.32.0
     eslint-plugin-jest: ~24.4.0
-    eslint-plugin-jsdoc: ~36.0.6
+    eslint-plugin-jsdoc: ~36.0.7
     jest: ~27.0.6
     jest-diff: ~27.0.6
     joi: ~17.4.2
@@ -3706,7 +3706,7 @@ __metadata:
     sequelize: ~6.6.5
     sprintf-js: ~1.1.2
     sqlite3: ~5.0.2
-    supertest: ~6.1.4
+    supertest: ~6.1.6
     umzug: ~2.3.0
   languageName: unknown
   linkType: soft
@@ -3716,11 +3716,11 @@ __metadata:
   resolution: "andeo-lunch-cypress@workspace:cypress"
   dependencies:
     axios: ~0.21.1
-    cypress: ~8.2.0
+    cypress: ~8.3.0
     eslint: ~7.32.0
     eslint-plugin-cypress: ~2.11.3
-    eslint-plugin-import: ~2.24.0
-    eslint-plugin-jsdoc: ~36.0.6
+    eslint-plugin-import: ~2.24.1
+    eslint-plugin-jsdoc: ~36.0.7
     eslint-plugin-node: ~11.1.0
     eslint-plugin-promise: ~5.1.0
     eslint-plugin-standard: ~5.0.0
@@ -6143,10 +6143,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"core-js@npm:^3.6.5, core-js@npm:~3.16.1":
+"core-js@npm:^3.6.5":
   version: 3.16.1
   resolution: "core-js@npm:3.16.1"
   checksum: 7924fa2a7f00e3a33bbe92fe42ba59fbbe7e01557a59824d000976300be3ba224cca20161f61654b3861ea80d244d6adfee6ed3ae6d6d9931210a37510fb7c9b
+  languageName: node
+  linkType: hard
+
+"core-js@npm:~3.16.2":
+  version: 3.16.2
+  resolution: "core-js@npm:3.16.2"
+  checksum: f48b988ab6d144aad1a7c09a73174946f797ec050b4566dee9bf0227560296cdd0f714b37f0ee065303eccf0e7fb8115ccca52ab3e80db12e0dcc20a88219483
   languageName: node
   linkType: hard
 
@@ -6535,9 +6542,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cypress@npm:~8.2.0":
-  version: 8.2.0
-  resolution: "cypress@npm:8.2.0"
+"cypress@npm:~8.3.0":
+  version: 8.3.0
+  resolution: "cypress@npm:8.3.0"
   dependencies:
     "@cypress/request": ^2.88.5
     "@cypress/xvfb": ^1.2.4
@@ -6582,7 +6589,7 @@ __metadata:
     yauzl: ^2.10.0
   bin:
     cypress: bin/cypress
-  checksum: 571341e255ca2322b9fa196660099fcf7f7e2674ab47d98fcc6b72302fd24e1dc9c51e3588716ee5c2332a50db23efa180ec6ddf88af09197bb6b13e3bed7719
+  checksum: acffc5ee3a347c3dc0989b43509f1d56ef2089aab6d8a2a8087f91dd93fd81d86939fa71a6df4a6690014385650e24599777bc5513c66ef7acfe34e6733dc4d6
   languageName: node
   linkType: hard
 
@@ -7583,13 +7590,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-import-resolver-node@npm:^0.3.4, eslint-import-resolver-node@npm:^0.3.5":
+"eslint-import-resolver-node@npm:^0.3.4":
   version: 0.3.5
   resolution: "eslint-import-resolver-node@npm:0.3.5"
   dependencies:
     debug: ^3.2.7
     resolve: ^1.20.0
   checksum: 93a8176205f18c40d2c11c444fab89aa3990c5a5eed226ef03a893b5779e7cd4d1f5f52b2bbbbbe4b13fb2a75ef629278be0b52099480cbe6e7024888d9982dd
+  languageName: node
+  linkType: hard
+
+"eslint-import-resolver-node@npm:^0.3.6":
+  version: 0.3.6
+  resolution: "eslint-import-resolver-node@npm:0.3.6"
+  dependencies:
+    debug: ^3.2.7
+    resolve: ^1.20.0
+  checksum: 6266733af1e112970e855a5bcc2d2058fb5ae16ad2a6d400705a86b29552b36131ffc5581b744c23d550de844206fb55e9193691619ee4dbf225c4bde526b1c8
   languageName: node
   linkType: hard
 
@@ -7664,28 +7681,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-import@npm:~2.24.0":
-  version: 2.24.0
-  resolution: "eslint-plugin-import@npm:2.24.0"
+"eslint-plugin-import@npm:~2.24.1":
+  version: 2.24.1
+  resolution: "eslint-plugin-import@npm:2.24.1"
   dependencies:
     array-includes: ^3.1.3
     array.prototype.flat: ^1.2.4
     debug: ^2.6.9
     doctrine: ^2.1.0
-    eslint-import-resolver-node: ^0.3.5
+    eslint-import-resolver-node: ^0.3.6
     eslint-module-utils: ^2.6.2
     find-up: ^2.0.0
     has: ^1.0.3
-    is-core-module: ^2.4.0
+    is-core-module: ^2.6.0
     minimatch: ^3.0.4
-    object.values: ^1.1.3
+    object.values: ^1.1.4
     pkg-up: ^2.0.0
     read-pkg-up: ^3.0.0
     resolve: ^1.20.0
-    tsconfig-paths: ^3.9.0
+    tsconfig-paths: ^3.10.1
   peerDependencies:
     eslint: ^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0
-  checksum: 79fb1094197cd1dc720725bd29e5c5fe7d123fd9dd31eb182849993a81a8c18e2bfbc4d267a2caabe02bd4d21aafb1eca1da2f55aca7e5df99fd8ba908e7b869
+  checksum: 6a43dc2c045d8f70a370fead2ed342a4b009685bb75818c0e4dab8bb118b853a77d532c63684f5c0b808239809a5a7289c968e45b5cc56960963be5b8cf1ee54
   languageName: node
   linkType: hard
 
@@ -7704,9 +7721,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-jsdoc@npm:~36.0.6":
-  version: 36.0.6
-  resolution: "eslint-plugin-jsdoc@npm:36.0.6"
+"eslint-plugin-jsdoc@npm:~36.0.7":
+  version: 36.0.7
+  resolution: "eslint-plugin-jsdoc@npm:36.0.7"
   dependencies:
     "@es-joy/jsdoccomment": 0.10.7
     comment-parser: 1.2.3
@@ -7719,7 +7736,7 @@ __metadata:
     spdx-expression-parse: ^3.0.1
   peerDependencies:
     eslint: ^6.0.0 || ^7.0.0
-  checksum: f64666158868e6cda1e53dbdb67d6a44f29575fd4ed322cccc3b4848c3c7741ebdfbb87252d7babb328bc707cd07cee8a2c679ef612b8a0586da779155d1933d
+  checksum: bc2bf61c5cda92f1881db36addb16cbbddedec9a6251e414583ccbdb982369485f3c8adbbed7f54152d1d3e26ec9b4cdc622c2011798ecca73c40b865e476f43
   languageName: node
   linkType: hard
 
@@ -7757,9 +7774,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-vue@npm:~7.15.1":
-  version: 7.15.1
-  resolution: "eslint-plugin-vue@npm:7.15.1"
+"eslint-plugin-vue@npm:~7.16.0":
+  version: 7.16.0
+  resolution: "eslint-plugin-vue@npm:7.16.0"
   dependencies:
     eslint-utils: ^2.1.0
     natural-compare: ^1.4.0
@@ -7767,7 +7784,7 @@ __metadata:
     vue-eslint-parser: ^7.10.0
   peerDependencies:
     eslint: ^6.2.0 || ^7.0.0
-  checksum: 8b5845a9f9d2e35d733cb944a2b210e02042139f47d680034acb3017b1bebdb2793aab4c5c6c98c0588d3bac53330b0aada5f429a57cd2deb0e9ed88236915a3
+  checksum: b60ed545eaa2f84c41cc09ed2213e698af2d81be4672c34d82a725fecb709f279b5868cc879194b7bf93dd7c19e1cba3f429b2756ac213f50aa2488b33d5765d
   languageName: node
   linkType: hard
 
@@ -10463,6 +10480,15 @@ fsevents@^1.2.7:
   dependencies:
     has: ^1.0.3
   checksum: e007de6ca5c391f8a669b9335192967d8815f9119f97d81fc4cde07febe09143263bc0146e86e813120223ea9a034cf0608d15b53b0269e19b4dc0a220ce0b4f
+  languageName: node
+  linkType: hard
+
+"is-core-module@npm:^2.6.0":
+  version: 2.6.0
+  resolution: "is-core-module@npm:2.6.0"
+  dependencies:
+    has: ^1.0.3
+  checksum: 183b3b96fed19822b13959876b0317e61fc2cb5ebcbc21639904c81f7ae328af57f8e18cc4750a9c4abebd686130c70d34a89521e57dbe002edfa4614507ce18
   languageName: node
   linkType: hard
 
@@ -13777,7 +13803,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"object.values@npm:^1.1.0, object.values@npm:^1.1.3":
+"object.values@npm:^1.1.0, object.values@npm:^1.1.4":
   version: 1.1.4
   resolution: "object.values@npm:1.1.4"
   dependencies:
@@ -17232,13 +17258,13 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"supertest@npm:~6.1.4":
-  version: 6.1.4
-  resolution: "supertest@npm:6.1.4"
+"supertest@npm:~6.1.6":
+  version: 6.1.6
+  resolution: "supertest@npm:6.1.6"
   dependencies:
     methods: ^1.1.2
     superagent: ^6.1.0
-  checksum: be2a06421f47a9ca2d90ac50f085b6d34eaee55e7c1df7e0445ae9048f0acb5b084c012e7b30d44efd172201155b7cfc2862ba25814ab38037cece0eeafe22ef
+  checksum: 51d11b794a022b49f0f9664e6d8ffef5e8d18467f65d2b4326e52ec96f0801d7066bf9a97eb06e8b6cd3eb6f662ee5bed937cd5764ab0617a822d7ee4c72ff36
   languageName: node
   linkType: hard
 
@@ -17817,7 +17843,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"tsconfig-paths@npm:^3.9.0":
+"tsconfig-paths@npm:^3.10.1":
   version: 3.10.1
   resolution: "tsconfig-paths@npm:3.10.1"
   dependencies:
