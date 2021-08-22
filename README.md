@@ -43,6 +43,7 @@
       value `"mariadb"` is supported, and for development `"sqlite"` is
       additionally supported.
     * (MariaDB only) `database.host` Hostname to connect to
+    * (MariaDB only) `database.port` Port to connect to
     * (MariaDB only) `database.database` DB name
     * (MariaDB only) `database.username` Username
     * (MariaDB only) `database.password` Password
@@ -53,6 +54,8 @@
   if desired, in which case the following environment variables will be read,
   allowing for easy integration with docker:
 
+    * MARIADB_HOST
+    * MARIADB_PORT
     * MARIADB_DATABASE
     * MARIADB_USER
     * MARIADB_PASSWORD

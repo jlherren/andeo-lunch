@@ -8,6 +8,6 @@ RUN mkdir -p /srv/andeo-lunch/backend
 WORKDIR /srv/andeo-lunch/backend
 COPY --from=backend-build /build/node_modules /srv/andeo-lunch/node_modules
 COPY --from=backend-build /build/backend      /srv/andeo-lunch/backend
-RUN mv config-docker.json config.json
+RUN echo '{"database": {"dialect": "mariadb"}, "bind": "0.0.0.0"}' > config.json
 EXPOSE 3000
 CMD ["node", "src/lunchMoney.js"]

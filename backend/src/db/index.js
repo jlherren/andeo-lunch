@@ -13,6 +13,8 @@ exports.sequelize = null;
 const MAX_CONNECTION_ATTEMPTS = 20;
 
 const ENV_FALLBACKS = {
+    host:     'MARIADB_HOST',
+    port:     'MARIADB_PORT',
     database: 'MARIADB_DATABASE',
     username: 'MARIADB_USER',
     password: 'MARIADB_PASSWORD',
