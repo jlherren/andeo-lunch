@@ -108,23 +108,26 @@ Run these from the `app/` directory.
 - `yarn lint:fix` Run linter and fix automatically
 - `yarn ui` Launch Vue UI
 
-## Cypress setup
+## Run cypress tests
 
-1. Navigate to the `app` directory
+Cypress tests are run against a full build running in docker images.
 
-2. Create a `cypress.env.json` file where you add this content, replacing
-   "TestUserName" and "TestUserPassword" with the values you entered when
-   running `db:createUser`:
+1. Build the docker images used for the Cypress tests:
 
-        {
-            "username": "TestUserName",
-            "password": "TestUserPassword"
-        }
+       ./docker/build-docker-cypress.sh
 
-3. Open the test runner with
+2. Start the containers to obtain a fully functional Andeo Lunch instance:
 
-       yarn run cypress open
+       ./cypress/start-cypress-container.sh
 
-4. Furthermore, you can run the test in the command line
+3. Open the Cypress GUI
 
-       yarn run cypress run
+       yarn workspace andeo-lunch-cypress run cypress:open
+
+Important: Modifications to tests will have effect immediately, but
+modifications to the app or backend will not have effect and will require the
+image to be re-build and re-started.
+
+To shut down the docker containers again:
+
+    ./cypress/start-cypress-container.sh
