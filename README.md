@@ -130,4 +130,4 @@ image to be re-build and re-started.
 
 To shut down the docker containers again:
 
-    ./cypress/start-cypress-container.sh
+    ./cypress/stop-cypress-container.sh
