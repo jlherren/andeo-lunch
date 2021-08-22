@@ -1,0 +1,12 @@
+{
+    "baseUrl": "http://127.0.0.1:53768",
+    "downloadsFolder": "downloads",
+    "fixturesFolder": "fixtures",
+    "integrationFolder": "integration",
+    "pluginsFile": "plugins/index.js",
+    "screenshotsFolder": "screenshots",
+    "supportFile": "support/index.js",
+    "videosFolder": "videos",
+    "viewportHeight": 600,
+    "viewportWidth": 420
+}

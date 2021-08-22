@@ -1,0 +1,34 @@
+version: '3.6'
+
+# Docker compose to set up the testing instance
+
+services:
+    db:
+        image: mariadb:10.3
+        environment:
+            MARIADB_RANDOM_ROOT_PASSWORD: 1
+            MARIADB_ROOT_HOST: localhost
+            MARIADB_DATABASE: andeolunchtest
+            MARIADB_USER: andeolunchtest
+            MARIADB_PASSWORD: andeolunchtest
+        ports:
+            # Expose DB so Cypress can directly mess with it
+            - '52476:3306'
+
+    backend:
+        image: andeo-lunch-backend-cypress
+        environment:
+            MARIADB_HOST: db
+            MARIADB_DATABASE: andeolunchtest
+            MARIADB_USER: andeolunchtest
+            MARIADB_PASSWORD: andeolunchtest
+            ANDEO_LUNCH_CYPRESS: 1
+        depends_on:
+            - db
+
+    app:
+        image: andeo-lunch-app-cypress
+        ports:
+            - '53768:80'
+        depends_on:
+            - backend

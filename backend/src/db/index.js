@@ -80,23 +80,36 @@ exports.connect = async function connect(options, sequelizeOptions) {
     Models.initModels(exports.sequelize);
 
     if (options.migrate) {
-        // Apply migrations
-        const umzug = new Umzug({
-            migrations:     {
-                path:    path.join(__dirname, '../../migrations'),
-                params:  [
-                    exports.sequelize,
-                ],
-                pattern: /^\d{4}-\d{2}-\d{2} \d{2} .*\.js$/u,
-            },
-            storage:        'sequelize',
-            storageOptions: {
-                sequelize: exports.sequelize,
-            },
-            logging:        options.quiet ? () => null : console.log,
-        });
-        await umzug.up();
+        await applyMigrations(exports.sequelize, options.quiet);
     }
 
     return exports.sequelize;
 };
+
+/**
+ * Apply migrations to the DB
+ *
+ * @param {Sequelize} sequelize
+ * @param {boolean} quiet
+ * @returns {Promise<void>}
+ */
+async function applyMigrations(sequelize, quiet) {
+    // Apply migrations
+    const umzug = new Umzug({
+        migrations:     {
+            path:    path.join(__dirname, '../../migrations'),
+            params:  [
+                sequelize,
+            ],
+            pattern: /^\d{4}-\d{2}-\d{2} \d{2} .*\.js$/u,
+        },
+        storage:        'sequelize',
+        storageOptions: {
+            sequelize: sequelize,
+        },
+        logging:        quiet ? () => null : console.log,
+    });
+    await umzug.up();
+}
+
+exports.applyMigrations = applyMigrations;

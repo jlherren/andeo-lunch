@@ -14,7 +14,7 @@ cd $(dirname "$0")/..
 
 docker build \
     --pull \
-    -t andeo-lunch-app \
+    -t andeo-lunch-app${DOCKER_IMAGE_SUFFIX:-} \
     --build-arg VUE_APP_BACKEND_URL="$VUE_APP_BACKEND_URL" \
     --build-arg VUE_APP_BRANDING_TITLE="$VUE_APP_BRANDING_TITLE" \
     -f docker/Dockerfile.app \
@@ -22,6 +22,6 @@ docker build \
 
 docker build \
     --pull \
-    -t andeo-lunch-backend \
+    -t andeo-lunch-backend${DOCKER_IMAGE_SUFFIX:-} \
     -f docker/Dockerfile.backend \
     .

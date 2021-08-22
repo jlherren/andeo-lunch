@@ -17,6 +17,13 @@ const RouteUtils = require('./routes/route-utils');
 const Db = require('./db');
 const ConfigProvider = require('./configProvider');
 
+const URLS_WITHOUT_AUTH = [
+    '/api/account/check',
+    '/api/account/login',
+    '/api/migrate',
+    '/api/version',
+];
+
 /**
  * Main app class
  */
@@ -94,7 +101,7 @@ class LunchMoney {
         });
 
         this.app.use(async (ctx, next) => {
-            if (!['/api/account/login', '/api/account/check', '/api/version'].includes(ctx.request.url)) {
+            if (!URLS_WITHOUT_AUTH.includes(ctx.request.url)) {
                 await RouteUtils.requireUser(ctx);
             }
             return next();
@@ -112,6 +119,13 @@ class LunchMoney {
      */
     async waitReady() {
         await this.sequelizePromise;
+    }
+
+    /**
+     * Re-apply DB migrations (used during testing only)
+     */
+    async reapplyMigrations() {
+        await Db.applyMigrations(await this.sequelizePromise, this.options.quiet);
     }
 
     /**

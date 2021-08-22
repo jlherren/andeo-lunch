@@ -9,7 +9,6 @@ module.exports = {
         'eslint:recommended',
         'plugin:jsdoc/recommended',
         'plugin:vue/essential',
-        'plugin:cypress/recommended',
         // '@vue/standard',
     ],
     parserOptions: {

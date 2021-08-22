@@ -28,11 +28,27 @@ async function getPayUpDefaultRecipient(ctx) {
 }
 
 /**
+ * @param {Application.Context} ctx
+ * @returns {Promise<void>}
+ */
+async function migrate(ctx) {
+    if (!process.env.ANDEO_LUNCH_CYPRESS) {
+        ctx.throw(410, 'This endpoint only exists in testing environments');
+    }
+
+    await ctx.lunchMoney.reapplyMigrations();
+    ctx.body = {
+        success: true,
+    };
+}
+
+/**
  * @param {Router} router
  */
 function register(router) {
     router.get('/version', getVersion);
     router.get('/pay-up/default-recipient', getPayUpDefaultRecipient);
+    router.get('/migrate', migrate);
 }
 
 exports.register = register;

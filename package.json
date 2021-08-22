@@ -2,9 +2,17 @@
     "name": "andeo-lunch",
     "workspaces": [
         "app",
-        "backend"
+        "backend",
+        "cypress"
     ],
+    "engines": {
+        "node": ">= 14.0.0"
+    },
     "scripts": {
-        "check": "yarn dedupe --check && yarn workspace andeo-lunch-app run lint && yarn workspace andeo-lunch-backend run lint && yarn workspace andeo-lunch-backend run test"
+        "check": "yarn check:global && yarn check:app && yarn check:backend && yarn check:cypress",
+        "check:global": "yarn install --immutable && yarn dedupe --check",
+        "check:app": "yarn workspace andeo-lunch-app run lint",
+        "check:backend": "yarn workspace andeo-lunch-backend run lint && yarn workspace andeo-lunch-backend run test",
+        "check:cypress": "yarn workspace andeo-lunch-cypress run lint"
     }
 }
