@@ -2,10 +2,10 @@
 
 set -e
 
-if [[ -z "$VUE_APP_BACKEND_URL" ]]; then
+if [[ -z "$VUE_APP_BACKEND_URL" || -z "$VUE_APP_BRANDING_TITLE" ]]; then
     echo ''
-    echo 'ERROR: VUE_APP_BACKEND_URL is not set, cannot build.'
-    echo '       (and no, app/.env will not be used for building).'
+    echo 'ERROR: Necessary VUE_APP_* variables are not set, cannot build.'
+    echo '       (app/.env will NOT be used for building!)'
     echo ''
     exit 1
 fi
