@@ -14,5 +14,6 @@
         "check:app": "yarn workspace andeo-lunch-app run lint",
         "check:backend": "yarn workspace andeo-lunch-backend run lint && yarn workspace andeo-lunch-backend run test",
         "check:cypress": "yarn workspace andeo-lunch-cypress run lint"
-    }
+    },
+    "packageManager": "yarn@3.0.1"
 }
