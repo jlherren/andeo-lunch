@@ -9,13 +9,13 @@
                         <v-select v-model="sender" label="Sender"
                                   :items="users" item-text="name" item-value="id"
                                   :rules="senderRules"
-                                  :prepend-icon="$icons.account"/>
+                                  :append-icon="$icons.account"/>
                     </v-col>
                     <v-col>
                         <v-select v-model="recipient" label="Recipient"
                                   :items="users" item-text="name" item-value="id"
                                   :rules="recipientRules"
-                                  :prepend-icon="$icons.account"/>
+                                  :append-icon="$icons.account"/>
                     </v-col>
                 </v-row>
 
@@ -23,7 +23,7 @@
                     <v-col>
                         <v-text-field type="number" v-model="amount" label="Amount"
                                       min="0" :rules="amountRules"
-                                      class="no-spinner" :prepend-icon="currency === 'money' ? $icons.money : $icons.points"/>
+                                      class="no-spinner" :append-icon="currency === 'money' ? $icons.money : $icons.points"/>
                     </v-col>
                     <v-col>
                         <v-btn-toggle v-model="currency" class="full-width" mandatory>
