@@ -27,7 +27,7 @@ const URLS_WITHOUT_AUTH = [
 /**
  * Main app class
  */
-class LunchMoney {
+class AndeoLunch {
     /**
      * @param {Object<string, any>} [options]
      * @param {Config} options.config
@@ -94,9 +94,9 @@ class LunchMoney {
             return next();
         });
 
-        // Provide the LunchMoney instance to all controllers
+        // Provide the AndeoLunch instance to all controllers
         this.app.use((ctx, next) => {
-            ctx.lunchMoney = this;
+            ctx.andeoLunch = this;
             return next();
         });
 
@@ -192,7 +192,7 @@ async function main() {
     console.log(chalk.bold('Starting Andeo Lunch backend...'));
 
     let mainConfig = await ConfigProvider.getMainConfig();
-    let lm = new LunchMoney({
+    let lm = new AndeoLunch({
         config:  mainConfig,
         logging: true,
     });
@@ -216,4 +216,4 @@ if (!module.parent) {
     main();
 }
 
-module.exports = LunchMoney;
+module.exports = AndeoLunch;

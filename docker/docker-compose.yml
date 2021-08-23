@@ -23,7 +23,7 @@ services:
             - db-user-password
         volumes:
             - ./data:/var/lib/mysql
-            - ./lunchmoney.cnf:/etc/mysql/mariadb.conf.d/lunchmoney.cnf
+            - ./andeolunch.cnf:/etc/mysql/mariadb.conf.d/andeolunch.cnf
 
     backend:
         image: andeo-lunch-backend

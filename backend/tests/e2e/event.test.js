@@ -2,14 +2,14 @@
 
 const supertest = require('supertest');
 
-const LunchMoney = require('../../src/lunchMoney');
+const AndeoLunch = require('../../src/andeoLunch');
 const ConfigProvider = require('../../src/configProvider');
 const Constants = require('../../src/constants');
 const Models = require('../../src/db/models');
 const Helper = require('./helper');
 
-/** @type {LunchMoney|null} */
-let lunchMoney = null;
+/** @type {AndeoLunch|null} */
+let andeoLunch = null;
 /** @type {supertest.SuperTest|null} */
 let request = null;
 /** @type {string|null} */
@@ -18,11 +18,11 @@ let jwt = null;
 let user = null;
 
 beforeEach(async () => {
-    lunchMoney = new LunchMoney({
+    andeoLunch = new AndeoLunch({
         config: await ConfigProvider.getTestConfig(),
         quiet:  true,
     });
-    await lunchMoney.waitReady();
+    await andeoLunch.waitReady();
     let username = 'test-user';
     user = await Models.User.create({
         username,
@@ -30,7 +30,7 @@ beforeEach(async () => {
         active:   true,
         name:     'Test User 1',
     });
-    request = supertest.agent(lunchMoney.listen());
+    request = supertest.agent(andeoLunch.listen());
     if (jwt === null) {
         let response = await request.post('/api/account/login')
             .send({username, password: Helper.password});
@@ -40,7 +40,7 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
-    await lunchMoney.close();
+    await andeoLunch.close();
 });
 
 const minimalEvent = {

@@ -1,24 +1,24 @@
 'use strict';
 
 const Models = require('../../src/db/models');
-const LunchMoney = require('../../src/lunchMoney');
+const AndeoLunch = require('../../src/andeoLunch');
 const Constants = require('../../src/constants');
 const TransactionRebuilder = require('../../src/transactionRebuilder');
 const ConfigProvider = require('../../src/configProvider');
 
-/** @type {LunchMoney|null} */
-let lunchMoney = null;
+/** @type {AndeoLunch|null} */
+let andeoLunch = null;
 
 beforeEach(async () => {
-    lunchMoney = new LunchMoney({
+    andeoLunch = new AndeoLunch({
         config: await ConfigProvider.getTestConfig(),
         quiet:  true,
     });
-    await lunchMoney.waitReady();
+    await andeoLunch.waitReady();
 });
 
 afterEach(async () => {
-    await lunchMoney.close();
+    await andeoLunch.close();
 });
 
 /**

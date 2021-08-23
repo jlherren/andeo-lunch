@@ -2,7 +2,7 @@
 
 const chalk = require('chalk');
 
-const LunchMoney = require('../lunchMoney');
+const AndeoLunch = require('../andeoLunch');
 const ConfigProvider = require('../configProvider');
 const Validator = require('../../src/db/validator');
 const {diff} = require('jest-diff');
@@ -15,9 +15,9 @@ const {diff} = require('jest-diff');
 async function validateDb() {
     console.log(chalk.bold('DB structure validator'));
 
-    let lunchMoney = new LunchMoney({config: await ConfigProvider.getMainConfig()});
-    await lunchMoney.waitReady();
-    let sequelize = await lunchMoney.sequelizePromise;
+    let andeoLunch = new AndeoLunch({config: await ConfigProvider.getMainConfig()});
+    await andeoLunch.waitReady();
+    let sequelize = await andeoLunch.sequelizePromise;
     let hasError = false;
 
     try {
@@ -37,7 +37,7 @@ async function validateDb() {
         console.error(err.message);
     }
 
-    await lunchMoney.close();
+    await andeoLunch.close();
 
     process.exitCode = hasError ? 1 : 0;
 }

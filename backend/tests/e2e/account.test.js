@@ -3,13 +3,13 @@
 const supertest = require('supertest');
 const JsonWebToken = require('jsonwebtoken');
 
-const LunchMoney = require('../../src/lunchMoney');
+const AndeoLunch = require('../../src/andeoLunch');
 const ConfigProvider = require('../../src/configProvider');
 const Models = require('../../src/db/models');
 const AuthUtils = require('../../src/authUtils');
 
-/** @type {LunchMoney|null} */
-let lunchMoney = null;
+/** @type {AndeoLunch|null} */
+let andeoLunch = null;
 /** @type {supertest.SuperTest|null} */
 let request = null;
 /** @type {User|null} */
@@ -18,11 +18,11 @@ let user = null;
 let inactiveUser = null;
 
 beforeEach(async () => {
-    lunchMoney = new LunchMoney({
+    andeoLunch = new AndeoLunch({
         config: await ConfigProvider.getTestConfig(),
         quiet:  true,
     });
-    await lunchMoney.waitReady();
+    await andeoLunch.waitReady();
     [user, inactiveUser] = await Models.User.bulkCreate([{
         username: 'testuser',
         password: await AuthUtils.hashPassword('abc123'),
@@ -34,11 +34,11 @@ beforeEach(async () => {
         active:   false,
         name:     'Inactive User',
     }]);
-    request = supertest(lunchMoney.listen());
+    request = supertest(andeoLunch.listen());
 });
 
 afterEach(async () => {
-    await lunchMoney.close();
+    await andeoLunch.close();
 });
 
 describe('account login route', () => {

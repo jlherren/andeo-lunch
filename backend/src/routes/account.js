@@ -25,7 +25,7 @@ async function login(ctx) {
     let user = await Models.User.findOne({where: {username: requestBody.username}});
     if (user !== null && user.active) {
         if (await AuthUtils.comparePassword(requestBody.password, user.password)) {
-            let config = ctx.lunchMoney.getConfig();
+            let config = ctx.andeoLunch.getConfig();
             let secret = await AuthUtils.getSecret();
             let token = await user.generateToken(secret, {expiresIn: config.tokenExpiry});
             ctx.body = {
@@ -47,7 +47,7 @@ async function login(ctx) {
  * @returns {Promise<void>}
  */
 async function renew(ctx) {
-    let config = ctx.lunchMoney.getConfig();
+    let config = ctx.andeoLunch.getConfig();
     let secret = await AuthUtils.getSecret();
     let token = await ctx.user.generateToken(secret, {expiresIn: config.tokenExpiry});
     ctx.body = {token};

@@ -2,26 +2,26 @@
 
 const supertest = require('supertest');
 
-const LunchMoney = require('../../src/lunchMoney');
+const AndeoLunch = require('../../src/andeoLunch');
 const PackageJson = require('../../package');
 const ConfigProvider = require('../../src/configProvider');
 
-/** @type {LunchMoney|null} */
-let lunchMoney = null;
+/** @type {AndeoLunch|null} */
+let andeoLunch = null;
 /** @type {supertest.SuperTest|null} */
 let request = null;
 
 beforeEach(async () => {
-    lunchMoney = new LunchMoney({
+    andeoLunch = new AndeoLunch({
         config: await ConfigProvider.getTestConfig(),
         quiet:  true,
     });
-    await lunchMoney.waitReady();
-    request = supertest.agent(lunchMoney.listen());
+    await andeoLunch.waitReady();
+    request = supertest.agent(andeoLunch.listen());
 });
 
 afterEach(async () => {
-    await lunchMoney.close();
+    await andeoLunch.close();
 });
 
 describe('misc route tests', () => {

@@ -5,7 +5,7 @@ const {sprintf} = require('sprintf-js');
 
 const Models = require('../db/models');
 const Cli = require('../cli');
-const LunchMoney = require('../lunchMoney');
+const AndeoLunch = require('../andeoLunch');
 const ConfigProvider = require('../configProvider');
 
 /**
@@ -54,8 +54,8 @@ async function savePaymentInfo(userId, paymentInfo) {
 async function setPaymentInfo() {
     console.log(chalk.bold('Update payment information'));
 
-    let lunchMoney = new LunchMoney({config: await ConfigProvider.getMainConfig()});
-    await lunchMoney.waitReady();
+    let andeoLunch = new AndeoLunch({config: await ConfigProvider.getMainConfig()});
+    await andeoLunch.waitReady();
 
     let cli = new Cli();
     try {
@@ -111,7 +111,7 @@ async function setPaymentInfo() {
     }
 
     cli.close();
-    await lunchMoney.close();
+    await andeoLunch.close();
 }
 
 // noinspection JSIgnoredPromiseFromCall

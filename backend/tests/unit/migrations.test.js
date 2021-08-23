@@ -1,6 +1,6 @@
 'use strict';
 
-const LunchMoney = require('../../src/lunchMoney');
+const AndeoLunch = require('../../src/andeoLunch');
 const ConfigProvider = require('../../src/configProvider');
 const Validator = require('../../src/db/validator');
 
@@ -12,17 +12,17 @@ describe('Migration test', () => {
             return;
         }
 
-        let lunchMoney = null;
+        let andeoLunch = null;
         try {
-            lunchMoney = new LunchMoney({
+            andeoLunch = new AndeoLunch({
                 config,
                 quiet: true,
             });
-            await lunchMoney.waitReady();
+            await andeoLunch.waitReady();
             // This test has otherwise no assertions...
             expect(true).toBe(true);
         } finally {
-            await lunchMoney?.close();
+            await andeoLunch?.close();
         }
     });
 
@@ -34,15 +34,15 @@ describe('Migration test', () => {
         }
 
         // Get DB dump after initializing models
-        let lunchMoney = null;
+        let andeoLunch = null;
         try {
-            lunchMoney = new LunchMoney({
+            andeoLunch = new AndeoLunch({
                 config,
                 migrate: false,
                 quiet:   true,
             });
-            await lunchMoney.waitReady();
-            let sequelize = await lunchMoney.sequelizePromise;
+            await andeoLunch.waitReady();
+            let sequelize = await andeoLunch.sequelizePromise;
             await sequelize.sync();
             let dbTables = await Validator.getCreateTableStatementsFromDb(sequelize);
             let refTables = await Validator.getReferenceCreateTableStatements();
@@ -51,7 +51,7 @@ describe('Migration test', () => {
                 expect(dbTables[table]).toEqual(refTables[table]);
             }
         } finally {
-            await lunchMoney?.close();
+            await andeoLunch?.close();
         }
     });
 
@@ -63,14 +63,14 @@ describe('Migration test', () => {
         }
 
         // Get DB dump after applying all migrations
-        let lunchMoney = null;
+        let andeoLunch = null;
         try {
-            lunchMoney = new LunchMoney({
+            andeoLunch = new AndeoLunch({
                 config,
                 quiet: true,
             });
-            await lunchMoney.waitReady();
-            let sequelize = await lunchMoney.sequelizePromise;
+            await andeoLunch.waitReady();
+            let sequelize = await andeoLunch.sequelizePromise;
             let dbTables = await Validator.getCreateTableStatementsFromDb(sequelize);
             let refTables = await Validator.getReferenceCreateTableStatements();
             let tables = [...new Set(Object.keys(dbTables).concat(Object.keys(refTables)))];
@@ -78,7 +78,7 @@ describe('Migration test', () => {
                 expect(dbTables[table]).toEqual(refTables[table]);
             }
         } finally {
-            await lunchMoney?.close();
+            await andeoLunch?.close();
         }
     });
 });

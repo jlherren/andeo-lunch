@@ -4,7 +4,7 @@ const chalk = require('chalk');
 
 const Models = require('../db/models');
 const Cli = require('../cli');
-const LunchMoney = require('../lunchMoney');
+const AndeoLunch = require('../andeoLunch');
 const ConfigProvider = require('../configProvider');
 const AuthUtils = require('../authUtils');
 
@@ -16,8 +16,8 @@ const AuthUtils = require('../authUtils');
 async function createUser() {
     console.log(chalk.bold('Creating new user'));
 
-    let lunchMoney = new LunchMoney({config: await ConfigProvider.getMainConfig()});
-    await lunchMoney.waitReady();
+    let andeoLunch = new AndeoLunch({config: await ConfigProvider.getMainConfig()});
+    await andeoLunch.waitReady();
     let cli = new Cli();
 
     try {
@@ -51,7 +51,7 @@ async function createUser() {
     }
 
     cli.close();
-    await lunchMoney.close();
+    await andeoLunch.close();
 }
 
 // noinspection JSIgnoredPromiseFromCall

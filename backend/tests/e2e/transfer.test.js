@@ -2,14 +2,14 @@
 
 const supertest = require('supertest');
 
-const LunchMoney = require('../../src/lunchMoney');
+const AndeoLunch = require('../../src/andeoLunch');
 const ConfigProvider = require('../../src/configProvider');
 const Constants = require('../../src/constants');
 const Models = require('../../src/db/models');
 const Helper = require('./helper');
 
-/** @type {LunchMoney|null} */
-let lunchMoney = null;
+/** @type {AndeoLunch|null} */
+let andeoLunch = null;
 /** @type {supertest.SuperTest|null} */
 let request = null;
 /** @type {User|null} */
@@ -26,11 +26,11 @@ const minimalEvent = {
 };
 
 beforeEach(async () => {
-    lunchMoney = new LunchMoney({
+    andeoLunch = new AndeoLunch({
         config: await ConfigProvider.getTestConfig(),
         quiet:  true,
     });
-    await lunchMoney.waitReady();
+    await andeoLunch.waitReady();
     [user1, user2] = await Models.User.bulkCreate([{
         username: 'test-user-1',
         password: Helper.passwordHash,
@@ -42,7 +42,7 @@ beforeEach(async () => {
         active:   true,
         name:     'Test User 2',
     }]);
-    request = supertest.agent(lunchMoney.listen());
+    request = supertest.agent(andeoLunch.listen());
     let response = await request.post('/api/account/login')
         .send({username: user1.username, password: Helper.password});
     jwt = response.body.token;
@@ -50,7 +50,7 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
-    await lunchMoney.close();
+    await andeoLunch.close();
 });
 
 describe('Manipulate transfer events', () => {

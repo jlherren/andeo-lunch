@@ -2,7 +2,7 @@
 
 const chalk = require('chalk');
 
-const LunchMoney = require('../lunchMoney');
+const AndeoLunch = require('../andeoLunch');
 const Transaction = require('../transactionRebuilder');
 const Models = require('../db/models');
 const ConfigProvider = require('../configProvider');
@@ -15,9 +15,9 @@ const ConfigProvider = require('../configProvider');
 async function rebuildTransactions() {
     console.log(chalk.bold('Rebuilding transactions and balances...'));
 
-    let lunchMoney = new LunchMoney({config: await ConfigProvider.getMainConfig()});
-    await lunchMoney.waitReady();
-    let sequelize = await lunchMoney.sequelizePromise;
+    let andeoLunch = new AndeoLunch({config: await ConfigProvider.getMainConfig()});
+    await andeoLunch.waitReady();
+    let sequelize = await andeoLunch.sequelizePromise;
 
     try {
         await sequelize.transaction(async transaction => {
@@ -47,7 +47,7 @@ async function rebuildTransactions() {
         console.error(err.message);
     }
 
-    await lunchMoney.close();
+    await andeoLunch.close();
 }
 
 // noinspection JSIgnoredPromiseFromCall

@@ -36,7 +36,7 @@ async function migrate(ctx) {
         ctx.throw(410, 'This endpoint only exists in testing environments');
     }
 
-    await ctx.lunchMoney.reapplyMigrations();
+    await ctx.andeoLunch.reapplyMigrations();
     ctx.body = {
         success: true,
     };

@@ -1,25 +1,25 @@
 'use strict';
 
-const LunchMoney = require('../../src/lunchMoney');
+const AndeoLunch = require('../../src/andeoLunch');
 const Models = require('../../src/db/models');
 const Constants = require('../../src/constants');
 const ConfigProvider = require('../../src/configProvider');
 const Db = require('../../src/db');
 const TransactionRebuilder = require('../../src/transactionRebuilder');
 
-/** @type {LunchMoney|null} */
-let lunchMoney = null;
+/** @type {AndeoLunch|null} */
+let andeoLunch = null;
 
 beforeEach(async () => {
-    lunchMoney = new LunchMoney({
+    andeoLunch = new AndeoLunch({
         config: await ConfigProvider.getTestConfig(),
         quiet:  true,
     });
-    await lunchMoney.waitReady();
+    await andeoLunch.waitReady();
 });
 
 afterEach(async () => {
-    await lunchMoney.close();
+    await andeoLunch.close();
 });
 
 it('Creates a sane empty DB', async () => {
