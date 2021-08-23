@@ -60,8 +60,8 @@ async function renew(ctx) {
 async function check(ctx) {
     let user = await RouteUtils.getUser(ctx);
     ctx.body = {
-        userId:   user?.id,
-        username: user?.username,
+        userId:   user?.id ?? null,
+        username: user?.username ?? null,
     };
 }
 
