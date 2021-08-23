@@ -35,14 +35,18 @@ exports.makeSingleObjectController = function makeSingleObjectController(options
  * @param {object} options Options
  * @param {typeof Model} options.model Model class of the object
  * @param {Function} options.mapper Mapper function for the DB row to returned object
- * @param {object} [options.where] Additional WHERE string
+ * @param {object} [options.where] Additional WHERE condition
+ * @param {Array<Array<string>>} [options.order] Additional ORDER BY
  * @returns {Function}
  */
 exports.makeObjectListController = function makeObjectListController(options) {
     let plural = `${options.model.name.toLowerCase()}s`;
 
     return async function (ctx) {
-        let objects = await options.model.findAll({where: options.where});
+        let objects = await options.model.findAll({
+            where: options.where,
+            order: options.order,
+        });
         ctx.body = {
             [plural]: objects.map(object => options.mapper(object)),
         };

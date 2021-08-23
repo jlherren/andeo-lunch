@@ -84,6 +84,9 @@ exports.register = function register(router) {
         where:  {
             hidden: 0,
         },
+        order: [
+            ['name', 'ASC'],
+        ]
     };
     router.get('/users', Factory.makeObjectListController(opts));
     router.get('/users/:user(\\d+)', Factory.makeSingleObjectController(opts));
