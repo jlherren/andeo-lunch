@@ -23,9 +23,9 @@ async function editUser() {
 
     try {
         let users = await Models.User.findAll({order: [['id', 'ASC']]});
-        console.log('\nID  Username          Display name');
+        console.log('\nID  Act  Username          Display name');
         for (let user of users) {
-            console.log(sprintf('%-2d  %-16s  %s', user.id, user.username, user.name));
+            console.log(sprintf('%-2d  %-3s  %-16s  %s', user.id, user.active ? 'Y' : 'N', user.username, user.name));
         }
         console.log('');
 
@@ -54,6 +54,14 @@ async function editUser() {
             user.password = await AuthUtils.hashPassword(password);
             await user.save();
             console.log('Password updated');
+        }
+
+        console.log('');
+        let prompt = user.active ? 'Deactivate user?' : 'Activate user?';
+        if (await cli.question(prompt + ' (y/N)') === 'y') {
+            user.active = !user.active;
+            await user.save();
+            console.log('User updated');
         }
     } catch (err) {
         console.error(err.message);
