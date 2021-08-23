@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -euo pipefail
 
 MARIADB_PORT=51576
 DB_IMAGE_NAME=andeo-lunch-test-db
