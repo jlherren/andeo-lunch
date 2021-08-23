@@ -17,7 +17,7 @@ async function rebuildTransactions() {
 
     let andeoLunch = new AndeoLunch({config: await ConfigProvider.getMainConfig()});
     await andeoLunch.waitReady();
-    let sequelize = await andeoLunch.sequelizePromise;
+    let sequelize = await andeoLunch.getSequelize();
 
     try {
         await sequelize.transaction(async transaction => {

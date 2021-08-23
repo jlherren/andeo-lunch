@@ -42,7 +42,7 @@ describe('Migration test', () => {
                 quiet:   true,
             });
             await andeoLunch.waitReady();
-            let sequelize = await andeoLunch.sequelizePromise;
+            let sequelize = await andeoLunch.getSequelize();
             await sequelize.sync();
             let dbTables = await Validator.getCreateTableStatementsFromDb(sequelize);
             let refTables = await Validator.getReferenceCreateTableStatements();
@@ -70,7 +70,7 @@ describe('Migration test', () => {
                 quiet: true,
             });
             await andeoLunch.waitReady();
-            let sequelize = await andeoLunch.sequelizePromise;
+            let sequelize = await andeoLunch.getSequelize();
             let dbTables = await Validator.getCreateTableStatementsFromDb(sequelize);
             let refTables = await Validator.getReferenceCreateTableStatements();
             let tables = [...new Set(Object.keys(dbTables).concat(Object.keys(refTables)))];

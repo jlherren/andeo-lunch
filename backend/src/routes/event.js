@@ -5,7 +5,6 @@ const {Op} = require('sequelize');
 
 const Models = require('../db/models');
 const RouteUtils = require('./route-utils');
-const Db = require('../db');
 const Constants = require('../constants');
 const Utils = require('../utils');
 const TransactionRebuilder = require('../transactionRebuilder');
@@ -197,7 +196,7 @@ async function resetDefaultOptIns(event, transaction) {
 async function createEvent(ctx) {
     /** @type {ApiEvent} */
     let apiEvent = RouteUtils.validateBody(ctx, eventCreateSchema);
-    let eventId = await Db.sequelize.transaction(async transaction => {
+    let eventId = await ctx.sequelize.transaction(async transaction => {
         let type = Constants.EVENT_TYPE_IDS[apiEvent.type];
         validateEvent(ctx, type, apiEvent);
 
@@ -312,7 +311,7 @@ function loadUserFromParam(ctx, transaction) {
 async function updateEvent(ctx) {
     /** @type {ApiEvent} */
     let apiEvent = RouteUtils.validateBody(ctx, eventUpdateSchema);
-    await Db.sequelize.transaction(async transaction => {
+    await ctx.sequelize.transaction(async transaction => {
         let event = await loadEventFromParam(ctx, transaction);
         validateEvent(ctx, event.type, apiEvent);
         let originalDate = event.date;
@@ -350,7 +349,7 @@ async function updateEvent(ctx) {
 async function saveParticipation(ctx) {
     /** @type {ApiParticipation} */
     let apiParticipation = RouteUtils.validateBody(ctx, participationSchema);
-    await Db.sequelize.transaction(async transaction => {
+    await ctx.sequelize.transaction(async transaction => {
         let event = await loadEventFromParam(ctx, transaction);
 
         if (![Constants.EVENT_TYPES.LUNCH, Constants.EVENT_TYPES.SPECIAL].includes(event.type)) {
@@ -398,7 +397,7 @@ async function saveParticipation(ctx) {
  * @returns {Promise<void>}
  */
 async function deleteParticipation(ctx) {
-    let n = await Db.sequelize.transaction(async transaction => {
+    let n = await ctx.sequelize.transaction(async transaction => {
         let event = await loadEventFromParam(ctx, transaction);
         let user = await loadUserFromParam(ctx, transaction);
 
@@ -517,7 +516,7 @@ async function listEvents(ctx) {
  * @returns {Promise<void>}
  */
 async function deleteEvent(ctx) {
-    await Db.sequelize.transaction(async transaction => {
+    await ctx.sequelize.transaction(async transaction => {
         let event = await loadEventFromParam(ctx, transaction);
         await Models.Transaction.destroy({
             transaction,
@@ -574,7 +573,7 @@ async function getTransferList(ctx) {
 async function createTransfers(ctx) {
     /** @type {Array<ApiTransfer>} */
     let apiTransfers = RouteUtils.validateBody(ctx, transfersSchema);
-    await Db.sequelize.transaction(async transaction => {
+    await ctx.sequelize.transaction(async transaction => {
         let event = await loadEventFromParam(ctx, transaction);
 
         if (event.type === Constants.EVENT_TYPES.LABEL) {
@@ -625,7 +624,7 @@ async function createTransfers(ctx) {
 async function saveTransfer(ctx) {
     /** @type {ApiTransfer} */
     let apiTransfer = RouteUtils.validateBody(ctx, transferSchema);
-    await Db.sequelize.transaction(async transaction => {
+    await ctx.sequelize.transaction(async transaction => {
         let event = await loadEventFromParam(ctx, transaction);
         let transfer = await loadTransferFromParam(ctx, transaction);
 
@@ -664,7 +663,7 @@ async function saveTransfer(ctx) {
  * @returns {Promise<void>}
  */
 async function deleteTransfer(ctx) {
-    await Db.sequelize.transaction(async transaction => {
+    await ctx.sequelize.transaction(async transaction => {
         let event = await loadEventFromParam(ctx, transaction);
         let transfer = await loadTransferFromParam(ctx, transaction);
 

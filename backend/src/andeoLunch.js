@@ -122,6 +122,13 @@ class AndeoLunch {
     }
 
     /**
+     * @returns {Promise<Sequelize>}
+     */
+    getSequelize() {
+        return this.sequelizePromise;
+    }
+
+    /**
      * Re-apply DB migrations (used during testing only)
      */
     async reapplyMigrations() {
@@ -204,7 +211,7 @@ async function main() {
 
     try {
         lm.listen();
-        await lm.sequelizePromise;
+        await lm.waitReady();
         console.log(chalk.bold('Server is ready'));
     } catch (err) {
         await lm.close();

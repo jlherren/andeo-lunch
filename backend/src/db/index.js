@@ -7,9 +7,6 @@ const Umzug = require('umzug');
 
 const Models = require('./models');
 
-/** @type {Sequelize|null} */
-exports.sequelize = null;
-
 const MAX_CONNECTION_ATTEMPTS = 20;
 
 const ENV_FALLBACKS = {
@@ -56,11 +53,11 @@ exports.connect = async function connect(options, sequelizeOptions) {
         }
     }
 
-    exports.sequelize = new Sequelize(sequelizeOptions);
+    let sequelize = new Sequelize(sequelizeOptions);
 
     for (let attempt = 0; attempt < MAX_CONNECTION_ATTEMPTS; attempt++) {
         try {
-            await exports.sequelize.authenticate();
+            await sequelize.authenticate();
         } catch (err) {
             if (err instanceof ConnectionRefusedError) {
                 // Try again, the MariaDB docker image usually takes a while when started for the first time
@@ -77,13 +74,13 @@ exports.connect = async function connect(options, sequelizeOptions) {
     }
 
     // Models need to be initialized before the migrations, since migrations may want to insert data.
-    Models.initModels(exports.sequelize);
+    Models.initModels(sequelize);
 
     if (options.migrate) {
-        await applyMigrations(exports.sequelize, options.quiet);
+        await applyMigrations(sequelize, options.quiet);
     }
 
-    return exports.sequelize;
+    return sequelize;
 };
 
 /**

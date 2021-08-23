@@ -4,7 +4,6 @@ const AndeoLunch = require('../../src/andeoLunch');
 const Models = require('../../src/db/models');
 const Constants = require('../../src/constants');
 const ConfigProvider = require('../../src/configProvider');
-const Db = require('../../src/db');
 const TransactionRebuilder = require('../../src/transactionRebuilder');
 
 /** @type {AndeoLunch|null} */
@@ -34,7 +33,8 @@ it('Creates a sane empty DB', async () => {
 });
 
 it('Correctly rebuilds user balances on an empty DB', async () => {
-    await Db.sequelize.transaction(async dbTransaction => {
+    let sequelize = await andeoLunch.getSequelize();
+    await sequelize.transaction(async dbTransaction => {
         await TransactionRebuilder.rebuildUserBalances(dbTransaction);
     });
     let systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});

@@ -17,7 +17,7 @@ async function validateDb() {
 
     let andeoLunch = new AndeoLunch({config: await ConfigProvider.getMainConfig()});
     await andeoLunch.waitReady();
-    let sequelize = await andeoLunch.sequelizePromise;
+    let sequelize = await andeoLunch.getSequelize();
     let hasError = false;
 
     try {

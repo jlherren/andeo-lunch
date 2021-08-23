@@ -5,7 +5,6 @@ const {Sequelize, Op} = require('sequelize');
 const Models = require('./db/models');
 const Utils = require('./utils');
 const Constants = require('./constants');
-const Db = require('./db');
 
 /**
  * Get the weights for points and money for a certain participation to an event
@@ -444,30 +443,17 @@ exports.rebuildUserBalances = async function rebuildUserBalances(dbTransaction) 
 /**
  * Rebuild everything regarding one event that has changed
  *
- * @param {Transaction|null} dbTransaction
+ * @param {Transaction} dbTransaction
  * @param {Event|number} event
  */
 exports.rebuildEvent = async function rebuildEvent(dbTransaction, event) {
-    /**
-     * @returns {Promise<void>}
-     */
-    async function execute() {
-        if (event.type === Constants.EVENT_TYPES.LUNCH) {
-            await exports.rebuildLunchDetails(dbTransaction, event);
-        }
-        let {earliestDate} = await exports.rebuildEventTransactions(dbTransaction, event);
-        if (earliestDate !== null) {
-            await exports.rebuildTransactionBalances(dbTransaction, earliestDate);
-            await exports.rebuildUserBalances(dbTransaction);
-        }
+    if (event.type === Constants.EVENT_TYPES.LUNCH) {
+        await exports.rebuildLunchDetails(dbTransaction, event);
     }
 
-    if (dbTransaction !== null) {
-        await execute();
-    } else {
-        await Db.sequelize.transaction(async t => {
-            dbTransaction = t;
-            await execute();
-        });
+    let {earliestDate} = await exports.rebuildEventTransactions(dbTransaction, event);
+    if (earliestDate !== null) {
+        await exports.rebuildTransactionBalances(dbTransaction, earliestDate);
+        await exports.rebuildUserBalances(dbTransaction);
     }
 };

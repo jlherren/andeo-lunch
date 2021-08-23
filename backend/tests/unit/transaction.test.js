@@ -84,11 +84,22 @@ async function createLunchWithParticipations(participants, cook, buyer) {
     return event;
 }
 
+/**
+ * @param {Event} event
+ * @returns {Promise<void>}
+ */
+async function rebuildEvent(event) {
+    let sequelize = await andeoLunch.getSequelize();
+    await sequelize.transaction(async transaction => {
+        await TransactionRebuilder.rebuildEvent(transaction, event);
+    });
+}
+
 describe('transaction tests', () => {
     it('correctly calculates a lunch for two', async () => {
         let [user1, user2] = await createUsers(2);
         let event = await createLunchWithParticipations([user1, user2], user1, user1);
-        await TransactionRebuilder.rebuildEvent(null, event);
+        await rebuildEvent(event);
         await user1.reload();
         await user2.reload();
 
@@ -106,7 +117,7 @@ describe('transaction tests', () => {
     it('reuse transactions on event modification', async () => {
         let [user1, user2] = await createUsers(2);
         let event = await createLunchWithParticipations([user1, user2], user1, user1);
-        await TransactionRebuilder.rebuildEvent(null, event);
+        await rebuildEvent(event);
 
         let transactions = await Models.Transaction.findAll();
         expect(transactions.length).toEqual(12);
@@ -114,7 +125,7 @@ describe('transaction tests', () => {
 
         // change costs and rebuild
         await event.Lunch.update({pointsCost: 12, moneyCost: 40});
-        await TransactionRebuilder.rebuildEvent(null, event);
+        await rebuildEvent(event);
 
         transactions = await Models.Transaction.findAll();
         expect(transactions.length).toEqual(12);
@@ -138,7 +149,7 @@ describe('transaction tests', () => {
             balance:    100,
         });
 
-        await TransactionRebuilder.rebuildEvent(null, event);
+        await rebuildEvent(event);
         await user1.reload();
 
         let transactions = await Models.Transaction.findAll();
@@ -166,7 +177,7 @@ describe('transaction tests', () => {
             },
         ]);
 
-        await TransactionRebuilder.rebuildEvent(null, event);
+        await rebuildEvent(event);
         await user1.reload();
         await user2.reload();
 
@@ -202,7 +213,7 @@ describe('transaction tests', () => {
             },
         ]);
 
-        await TransactionRebuilder.rebuildEvent(null, event);
+        await rebuildEvent(event);
         await user1.reload();
         await user2.reload();
         await user3.reload();
@@ -238,7 +249,7 @@ describe('transaction tests', () => {
             },
         ]);
 
-        await TransactionRebuilder.rebuildEvent(null, event);
+        await rebuildEvent(event);
         await user1.reload();
         await user2.reload();
         await user3.reload();
@@ -251,7 +262,7 @@ describe('transaction tests', () => {
     it('correctly ignores the money calculation if there is no buyers', async () => {
         let [user1, user2] = await createUsers(2);
         let event = await createLunchWithParticipations([user1, user2], user1, null);
-        await TransactionRebuilder.rebuildEvent(null, event);
+        await rebuildEvent(event);
         await user1.reload();
         await user2.reload();
         expect(user1.money).toEqual(0);
@@ -284,7 +295,7 @@ describe('transaction tests', () => {
             },
         ]);
 
-        await TransactionRebuilder.rebuildEvent(null, event);
+        await rebuildEvent(event);
         await user1.reload();
         await user2.reload();
         await user3.reload();
@@ -297,7 +308,7 @@ describe('transaction tests', () => {
     it('Correctly ignores points calculation if there is no cook', async () => {
         let [user1, user2] = await createUsers(2);
         let event = await createLunchWithParticipations([user1, user2], null, user1);
-        await TransactionRebuilder.rebuildEvent(null, event);
+        await rebuildEvent(event);
         await user1.reload();
         await user2.reload();
         expect(user1.points).toEqual(0);
@@ -316,7 +327,7 @@ describe('transaction tests', () => {
             pointsCredited: 12,
             moneyCredited:  event.Lunch.moneyCost,
         });
-        await TransactionRebuilder.rebuildEvent(null, event);
+        await rebuildEvent(event);
         await user.reload();
         expect(user.money).toEqual(0);
     });
