@@ -58,7 +58,7 @@ async function editUser() {
 
         console.log('');
         let prompt = user.active ? 'Deactivate user?' : 'Activate user?';
-        if (await cli.question(prompt + ' (y/N)') === 'y') {
+        if (await cli.question(`${prompt} (y/N)`) === 'y') {
             user.active = !user.active;
             await user.save();
             console.log('User updated');
