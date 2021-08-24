@@ -16,6 +16,8 @@ let request = null;
 let user1 = null;
 /** @type {User|null} */
 let user2 = null;
+/** @type {User|null} */
+let user3 = null;
 /** @type {string|null} */
 let jwt = null;
 
@@ -31,7 +33,7 @@ beforeEach(async () => {
         quiet:  true,
     });
     await andeoLunch.waitReady();
-    [user1, user2] = await Models.User.bulkCreate([{
+    [user1, user2, user3] = await Models.User.bulkCreate([{
         username: 'test-user-1',
         password: Helper.passwordHash,
         active:   true,
@@ -41,6 +43,11 @@ beforeEach(async () => {
         password: Helper.passwordHash,
         active:   true,
         name:     'Test User 2',
+    }, {
+        username: 'test-user-3',
+        password: Helper.passwordHash,
+        active:   true,
+        name:     'Test User 3',
     }]);
     request = supertest.agent(andeoLunch.listen());
     let response = await request.post('/api/account/login')
@@ -382,5 +389,242 @@ describe('Label events', () => {
         let response = await request.post(`/api/events/${eventId}/transfers`).send(data);
         expect(response.status).toEqual(400);
         expect(response.text).toEqual('Label events cannot have transfers');
+    });
+});
+
+describe('Pot transfers', () => {
+    let eventId = null;
+
+    beforeEach(async () => {
+        eventId = await Helper.createEvent(request, {
+            name: 'Test transfer',
+            date: '2020-01-01',
+            type: Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.TRANSFER],
+        });
+    });
+
+    it('Simple pot transfer with two users', async () => {
+        let transfers = [{
+            senderId:    user1.id,
+            recipientId: -1,
+            amount:      10,
+            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+        }, {
+            senderId:    -1,
+            recipientId: user2.id,
+            amount:      5,
+            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+        }];
+        let response = await request.post(`/api/events/${eventId}/transfers`).send(transfers);
+        expect(response.status).toEqual(204);
+
+        response = await request.get(`/api/users/${user1.id}`);
+        expect(response.body.user.balances).toMatchObject({points: -10, money: 0});
+        response = await request.get(`/api/users/${user2.id}`);
+        expect(response.body.user.balances).toMatchObject({points: 10, money: 0});
+        response = await request.get('/api/users/system');
+        expect(response.body.user.balances).toMatchObject({points: 0, money: 0});
+    });
+
+    it('Pot transfer with two input users', async () => {
+        let transfers = [{
+            senderId:    user1.id,
+            recipientId: -1,
+            amount:      3,
+            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+        }, {
+            senderId:    user2.id,
+            recipientId: -1,
+            amount:      7,
+            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+        }, {
+            senderId:    -1,
+            recipientId: user3.id,
+            amount:      2,
+            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+        }];
+        let response = await request.post(`/api/events/${eventId}/transfers`).send(transfers);
+        expect(response.status).toEqual(204);
+
+        response = await request.get(`/api/users/${user1.id}`);
+        expect(response.body.user.balances).toMatchObject({points: -3, money: 0});
+        response = await request.get(`/api/users/${user2.id}`);
+        expect(response.body.user.balances).toMatchObject({points: -7, money: 0});
+        response = await request.get(`/api/users/${user3.id}`);
+        expect(response.body.user.balances).toMatchObject({points: 10, money: 0});
+        response = await request.get('/api/users/system');
+        expect(response.body.user.balances).toMatchObject({points: 0, money: 0});
+    });
+
+    it('Pot transfer with two output users', async () => {
+        let transfers = [{
+            senderId:    user1.id,
+            recipientId: -1,
+            amount:      30,
+            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+        }, {
+            senderId:    -1,
+            recipientId: user2.id,
+            amount:      1,
+            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+        }, {
+            senderId:    -1,
+            recipientId: user3.id,
+            amount:      2,
+            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+        }];
+        let response = await request.post(`/api/events/${eventId}/transfers`).send(transfers);
+        expect(response.status).toEqual(204);
+
+        response = await request.get(`/api/users/${user1.id}`);
+        expect(response.body.user.balances).toMatchObject({points: -30, money: 0});
+        response = await request.get(`/api/users/${user2.id}`);
+        expect(response.body.user.balances).toMatchObject({points: 10, money: 0});
+        response = await request.get(`/api/users/${user3.id}`);
+        expect(response.body.user.balances).toMatchObject({points: 20, money: 0});
+        response = await request.get('/api/users/system');
+        expect(response.body.user.balances).toMatchObject({points: 0, money: 0});
+    });
+
+    it('Complex pot transfer with both currencies', async () => {
+        // List the output transfers first, to see if that works as well
+        let transfers = [{
+            senderId:    -1,
+            recipientId: user1.id,
+            amount:      5,
+            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+        }, {
+            senderId:    -1,
+            recipientId: user1.id,
+            amount:      1,
+            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+        }, {
+            senderId:    -1,
+            recipientId: user2.id,
+            amount:      2,
+            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+        }, {
+            senderId:    -1,
+            recipientId: user2.id,
+            amount:      2,
+            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+        }, {
+            senderId:    -1,
+            recipientId: user3.id,
+            amount:      3,
+            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+        }, {
+            senderId:    -1,
+            recipientId: user3.id,
+            amount:      5,
+            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+        }, {
+            senderId:    user3.id,
+            recipientId: user1.id,
+            amount:      2,
+            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+        }, {
+            senderId:    user2.id,
+            recipientId: user3.id,
+            amount:      3,
+            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+        }, {
+            senderId:    user3.id,
+            recipientId: -1,
+            amount:      4,
+            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+        }, {
+            senderId:    user3.id,
+            recipientId: -1,
+            amount:      7,
+            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+        }, {
+            senderId:    user2.id,
+            recipientId: -1,
+            amount:      9,
+            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+        }, {
+            senderId:    user2.id,
+            recipientId: -1,
+            amount:      1,
+            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+        }, {
+            senderId:    user1.id,
+            recipientId: -1,
+            amount:      7,
+            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+        }, {
+            senderId:    user1.id,
+            recipientId: -1,
+            amount:      16,
+            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+        }];
+        let response = await request.post(`/api/events/${eventId}/transfers`).send(transfers);
+        expect(response.status).toEqual(204);
+
+        response = await request.get(`/api/users/${user1.id}`);
+        expect(response.body.user.balances).toMatchObject({points: 5, money: -13});
+        response = await request.get(`/api/users/${user2.id}`);
+        expect(response.body.user.balances).toMatchObject({points: -5, money: 2});
+        response = await request.get(`/api/users/${user3.id}`);
+        expect(response.body.user.balances).toMatchObject({points: 0, money: 11});
+        response = await request.get('/api/users/system');
+        expect(response.body.user.balances).toMatchObject({points: 0, money: 0});
+    });
+
+    it('Pot transfer with unused inputs', async () => {
+        let transfers = [{
+            senderId:    user1.id,
+            recipientId: -1,
+            amount:      12,
+            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+        }, {
+            senderId:    user1.id,
+            recipientId: -1,
+            amount:      15,
+            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+        }, {
+            senderId:    -1,
+            recipientId: user2.id,
+            amount:      1,
+            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+        }];
+        let response = await request.post(`/api/events/${eventId}/transfers`).send(transfers);
+        expect(response.status).toEqual(204);
+
+        response = await request.get(`/api/users/${user1.id}`);
+        expect(response.body.user.balances).toMatchObject({points: -12, money: 0});
+        response = await request.get(`/api/users/${user2.id}`);
+        expect(response.body.user.balances).toMatchObject({points: 12, money: 0});
+        response = await request.get('/api/users/system');
+        expect(response.body.user.balances).toMatchObject({points: 0, money: 0});
+    });
+
+    it('Pot transfer with superfluous output', async () => {
+        let transfers = [{
+            senderId:    user1.id,
+            recipientId: -1,
+            amount:      7,
+            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+        }, {
+            senderId:    -1,
+            recipientId: user2.id,
+            amount:      1,
+            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+        }, {
+            senderId:    -1,
+            recipientId: user2.id,
+            amount:      1,
+            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+        }];
+        let response = await request.post(`/api/events/${eventId}/transfers`).send(transfers);
+        expect(response.status).toEqual(204);
+
+        response = await request.get(`/api/users/${user1.id}`);
+        expect(response.body.user.balances).toMatchObject({points: -7, money: 0});
+        response = await request.get(`/api/users/${user2.id}`);
+        expect(response.body.user.balances).toMatchObject({points: 7, money: 0});
+        response = await request.get('/api/users/system');
+        expect(response.body.user.balances).toMatchObject({points: 0, money: 0});
     });
 });

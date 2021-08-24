@@ -281,9 +281,13 @@ function loadTransferFromParam(ctx, transaction) {
  * @param {Application.Context} ctx
  * @param {number} userId
  * @param {Transaction} transaction
+ * @param {boolean} allowSystemUser
  * @returns {Promise<User>}
  */
-async function loadUser(ctx, userId, transaction) {
+async function loadUser(ctx, userId, transaction, allowSystemUser = false) {
+    if (allowSystemUser && userId === -1) {
+        return Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}, transaction});
+    }
     let options = {
         transaction,
         lock: transaction.LOCK.UPDATE,
@@ -298,10 +302,11 @@ async function loadUser(ctx, userId, transaction) {
 /**
  * @param {Application.Context} ctx
  * @param {Transaction} transaction
+ * @param {boolean} allowSystemUser
  * @returns {Promise<User>}
  */
-function loadUserFromParam(ctx, transaction) {
-    return loadUser(ctx, parseInt(ctx.params.user, 10), transaction);
+function loadUserFromParam(ctx, transaction, allowSystemUser = false) {
+    return loadUser(ctx, parseInt(ctx.params.user, 10), transaction, allowSystemUser);
 }
 
 /**
@@ -430,8 +435,9 @@ async function getEvent(ctx) {
     if (!event) {
         ctx.throw(404, 'No such event');
     }
+    let systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
     ctx.body = {
-        event: event.toApi(),
+        event: event.toApi(systemUser.id),
     };
 }
 
@@ -501,12 +507,13 @@ async function listEvents(ctx) {
         order: [['date', 'ASC']],
         limit: 100,
     });
+    let systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
     ctx.body = {
-        events: events.map(event => event.toApi()),
+        events: events.map(event => event.toApi(systemUser.id)),
     };
     if (ownParticipations) {
         ctx.body.participations = events.map(event => {
-            return event.Participations.map(p => p.toApi());
+            return event.Participations.map(p => p.toApi(systemUser.id));
         }).flat();
     }
 }
@@ -561,8 +568,9 @@ async function getTransferList(ctx) {
             event: ctx.params.event,
         },
     });
+    let systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
     ctx.body = {
-        transfers: transfers.map(transfer => transfer.toApi()),
+        transfers: transfers.map(transfer => transfer.toApi(systemUser.id)),
     };
 }
 
@@ -584,11 +592,13 @@ async function createTransfers(ctx) {
         let logEntries = [];
 
         for (let apiTransfer of apiTransfers) {
-            if (apiTransfer.senderId === apiTransfer.recipientId) {
+            let sender = await loadUser(ctx, apiTransfer.senderId, transaction, true);
+            let recipient = await loadUser(ctx, apiTransfer.recipientId, transaction, true);
+
+            // Need to check this after loading the user, since there are two ways to specify the system user
+            if (sender.id === recipient.id) {
                 ctx.throw(400, 'Cannot transfer back to sender');
             }
-            let sender = await loadUser(ctx, apiTransfer.senderId, transaction);
-            let recipient = await loadUser(ctx, apiTransfer.recipientId, transaction);
 
             transactionInserts.push({
                 event:     event.id,
@@ -632,9 +642,11 @@ async function saveTransfer(ctx) {
             ctx.throw('400', 'Transfer does not belong to specified event');
         }
 
-        let sender = await loadUser(ctx, apiTransfer.senderId, transaction);
-        let recipient = await loadUser(ctx, apiTransfer.recipientId, transaction);
-        if (apiTransfer.senderId === apiTransfer.recipientId) {
+        let sender = await loadUser(ctx, apiTransfer.senderId, transaction, true);
+        let recipient = await loadUser(ctx, apiTransfer.recipientId, transaction, true);
+
+        // Need to check this after loading the user, since there are two ways to specify the system user
+        if (sender.id === recipient.id) {
             ctx.throw(400, 'Cannot transfer back to sender');
         }
 

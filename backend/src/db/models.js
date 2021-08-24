@@ -72,9 +72,10 @@ class Event extends Model {
     /**
      * Map a user to an object suitable to return over the API
      *
+     * @param {number} systemUserId
      * @returns {ApiEvent}
      */
-    toApi() {
+    toApi(systemUserId) {
         return {
             id:        this.id,
             type:      Constants.EVENT_TYPE_NAMES[this.type],
@@ -89,7 +90,7 @@ class Event extends Model {
                     [Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY]]: this.Lunch.vegetarianMoneyFactor,
                 },
             },
-            transfers: this.Transfers?.map(transfer => transfer.toApi()),
+            transfers: this.Transfers?.map(transfer => transfer.toApi(systemUserId)),
         };
     }
 }
@@ -118,15 +119,16 @@ class Transfer extends Model {
     /**
      * Map to an object suitable to return over the API
      *
+     * @param {number} systemUserId
      * @returns {ApiTransfer}
      */
-    toApi() {
+    toApi(systemUserId) {
         return {
             id:          this.id,
             eventId:     this.event,
             eventName:   this.Event?.name,
-            senderId:    this.sender,
-            recipientId: this.recipient,
+            senderId:    systemUserId === this.sender ? -1 : this.sender,
+            recipientId: systemUserId === this.recipient ? -1 : this.recipient,
             currency:    Constants.CURRENCY_NAMES[this.currency],
             amount:      this.amount,
         };

@@ -103,6 +103,11 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
      * @param {number} currency
      */
     function addInsert(user, contra, amount, currency) {
+        if (isNaN(amount)) {
+            // This is important, because SQLite will not cause an error when trying to insert NaN
+            throw new Error('Attempt to insert NaN transaction');
+        }
+
         let existingTransactionKey = `${user}/${contra}/${currency}`;
 
         if (existingTransactionKey in existingTransactions && existingTransactions[existingTransactionKey].length) {
@@ -255,7 +260,55 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
             event.Transfers = await Models.Transfer.findAll(opts);
         }
 
+        let potInputs = [];
+        let potOutputs = [];
+        let nonPotTransfers = [];
+
         for (let transfer of event.Transfers) {
+            if (transfer.recipient === systemUser.id) {
+                potInputs.push(transfer);
+            } else if (transfer.sender === systemUser.id) {
+                potOutputs.push(transfer);
+            } else {
+                nonPotTransfers.push(transfer);
+            }
+        }
+
+        // Calculate output shares
+        let totalShares = {};
+        for (let transfer of potOutputs) {
+            let currency = transfer.currency;
+            if (!(currency in totalShares)) {
+                totalShares[currency] = 0.0;
+            }
+            totalShares[currency] += transfer.amount;
+        }
+
+        let potBalances = {};
+        for (let transfer of potInputs) {
+            let currency = transfer.currency;
+            if (!(currency in totalShares)) {
+                // Pot input where there is no output for the same currency, ignore it.
+                continue;
+            }
+            addTransaction(systemUser.id, transfer.sender, transfer.amount, currency);
+            if (!(currency in potBalances)) {
+                potBalances[currency] = 0.0;
+            }
+            potBalances[currency] += transfer.amount;
+        }
+
+        for (let transfer of potOutputs) {
+            let currency = transfer.currency;
+            if (!(currency in potBalances)) {
+                // No such currency in the pot
+                continue;
+            }
+            let amount = potBalances[currency] / totalShares[currency] * transfer.amount;
+            addTransaction(transfer.recipient, systemUser.id, amount, currency);
+        }
+
+        for (let transfer of nonPotTransfers) {
             addTransaction(transfer.recipient, transfer.sender, transfer.amount, transfer.currency);
         }
     }
