@@ -33,11 +33,20 @@
                         {{ transfer.senderName }} &rarr; {{ transfer.recipientName }}
                     </v-list-item-title>
                     <v-list-item-subtitle>
-                        <balance :value="transfer.amount"
+                        <balance :value="transfer.actualAmount"
                                  :points="transfer.currency === 'points'"
                                  :money="transfer.currency === 'money'"
                                  precise small no-sign
                         />
+                        <span v-if="transfer.unspent" class="ml-4">
+                            <v-icon small color="red">
+                                {{ $icons.alert }}
+                            </v-icon>
+                            Amount is unspent
+                        </span>
+                        <span v-if="transfer.isShare" class="ml-4">
+                            {{ transfer.amount }} share
+                        </span>
                     </v-list-item-subtitle>
                 </v-list-item-content>
                 <v-list-item-action>
@@ -151,15 +160,45 @@
                 return this.$store.getters.event(this.eventId);
             },
 
-            transfers() {
-                return this.$store.getters.transfers(this.eventId)?.map(transfer => {
+            transfers: function () {
+                let transfers = this.$store.getters.transfers(this.eventId);
+                if (!transfers) {
+                    return null;
+                }
+
+                let potBalances = {};
+                let totalShares = {};
+                for (let transfer of transfers) {
+                    let currency = transfer.currency;
+                    if (transfer.recipientId === -1) {
+                        potBalances[currency] = (potBalances[currency] ?? 0.0) + transfer.amount;
+                    } else if (transfer.senderId === -1) {
+                        totalShares[currency] = (totalShares[currency] ?? 0.0) + transfer.amount;
+                    }
+                }
+
+                transfers = transfers.map(transfer => {
+                    let currency = transfer.currency;
+                    let isShare = transfer.senderId === -1;
+                    let actualAmount = 0.0;
+                    if (!isShare) {
+                        actualAmount = transfer.amount;
+                    } else if (totalShares[currency]) {
+                        actualAmount = (potBalances[currency] ?? 0.0) / totalShares[currency] * transfer.amount;
+                    }
                     return {
                         ...transfer,
-                        senderName:    this.$store.getters.user(transfer.senderId)?.name,
-                        recipientName: this.$store.getters.user(transfer.recipientId)?.name,
-                        icon:          transfer.currency === 'points' ? this.$icons.points : this.$icons.money,
+                        senderName:    this.getDisplayName(transfer.senderId),
+                        recipientName: this.getDisplayName(transfer.recipientId),
+                        icon:          currency === 'points' ? this.$icons.points : this.$icons.money,
+                        isShare,
+                        actualAmount,
+                        unspent:       transfer.recipientId === -1 && !totalShares[currency],
+                        ordering:      this.getOrdering(transfer),
                     };
                 });
+                transfers.sort((a, b) => a.ordering - b.ordering);
+                return transfers;
             },
 
             name() {
@@ -172,6 +211,23 @@
         },
 
         methods: {
+            getDisplayName(userId) {
+                if (userId === -1) {
+                    return 'Temporary pot';
+                }
+                return this.$store.getters.user(userId)?.name;
+            },
+
+            getOrdering(transfer) {
+                if (transfer.recipientId === -1) {
+                    return 1;
+                }
+                if (transfer.sender === -1) {
+                    return 2;
+                }
+                return 3;
+            },
+
             openDeleteEventDialog() {
                 this.deleteEventDialog = true;
             },

@@ -49,6 +49,7 @@
                     userIds.add(transfer.senderId);
                     userIds.add(transfer.recipientId);
                 }
+                userIds.delete(-1);
                 return Array.from(userIds)
                     .map(userId => this.$store.getters.user(userId)?.name ?? 'Unknown')
                     .join(', ');

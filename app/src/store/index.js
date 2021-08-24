@@ -165,8 +165,11 @@ export default new Vuex.Store({
         },
 
         // Users
-        fetchUser(context, {userId}) {
-            return Cache.ifNotFresh('user', userId, 10000, async () => {
+        async fetchUser(context, {userId}) {
+            if (userId === -1) {
+                return;
+            }
+            await Cache.ifNotFresh('user', userId, 10000, async () => {
                 let response = await Backend.get(`/users/${userId}`);
                 let user = response.data.user;
                 Vue.set(context.state.users, user.id, user);

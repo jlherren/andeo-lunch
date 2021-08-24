@@ -46,6 +46,7 @@ export const icons = {
     transferLunch:  mdi.mdiFoodVariant,
     transferOut:    mdi.mdiAccountArrowRight,
     transferPayUp:  mdi.mdiCreditCard,
+    transferPot:    mdi.mdiPotMix,
     transferTrade:  mdi.mdiSwapVerticalBold,
     transfers:      mdi.mdiSwapHorizontalBold,
     undecided:      mdi.mdiHelpCircle,

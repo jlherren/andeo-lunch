@@ -9,19 +9,19 @@
                         <v-select v-model="sender" label="Sender"
                                   :items="users" item-text="name" item-value="id"
                                   :rules="senderRules"
-                                  :append-icon="$icons.account"/>
+                                  :append-icon="sender === -1 ? $icons.transferPot : $icons.account"/>
                     </v-col>
                     <v-col>
                         <v-select v-model="recipient" label="Recipient"
                                   :items="users" item-text="name" item-value="id"
                                   :rules="recipientRules"
-                                  :append-icon="$icons.account"/>
+                                  :append-icon="recipient === -1 ? $icons.transferPot : $icons.account"/>
                     </v-col>
                 </v-row>
 
                 <v-row>
                     <v-col>
-                        <v-text-field type="number" v-model="amount" label="Amount"
+                        <v-text-field type="number" v-model="amount" :label="sender === -1 ? 'Shares' : 'Amount'"
                                       min="0" :rules="amountRules"
                                       class="no-spinner" :append-icon="currency === 'money' ? $icons.money : $icons.points"/>
                     </v-col>
@@ -51,8 +51,6 @@
 </template>
 
 <script>
-    import {mapGetters} from 'vuex';
-
     export default {
         name: 'TransferEdit',
 
@@ -85,9 +83,12 @@
         },
 
         computed: {
-            ...mapGetters([
-                'users',
-            ]),
+            users() {
+                return this.$store.getters.users.concat({
+                    id:   -1,
+                    name: 'Temporary pot',
+                });
+            },
         },
 
         methods: {
