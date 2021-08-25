@@ -53,14 +53,6 @@
             <v-list v-if="event.type !== 'label'">
                 <v-skeleton-loader v-if="!participations" type="list-item-avatar"/>
 
-                <participation-list-item v-if="participations" :event="event" :participation="myParticipation"
-                                         @saved="refreshEvent()"/>
-
-                <participation-list-item v-for="participation of foreignParticipations"
-                                         :key="participation.userId"
-                                         :event="event" :participation="participation"
-                                         @saved="refreshEvent()"/>
-
                 <v-list-item @click="openAddParticipationDialog()">
                     <v-list-item-avatar>
                         <v-icon>{{ $icons.plus }}</v-icon>
@@ -72,6 +64,14 @@
                         </v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
+
+                <participation-list-item v-if="participations" :event="event" :participation="myParticipation"
+                                         @saved="refreshEvent()"/>
+
+                <participation-list-item v-for="participation of foreignParticipations"
+                                         :key="participation.userId"
+                                         :event="event" :participation="participation"
+                                         @saved="refreshEvent()"/>
             </v-list>
 
             <v-dialog v-model="edit" persistent>
@@ -114,6 +114,13 @@
     import Vue from 'vue';
 
     const PASSIVE_TYPES = ['undecided'];
+
+    const TYPE_TO_ORDER = {
+        'omnivorous': 1,
+        'vegetarian': 1,
+        'opt-out':    2,
+        'undecided':  3,
+    };
 
     export default {
         name: 'LunchDetail',
@@ -167,15 +174,34 @@
             foreignParticipations() {
                 // List of opt-inners as well as opt-out/undecided that cook or provide money.
                 // This excludes own participation
-                if (!this.participations) {
+                let participations = this.participations;
+                if (!participations) {
                     return [];
                 }
-                return this.participations.filter(p => {
+                participations = participations.filter(p => {
                     if (p.userId === this.ownUserId) {
                         return false;
                     }
                     return !PASSIVE_TYPES.includes(p.type) || p.credits.points > 0 || p.credits.money > 0;
                 });
+                participations.sort((a, b) => {
+                    let orderA = TYPE_TO_ORDER[a.type] ?? 9;
+                    let orderB = TYPE_TO_ORDER[b.type] ?? 9;
+                    let diff = orderA - orderB;
+                    if (diff) {
+                        return diff;
+                    }
+                    let nameA = this.$store.getters.user(a.userId)?.name;
+                    let nameB = this.$store.getters.user(b.userId)?.name;
+                    if (nameA < nameB) {
+                        return -1;
+                    }
+                    if (nameA > nameB) {
+                        return 1;
+                    }
+                    return 0;
+                });
+                return participations;
             },
 
             myParticipation() {
