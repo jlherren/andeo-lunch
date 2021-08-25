@@ -21,6 +21,7 @@
                               :append-icon="$icons.label"/>
 
                 <al-date-picker v-model="date" required/>
+                <al-time-picker v-model="time" required/>
 
                 <!-- Button is to make it submittable by pressing enter -->
                 <v-btn type="submit" :disabled="isBusy" v-show="false">Save</v-btn>
@@ -30,7 +31,9 @@
 </template>
 
 <script>
+    import * as DateFormatter from '@/utils/dateUtils';
     import AlDatePicker from '@/components/AlDatePicker';
+    import AlTimePicker from '@/components/AlTimePicker';
     import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
 
@@ -39,15 +42,18 @@
 
         components: {
             AlDatePicker,
+            AlTimePicker,
             ShyProgress,
             TheAppBar,
         },
 
         data() {
+            let now = new Date();
             return {
                 isBusy:    false,
                 name:      '',
-                date:      null,
+                date:      DateFormatter.isoDate(now),
+                time:      DateFormatter.isoTime(now, false),
                 nameRules: [
                     v => v !== '',
                 ],
@@ -64,7 +70,7 @@
 
                     let eventId = await this.$store.dispatch('saveEvent', {
                         name: this.name,
-                        date: this.date,
+                        date: new Date(`${this.date}T${this.time}:00`),
                         type: 'transfer',
                     });
 

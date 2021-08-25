@@ -132,10 +132,24 @@ export function isoDateTime(date) {
     let year = date.getFullYear();
     let month = String(date.getMonth() + 1).padStart(2, '0');
     let day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day} ${isoTime(date)}`;
+}
+
+/**
+ * Format as ISO time string in local time zone
+ *
+ * @param {Date} date
+ * @param {boolean} useSeconds
+ * @returns {string}
+ */
+export function isoTime(date, useSeconds = true) {
     let hour = String(date.getHours()).padStart(2, '0');
     let minute = String(date.getMinutes()).padStart(2, '0');
-    let second = String(date.getSeconds()).padStart(2, '0');
-    return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+    if (useSeconds) {
+        let second = String(date.getSeconds()).padStart(2, '0');
+        return `${hour}:${minute}:${second}`;
+    }
+    return `${hour}:${minute}`;
 }
 
 /**

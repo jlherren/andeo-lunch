@@ -14,6 +14,7 @@ export const icons = {
     calendar:      mdi.mdiCalendar,
     chevronLeft:   mdi.mdiChevronLeft,
     chevronRight:  mdi.mdiChevronRight,
+    clock:         mdi.mdiClock,
     close:         mdi.mdiClose,
     cog:           mdi.mdiCog,
     delete:        mdi.mdiDelete,
