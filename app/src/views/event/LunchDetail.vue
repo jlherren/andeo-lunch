@@ -228,15 +228,14 @@
 
         methods: {
             optIn() {
-                this.setParticipation(this.$store.getters.settings.quickOptIn, true);
+                this.setParticipation(this.$store.getters.settings.quickOptIn);
             },
 
             optOut() {
-                // Not refetching the user here, because opt-out from undecided will never cause it to change
-                this.setParticipation('opt-out', false);
+                this.setParticipation('opt-out');
             },
 
-            async setParticipation(type, refetchUser) {
+            async setParticipation(type) {
                 try {
                     this.isBusy = true;
                     await this.$store.dispatch('saveParticipation', {
@@ -244,10 +243,6 @@
                         eventId: this.eventId,
                         type,
                     });
-                    // Not refetching the event here, because neither opt-in nor opt-out will ever cause it to change
-                    if (refetchUser) {
-                        await this.$store.dispatch('fetchUser', {userId: this.$store.getters.ownUserId});
-                    }
                 } finally {
                     this.isBusy = false;
                 }

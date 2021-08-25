@@ -69,8 +69,6 @@
         props: {},
 
         created() {
-            let userId = this.$store.getters.ownUserId;
-            this.$store.dispatch('fetchUser', {userId});
             this.$store.dispatch('fetchSettings');
         },
 

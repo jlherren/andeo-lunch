@@ -61,5 +61,9 @@
         components: {
             TheAppBar,
         },
+
+        created() {
+            this.$store.dispatch('fetchUser', {userId: this.$store.getters.ownUserId});
+        },
     };
 </script>

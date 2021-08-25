@@ -119,7 +119,8 @@ export default new Vuex.Store({
         async login(context, data) {
             let response = await Backend.post('/account/login', data);
             localStorage.setItem('token', response.data.token);
-            await context.dispatch('fetchUser', {userId: response.data.userId});
+            // Fetch all users, see comment in checkLogin()
+            await context.dispatch('fetchUsers');
             // Don't set the following until after the user is fetched, otherwise 'ownUser' won't be reliable
             context.state.account.userId = response.data.userId;
             context.state.account.username = response.data.username;
@@ -140,7 +141,9 @@ export default new Vuex.Store({
             }
 
             if (userId) {
-                await context.dispatch('fetchUser', {userId});
+                // Fetch all users, so that by policy we always have users available.  This allows us to never wait for
+                // promises that fetch users.
+                await context.dispatch('fetchUsers');
             }
 
             // This should not be set before the above fetchUser is finished, otherwise 'ownUser' won't be reliable
@@ -182,6 +185,7 @@ export default new Vuex.Store({
                 let users = {};
                 for (let user of response.data.users) {
                     users[user.id] = user;
+                    Cache.validate('user', user.id);
                 }
                 Vue.set(context.state, 'users', users);
                 context.state.allUserIds = response.data.users.map(user => user.id);
@@ -227,13 +231,9 @@ export default new Vuex.Store({
                 }
             });
 
-            let participations = context.state.participations[eventId];
-            // Participations may sometimes not be available here, due to multiple fetchParticipations being called
-            // concurrently
-            if (participations) {
-                let promises = participations.map(p => context.dispatch('fetchUser', {userId: p.userId}));
-                await Promise.all(promises);
-            }
+            // Fetch all users, not just the ones from the participations
+            // noinspection ES6MissingAwait
+            context.dispatch('fetchUsers');
         },
 
         async saveParticipation(context, {eventId, userId, ...data}) {
@@ -244,6 +244,10 @@ export default new Vuex.Store({
             Cache.invalidate('user');
             Cache.invalidate('users');
             await context.dispatch('fetchParticipations', {eventId});
+
+            // Also refetch user balances, but do not wait until it completes.
+            // noinspection ES6MissingAwait
+            context.dispatch('fetchUsers');
         },
 
         async fetchTransfers(context, {eventId}) {
@@ -253,12 +257,9 @@ export default new Vuex.Store({
                 Vue.set(context.state.transfers, eventId, transfers);
             });
 
-            let promises = context.state.transfers[eventId]
-                .map(t => Promise.all([
-                    context.dispatch('fetchUser', {userId: t.senderId}),
-                    context.dispatch('fetchUser', {userId: t.recipientId}),
-                ]));
-            await Promise.all(promises);
+            // Fetch all users, not just the ones from the transfers
+            // noinspection ES6MissingAwait
+            context.dispatch('fetchUsers');
         },
 
         async saveTransfers(context, {eventId, transfers}) {
