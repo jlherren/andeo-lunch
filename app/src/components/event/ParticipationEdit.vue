@@ -13,7 +13,7 @@
 
                 <v-row>
                     <v-col>
-                        <participation-type-widget v-model="type" :disabled="isBusy"/>
+                        <participation-type-widget v-model="type" :disabled="isBusy" label/>
                     </v-col>
                 </v-row>
 

@@ -1,22 +1,15 @@
 <template>
-    <v-btn-toggle :value="value" @change="update($event)" :dense="$vuetify.breakpoint.xs" mandatory class="full-width">
-        <v-btn value="omnivorous" :disabled="disabled">
-            <v-icon :large="$vuetify.breakpoint.mdAndUp" left>{{ $icons.omnivorous }}</v-icon>
-            <span class="hidden-xs-only">Omni</span>
-        </v-btn>
-        <v-btn value="vegetarian" :disabled="disabled">
-            <v-icon :large="$vuetify.breakpoint.mdAndUp" left>{{ $icons.vegetarian }}</v-icon>
-            <span class="hidden-xs-only">Vegi</span>
-        </v-btn>
-        <v-btn value="opt-out" :disabled="disabled">
-            <v-icon :large="$vuetify.breakpoint.mdAndUp" left>{{ $icons.optOut }}</v-icon>
-            <span class="hidden-xs-only">Out</span>
-        </v-btn>
-        <v-btn value="undecided" :disabled="disabled">
-            <v-icon :large="$vuetify.breakpoint.mdAndUp" left>{{ $icons.undecided }}</v-icon>
-            <span class="hidden-xs-only">Undecided</span>
-        </v-btn>
-    </v-btn-toggle>
+    <div>
+        <label v-if="label" class="v-label" :class="$vuetify.theme.dark ? 'theme--dark' : 'theme--light'">
+            Participation type{{ $vuetify.breakpoint.xs ? ': ' + displayName(value) : '' }}
+        </label>
+        <v-btn-toggle :value="value" @change="update($event)" :dense="$vuetify.breakpoint.xs" mandatory class="full-width">
+            <v-btn v-for="type of types" :key="type.id" :value="type.id" :disabled="disabled">
+                <v-icon :large="$vuetify.breakpoint.mdAndUp" left>{{ type.icon }}</v-icon>
+                <span class="hidden-xs-only">{{ type.name }}</span>
+            </v-btn>
+        </v-btn-toggle>
+    </div>
 </template>
 
 <script>
@@ -28,16 +21,47 @@
                 type:     String,
                 required: true,
             },
-            disabled: {
-                type:    Boolean,
-                default: false,
-            },
+            disabled: Boolean,
+            label:    Boolean,
+        },
+
+        data() {
+            return {
+                types: [{
+                    id:   'omnivorous',
+                    name: 'Omni',
+                    icon: this.$icons.omnivorous,
+                }, {
+                    id:   'vegetarian',
+                    name: 'Vegi',
+                    icon: this.$icons.vegetarian,
+                }, {
+                    id:   'opt-out',
+                    name: 'Out',
+                    icon: this.$icons.optOut,
+                }, {
+                    id:   'undecided',
+                    name: 'Undecided',
+                    icon: this.$icons.undecided,
+                }],
+            };
         },
 
         methods: {
             update(value) {
                 this.$emit('input', value);
             },
+
+            displayName(value) {
+                return this.types.find(type => type.id === value)?.name;
+            },
         },
     };
 </script>
+
+<style lang="scss" scoped>
+    .v-label {
+        // Default label size is 16px, and 0.75 is the scaling factor for when it minifies
+        font-size: 16px * 0.75;
+    }
+</style>
