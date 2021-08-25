@@ -24,7 +24,7 @@
                     <span>{{ audit.actingUserName }}</span>
                     <span>{{ audit.display }}</span>
                     <span>
-                        <v-chip small outlined label v-for="element of audit.details" :key="element.name">
+                        <v-chip small outlined label v-for="element of audit.details" :key="element.name" :class="element.class">
                             {{ element.name }} <b>{{ element.value }}</b>
                         </v-chip>
                     </span>
@@ -105,28 +105,30 @@
             },
 
             getDetails(audit) {
-                let parts = [];
+                let details = [];
                 if (audit.type !== 'event.delete' && audit.eventName !== null) {
-                    parts.push({
+                    details.push({
                         name:  'Event',
                         value: audit.eventName,
                     });
                 }
                 if (audit.affectedUserName !== null) {
-                    parts.push({
-                        name:  'Affected user',
-                        value: audit.affectedUserName,
+                    let ownUserId = this.$store.getters.ownUserId;
+                    details.push({
+                        name:    'Affected user',
+                        value:   audit.affectedUserName,
+                        class: audit.affectedUserId !== ownUserId ? 'foreign' : null,
                     });
                 }
                 if (audit.values) {
                     for (let key in audit.values) {
-                        parts.push({
+                        details.push({
                             name:  NAMES[key] ?? key,
                             value: this.prettifyValue(key, audit.values[key]),
                         });
                     }
                 }
-                return parts;
+                return details;
             },
 
             prettifyValue(key, value) {
@@ -215,6 +217,10 @@
 
         b {
             margin-left: 0.33em;
+        }
+
+        &.foreign {
+            border: 2px solid red;
         }
     }
 
