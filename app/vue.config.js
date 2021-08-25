@@ -2,8 +2,6 @@ const crypto = require('crypto');
 
 const {LUNCH_BLUE} = require('./src/constants');
 
-process.env.VUE_APP_VERSION = require('./package.json').version;
-
 if (!process.env.VUE_APP_BACKEND_URL) {
     throw new Error('VUE_APP_BACKEND_URL is not set, please read README.md');
 }

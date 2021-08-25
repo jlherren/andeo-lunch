@@ -1,3 +1,4 @@
+import * as PackageJson from '../../../package.json';
 import Backend from '@/store/backend';
 import Cache from '@/store/cache';
 import Vue from 'vue';
@@ -9,8 +10,7 @@ export default new Vuex.Store({
     state: {
         globalSnackbar: null,
 
-        backendVersion:        'unknown',
-        frontendVersion:       process.env.VUE_APP_VERSION,
+        version:               PackageJson.version,
         payUpDefaultRecipient: null,
 
         account: {
@@ -63,8 +63,7 @@ export default new Vuex.Store({
 
     getters: {
         // System information
-        frontendVersion: state => state.frontendVersion,
-        backendVersion:  state => state.backendVersion,
+        version: state => state.version,
 
         // Users and account
         user:        state => userId => state.users[userId] ?? {id: userId},
@@ -106,15 +105,6 @@ export default new Vuex.Store({
     },
 
     actions: {
-        // System information
-        fetchBackendVersion(context) {
-            return Cache.ifNotFresh('system', 'version', 60000, async () => {
-                context.state.backendVersion = 'unknown';
-                let response = await Backend.get('/version');
-                context.state.backendVersion = response.data.version;
-            });
-        },
-
         // Account
         async login(context, data) {
             let response = await Backend.post('/account/login', data);

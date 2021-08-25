@@ -1,16 +1,6 @@
 'use strict';
 
-const PackageJson = require('../../package');
 const Models = require('../db/models');
-
-/**
- * @param {Application.Context} ctx
- */
-function getVersion(ctx) {
-    ctx.body = {
-        version: PackageJson.version,
-    };
-}
 
 /**
  * @param {Application.Context} ctx
@@ -46,7 +36,6 @@ async function migrate(ctx) {
  * @param {Router} router
  */
 function register(router) {
-    router.get('/version', getVersion);
     router.get('/pay-up/default-recipient', getPayUpDefaultRecipient);
     router.get('/migrate', migrate);
 }

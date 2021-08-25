@@ -10,11 +10,7 @@
             </h1>
 
             <p class="text-body-2">
-                App version: {{ frontendVersion }}<br>
-
-                Backend version:
-                <v-progress-circular v-if="backendVersionLoading" indeterminate size="10" width="1"/>
-                <span v-else>{{ backendVersion }}</span>
+                App version: {{ version }}<br>
             </p>
 
             <p class="text-body-2">
@@ -57,25 +53,10 @@
             TheAppBar,
         },
 
-        data() {
-            return {
-                backendVersionLoading: true,
-            };
-        },
-
-        async created() {
-            try {
-                await this.$store.dispatch('fetchBackendVersion');
-            } finally {
-                this.backendVersionLoading = false;
-            }
-        },
-
         computed: {
             ...mapGetters([
                 'ownUser',
-                'backendVersion',
-                'frontendVersion',
+                'version',
             ]),
 
             appTitle() {

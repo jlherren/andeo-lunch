@@ -21,7 +21,6 @@ const URLS_WITHOUT_AUTH = [
     '/api/account/check',
     '/api/account/login',
     '/api/migrate',
-    '/api/version',
 ];
 
 /**

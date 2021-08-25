@@ -3,7 +3,6 @@
 const supertest = require('supertest');
 
 const AndeoLunch = require('../../src/andeoLunch');
-const PackageJson = require('../../package');
 const ConfigProvider = require('../../src/configProvider');
 
 /** @type {AndeoLunch|null} */
@@ -25,14 +24,8 @@ afterEach(async () => {
 });
 
 describe('misc route tests', () => {
-    it('responds with backend version', async () => {
-        let response = await request.get('/api/version');
-        expect(response.status).toEqual(200);
-        expect(response.body.version).toEqual(PackageJson.version);
-    });
-
     it('responds to cors request', async () => {
-        let response = await request.options('/api/version')
+        let response = await request.options('/api/')
             .set('Access-Control-Request-Method', 'GET')
             .set('Origin', 'http://www.example.com');
         expect(response.status).toEqual(204);

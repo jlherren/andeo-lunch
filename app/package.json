@@ -1,6 +1,5 @@
 {
     "name": "andeo-lunch-app",
-    "version": "0.1.1",
     "private": true,
     "engines": {
         "node": ">= 14.0.0"

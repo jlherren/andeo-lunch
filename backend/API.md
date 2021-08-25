@@ -142,25 +142,6 @@ Response:
 401 Not Authorized
 ```
 
-## Miscellaneous data
-
-### Get version
-
-Query the version of the backend.
-
-Request:
-
-```
-GET /version
-```
-
-Response:
-
-```
-200 OK
-{"version": "0.0.1"}
-```
-
 ## Users
 
 ### Get the user list

@@ -1,6 +1,5 @@
 {
     "name": "andeo-lunch-backend",
-    "version": "0.2.0",
     "main": "src/andeoLunch.js",
     "license": "UNLICENSED",
     "private": true,
