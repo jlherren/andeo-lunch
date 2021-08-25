@@ -113,11 +113,10 @@
                     });
                 }
                 if (audit.affectedUserName !== null) {
-                    let ownUserId = this.$store.getters.ownUserId;
                     details.push({
                         name:    'Affected user',
                         value:   audit.affectedUserName,
-                        class: audit.affectedUserId !== ownUserId ? 'foreign' : null,
+                        class: audit.affectedUserId !== audit.actingUserId ? 'foreign' : null,
                     });
                 }
                 if (audit.values) {
