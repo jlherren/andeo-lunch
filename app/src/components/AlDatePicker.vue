@@ -13,7 +13,7 @@
     import * as DateUtils from '@/utils/dateUtils';
 
     export default {
-        name: 'LmDatePicker',
+        name: 'AlDatePicker',
 
         props: {
             value:    String,

@@ -11,7 +11,7 @@
                         />
                     </v-col>
                     <v-col>
-                        <lm-date-picker v-model="date" required/>
+                        <al-date-picker v-model="date" required/>
                     </v-col>
                 </v-row>
 
@@ -38,14 +38,14 @@
 
 <script>
     import * as DateUtils from '@/utils/dateUtils';
-    import LmDatePicker from '@/components/LmDatePicker';
+    import AlDatePicker from '@/components/AlDatePicker';
     import NumberField from '@/components/NumberField';
 
     export default {
         name: 'LunchEdit',
 
         components: {
-            LmDatePicker,
+            AlDatePicker,
             NumberField,
         },
 

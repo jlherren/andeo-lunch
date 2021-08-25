@@ -20,7 +20,7 @@
                               :rules="nameRules"
                               :append-icon="$icons.label"/>
 
-                <lm-date-picker v-model="date" required/>
+                <al-date-picker v-model="date" required/>
 
                 <!-- Button is to make it submittable by pressing enter -->
                 <v-btn type="submit" :disabled="isBusy" v-show="false">Save</v-btn>
@@ -30,7 +30,7 @@
 </template>
 
 <script>
-    import LmDatePicker from '@/components/LmDatePicker';
+    import AlDatePicker from '@/components/AlDatePicker';
     import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
 
@@ -38,7 +38,7 @@
         name: 'TransferWizardCustom',
 
         components: {
-            LmDatePicker,
+            AlDatePicker,
             ShyProgress,
             TheAppBar,
         },
