@@ -135,10 +135,20 @@
                 switch (key) {
                     case 'sender':
                     case 'recipient':
-                        return this.$store.getters.user(value)?.name;
+                        if (value === -1) {
+                            return 'Temporary pot';
+                        }
+                        return this.$store.getters.user(value)?.name ?? 'Unknown';
 
                     case 'currency':
                         return value === 1 ? 'points' : 'money';
+
+                    case 'amount':
+                        if (typeof value === 'number') {
+                            return value.toFixed(2)
+                                .replace(/\.?0+$/u, '');
+                        }
+                        return value;
 
                     default:
                         return value;
@@ -212,7 +222,8 @@
     }
 
     .v-chip {
-        margin-right: 0.5em;
+        margin-right: 0.33em;
+        padding: 0 0.33em;
         color: gray !important;
 
         b {
@@ -255,10 +266,6 @@
 
             & > span:nth-child(4) {
                 flex: 1 0 100%;
-            }
-
-            .v-chip {
-                padding: 0 0.5em;
             }
         }
     }
