@@ -47,12 +47,15 @@
             </template>
             <v-btn color="primary" fab small @click="openCreateDialog('lunch', null)">
                 <v-icon>{{ $icons.lunch }}</v-icon>
+                <span class="label">Lunch</span>
             </v-btn>
             <v-btn color="primary" fab small @click="openCreateDialog('special', null)">
                 <v-icon>{{ $icons.special }}</v-icon>
+                <span class="label">Special event</span>
             </v-btn>
             <v-btn color="primary" fab small @click="openCreateDialog('label', null)">
                 <v-icon>{{ $icons.label }}</v-icon>
+                <span class="label">Label</span>
             </v-btn>
         </v-speed-dial>
 
@@ -205,5 +208,15 @@
     .v-speed-dial {
         // This is a known issue, it doesn't account for the bottom navigation
         bottom: 16px + 56px;
+
+        .label {
+            position: absolute;
+            right: 48px;
+            top: 3px;
+            color: $andeo-blue;
+            font-weight: bold;
+            background: white;
+            padding: 2px 0.33em;
+        }
     }
 </style>
