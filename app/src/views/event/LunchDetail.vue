@@ -118,8 +118,10 @@
     const TYPE_TO_ORDER = {
         'omnivorous': 1,
         'vegetarian': 1,
-        'opt-out':    2,
-        'undecided':  3,
+        // credit-less undecided participations are not shown at all, the ones that are shown are the ones that involve
+        // some credits, we want them to show before opt-outs.
+        'undecided':  2,
+        'opt-out':    3,
     };
 
     export default {
