@@ -1,7 +1,7 @@
 FROM node:16.7-bullseye-slim AS backend-build
 WORKDIR /build
 COPY . .
-RUN yarn workspaces focus andeo-lunch-backend
+RUN yarn workspaces focus --production andeo-lunch-backend
 
 FROM node:16.7-bullseye-slim
 RUN mkdir -p /srv/andeo-lunch/backend
