@@ -73,7 +73,7 @@
     }
 
     img {
-        width: 33%;
+        width: 50%;
         max-width: 250px;
         display: block;
         margin: 50px auto;
