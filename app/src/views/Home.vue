@@ -15,7 +15,7 @@
             </v-list-item>
         </v-list>
 
-        <v-subheader>Upcoming events</v-subheader>
+        <v-subheader>Next 7 days</v-subheader>
 
         <v-container v-if="!loading && events.length === 0">
             <v-banner elevation="2" single-line :icon="$icons.information">
@@ -84,7 +84,6 @@
                 });
 
                 events.sort((a, b) => a.date.getTime() - b.date.getTime());
-                events = events.slice(0, 3);
 
                 // Add information about divider lines
                 let prev = null;
