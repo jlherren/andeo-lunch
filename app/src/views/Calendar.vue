@@ -3,12 +3,8 @@
         <the-app-bar>
             {{ title }}
             <template v-slot:buttons>
-                <v-btn icon @click="previousWeek">
-                    <v-icon>{{ $icons.chevronLeft }}</v-icon>
-                </v-btn>
-                <v-btn icon @click="nextWeek">
-                    <v-icon>{{ $icons.chevronRight }}</v-icon>
-                </v-btn>
+                <dynamic-button label="Previous week" :icon="$icons.chevronLeft" @click="previousWeek"/>
+                <dynamic-button label="Next week" :icon="$icons.chevronRight" right @click="nextWeek"/>
             </template>
         </the-app-bar>
 
@@ -67,6 +63,7 @@
 
 <script>
     import * as DateUtils from '@/utils/dateUtils';
+    import DynamicButton from '@/components/DynamicButton';
     import LunchEdit from '@/components/event/LunchEdit';
     import LunchListItem from '@/components/event/LunchListItem';
     import ShyProgress from '@/components/ShyProgress';
@@ -79,6 +76,7 @@
         name: 'Calendar',
 
         components: {
+            DynamicButton,
             LunchEdit,
             LunchListItem,
             ShyProgress,

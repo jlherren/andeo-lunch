@@ -3,12 +3,8 @@
         <the-app-bar>
             {{ title }}
             <template v-slot:buttons>
-                <v-btn icon @click="previousMonth">
-                    <v-icon>{{ $icons.chevronLeft }}</v-icon>
-                </v-btn>
-                <v-btn icon @click="nextMonth">
-                    <v-icon>{{ $icons.chevronRight }}</v-icon>
-                </v-btn>
+                <dynamic-button label="Previous month" :icon="$icons.chevronLeft" @click="previousMonth"/>
+                <dynamic-button label="Next month" :icon="$icons.chevronRight" right @click="nextMonth"/>
             </template>
         </the-app-bar>
 
@@ -39,6 +35,7 @@
 
 <script>
     import * as DateUtils from '@/utils/dateUtils';
+    import DynamicButton from '../components/DynamicButton';
     import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
     import TransferListItem from '@/components/event/TransferListItem';
@@ -47,6 +44,7 @@
         name: 'Transfers',
 
         components: {
+            DynamicButton,
             ShyProgress,
             TheAppBar,
             TransferListItem,

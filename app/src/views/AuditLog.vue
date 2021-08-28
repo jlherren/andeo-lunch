@@ -3,9 +3,7 @@
         <the-app-bar sub-page>
             Audit log
             <template v-slot:buttons>
-                <v-btn icon @click.prevent="refresh()">
-                    <v-icon>{{ $icons.refresh }}</v-icon>
-                </v-btn>
+                <dynamic-button label="Refresh" :icon="$icons.refresh" @click="refresh()"/>
             </template>
         </the-app-bar>
 
@@ -36,6 +34,7 @@
 
 <script>
     import * as DateUtils from '@/utils/dateUtils';
+    import DynamicButton from '../components/DynamicButton';
     import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
     import Vue from 'vue';
@@ -62,6 +61,7 @@
 
     export default {
         components: {
+            DynamicButton,
             ShyProgress,
             TheAppBar,
         },

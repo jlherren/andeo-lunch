@@ -3,12 +3,8 @@
         <the-app-bar sub-page>
             {{ name }}
             <template v-if="event" slot="buttons">
-                <v-btn icon disabled>
-                    <v-icon>{{ $icons.edit }}</v-icon>
-                </v-btn>
-                <v-btn icon @click="openDeleteEventDialog" :disabled="isBusy">
-                    <v-icon>{{ $icons.delete }}</v-icon>
-                </v-btn>
+                <dynamic-button label="Edit" :icon="$icons.edit" disabled/>
+                <dynamic-button label="Delete" :icon="$icons.delete" :disabled="isBusy" @click="openDeleteEventDialog"/>
             </template>
         </the-app-bar>
 
@@ -119,6 +115,7 @@
 <script>
     import * as DateUtils from '@/utils/dateUtils';
     import Balance from '@/components/Balance';
+    import DynamicButton from '../../components/DynamicButton';
     import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
     import TransferEdit from '@/components/event/TransferEdit';
@@ -129,6 +126,7 @@
 
         components: {
             Balance,
+            DynamicButton,
             ShyProgress,
             TheAppBar,
             TransferEdit,

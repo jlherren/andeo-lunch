@@ -3,12 +3,8 @@
         <the-app-bar sub-page>
             {{ name }}
             <template v-if="event" slot="buttons">
-                <v-btn icon @click="openEditDialog" :disabled="isBusy">
-                    <v-icon>{{ $icons.edit }}</v-icon>
-                </v-btn>
-                <v-btn icon @click="openConfirmDelete" :disabled="isBusy">
-                    <v-icon>{{ $icons.delete }}</v-icon>
-                </v-btn>
+                <dynamic-button label="Edit" :icon="$icons.edit" :disabled="isBusy" @click="openEditDialog"/>
+                <dynamic-button label="Delete" :icon="$icons.delete" :disabled="isBusy" @click="openConfirmDelete"/>
             </template>
         </the-app-bar>
 
@@ -105,6 +101,7 @@
 <script>
     import * as DateUtils from '@/utils/dateUtils';
     import Balance from '@/components/Balance';
+    import DynamicButton from '../../components/DynamicButton';
     import LunchEdit from '@/components/event/LunchEdit';
     import ParticipationEdit from '@/components/event/ParticipationEdit';
     import ParticipationListItem from '@/components/event/ParticipationListItem';
@@ -128,9 +125,10 @@
         name: 'LunchDetail',
 
         components: {
-            ParticipationEdit,
             Balance,
+            DynamicButton,
             LunchEdit,
+            ParticipationEdit,
             ParticipationListItem,
             ParticipationSummary,
             ShyProgress,
