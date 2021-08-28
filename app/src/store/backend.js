@@ -1,5 +1,5 @@
 import Axios from 'axios';
-import {ErrorService} from '@/services/errorService';
+import {EventService} from '@/services/eventService';
 
 const BACKEND_URL = process.env.VUE_APP_BACKEND_URL;
 
@@ -62,7 +62,7 @@ async function get(url, config = {}) {
         return await axios.get(BACKEND_URL + url, config);
     } catch (err) {
         processError(err);
-        ErrorService.instance.onError(err);
+        EventService.error.dispatch(err);
         throw err;
     }
 }
@@ -81,7 +81,7 @@ async function post(url, data, config = {}) {
         return await axios.post(BACKEND_URL + url, data, config);
     } catch (err) {
         processError(err);
-        ErrorService.instance.onError(err);
+        EventService.error.dispatch(err);
         throw err;
     }
 }
@@ -99,7 +99,7 @@ async function delete0(url, config = {}) {
         return await axios.delete(BACKEND_URL + url, config);
     } catch (err) {
         processError(err);
-        ErrorService.instance.onError(err);
+        EventService.error.dispatch(err);
         throw err;
     }
 }

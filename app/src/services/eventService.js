@@ -1,9 +1,12 @@
 /**
- * Dispatches errors to registered handlers
+ * Dispatches events to registered handlers
  */
-export class ErrorService {
+export class EventService {
     // We could pull in rxjs to implement this, but it's not really worth it for just one class
-    static instance = new ErrorService();
+
+    static error = new EventService();
+
+    static systemMessage = new EventService();
 
     /**
      * Create a new error service
@@ -14,14 +17,14 @@ export class ErrorService {
     }
 
     /**
-     * Register an error handler.  Returns a function to unregister again.
+     * Register an event handler.  Returns a function to unregister the handler again.
      *
-     * @param {function(error: Error)} callback
-     * @returns {function()}
+     * @param {function(payload: any)} handler
+     * @returns {function(): void}
      */
-    register(callback) {
+    register(handler) {
         let id = this.nextId++;
-        this.handlers[id] = callback;
+        this.handlers[id] = handler;
         return () => {
             delete this.handlers[id];
         };
@@ -30,11 +33,11 @@ export class ErrorService {
     /**
      * Dispatch an error
      *
-     * @param {Error} error
+     * @param {any} payload
      */
-    onError(error) {
+    dispatch(payload) {
         for (let handler of Object.values(this.handlers)) {
-            handler(error);
+            handler(payload);
         }
     }
 }

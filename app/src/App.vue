@@ -33,7 +33,7 @@
 </template>
 
 <script>
-    import {ErrorService} from '@/services/errorService';
+    import {EventService} from '@/services/eventService';
     import Loading from '@/views/Loading';
     import Login from '@/views/Login';
     import {mapGetters} from 'vuex';
@@ -83,9 +83,13 @@
             // Restore dark mode setting
             this.$vuetify.theme.dark = localStorage.getItem('dark-mode') === 'true';
 
-            this.unregisterErrors = ErrorService.instance.register(error => {
+            this.unregisterErrors = EventService.error.register(error => {
                 this.$store.commit('globalSnackbar', `Error: ${error.message}`);
             });
+            this.unregisterSystemMessage = EventService.systemMessage.register(message => {
+                this.$store.commit('globalSnackbar', message);
+            });
+
             this.$store.dispatch('checkLogin');
         },
 
@@ -108,6 +112,7 @@
 
         beforeDestroy() {
             this.unregisterErrors();
+            this.unregisterSystemMessage();
         },
     };
 </script>
