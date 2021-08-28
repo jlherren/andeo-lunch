@@ -34,3 +34,30 @@ function login(username, password) {
 }
 
 Cypress.Commands.add('login', login);
+
+/**
+ * Expect a dialog and wait for it to have finished fading in and yield the dialog, which can then be used with
+ * within().  (Waiting for the fade in is important for running Cypress headless, otherwise it will be difficult to
+ * see anything that happens inside the dialog)
+ *
+ * @returns {Cypress.Chainable<HTMLElement>}
+ * @memberof cy
+ */
+function getDialog() {
+    return cy.get('.v-dialog.v-dialog--active')
+        .should('have.css', 'opacity', '1');
+}
+
+Cypress.Commands.add('getDialog', getDialog);
+
+/**
+ * Expect no dialog to be open
+ *
+ * @memberof cy
+ */
+function noDialog() {
+    cy.get('.v-dialog.v-dialog--active')
+        .should('not.exist');
+}
+
+Cypress.Commands.add('noDialog', noDialog);
