@@ -22,13 +22,14 @@ module.exports = {
     lintOnSave: 'warning',
 
     pwa: {
-        name:          process.env.VUE_APP_BRANDING_TITLE,
+        name:                     process.env.VUE_APP_BRANDING_TITLE,
         // Color used for the window title bar when installed as Chrome/Edge app.  We set it to the same color as the
         // background of Vuetify's <v-app-bar>, to make it look seamless.
-        themeColor:    LUNCH_BLUE,
-        msTileColor:   '#ffffff',
-        assetsVersion: randomVersion,
-        iconPaths:     {
+        themeColor:               LUNCH_BLUE,
+        msTileColor:              '#ffffff',
+        assetsVersion:            randomVersion,
+        appleMobileWebAppCapable: 'yes',
+        iconPaths:                {
             favicon16:      'img/logo16.png',
             favicon32:      'img/logo32.png',
             appleTouchIcon: 'img/logo-small.svg',
