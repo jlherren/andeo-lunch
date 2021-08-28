@@ -1,6 +1,6 @@
 {
     "name": "andeo-lunch",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "workspaces": [
         "app",
         "backend",
