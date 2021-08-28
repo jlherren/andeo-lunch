@@ -1,5 +1,6 @@
 {
     "baseUrl": "http://127.0.0.1:53768",
+    "chromeWebSecurity": false,
     "downloadsFolder": "downloads",
     "fixturesFolder": "fixtures",
     "integrationFolder": "integration",

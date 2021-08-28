@@ -1,74 +1,39 @@
-const enterUserName = () => {
-    return cy.get('label')
-        .contains('Username')
-        .siblings()
-        .first()
-        .type('john.doe');
-};
-
-const pressLoginButton = () => {
-    return cy.get('button[type=submit]')
-        .should('not.be.disabled')
-        .click();
-};
+const {USERS} = require('../helpers/sql');
 
 describe('login', () => {
     before(() => {
         cy.task('db:purge');
-        cy.task('db:sql', `
-            INSERT INTO user (id, username, password, name, active, createdAt, updatedAt)
-                VALUES (2, 'john.doe', '$2a$10$EOq4EMCEzqoyWX.RezHdnuc/.oukv2lR2nVV1d8RyKVHMHwAq2/Wi', 'John Doe', 1, NOW(), NOW());
-        `);
+        USERS.john.insert();
     });
 
-    it('Disables Login button when not entering a password.', () => {
+    it('Disables login button when not entering a password', () => {
         cy.visit('/');
-        cy.get('label')
-            .contains('Username')
-            .siblings()
-            .first()
-            .type('Random UserName.');
+        cy.followLabel('Username')
+            .type('random.username');
+        cy.get('button[type=submit]')
+            .should('be.disabled');
+    });
 
+    it('Disables login button when not entering a username', () => {
+        cy.visit('/');
+        cy.followLabel('Password')
+            .type('random.password');
         cy.get('button[type=submit]')
             .should('be.disabled');
     });
 
     it('Provides feedback for incorrect credentials', () => {
         cy.visit('/');
-
-        enterUserName();
-
-        cy.get('label')
-            .contains('Password')
-            .siblings()
-            .first()
-            .type('Password');
-
-        pressLoginButton();
-
-        cy.get('#app')
-            .should('contain.text', 'Error: Invalid username or password ');
+        cy.followLabel('Username')
+            .type(USERS.john.username);
+        cy.followLabel('Password')
+            .type('wrong-password');
+        cy.get('button[type=submit]')
+            .click();
+        cy.contains('Error: Invalid username or password');
     });
 
     it('Successfully logs in with correct credentials', () => {
-        cy.visit('/');
-
-        enterUserName();
-
-        cy.get('label')
-            .contains('Password')
-            .siblings()
-            .first()
-            .type('andeolunchtest');
-
-        pressLoginButton();
-
-        cy.get('#app').should('contain.text', 'John Doe');
-
-        cy.window().then(window => {
-            // eslint-disable-next-line no-unused-expressions
-            expect(window.localStorage.getItem('token')).to.not.be.empty;
-            Cypress.env('token', window.localStorage.getItem('token'));
-        });
+        cy.login(USERS.john.username, USERS.john.password);
     });
 });
