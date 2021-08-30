@@ -8,7 +8,7 @@
                     </v-badge>
                 </template>
             </v-app-bar-nav-icon>
-            <v-app-bar-nav-icon v-if="subPage" @click="to ? null : goBack()" :to="to">
+            <v-app-bar-nav-icon v-if="subPage" @click="goBack()">
                 <v-icon>{{ $icons.arrowLeft }}</v-icon>
             </v-app-bar-nav-icon>
             <v-app-bar-title>
@@ -56,7 +56,14 @@
 
         methods: {
             goBack() {
-                this.$router.back();
+                // We'd like to just use the "to" property of "v-app-bar-nav-icon", but this causes it to spuriously
+                // have the 'active' class, when the URL it goes back to is a prefix of the current one.  And there
+                // seems to be no way to pass on 'exact-active-class' to the 'v-btn' underneath.
+                if (this.to) {
+                    this.$router.push(this.to);
+                } else {
+                    this.$router.back();
+                }
             },
 
             toggleDrawer() {
