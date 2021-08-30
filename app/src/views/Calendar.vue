@@ -22,7 +22,7 @@
                             <v-list-item-subtitle>{{ formatDate(event.date) }}</v-list-item-subtitle>
                         </v-list-item-content>
                         <v-list-item-action>
-                            <v-btn icon @click="openCreateDialog('lunch', event.date)">
+                            <v-btn icon :to="`/events/new?type=lunch&date=${event.isoDate}`">
                                 <v-icon>{{ $icons.plus }}</v-icon>
                             </v-btn>
                         </v-list-item-action>
@@ -41,34 +41,28 @@
                     <v-icon v-else>{{ $icons.plus }}</v-icon>
                 </v-btn>
             </template>
-            <v-btn color="primary" fab small @click="openCreateDialog('lunch', null)">
+            <v-btn color="primary" fab small to="/events/new?type=lunch">
                 <v-icon>{{ $icons.lunch }}</v-icon>
                 <span class="label">Lunch</span>
             </v-btn>
-            <v-btn color="primary" fab small @click="openCreateDialog('special', null)">
+            <v-btn color="primary" fab small to="/events/new?type=special">
                 <v-icon>{{ $icons.special }}</v-icon>
                 <span class="label">Special event</span>
             </v-btn>
-            <v-btn color="primary" fab small @click="openCreateDialog('label', null)">
+            <v-btn color="primary" fab small to="/events/new?type=label">
                 <v-icon>{{ $icons.label }}</v-icon>
                 <span class="label">Label</span>
             </v-btn>
         </v-speed-dial>
-
-        <v-dialog v-model="createDialog" persistent>
-            <lunch-edit ref="createEvent" :event="newEvent" @close="createDialogClosed()"/>
-        </v-dialog>
     </v-main>
 </template>
 
 <script>
     import * as DateUtils from '@/utils/dateUtils';
     import DynamicButton from '@/components/DynamicButton';
-    import LunchEdit from '@/components/event/LunchEdit';
     import LunchListItem from '@/components/event/LunchListItem';
     import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
-    import Vue from 'vue';
 
     export const EVENT_TYPES = ['lunch', 'special', 'label'];
 
@@ -77,7 +71,6 @@
 
         components: {
             DynamicButton,
-            LunchEdit,
             LunchListItem,
             ShyProgress,
             TheAppBar,
@@ -94,13 +87,12 @@
             }
 
             return {
-                startDate:    DateUtils.previousMonday(date),
-                endDate:      null,
-                loading:      false,
-                createDialog: false,
-                speedDial:    false,
-                newEvent:     {},
-                touch:        {
+                startDate: DateUtils.previousMonday(date),
+                endDate:   null,
+                loading:   false,
+                speedDial: false,
+                newEvent:  {},
+                touch:     {
                     left:  () => this.previousWeek(),
                     right: () => this.nextWeek(),
                 },
@@ -140,9 +132,10 @@
                         let date = DateUtils.addDays(this.startDate, i - 1);
                         date.setHours(12, 0, 0, 0);
                         events.push({
-                            id:   `placeholder-${i}`,
-                            date: date,
-                            type: 'placeholder',
+                            id:      `placeholder-${i}`,
+                            date:    date,
+                            isoDate: DateUtils.isoDate(date),
+                            type:    'placeholder',
                         });
                     }
                 }
@@ -179,20 +172,6 @@
             nextWeek() {
                 let newDate = DateUtils.addDays(this.startDate, 7);
                 this.$router.push(`/calendar/${DateUtils.isoDate(newDate)}`);
-            },
-
-            openCreateDialog(type, date) {
-                this.createDialog = true;
-                this.newEvent = {
-                    type,
-                    date,
-                };
-                Vue.nextTick(() => this.$refs.createEvent.reset());
-            },
-
-            createDialogClosed() {
-                this.createDialog = false;
-                this.reload();
             },
 
             formatDate(date) {

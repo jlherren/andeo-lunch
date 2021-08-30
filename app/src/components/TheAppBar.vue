@@ -8,7 +8,7 @@
                     </v-badge>
                 </template>
             </v-app-bar-nav-icon>
-            <v-app-bar-nav-icon v-if="subPage" @click="goBack">
+            <v-app-bar-nav-icon v-if="subPage" @click="to ? null : goBack()" :to="to">
                 <v-icon>{{ $icons.arrowLeft }}</v-icon>
             </v-app-bar-nav-icon>
             <v-app-bar-title>
@@ -45,6 +45,7 @@
             },
             logo:            Boolean,
             noMenu:          Boolean,
+            to:              String,
         },
 
         data() {
@@ -55,7 +56,7 @@
 
         methods: {
             goBack() {
-                this.$router.go(-1);
+                this.$router.back();
             },
 
             toggleDrawer() {

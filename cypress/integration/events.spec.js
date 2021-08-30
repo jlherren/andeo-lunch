@@ -10,122 +10,92 @@ describe('Create events', () => {
     });
 
     it('Use quick add button', () => {
-        cy.get('.v-list-item button')
+        cy.get('.v-list-item a')
             .first()
             .click();
 
-        cy.getDialog().within(() => {
-            cy.followLabel('Name')
-                .type('Brunch');
-            // Must have a preset date
-            cy.followLabel('Date')
-                .should('not.have.value', '')
-                .click();
-            // We need to temporarily escape the 'within' scope, since the calendar popup is not in the dialog
-            cy.document()
-                .its('body')
-                .find('button.v-date-picker-table__current')
-                .click();
-            cy.followLabel('Points')
-                .type('6');
-            cy.followLabel('Vegetarian factor')
-                .should('have.value', 50);
-            cy.contains('button', 'Save')
-                .click();
-        });
+        cy.followLabel('Name')
+            .type('Brunch');
+        // Must have a preset date
+        cy.followLabel('Date')
+            .should('not.have.value', '')
+            .click();
+        cy.get('button.v-date-picker-table__current')
+            .click();
+        cy.followLabel('Points')
+            .type('6');
+        cy.followLabel('Vegetarian factor')
+            .should('have.value', 50);
+        cy.contains('button', 'Save')
+            .click();
 
-        cy.noDialog();
-
-        cy.contains('.v-list-item', 'Brunch');
+        cy.contains('.headline', 'Brunch');
     });
 
     it('Manual lunch button', () => {
         cy.get('button.v-btn--fab')
             .click();
-        cy.contains('button', 'Lunch')
+        cy.contains('a', 'Lunch')
             .click();
 
-        cy.getDialog().within(() => {
-            cy.followLabel('Name')
-                .type('Spätzli');
-            cy.followLabel('Date')
-                .should('have.value', '')
-                .click();
-            // We need to temporarily escape the 'within' scope, since the calendar popup is not in the dialog
-            cy.document()
-                .its('body')
-                .find('button.v-date-picker-table__current')
-                .click();
-            cy.followLabel('Points')
-                .type('0.5');
-            cy.followLabel('Vegetarian factor')
-                .clear()
-                .type('100');
-            cy.contains('button', 'Save')
-                .click();
-        });
+        cy.followLabel('Name')
+            .type('Spätzli');
+        cy.followLabel('Date')
+            .should('have.value', '')
+            .click();
+        cy.get('button.v-date-picker-table__current')
+            .click();
+        cy.followLabel('Points')
+            .type('0.5');
+        cy.followLabel('Vegetarian factor')
+            .type('{selectall}100');
+        cy.contains('button', 'Save')
+            .click();
 
-        cy.noDialog();
-
-        cy.contains('.v-list-item', 'Spätzli');
+        cy.contains('.headline', 'Spätzli');
     });
 
     it('Special event button', () => {
         cy.get('button.v-btn--fab')
             .click();
-        cy.contains('button', 'Special')
+        cy.contains('a', 'Special')
             .click();
 
-        cy.getDialog().within(() => {
-            cy.followLabel('Name')
-                .type('AoE Zyt Pizza');
-            cy.followLabel('Date')
-                .click();
-            // We need to temporarily escape the 'within' scope, since the calendar popup is not in the dialog
-            cy.document()
-                .its('body')
-                .find('button.v-date-picker-table__current')
-                .click();
-            cy.followLabel('Points')
-                .type('4');
-            cy.followLabel('Vegetarian factor')
-                .clear()
-                .type('100');
-            cy.contains('button', 'Save')
-                .click();
-        });
+        cy.followLabel('Name')
+            .type('AoE Zyt Pizza');
+        cy.followLabel('Date')
+            .click();
+        cy.get('button.v-date-picker-table__current')
+            .click();
+        cy.followLabel('Points')
+            .type('4');
+        cy.followLabel('Vegetarian factor')
+            .type('{selectall}100');
+        cy.contains('button', 'Save')
+            .click();
 
-        cy.noDialog();
-
-        cy.contains('.v-list-item', 'AoE Zyt Pizza');
+        cy.contains('.headline', 'AoE Zyt Pizza');
     });
 
     it('Label event', () => {
         cy.get('button.v-btn--fab')
             .click();
-        cy.contains('button', 'Label')
+        cy.contains('a', 'Label')
             .click();
 
-        cy.getDialog().within(() => {
-            cy.followLabel('Name')
-                .type('Feiertag');
-            cy.followLabel('Date')
-                .click();
-            // We need to temporarily escape the 'within' scope, since the calendar popup is not in the dialog
-            cy.document()
-                .its('body')
-                .find('button.v-date-picker-table__current')
-                .click();
-            cy.contains('label', 'Points')
-                .should('not.exist');
-            cy.contains('label', 'Vegetarian factor')
-                .should('not.exist');
-            cy.contains('button', 'Save')
-                .click();
-        });
+        cy.followLabel('Name')
+            .type('Feiertag');
+        cy.followLabel('Date')
+            .click();
+        cy.get('button.v-date-picker-table__current')
+            .click();
+        cy.contains('label', 'Points')
+            .should('not.exist');
+        cy.contains('label', 'Vegetarian factor')
+            .should('not.exist');
+        cy.contains('button', 'Save')
+            .click();
 
-        cy.noDialog();
-
-        cy.contains('.v-list-item', 'Feiertag');
+        cy.contains('.headline', 'Feiertag');
     });
 });

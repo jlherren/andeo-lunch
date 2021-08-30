@@ -1,6 +1,6 @@
 <template>
     <v-main>
-        <the-app-bar sub-page>
+        <the-app-bar sub-page :to="`/transfers/${isoDate}`">
             {{ name }}
             <template v-if="event" slot="buttons">
                 <dynamic-button label="Edit" :icon="$icons.edit" disabled/>
@@ -133,9 +133,8 @@
         },
 
         data() {
-            let eventId = parseInt(this.$route.params.id, 10);
             return {
-                eventId,
+                eventId:                        parseInt(this.$route.params.id, 10),
                 isBusy:                         false,
                 deleteEventDialog:              false,
                 deleteTransferDialog:           false,
@@ -147,6 +146,13 @@
         async created() {
             try {
                 this.isBusy = true;
+                await this.$store.dispatch('fetchEvent', {eventId: this.eventId});
+                let event = this.$store.getters.event(this.eventId);
+                if (event.type !== 'transfer') {
+                    // Oops, you're in the wrong view, redirect.
+                    await this.$router.push(`/events/${this.eventId}`);
+                    return;
+                }
                 await this.$store.dispatch('fetchTransfers', {eventId: this.eventId});
             } finally {
                 this.isBusy = false;
@@ -204,7 +210,11 @@
             },
 
             formattedDate() {
-                return this.event.date !== null ? DateUtils.displayFormat(this.event.date) : null;
+                return this.event?.date ? DateUtils.displayFormat(this.event.date) : null;
+            },
+
+            isoDate() {
+                return this.event?.date ? DateUtils.isoDate(this.event.date) : null;
             },
         },
 

@@ -1,5 +1,5 @@
 <template>
-    <v-list-item :to="`/events/${this.event.id}`">
+    <v-list-item :to="`/transfers/${this.event.id}`">
         <v-list-item-icon>
             <v-icon :color="iconColor">{{ $icons.transfers }}</v-icon>
         </v-list-item-icon>

@@ -1,5 +1,5 @@
 <template>
-    <v-btn :text="large" :icon="!large" :disabled="disabled" @click="$emit('click')">
+    <v-btn :text="large" :icon="!large" :disabled="disabled" @click="$emit('click')" :to="to">
         <v-icon v-if="!right" :left="large">{{ icon }}</v-icon>
         <span v-if="large">{{ label }}</span>
         <v-icon v-if="right" :right="large">{{ icon }}</v-icon>
@@ -15,6 +15,7 @@
             icon:     String,
             right:    Boolean,
             disabled: Boolean,
+            to:       String,
         },
 
         computed: {

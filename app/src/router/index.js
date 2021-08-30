@@ -18,8 +18,12 @@ const routes = [
         component: () => import('@/views/Menus.vue'),
     },
     {
-        path:      '/transfers/:date([-0-9]{10})?',
+        path:      '/transfers/:date([0-9]{4}-[0-9]{2}-[0-9]{2})?',
         component: () => import('@/views/TransfersList.vue'),
+    },
+    {
+        path:      '/transfers/:id(\\d+)',
+        component: () => import('@/views/event/TransferDetail'),
     },
     {
         path:      '/transfers/new',
@@ -56,6 +60,14 @@ const routes = [
     {
         path:      '/events/:id(\\d+)',
         component: () => import('@/views/event/EventDetail'),
+    },
+    {
+        path:      '/events/:id(\\d+)/edit',
+        component: () => import('@/views/event/EventEdit'),
+    },
+    {
+        path:      '/events/new',
+        component: () => import('@/views/event/EventEdit'),
     },
     {
         path:      '/profile',
