@@ -6,6 +6,9 @@
 
         <v-list>
             <v-list-item @click.prevent="openDefaultOptInModal()">
+                <v-list-item-icon>
+                    <v-icon>{{ $icons.checkboxMultipleMarked }}</v-icon>
+                </v-list-item-icon>
                 <v-list-item-content>
                     <v-list-item-title>
                         Default opt-in
@@ -19,7 +22,24 @@
                 </v-list-item-action>
             </v-list-item>
 
+            <v-list-item to="/preferences/absences">
+                <v-list-item-icon>
+                    <v-icon>{{ $icons.absence }}</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                    <v-list-item-title>
+                        Absences
+                    </v-list-item-title>
+                </v-list-item-content>
+                <v-list-item-action>
+                    <v-icon>{{ $icons.chevronRight }}</v-icon>
+                </v-list-item-action>
+            </v-list-item>
+
             <v-list-item>
+                <v-list-item-icon>
+                    <v-icon>{{ $icons.lunch }}</v-icon>
+                </v-list-item-icon>
                 <v-list-item-content>
                     <v-list-item-title>
                         Dietary information
@@ -35,6 +55,9 @@
             </v-list-item>
 
             <v-list-item>
+                <v-list-item-icon>
+                    <v-icon>{{ $icons.darkMode }}</v-icon>
+                </v-list-item-icon>
                 <v-list-item-content>
                     <v-list-item-title>
                         Use dark mode

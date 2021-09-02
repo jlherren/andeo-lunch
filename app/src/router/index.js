@@ -78,12 +78,12 @@ const routes = [
         component: () => import(/* webpackChunkName: "profile" */ '@/views/settings/ChangePassword'),
     },
     {
-        path:      '/profile/absences',
-        component: () => import(/* webpackChunkName: "profile" */ '@/views/settings/Absences'),
-    },
-    {
         path:      '/preferences',
         component: () => import('@/views/settings/Preferences'),
+    },
+    {
+        path:      '/preferences/absences',
+        component: () => import(/* webpackChunkName: "profile" */ '@/views/settings/Absences'),
     },
     {
         path:      '/log',
