@@ -1,10 +1,23 @@
 <template>
-    <v-card>
-        <v-card-title>
-            Default opt-in
-        </v-card-title>
+    <v-main>
+        <the-app-bar sub-page>
+            Default opt-ins
 
-        <v-card-text>
+            <template v-slot:buttons>
+                <v-btn :disabled="isBusy" @click="save()" color="primary">
+                    Save
+                </v-btn>
+            </template>
+        </the-app-bar>
+
+        <shy-progress v-if="isBusy"/>
+
+        <v-container>
+            <p class="text-body-1">
+                Default opt-ins allow to set defaults based on the day of the week.  They
+                will only affect newly created lunches and never existing lunches.
+            </p>
+
             <div v-for="weekday of weekdays" :key="weekday.index">
                 {{ weekday.name }}<br/>
                 <participation-type-widget v-model="settings[`defaultOptIn${weekday.index}`]"
@@ -17,23 +30,14 @@
                     Quick opt-in as vegetarian
                 </template>
             </v-switch>
-        </v-card-text>
-
-        <v-card-actions>
-            <v-btn text :disabled="isBusy" @click.prevent="close()">
-                Close
-            </v-btn>
-            <v-spacer/>
-            <v-progress-circular v-if="isBusy" indeterminate size="20" width="2"/>
-            <v-btn :disabled="isBusy" @click.prevent="save()" color="primary">
-                Save
-            </v-btn>
-        </v-card-actions>
-    </v-card>
+        </v-container>
+    </v-main>
 </template>
 
 <script>
     import ParticipationTypeWidget from '@/components/event/ParticipationTypeWidget';
+    import ShyProgress from '../../components/ShyProgress';
+    import TheAppBar from '../../components/TheAppBar';
     import {WEEKDAYS} from '@/utils/dateUtils';
 
     const VALID_SETTINGS = [
@@ -46,14 +50,12 @@
     ];
 
     export default {
-        name: 'DefaultOptInEdit',
+        name: 'DefaultOptIn',
 
         components: {
             ParticipationTypeWidget,
-        },
-
-        created() {
-            this.reset();
+            ShyProgress,
+            TheAppBar,
         },
 
         data() {
@@ -71,6 +73,12 @@
             };
         },
 
+        async created() {
+            await this.$store.dispatch('fetchSettings');
+            this.settings = this.$store.getters.settings;
+            this.isBusy = false;
+        },
+
         computed: {
             weekdays() {
                 return Object.values(WEEKDAYS);
@@ -78,13 +86,6 @@
         },
 
         methods: {
-            async reset() {
-                Object.assign(this.$data, this.$options.data.apply(this));
-                await this.$store.dispatch('fetchSettings');
-                this.settings = this.$store.getters.settings;
-                this.isBusy = false;
-            },
-
             async save() {
                 try {
                     this.isBusy = true;
@@ -94,18 +95,15 @@
                     for (let key of VALID_SETTINGS) {
                         settingsUpdate[key] = this.settings[key];
                     }
+                    console.log(settingsUpdate);
                     if (Object.keys(settingsUpdate).length) {
                         await this.$store.dispatch('saveSettings', settingsUpdate);
                     }
-                    this.close();
+                    await this.$router.push('/');
                 } catch (err) {
                     this.isBusy = false;
                     throw err;
                 }
-            },
-
-            close() {
-                this.$emit('close');
             },
         },
     };

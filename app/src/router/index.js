@@ -79,7 +79,11 @@ const routes = [
     },
     {
         path:      '/preferences',
-        component: () => import('@/views/settings/Preferences'),
+        component: () => import(/* webpackChunkName: "profile" */ '@/views/settings/Preferences'),
+    },
+    {
+        path:      '/preferences/default-opt-in',
+        component: () => import(/* webpackChunkName: "profile" */ '@/views/settings/DefaultOptIn'),
     },
     {
         path:      '/preferences/absences',
