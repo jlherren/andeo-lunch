@@ -27,6 +27,7 @@ export const icons = {
     refresh:       mdi.mdiRefresh,
 
     // Add semantic aliases here (this is encouraged).  Keep this list sorted!
+    absence:        mdi.mdiBeach,
     appMenu:        mdi.mdiMenu,
     balanceHistory: mdi.mdiScaleBalance,
     edit:           mdi.mdiPencil,
