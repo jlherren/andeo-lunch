@@ -93,8 +93,8 @@
                 speedDial: false,
                 newEvent:  {},
                 touch:     {
-                    left:  () => this.previousWeek(),
-                    right: () => this.nextWeek(),
+                    left:  () => this.nextWeek(),
+                    right: () => this.previousWeek(),
                 },
             };
         },
