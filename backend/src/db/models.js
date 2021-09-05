@@ -248,6 +248,7 @@ class Audit extends Model {
             actingUserName:   this.getActingUserName(),
             eventId:          this.event,
             eventName:        this.getEventName(),
+            eventDate:        this.Event?.date,
             affectedUserId:   this.affectedUser,
             affectedUserName: this.getAffectedUserName(),
             values:           this.values,

@@ -333,6 +333,9 @@ export default new Vuex.Store({
                 let audits = response.data.audits;
                 for (let audit of audits) {
                     audit.date = new Date(audit.date);
+                    if (audit.eventDate) {
+                        audit.eventDate = new Date(audit.eventDate);
+                    }
                 }
                 context.state.audits = audits;
             });

@@ -23,7 +23,8 @@
                     <span>{{ audit.display }}</span>
                     <span>
                         <v-chip small outlined label v-for="element of audit.details" :key="element.name" :class="element.class">
-                            {{ element.name }} <b>{{ element.value }}</b>
+                            <span v-if="element.name">{{ element.name }}</span>
+                            <b>{{ element.value }}</b>
                         </v-chip>
                     </span>
                 </v-list-item>
@@ -112,11 +113,24 @@
                         value: audit.eventName,
                     });
                 }
+                if (audit.type.match(/^participation\./u) && audit.eventDate) {
+                    if (audit.eventDate < audit.date) {
+                        details.push({
+                            value: 'Action after event!',
+                            class: 'alert',
+                        });
+                    } else if (DateUtils.previousMonday(audit.eventDate) < audit.date) {
+                        details.push({
+                            value: 'Action for current week!',
+                            class: 'warning',
+                        });
+                    }
+                }
                 if (audit.affectedUserName !== null) {
                     details.push({
-                        name:    'Affected user',
-                        value:   audit.affectedUserName,
-                        class: audit.affectedUserId !== audit.actingUserId ? 'foreign' : null,
+                        name:  'Affected user',
+                        value: audit.affectedUserName,
+                        class: audit.affectedUserId !== audit.actingUserId ? 'alert' : null,
                     });
                 }
                 if (audit.values) {
@@ -225,11 +239,15 @@
         padding: 0 0.33em;
         color: gray !important;
 
-        b {
+        span + b {
             margin-left: 0.33em;
         }
 
-        &.foreign {
+        &.warning {
+            border: 2px solid orange;
+        }
+
+        &.alert {
             border: 2px solid red;
         }
     }
