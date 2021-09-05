@@ -3659,9 +3659,9 @@ __metadata:
     "@vue/cli-plugin-vuex": ~4.5.13
     "@vue/cli-service": ~4.5.13
     "@vue/eslint-config-standard": ~6.1.0
-    axios: ~0.21.1
+    axios: ~0.21.3
     babel-eslint: ~10.1.0
-    core-js: ~3.16.3
+    core-js: ~3.17.2
     eslint: ~7.32.0
     eslint-plugin-import: ~2.24.2
     eslint-plugin-jsdoc: ~36.0.8
@@ -3722,7 +3722,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "andeo-lunch-cypress@workspace:cypress"
   dependencies:
-    axios: ~0.21.1
+    axios: ~0.21.3
     cypress: ~8.3.1
     eslint: ~7.32.0
     eslint-plugin-cypress: ~2.11.3
@@ -4394,12 +4394,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:~0.21.1":
-  version: 0.21.1
-  resolution: "axios@npm:0.21.1"
+"axios@npm:~0.21.3":
+  version: 0.21.3
+  resolution: "axios@npm:0.21.3"
   dependencies:
-    follow-redirects: ^1.10.0
-  checksum: c87915fa0b18c15c63350112b6b3563a3e2ae524d7707de0a73d2e065e0d30c5d3da8563037bc29d4cc1b7424b5a350cb7274fa52525c6c04a615fe561c6ab11
+    follow-redirects: ^1.14.0
+  checksum: fdcac33adb0330e127ab0e58f8d9fb7470b49dbfb0aba251ff54f146f2fc7d9362e3300581b6c98d2ea3b8db958ed099c831c3c7832ae79b14f517d5947a029a
   languageName: node
   linkType: hard
 
@@ -6150,10 +6150,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"core-js@npm:^3.6.5, core-js@npm:~3.16.3":
-  version: 3.16.3
-  resolution: "core-js@npm:3.16.3"
-  checksum: f44f73655b3e24a8b0c66d2cdf71549c07d90d63548081bb869e09661f57c5f68b84adf3a169023bda1861f0561159b75acc6d533e5e96fca4f24e88634276ff
+"core-js@npm:^3.6.5, core-js@npm:~3.17.2":
+  version: 3.17.2
+  resolution: "core-js@npm:3.17.2"
+  checksum: 54df8d467bc59ff65f9db3764a486f102605483c7c2b0bad8d83171bfcfa3e0e38197a7349f072249cc07d3b140e92c655b4ce08315206dcfae0e4c3b744f378
   languageName: node
   linkType: hard
 
@@ -8699,13 +8699,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.10.0":
-  version: 1.14.1
-  resolution: "follow-redirects@npm:1.14.1"
+"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.14.0":
+  version: 1.14.3
+  resolution: "follow-redirects@npm:1.14.3"
   peerDependenciesMeta:
     debug:
       optional: true
-  checksum: 7381a55bdc6951c5c1ab73a8da99d9fa4c0496ce72dba92cd2ac2babe0e3ebde9b81c5bca889498ad95984bc773d713284ca2bb17f1b1e1416e5f6531e39a488
+  checksum: b4d89339afd119b5e6fd92f0e81ae7d3621a5421af7d4a7d94539765c1d5546cf61d2f3219d40596e53c7c253307fbaf5dc772254aa9170fdfe1f9d7731732a9
   languageName: node
   linkType: hard
 
