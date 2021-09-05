@@ -61,8 +61,8 @@
                 endDate:   null,
 
                 touch: {
-                    left:  () => this.previousMonth(),
-                    right: () => this.nextMonth(),
+                    left:  () => this.nextMonth(),
+                    right: () => this.previousMonth(),
                 },
             };
         },
