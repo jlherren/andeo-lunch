@@ -18,11 +18,7 @@ describe('Create events', () => {
             .type('Brunch');
         // Must have a preset date
         cy.followLabel('Date')
-            .should('not.have.value', '')
-            .click();
-        // Note: This may fail, when the monday of the current week is in the last month.
-        cy.get('button.v-date-picker-table__current')
-            .click();
+            .should('not.have.value', '');
         cy.followLabel('Points')
             .type('6');
         cy.followLabel('Vegetarian factor')
