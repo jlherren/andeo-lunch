@@ -216,7 +216,10 @@ async function createEvent(ctx) {
 
         await resetDefaultOptIns(event, transaction);
         await TransactionRebuilder.rebuildEvent(transaction, event);
-        await AuditManager.log(transaction, ctx.user, 'event.create', {event: event.id});
+        await AuditManager.log(transaction, ctx.user, 'event.create', {
+            event:  event.id,
+            values: event.toSnapshot(),
+        });
         return event.id;
     });
     ctx.status = 201;
@@ -322,7 +325,7 @@ async function updateEvent(ctx) {
         let event = await loadEventFromParam(ctx, transaction);
         validateEvent(ctx, event.type, apiEvent);
         let originalDate = event.date;
-
+        let before = event.toSnapshot();
         await event.update(
             {
                 name: apiEvent.name,
@@ -340,13 +343,17 @@ async function updateEvent(ctx) {
                 {transaction},
             );
         }
+        let after = event.toSnapshot();
 
         if (originalDate.getTime() !== event.date.getTime()) {
             await resetDefaultOptIns(event, transaction);
         }
 
         await TransactionRebuilder.rebuildEvent(transaction, event);
-        await AuditManager.log(transaction, ctx.user, 'event.update', {event: event.id});
+        await AuditManager.log(transaction, ctx.user, 'event.update', {
+            event:  event.id,
+            values: Utils.snapshotDiff(before, after),
+        });
     });
     ctx.status = 204;
 }
@@ -379,24 +386,26 @@ async function saveParticipation(ctx) {
             pointsCredited: apiParticipation.credits?.points,
             moneyCredited:  apiParticipation.credits?.money,
         };
-        let auditType = 'unknown';
         if (!participation) {
             data.event = event.id;
             data.user = user.id;
-            await Models.Participation.create(data, {transaction});
-            auditType = 'participation.create';
+            participation = await Models.Participation.create(data, {transaction});
+            await AuditManager.log(transaction, ctx.user, 'participation.create', {
+                event:        event.id,
+                affectedUser: user.id,
+                values:       participation.toSnapshot(),
+            });
         } else {
+            let before = participation.toSnapshot();
             await participation.update(data, {transaction});
-            auditType = 'participation.update';
+            let after = participation.toSnapshot();
+            await AuditManager.log(transaction, ctx.user, 'participation.update', {
+                event:        event.id,
+                affectedUser: user.id,
+                values:       Utils.snapshotDiff(before, after),
+            });
         }
         await TransactionRebuilder.rebuildEvent(transaction, event);
-        await AuditManager.log(transaction, ctx.user, auditType, {
-            event:        event.id,
-            affectedUser: user.id,
-            values:       {
-                participationType: apiParticipation.type,
-            },
-        });
     });
     ctx.status = 204;
 }
@@ -406,28 +415,30 @@ async function saveParticipation(ctx) {
  * @returns {Promise<void>}
  */
 async function deleteParticipation(ctx) {
-    let n = await ctx.sequelize.transaction(async transaction => {
+    await ctx.sequelize.transaction(async transaction => {
         let event = await loadEventFromParam(ctx, transaction);
         let user = await loadUserFromParam(ctx, transaction);
-
-        let nDestroyed = await Models.Participation.destroy({
+        let participation = await Models.Participation.findOne({
             where: {
                 event: event.id,
                 user:  user.id,
             },
             transaction,
+            lock:  transaction.LOCK.UPDATE,
         });
-        if (nDestroyed) {
-            await TransactionRebuilder.rebuildEvent(transaction, event);
-            await AuditManager.log(transaction, ctx.user, 'participation.delete', {event: event.id, affectedUser: user.id});
+        if (!participation) {
+            ctx.throw(404, 'No such participation');
         }
-        return nDestroyed;
+        let before = participation.toSnapshot();
+        await participation.destroy({transaction});
+        await TransactionRebuilder.rebuildEvent(transaction, event);
+        await AuditManager.log(transaction, ctx.user, 'participation.delete', {
+            event:        event.id,
+            affectedUser: user.id,
+            values:       before,
+        });
     });
-    if (n) {
-        ctx.status = 204;
-    } else {
-        ctx.throw(404, 'No such participation');
-    }
+    ctx.status = 204;
 }
 
 /**
@@ -529,6 +540,7 @@ async function listEvents(ctx) {
 async function deleteEvent(ctx) {
     await ctx.sequelize.transaction(async transaction => {
         let event = await loadEventFromParam(ctx, transaction);
+        let before = event.toSnapshot();
         await Models.Transaction.destroy({
             transaction,
             where: {
@@ -557,7 +569,10 @@ async function deleteEvent(ctx) {
 
         await TransactionRebuilder.rebuildTransactionBalances(transaction, event.date);
         await TransactionRebuilder.rebuildUserBalances(transaction);
-        await AuditManager.log(transaction, ctx.user, 'event.delete', {event: event.id});
+        await AuditManager.log(transaction, ctx.user, 'event.delete', {
+            event:  event.id,
+            values: before,
+        });
     });
     ctx.status = 204;
 }
@@ -636,6 +651,8 @@ async function createTransfers(ctx) {
  * @returns {Promise<void>}
  */
 async function saveTransfer(ctx) {
+    let systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
+
     /** @type {ApiTransfer} */
     let apiTransfer = RouteUtils.validateBody(ctx, transferSchema);
     await ctx.sequelize.transaction(async transaction => {
@@ -654,21 +671,20 @@ async function saveTransfer(ctx) {
             ctx.throw(400, 'Cannot transfer back to sender');
         }
 
+        let before = transfer.toSnapshot(systemUser);
         await transfer.update({
             currency:  Constants.CURRENCY_IDS[apiTransfer.currency],
             amount:    apiTransfer.amount,
             sender:    sender.id,
             recipient: recipient.id,
         }, {transaction});
+        let after = transfer.toSnapshot(systemUser);
+
         await TransactionRebuilder.rebuildEvent(transaction, event);
+
         await AuditManager.log(transaction, ctx.user, 'transfer.update', {
             event:  event.id,
-            values: {
-                sender:    transfer.sender,
-                recipient: transfer.recipient,
-                amount:    transfer.amount,
-                currency:  transfer.currency,
-            },
+            values: Utils.snapshotDiff(before, after),
         });
     });
     ctx.status = 204;
@@ -679,6 +695,8 @@ async function saveTransfer(ctx) {
  * @returns {Promise<void>}
  */
 async function deleteTransfer(ctx) {
+    let systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
+
     await ctx.sequelize.transaction(async transaction => {
         let event = await loadEventFromParam(ctx, transaction);
         let transfer = await loadTransferFromParam(ctx, transaction);
@@ -687,16 +705,12 @@ async function deleteTransfer(ctx) {
             ctx.throw('400', 'Transfer does not belong to specified event');
         }
 
+        let before = transfer.toSnapshot(systemUser);
         await transfer.destroy({transaction});
         await TransactionRebuilder.rebuildEvent(transaction, event);
         await AuditManager.log(transaction, ctx.user, 'transfer.delete', {
             event:  event.id,
-            values: {
-                sender:    transfer.sender,
-                recipient: transfer.recipient,
-                amount:    transfer.amount,
-                currency:  transfer.currency,
-            },
+            values: before,
         });
     });
     ctx.status = 204;

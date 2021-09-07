@@ -53,11 +53,25 @@
     };
 
     const NAMES = {
-        participationType: 'Type',
-        sender:            'Sender',
-        recipient:         'Recipient',
-        amount:            'Amount',
-        currency:          'Currency',
+        'participation.type':           'Type',
+        'participation.credits.money':  'Money credited',
+        'participation.credits.points': 'Points credited',
+        'transfer.sender':              'Sender',
+        'transfer.recipient':           'Recipient',
+        'transfer.amount':              'Amount',
+        'transfer.currency':            'Currency',
+        'event.name':                   'Name',
+        'event.date':                   'Date',
+        'event.costs.points':           'Points cost',
+        'event.costs.money':            'Money cost',
+        'event.factors.2.2':            'Vegetarian money factor',
+    };
+
+    const PARTICIPATION_TYPES = {
+        1: 'Omni',
+        2: 'Vegi',
+        8: 'Opt-out',
+        9: 'Undecided',
     };
 
     export default {
@@ -133,35 +147,79 @@
                         class: audit.affectedUserId !== audit.actingUserId ? 'alert' : null,
                     });
                 }
-                if (audit.values) {
-                    for (let key in audit.values) {
-                        details.push({
-                            name:  NAMES[key] ?? key,
-                            value: this.prettifyValue(key, audit.values[key]),
-                        });
+                let values = audit.values;
+                if (values) {
+                    values = this.flatten(values);
+                    let keys = Object.keys(values);
+                    keys.sort();
+                    for (let key of keys) {
+                        let value = values[key];
+                        let prefix = audit.type.split('.', 1)[0];
+                        let keyWithPrefix = `${prefix}.${key}`;
+                        let name = NAMES[keyWithPrefix] ?? key;
+                        if (Array.isArray(value)) {
+                            details.push({
+                                name,
+                                value: `${this.prettifyValue(keyWithPrefix, value[0])} \u{2192} ${this.prettifyValue(keyWithPrefix, value[1])}`,
+                            });
+                        } else {
+                            details.push({
+                                name,
+                                value: this.prettifyValue(keyWithPrefix, value),
+                            });
+                        }
                     }
                 }
                 return details;
             },
 
+            flatten(object, prefix = '') {
+                let ret = {};
+                for (let key of Object.keys(object)) {
+                    let value = object[key];
+                    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+                        ret = {
+                            ...ret,
+                            ...this.flatten(value, `${prefix}${key}.`),
+                        };
+                    } else {
+                        ret[prefix + key] = value;
+                    }
+                }
+                return ret;
+            },
+
             prettifyValue(key, value) {
                 switch (key) {
-                    case 'sender':
-                    case 'recipient':
+                    case 'transfer.sender':
+                    case 'transfer.recipient':
                         if (value === -1) {
                             return 'Temporary pot';
                         }
                         return this.$store.getters.user(value)?.name ?? 'Unknown';
 
-                    case 'currency':
+                    case 'transfer.currency':
                         return value === 1 ? 'points' : 'money';
 
-                    case 'amount':
+                    case 'transfer.amount':
                         if (typeof value === 'number') {
                             return value.toFixed(2)
                                 .replace(/\.?0+$/u, '');
                         }
                         return value;
+
+                    case 'participation.type':
+                        return PARTICIPATION_TYPES[value] ?? value;
+
+                    case 'event.factors.2.2':
+                        value = parseFloat((value * 100).toPrecision(4));
+                        return `${value}%`;
+
+                    case 'event.date':
+                        if (typeof value === 'string') {
+                            value = new Date(value);
+                        }
+                        return value instanceof Date ? DateUtils.isoDateTime(value) : value;
 
                     default:
                         return value;

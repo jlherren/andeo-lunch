@@ -93,6 +93,21 @@ class Event extends Model {
             transfers: this.Transfers?.map(transfer => transfer.toApi(systemUserId)),
         };
     }
+
+    toSnapshot() {
+        return {
+            date:      this.date,
+            name:      this.name,
+            costs:     this.Lunch && {
+                points: this.Lunch.pointsCost,
+            },
+            factors:   this.Lunch && {
+                [Constants.PARTICIPATION_TYPES.VEGETARIAN]: {
+                    [Constants.CURRENCIES.MONEY]: this.Lunch.vegetarianMoneyFactor,
+                },
+            },
+        };
+    }
 }
 
 /**
@@ -133,6 +148,15 @@ class Transfer extends Model {
             amount:      this.amount,
         };
     }
+
+    toSnapshot(systemUserId) {
+        return {
+            sender:    systemUserId === this.sender ? -1 : this.sender,
+            recipient: systemUserId === this.recipient ? -1 : this.recipient,
+            currency:  this.currency,
+            amount:    this.amount,
+        };
+    }
 }
 
 /**
@@ -161,6 +185,16 @@ class Participation extends Model {
             userId:  this.user,
             eventId: this.event,
             type:    Constants.PARTICIPATION_TYPE_NAMES[this.type],
+            credits: {
+                points: this.pointsCredited,
+                money:  this.moneyCredited,
+            },
+        };
+    }
+
+    toSnapshot() {
+        return {
+            type:    this.type,
             credits: {
                 points: this.pointsCredited,
                 money:  this.moneyCredited,

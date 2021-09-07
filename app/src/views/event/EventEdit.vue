@@ -130,7 +130,8 @@
                     this.isBusy = true;
                     let data = {
                         name: this.name,
-                        date: this.date,
+                        // Use noon in local time zone
+                        date: new Date(`${this.date}T12:00:00`),
                     };
                     let eventId = this.eventId;
                     if (eventId) {

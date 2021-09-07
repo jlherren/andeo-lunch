@@ -11,7 +11,7 @@ const Models = require('./db/models');
  */
 exports.log = async function log(transaction, actingUser, type, rest) {
     await Models.Audit.create({
-        date:       Date.now(),
+        date:       new Date(),
         type,
         actingUser: actingUser.id,
         ...rest,
