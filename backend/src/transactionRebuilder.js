@@ -44,6 +44,10 @@ function getWeightsForParticipationType(event, participation) {
  * @returns {Promise<void>}
  */
 exports.rebuildLunchDetails = async function rebuildLunchDetails(dbTransaction, event) {
+    if (![Constants.EVENT_TYPES.LUNCH, Constants.EVENT_TYPES.SPECIAL].includes(event.type)) {
+        return;
+    }
+
     let eventId = event instanceof Models.Event ? event.id : event;
 
     // Careful: This query must work with MariaDB and also SQLite
@@ -500,9 +504,7 @@ exports.rebuildUserBalances = async function rebuildUserBalances(dbTransaction) 
  * @param {Event|number} event
  */
 exports.rebuildEvent = async function rebuildEvent(dbTransaction, event) {
-    if (event.type === Constants.EVENT_TYPES.LUNCH) {
-        await exports.rebuildLunchDetails(dbTransaction, event);
-    }
+    await exports.rebuildLunchDetails(dbTransaction, event);
 
     let {earliestDate} = await exports.rebuildEventTransactions(dbTransaction, event);
     if (earliestDate !== null) {

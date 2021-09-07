@@ -201,6 +201,42 @@ describe('A label event', () => {
     });
 });
 
+describe('A special event', () => {
+    let eventId = null;
+
+    beforeEach(async () => {
+        eventId = await Helper.createEvent(request, {
+            name:  'Special event',
+            date:  '2020-01-01',
+            type:  Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.SPECIAL],
+            costs: {
+                points: 8,
+            },
+        });
+    });
+
+    it('initially has no participations', async () => {
+        let response = await request.get(`/api/events/${eventId}/participations`);
+        expect(response.status).toEqual(200);
+        expect(response.body.participations).toEqual([]);
+    });
+
+    it('participations correctly updates money', async () => {
+        let response = await request.post(`/api/events/${eventId}/participations/${user1.id}`)
+            .send(sampleParticipation1);
+        expect(response.status).toEqual(204);
+        response = await request.post(`/api/events/${eventId}/participations/${user2.id}`)
+            .send(sampleParticipation2);
+        expect(response.status).toEqual(204);
+
+        // Check event again
+        response = await request.get(`/api/events/${eventId}`);
+        expect(response.status).toEqual(200);
+        expect(response.body.event.costs.points).toEqual(8);
+        expect(response.body.event.costs.money).toEqual(30);
+    });
+});
+
 describe('Default opt-in', () => {
     it('Does not set default opt-ins on past event', async () => {
         let settings = {

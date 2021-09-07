@@ -28,7 +28,8 @@ async function rebuildTransactions() {
             console.log(`Found ${events.length} events to rebuild`);
 
             for (let event of events) {
-                console.log(`Rebuilding transactions for event ${event.id}`);
+                console.log(`Rebuilding event ${event.id}`);
+                await Transaction.rebuildLunchDetails(transaction, event);
                 let {earliestDate, nUpdates} = await Transaction.rebuildEventTransactions(transaction, event);
                 if (earliestDate !== null && (overallEarliestDate === null || earliestDate < overallEarliestDate)) {
                     overallEarliestDate = earliestDate;
