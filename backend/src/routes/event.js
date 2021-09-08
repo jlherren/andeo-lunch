@@ -206,11 +206,13 @@ async function createEvent(ctx) {
             type,
         }, {transaction});
 
-        await Models.Lunch.create({
-            event:                 event.id,
-            pointsCost:            apiEvent?.costs?.points,
-            vegetarianMoneyFactor: apiEvent?.factors?.vegetarian?.money,
-        }, {transaction});
+        if ([Constants.EVENT_TYPES.LUNCH, Constants.EVENT_TYPES.SPECIAL].includes(type)) {
+            event.Lunch = await Models.Lunch.create({
+                event:                 event.id,
+                pointsCost:            apiEvent?.costs?.points,
+                vegetarianMoneyFactor: apiEvent?.factors?.vegetarian?.money,
+            }, {transaction});
+        }
 
         await resetDefaultOptIns(event, transaction);
         await TransactionRebuilder.rebuildEvent(transaction, event);
@@ -329,13 +331,15 @@ async function updateEvent(ctx) {
             {transaction},
         );
 
-        await event.Lunch.update(
-            {
-                pointsCost:            apiEvent?.costs?.points,
-                vegetarianMoneyFactor: apiEvent?.factors?.vegetarian?.money,
-            },
-            {transaction},
-        );
+        if ([Constants.EVENT_TYPES.LUNCH, Constants.EVENT_TYPES.SPECIAL].includes(event.type)) {
+            await event.Lunch.update(
+                {
+                    pointsCost:            apiEvent?.costs?.points,
+                    vegetarianMoneyFactor: apiEvent?.factors?.vegetarian?.money,
+                },
+                {transaction},
+            );
+        }
 
         if (originalDate.getTime() !== event.date.getTime()) {
             await resetDefaultOptIns(event, transaction);
