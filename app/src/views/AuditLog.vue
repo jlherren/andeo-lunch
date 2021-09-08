@@ -34,6 +34,7 @@
 </template>
 
 <script>
+    import * as Constants from '@/constants';
     import * as DateUtils from '@/utils/dateUtils';
     import DynamicButton from '../components/DynamicButton';
     import ShyProgress from '@/components/ShyProgress';
@@ -68,11 +69,16 @@
     };
 
     const PARTICIPATION_TYPES = {
-        1: 'Omni',
-        2: 'Vegi',
-        8: 'Opt-out',
-        9: 'Undecided',
+        [Constants.PARTICIPATION_TYPES.OMNIVOROUS]: 'Omni',
+        [Constants.PARTICIPATION_TYPES.VEGETARIAN]: 'Vegi',
+        [Constants.PARTICIPATION_TYPES.OPT_OUT]:    'Opt-out',
+        [Constants.PARTICIPATION_TYPES.UNDECIDED]:  'Undecided',
     };
+
+    const OPT_IN_TYPES = [
+        Constants.PARTICIPATION_TYPES.OMNIVOROUS,
+        Constants.PARTICIPATION_TYPES.VEGETARIAN,
+    ];
 
     export default {
         components: {
@@ -128,16 +134,19 @@
                     });
                 }
                 if (audit.type.match(/^participation\./u) && audit.eventDate) {
-                    if (audit.eventDate < audit.date) {
-                        details.push({
-                            value: 'Action after event!',
-                            class: 'alert',
-                        });
-                    } else if (DateUtils.previousMonday(audit.eventDate) < audit.date) {
-                        details.push({
-                            value: 'Action for current week!',
-                            class: 'warning',
-                        });
+                    let [typeBefore, typeAfter] = this.getBeforeAfterParticipationType(audit);
+                    if (typeBefore && typeAfter && typeBefore !== typeAfter && (OPT_IN_TYPES.includes(typeBefore) || OPT_IN_TYPES.includes(typeAfter))) {
+                        if (audit.eventDate < audit.date) {
+                            details.push({
+                                value: 'Action after event!',
+                                class: 'alert',
+                            });
+                        } else if (DateUtils.previousMonday(audit.eventDate) < audit.date) {
+                            details.push({
+                                value: 'Action for current week!',
+                                class: 'warning',
+                            });
+                        }
                     }
                 }
                 if (audit.affectedUserName !== null) {
@@ -171,6 +180,19 @@
                     }
                 }
                 return details;
+            },
+
+            getBeforeAfterParticipationType(audit) {
+                switch (audit.type) {
+                    case 'participation.create':
+                        return [Constants.PARTICIPATION_TYPES.UNDECIDED, audit.values?.type];
+                    case 'participation.update':
+                        return [audit.values?.type?.[0], audit.values?.type?.[1]];
+                    case 'participation.delete':
+                        return [audit.values?.type, Constants.PARTICIPATION_TYPES.UNDECIDED];
+                    default:
+                        return [undefined, undefined];
+                }
             },
 
             flatten(object, prefix = '') {

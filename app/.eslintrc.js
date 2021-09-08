@@ -254,7 +254,7 @@ module.exports = {
         'no-ternary':                         'off',
         'no-throw-literal':                   'warn',
         'no-trailing-spaces':                 'warn',
-        'no-undef-init':                      'warn',
+        'no-undef-init':                      'off',
         'no-undefined':                       'off',
         'no-underscore-dangle':               'warn',
         'no-unmodified-loop-condition':       'warn',
