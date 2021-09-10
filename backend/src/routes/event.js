@@ -214,7 +214,7 @@ async function createEvent(ctx) {
             }, {transaction});
         }
 
-        await resetDefaultOptIns(event, transaction);
+        // await resetDefaultOptIns(event, transaction);
         await TransactionRebuilder.rebuildEvent(transaction, event);
         await AuditManager.log(transaction, ctx.user, 'event.create', {
             event:  event.id,
