@@ -55,17 +55,17 @@
 
     const NAMES = {
         'participation.type':           'Type',
-        'participation.credits.money':  'Money credited',
-        'participation.credits.points': 'Points credited',
+        'participation.credits.money':  'Money',
+        'participation.credits.points': 'Points',
         'transfer.sender':              'Sender',
         'transfer.recipient':           'Recipient',
         'transfer.amount':              'Amount',
         'transfer.currency':            'Currency',
         'event.name':                   'Name',
         'event.date':                   'Date',
-        'event.costs.points':           'Points cost',
-        'event.costs.money':            'Money cost',
-        'event.factors.2.2':            'Vegetarian money factor',
+        'event.costs.points':           'Points',
+        'event.costs.money':            'Money',
+        'event.factors.2.2':            'Vegi factor',
     };
 
     const PARTICIPATION_TYPES = {
@@ -130,7 +130,7 @@
                 if (audit.type !== 'event.delete' && audit.eventName !== null) {
                     details.push({
                         name:  'Event',
-                        value: audit.eventName,
+                        value: this.abbreviate(audit.eventName),
                     });
                 }
                 if (audit.type.match(/^participation\./u) && audit.eventDate) {
@@ -138,12 +138,12 @@
                     if (typeBefore && typeAfter && typeBefore !== typeAfter && (OPT_IN_TYPES.includes(typeBefore) || OPT_IN_TYPES.includes(typeAfter))) {
                         if (audit.eventDate < audit.date) {
                             details.push({
-                                value: 'Action after event!',
+                                value: 'After event!',
                                 class: 'alert',
                             });
                         } else if (DateUtils.previousMonday(audit.eventDate) < audit.date) {
                             details.push({
-                                value: 'Action for current week!',
+                                value: 'Current week!',
                                 class: 'warning',
                             });
                         }
@@ -151,7 +151,7 @@
                 }
                 if (audit.affectedUserName !== null) {
                     details.push({
-                        name:  'Affected user',
+                        name:  'Affected',
                         value: audit.affectedUserName,
                         class: audit.affectedUserId !== audit.actingUserId ? 'alert' : null,
                     });
@@ -248,6 +248,14 @@
                 }
             },
 
+            abbreviate(text, length = 20) {
+                if (text.length > length) {
+                    text = text.substr(0, length);
+                    return `${text}\u{2026}`;
+                }
+                return text;
+            },
+
             async refresh() {
                 this.loading = true;
                 await this.$store.dispatch('fetchAuditLog', true);
@@ -300,7 +308,7 @@
         }
 
         & > span:nth-child(4) {
-            flex: 2 0 200px;
+            flex: 4 0 200px;
         }
     }
 
@@ -317,7 +325,11 @@
     .v-chip {
         margin-right: 0.33em;
         padding: 0 0.33em;
-        color: gray !important;
+
+        span {
+            color: gray;
+            font-size: smaller;
+        }
 
         span + b {
             margin-left: 0.33em;
