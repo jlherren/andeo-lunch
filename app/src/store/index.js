@@ -125,9 +125,10 @@ export default new Vuex.Store({
         async checkLogin(context) {
             let userId = null;
             let username = null;
+            let shouldRenew = false;
             if (Backend.hasToken()) {
                 let response = await Backend.get('/account/check');
-                ({userId, username} = response.data);
+                ({userId, username, shouldRenew} = response.data);
             }
 
             if (userId) {
@@ -140,6 +141,17 @@ export default new Vuex.Store({
             context.state.account.userId = userId;
             context.state.account.username = username;
             context.state.account.initialCheckCompleted = true;
+
+            // Finally, renew the token if necessary, but don't wait for it to complete
+            if (shouldRenew) {
+                // noinspection ES6MissingAwait
+                context.dispatch('renewToken');
+            }
+        },
+
+        async renewToken() {
+            let response = await Backend.post('/account/renew');
+            localStorage.setItem('token', response.data.token);
         },
 
         /**

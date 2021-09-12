@@ -24,24 +24,37 @@ exports.validateBody = function validateBody(ctx, schema) {
 };
 
 /**
+ * @param {Request} request
+ * @returns {string|null}
+ */
+exports.getAuthorizationToken = function (request) {
+    let auth = request.headers.authorization;
+    if (auth === undefined) {
+        return null;
+    }
+    let match = auth.match(/^bearer\s+(?<token>\S+)$/ui);
+    if (match !== null) {
+        return match.groups.token;
+    }
+
+    return null;
+};
+
+/**
  * Get the user from the request, if any
  *
  * @param {Application.Context} ctx
  * @returns {Promise<User|null>}
  */
 exports.getUser = async function (ctx) {
-    let auth = ctx.request.headers.authorization;
-    if (auth === undefined) {
-        return null;
-    }
-    let match = auth.match(/^bearer\s+(?<token>\S+)$/ui);
-    if (match === null) {
+    let token = exports.getAuthorizationToken(ctx.request);
+    if (token === null) {
         return null;
     }
     let secret = await AuthUtils.getSecret();
     let userId = null;
     try {
-        userId = (await JsonWebToken.verify(match.groups.token, secret)).id;
+        userId = (await JsonWebToken.verify(token, secret)).id;
     } catch (err) {
         // Happens on malformed tokens
         return null;

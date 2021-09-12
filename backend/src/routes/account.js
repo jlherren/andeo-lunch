@@ -1,6 +1,7 @@
 'use strict';
 
 const Joi = require('joi');
+const JsonWebToken = require('jsonwebtoken');
 
 const Models = require('../db/models');
 const RouteUtils = require('./route-utils');
@@ -59,9 +60,25 @@ async function renew(ctx) {
  */
 async function check(ctx) {
     let user = await RouteUtils.getUser(ctx);
+    let shouldRenew = false;
+    if (user) {
+        let token = RouteUtils.getAuthorizationToken(ctx.request);
+        let secret = await AuthUtils.getSecret();
+        try {
+            let tokenData = await JsonWebToken.verify(token, secret);
+            let lifetime = (Date.now() / 1000 - tokenData.iat) / (tokenData.exp - tokenData.iat);
+            if (lifetime > 0.25) {
+                // 25% of token lifetime has passed, ask the client to renew the token
+                shouldRenew = true;
+            }
+        } catch (err) {
+            // Happens on malformed tokens
+        }
+    }
     ctx.body = {
         userId:   user?.id ?? null,
         username: user?.username ?? null,
+        shouldRenew,
     };
 }
 

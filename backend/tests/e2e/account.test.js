@@ -120,13 +120,13 @@ describe('account check route', () => {
     it('works when not providing a token', async () => {
         let response = await request.get('/api/account/check');
         expect(response.status).toEqual(200);
-        expect(response.body).toEqual({userId: null, username: null});
+        expect(response.body).toEqual({userId: null, username: null, shouldRenew: false});
     });
 
     it('works when providing a non-parsable token', async () => {
         let response = await request.get('/api/account/check').set('Authorization', 'Bearer WHATEVER');
         expect(response.status).toEqual(200);
-        expect(response.body).toEqual({userId: null, username: null});
+        expect(response.body).toEqual({userId: null, username: null, shouldRenew: false});
     });
 
     it('works when providing an expired token', async () => {
@@ -135,7 +135,7 @@ describe('account check route', () => {
         let token = await user.generateToken(secret, {expiresIn: '-1 day'});
         let response = await request.get('/api/account/check').set('Authorization', `Bearer ${token}`);
         expect(response.status).toEqual(200);
-        expect(response.body).toEqual({userId: null, username: null});
+        expect(response.body).toEqual({userId: null, username: null, shouldRenew: false});
     });
 
     it('works when providing a valid token', async () => {
@@ -144,7 +144,7 @@ describe('account check route', () => {
         let token = await user.generateToken(secret);
         let response = await request.get('/api/account/check').set('Authorization', `Bearer ${token}`);
         expect(response.status).toEqual(200);
-        expect(response.body).toEqual({userId: user.id, username: 'testuser'});
+        expect(response.body).toEqual({userId: user.id, username: 'testuser', shouldRenew: false});
     });
 });
 
