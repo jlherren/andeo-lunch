@@ -74,7 +74,6 @@ const sampleEvent = {
 
 const eventUpdates = {
     name:    'Other lunch',
-    date:    '2020-01-20T13:00:00.000Z',
     costs:   {
         points: 6,
     },
@@ -93,6 +92,7 @@ const labelEvent = {
 
 const disallowedUpdate = {
     type: Constants.EVENT_TYPES.LUNCH,
+    date: '2020-01-20T13:00:00.000Z',
 };
 
 const invalidData = {

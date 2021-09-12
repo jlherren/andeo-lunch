@@ -14,7 +14,7 @@
             <v-form :disabled="isBusy" @submit.prevent="save()" ref="form">
                 <v-text-field v-model="name" :rules="nameRules" label="Name" autofocus required
                               :append-icon="$icons.label"/>
-                <al-date-picker v-model="date" required/>
+                <al-date-picker v-model="date" required :disabled="!!eventId"/>
 
                 <template v-if="type !== 'label'">
                     <number-field v-model="points" label="Points" :min="0" :icon="$icons.points"/>
@@ -130,14 +130,14 @@
                     this.isBusy = true;
                     let data = {
                         name: this.name,
-                        // Use noon in local time zone
-                        date: new Date(`${this.date}T12:00:00`),
                     };
                     let eventId = this.eventId;
                     if (eventId) {
                         data.id = eventId;
                     } else {
                         data.type = this.type;
+                        // Use noon in local time zone
+                        data.date = new Date(`${this.date}T12:00:00`);
                     }
                     if (this.type !== 'label') {
                         data.costs = {

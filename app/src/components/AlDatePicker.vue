@@ -2,7 +2,7 @@
     <v-dialog v-model="open" width="290px">
         <template v-slot:activator="{ on, attrs }">
             <v-text-field v-bind="attrs" v-on="on" :append-icon="$icons.calendar"
-                          :label="label" :rules="rules" :value="formatted" readonly
+                          :label="label" :rules="rules" :value="formatted" readonly :disabled="disabled"
             />
         </template>
         <v-date-picker :value="value" @input="update($event)" first-day-of-week="1"/>
@@ -22,6 +22,10 @@
                 default: 'Date',
             },
             required: {
+                type:    Boolean,
+                default: false,
+            },
+            disabled: {
                 type:    Boolean,
                 default: false,
             },

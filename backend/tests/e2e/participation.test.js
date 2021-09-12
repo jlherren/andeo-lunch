@@ -279,48 +279,6 @@ describe('Default opt-in', () => {
         expect(response.body.participation.type).toEqual('omnivorous');
     });
 
-    it('Adds default opt-in when changing to day with different opt-in', async () => {
-        let settings = {
-            defaultOptIn2: 'omnivorous',
-        };
-        await request.post('/api/settings')
-            .send(settings);
-        let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
-        await request.post(`/api/events/${eventId}`)
-            .send({date: '2036-01-08T12:00:00Z'});
-        let response = await request.get(`/api/events/${eventId}/participations/${user1.id}`);
-        expect(response.status).toEqual(200);
-        expect(response.body.participation.type).toEqual('omnivorous');
-    });
-
-    it('Adjusts default opt-in when changing to day with different opt-in', async () => {
-        let settings = {
-            defaultOptIn1: 'omnivorous',
-            defaultOptIn2: 'vegetarian',
-        };
-        await request.post('/api/settings')
-            .send(settings);
-        let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
-        await request.post(`/api/events/${eventId}`)
-            .send({date: '2036-01-08T12:00:00Z'});
-        let response = await request.get(`/api/events/${eventId}/participations/${user1.id}`);
-        expect(response.status).toEqual(200);
-        expect(response.body.participation.type).toEqual('vegetarian');
-    });
-
-    it('Deletes default opt-in when changing to day without default opt-in', async () => {
-        let settings = {
-            defaultOptIn1: 'omnivorous',
-        };
-        await request.post('/api/settings')
-            .send(settings);
-        let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
-        await request.post(`/api/events/${eventId}`)
-            .send({date: '2036-01-08T12:00:00Z'});
-        let response = await request.get(`/api/events/${eventId}/participations/${user1.id}`);
-        expect(response.status).toEqual(404);
-    });
-
     it('Does not set any default opt-in on disabled user', async () => {
         let bob = await Models.User.create({
             username: 'bob',

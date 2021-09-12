@@ -35,8 +35,9 @@ const eventCreateSchema = Joi.object({
 });
 
 const eventUpdateSchema = Joi.object({
+    type:    Joi.forbidden(),
     name:    eventNameSchema,
-    date:    Joi.date(),
+    date:    Joi.forbidden(),
     costs:   Joi.object({
         points: nonNegativeSchema,
     }),
@@ -150,40 +151,25 @@ async function computeDefaultParticipationType(user, date, transaction) {
  * @param {Event} event
  * @param {Transaction} transaction
  */
-async function resetDefaultOptIns(event, transaction) {
+async function setDefaultOptIns(event, transaction) {
     let date = new Date(event.date);
 
     if (date < new Date()) {
-        // Event is in the past, do nothing.  Changing event dates from the past probably shouldn't be allowed anyway.
+        // Event is in the past, do nothing.  This isn't usually happening, but when it does, we shouldn't set any
+        // defaults.
         return;
     }
 
     if (event.type === Constants.EVENT_TYPES.LUNCH) {
-        const UNDECIDED = Constants.PARTICIPATION_TYPES.UNDECIDED;
-
         for (let user of await Models.User.findAll()) {
-            let options = {where: {event: event.id, user: user.id}, transaction};
-            let participation = await Models.Participation.findOne(options);
-            let currentType = participation?.type;
             let shouldBeType = await computeDefaultParticipationType(user, date, transaction);
 
-            if (shouldBeType !== UNDECIDED) {
-                if (currentType === undefined) {
-                    await Models.Participation.create({
-                        user:  user.id,
-                        event: event.id,
-                        type:  shouldBeType,
-                    }, {transaction});
-                } else if (currentType !== UNDECIDED) {
-                    await participation.update({type: shouldBeType}, {transaction});
-                }
-            } else if (currentType !== undefined) {
-                if (Math.abs(participation.moneyCredited) < Constants.EPSILON &&
-                    Math.abs(participation.pointsCredited) < Constants.EPSILON) {
-                    await participation.destroy({transaction});
-                } else if (currentType !== UNDECIDED) {
-                    await participation.update({type: UNDECIDED}, {transaction});
-                }
+            if (shouldBeType !== Constants.PARTICIPATION_TYPES.UNDECIDED) {
+                await Models.Participation.create({
+                    user:  user.id,
+                    event: event.id,
+                    type:  shouldBeType,
+                }, {transaction});
             }
         }
     }
@@ -214,7 +200,7 @@ async function createEvent(ctx) {
             }, {transaction});
         }
 
-        // await resetDefaultOptIns(event, transaction);
+        await setDefaultOptIns(event, transaction);
         await TransactionRebuilder.rebuildEvent(transaction, event);
         await AuditManager.log(transaction, ctx.user, 'event.create', {
             event:  event.id,
@@ -324,12 +310,10 @@ async function updateEvent(ctx) {
     await ctx.sequelize.transaction(async transaction => {
         let event = await loadEventFromParam(ctx, transaction);
         validateEvent(ctx, event.type, apiEvent);
-        let originalDate = event.date;
         let before = event.toSnapshot();
         await event.update(
             {
                 name: apiEvent.name,
-                date: apiEvent.date,
             },
             {transaction},
         );
@@ -344,10 +328,6 @@ async function updateEvent(ctx) {
             );
         }
         let after = event.toSnapshot();
-
-        if (originalDate.getTime() !== event.date.getTime()) {
-            await resetDefaultOptIns(event, transaction);
-        }
 
         await TransactionRebuilder.rebuildEvent(transaction, event);
         await AuditManager.log(transaction, ctx.user, 'event.update', {
