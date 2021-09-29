@@ -1,5 +1,5 @@
 <template>
-    <v-list-item :to="link">
+    <v-list-item :to="link" :class="{past: isPast}">
         <v-list-item-icon>
             <v-icon>{{ icon }}</v-icon>
         </v-list-item-icon>
@@ -93,6 +93,10 @@
             participations() {
                 return this.$store.getters.participations(this.event.id);
             },
+
+            isPast() {
+                return this.event.date.getTime() < Date.now();
+            },
         },
 
         methods: {
@@ -111,5 +115,9 @@
     .v-list-item__action > .v-icon {
         // Align equally with the plus buttons
         margin-right: 6px;
+    }
+
+    .past {
+        opacity: 0.5;
     }
 </style>
