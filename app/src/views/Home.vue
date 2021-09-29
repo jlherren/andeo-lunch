@@ -15,6 +15,18 @@
             </v-list-item>
         </v-list>
 
+        <v-container v-if="ownUser.balances.money < -200">
+            <v-banner elevation="2" :icon="$icons.alert" icon-color="red">
+                Your money balance is very low!  Please send money to a user with a high balance to even it out.
+
+                <template v-slot:actions>
+                    <v-btn to="/transfers/new/pay-up" color="primary" text>
+                        Send money now
+                    </v-btn>
+                </template>
+            </v-banner>
+        </v-container>
+
         <v-subheader>Next 7 days</v-subheader>
 
         <v-container v-if="!loading && events.length === 0">
