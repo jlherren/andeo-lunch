@@ -59,7 +59,6 @@
             let midnight = DateUtils.previousMidnight(new Date());
             return {
                 startDate: midnight,
-                endDate:   DateUtils.addDays(midnight, 7),
                 loading:   false,
             };
         },
@@ -80,7 +79,7 @@
             events() {
                 let events = this.$store.getters.events.filter(event => {
                     return EVENT_TYPES.includes(event.type) &&
-                        event.date >= this.startDate && event.date < this.endDate;
+                        event.date >= this.startDate;
                 });
 
                 events.sort((a, b) => a.date.getTime() - b.date.getTime());
@@ -111,7 +110,6 @@
                     this.loading = true;
                     let params = {
                         from: this.startDate,
-                        to:   this.endDate,
                         with: 'ownParticipations',
                     };
                     await this.$store.dispatch('fetchEvents', params);
