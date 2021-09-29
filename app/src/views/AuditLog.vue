@@ -51,6 +51,8 @@
         'transfer.create':      'Transfer created',
         'transfer.update':      'Transfer updated',
         'transfer.delete':      'Transfer deleted',
+        'absence.create':       'Absence created',
+        'absence.delete':       'Absence deleted',
     };
 
     const NAMES = {
@@ -66,6 +68,8 @@
         'event.costs.points':           'Points',
         'event.costs.money':            'Money',
         'event.factors.2.2':            'Vegi factor',
+        'absence.start':                'Start',
+        'absence.end':                  'End',
     };
 
     const PARTICIPATION_TYPES = {

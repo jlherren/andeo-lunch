@@ -4,7 +4,7 @@
             Absences
 
             <template v-slot:buttons>
-                <dynamic-button icon="$icons.plus" label="Add" disabled/>
+                <dynamic-button icon="$icons.plus" label="Add" @click="addModal = true" :disabled="isBusy"/>
             </template>
         </the-app-bar>
 
@@ -26,7 +26,7 @@
             </v-banner>
         </v-container>
 
-        <v-list v-if="absences !== null && absences.length">
+        <v-list v-if="absences != null && absences.length">
             <v-list-item v-for="absence of absences" :key="absence.id">
                 <v-list-item-icon>
                     <v-icon>{{ $icons.absence }}</v-icon>
@@ -38,7 +38,7 @@
                     </v-list-item-title>
                 </v-list-item-content>
                 <v-list-item-action>
-                    <v-btn icon disabled>
+                    <v-btn icon @click="openConfirmDelete(absence.id)" :disabled="isBusy">
                         <v-icon>
                             {{ $icons.delete }}
                         </v-icon>
@@ -46,11 +46,57 @@
                 </v-list-item-action>
             </v-list-item>
         </v-list>
+
+        <v-dialog v-model="addModal">
+            <v-card>
+                <v-form :disabled="isBusy" ref="addForm">
+                    <v-card-title>
+                        Add absence
+                    </v-card-title>
+
+                    <v-card-text>
+                        <al-date-picker v-model="start" required label="From"/>
+                        <al-date-picker v-model="end" required label="To"/>
+
+                        <!-- Button is to make it submittable by pressing enter -->
+                        <v-btn type="submit" :disabled="isBusy" v-show="false">Save</v-btn>
+                    </v-card-text>
+
+                    <v-card-actions>
+                        <v-btn text :disabled="isBusy" @click="addModal = false">
+                            Cancel
+                        </v-btn>
+                        <v-spacer></v-spacer>
+                        <v-progress-circular v-if="isBusy" indeterminate size="20" width="2"/>
+                        <v-btn color="primary" :disabled="isBusy" @click="save">
+                            Save
+                        </v-btn>
+                    </v-card-actions>
+                </v-form>
+            </v-card>
+        </v-dialog>
+
+        <v-dialog v-model="confirmDelete">
+            <v-card>
+                <v-card-title>
+                    Confirm
+                </v-card-title>
+                <v-card-text>
+                    Really delete this absence?
+                </v-card-text>
+                <v-card-actions>
+                    <v-btn text @click="confirmDelete = false" :disabled="isBusy">Cancel</v-btn>
+                    <v-spacer/>
+                    <v-btn @click="deleteAbsence" :disabled="isBusy" color="error">Delete</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-main>
 </template>
 
 <script>
-    import DynamicButton from '../../components/DynamicButton';
+    import AlDatePicker from '@/components/AlDatePicker';
+    import DynamicButton from '@/components/DynamicButton';
     import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
 
@@ -58,9 +104,21 @@
         name: 'Absences',
 
         components: {
+            AlDatePicker,
             DynamicButton,
             ShyProgress,
             TheAppBar,
+        },
+
+        data() {
+            return {
+                addModal:        false,
+                isBusy:          false,
+                start:           null,
+                end:             null,
+                confirmDelete:   false,
+                deleteAbsenceId: null,
+            };
         },
 
         created() {
@@ -76,6 +134,45 @@
                         end:   absence.end ? absence.end : '\u221e',
                     };
                 });
+            },
+        },
+
+        methods: {
+            async save() {
+                if (!this.$refs.addForm.validate()) {
+                    return;
+                }
+                this.isBusy = true;
+                try {
+                    await this.$store.dispatch('saveAbsence', {
+                        userId: this.$store.getters.ownUserId,
+                        start:  this.start,
+                        end:    this.end,
+                    });
+                    this.start = null;
+                    this.end = null;
+                    this.addModal = false;
+                } finally {
+                    this.isBusy = false;
+                }
+            },
+
+            openConfirmDelete(absenceId) {
+                this.confirmDelete = true;
+                this.deleteAbsenceId = absenceId;
+            },
+
+            async deleteAbsence() {
+                try {
+                    this.isBusy = true;
+                    await this.$store.dispatch('deleteAbsence', {
+                        userId:    this.$store.getters.ownUserId,
+                        absenceId: this.deleteAbsenceId,
+                    });
+                } finally {
+                    this.confirmDelete = false;
+                    this.isBusy = false;
+                }
             },
         },
     };

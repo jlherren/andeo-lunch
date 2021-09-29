@@ -254,6 +254,14 @@ class Absence extends Model {
             end:    this.end,
         };
     }
+
+    toSnapshot() {
+        return {
+            user:  this.user,
+            start: this.start,
+            end:   this.end,
+        };
+    }
 }
 
 /**

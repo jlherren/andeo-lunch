@@ -3,6 +3,14 @@
 const Models = require('../db/models');
 const Factory = require('./factory');
 const Constants = require('../constants');
+const RouteUtils = require('./route-utils');
+const AuditManager = require('../auditManager');
+const Joi = require('joi');
+
+const absenceCreateSchema = Joi.object({
+    start: Joi.date().required(),
+    end:   Joi.date().required(),
+});
 
 /**
  * @param {Application.Context} ctx
@@ -75,6 +83,54 @@ async function getUserAbsences(ctx) {
 }
 
 /**
+ * @param {Application.Context} ctx
+ * @returns {Promise<void>}
+ */
+async function createUserAbsence(ctx) {
+    /** @type {ApiAbsence} */
+    let apiAbsence = RouteUtils.validateBody(ctx, absenceCreateSchema);
+    let userId = ctx.params.user;
+    let absenceId = await ctx.sequelize.transaction(async transaction => {
+        let absence = await Models.Absence.create({
+            user: userId,
+            ...apiAbsence,
+        }, {transaction});
+        let values = absence.toSnapshot();
+        values.user = undefined;
+        await AuditManager.log(transaction, ctx.user, 'absence.create', {
+            affectedUser: userId,
+            values,
+        });
+        return absence.id;
+    });
+    ctx.status = 201;
+    ctx.body = '';
+    ctx.set('Location', `/api/users/${userId}/absences/${absenceId}`);
+}
+
+/**
+ * @param {Application.Context} ctx
+ * @returns {Promise<void>}
+ */
+async function deleteUserAbsence(ctx) {
+    await ctx.sequelize.transaction(async transaction => {
+        let absence = await Models.Absence.findByPk(parseInt(ctx.params.absence, 10), {transaction});
+        let user = parseInt(ctx.params.user, 10);
+        if (!absence || absence.user !== user) {
+            ctx.throw(404, 'No such absence');
+        }
+        let values = absence.toSnapshot();
+        values.user = undefined;
+        await absence.destroy({transaction});
+        await AuditManager.log(transaction, ctx.user, 'absence.delete', {
+            affectedUser: user,
+            values,
+        });
+    });
+    ctx.status = 204;
+}
+
+/**
  * @param {Router} router
  */
 exports.register = function register(router) {
@@ -84,7 +140,7 @@ exports.register = function register(router) {
         where:  {
             hidden: 0,
         },
-        order: [
+        order:  [
             ['name', 'ASC'],
         ],
     };
@@ -93,5 +149,7 @@ exports.register = function register(router) {
     router.get('/users/:user(\\d+)/transactions', getUserTransactionLists);
     router.get('/users/:user(\\d+)/payment-info', getUserPaymentInfo);
     router.get('/users/:user(\\d+)/absences', getUserAbsences);
+    router.post('/users/:user(\\d+)/absences', createUserAbsence);
+    router.delete('/users/:user(\\d+)/absences/:absence(\\d+)', deleteUserAbsence);
     router.get('/users/system', getSystemUser);
 };

@@ -392,5 +392,20 @@ export default new Vuex.Store({
                 Vue.set(context.state.absences, userId, response.data.absences);
             });
         },
+
+        async saveAbsence(context, {userId, ...data}) {
+            await Backend.post(`/users/${userId}/absences`, data);
+            Cache.invalidate('absences', userId);
+            await context.dispatch('fetchAbsences', {userId});
+        },
+
+        async deleteAbsence(context, {userId, absenceId}) {
+            let response = await Backend.delete(`/users/${userId}/absences/${absenceId}`);
+            if (response.status === 204) {
+                Vue.delete(context.state.absences, absenceId);
+                Cache.invalidate('absences', userId);
+            }
+            await context.dispatch('fetchAbsences', {userId});
+        },
     },
 });
