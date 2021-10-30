@@ -34,8 +34,10 @@ exports.getReferenceCreateTableStatements = async function getReferenceCreateTab
  * @returns {string}
  */
 function fixCreateTableSql(sql) {
-    sql = sql.replace(/ENGINE=InnoDB AUTO_INCREMENT=\d+/u, 'ENGINE=InnoDB');
+    sql = sql.replace(/ENGINE=InnoDB AUTO_INCREMENT=\d+/gu, 'ENGINE=InnoDB');
     sql = sql.replace(/ USING BTREE\b/gu, '');
+    // The check constraint is only used in MariaDB 10.4+
+    sql = sql.replace(/ CHECK \(json_valid\(`\w+`\)\)/gu, '');
     return `${sql}\n`;
 }
 

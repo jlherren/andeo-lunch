@@ -3,7 +3,7 @@
 set -euo pipefail
 
 MARIADB_PORT=51576
-DB_IMAGE_NAME=andeo-lunch-test-db
+DB_CONTAINER_NAME=andeo-lunch-test-db
 export TEST_DB=mariadb
 export TEST_DB_NAME=andeolunchtest
 export TEST_DB_HOST=127.0.0.1
@@ -14,17 +14,17 @@ export TEST_DB_PASSWORD=andeolunchtest
 cd $(dirname "$0")/..
 
 # MariaDB 10.3 is mostly used for development, 10.6 is used for production.  However, we currently can't test 10.6
-# (or any >=10.4 for that matter), due to an outstanding bug with JSON columns.
+# (or any >=10.5 for that matter), due to an outstanding bug with JSON columns.
 
-for MARIADB_VERSION in 10.3; do
+for MARIADB_VERSION in 10.3 10.4; do
     echo "Stopping existing container"
-    docker stop "$DB_IMAGE_NAME" 2> /dev/null || true
+    docker stop "$DB_CONTAINER_NAME" 2> /dev/null || true
 
     echo "Starting MariaDB $MARIADB_VERSION"
     docker run \
         --rm \
         --detach \
-        --name "$DB_IMAGE_NAME" \
+        --name "$DB_CONTAINER_NAME" \
         --env MARIADB_RANDOM_ROOT_PASSWORD=1 \
         --env MARIADB_DATABASE="$TEST_DB_NAME" \
         --env MARIADB_USER="$TEST_DB_USERNAME" \
@@ -54,4 +54,4 @@ for MARIADB_VERSION in 10.3; do
 done
 
 echo "Stopping MariaDB"
-docker stop "$DB_IMAGE_NAME"
+docker stop "$DB_CONTAINER_NAME"
