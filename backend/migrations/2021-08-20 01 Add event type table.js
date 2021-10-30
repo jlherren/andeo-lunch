@@ -63,6 +63,7 @@ async function down(sequelize) {
     let queryInterface = sequelize.getQueryInterface();
     await queryInterface.removeConstraint('event', 'event_ibfk_1');
     await queryInterface.removeIndex('event', 'event_type_idx');
+    await queryInterface.dropTable('eventType');
 }
 
 module.exports = {up, down};
