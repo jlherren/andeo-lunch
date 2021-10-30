@@ -1,6 +1,6 @@
 <template>
     <v-main>
-        <the-app-bar extension-height="30" sub-page>
+        <the-app-bar extension-height="30">
             History
             <template v-slot:buttons>
                 <user-stats/>

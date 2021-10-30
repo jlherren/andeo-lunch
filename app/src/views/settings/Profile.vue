@@ -1,6 +1,6 @@
 <template>
     <v-main>
-        <the-app-bar sub-page>
+        <the-app-bar>
             Profile
         </the-app-bar>
 

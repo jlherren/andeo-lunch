@@ -1,6 +1,6 @@
 <template>
     <v-main>
-        <the-app-bar sub-page>
+        <the-app-bar>
             Audit log
             <template v-slot:buttons>
                 <dynamic-button label="Refresh" :icon="$icons.refresh" @click="refresh()"/>
