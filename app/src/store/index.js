@@ -238,14 +238,30 @@ export default new Vuex.Store({
             context.dispatch('fetchUsers');
         },
 
-        async saveParticipation(context, {eventId, userId, ...data}) {
-            await Backend.post(`/events/${eventId}/participations/${userId}`, data);
-            Cache.invalidate('event', eventId);
-            Cache.invalidate('participations', eventId);
-            Cache.invalidate('participation', `${eventId}/${userId}`);
+        saveParticipation(context, {eventId, userId, ...data}) {
+            return context.dispatch('saveParticipations', [{eventId, userId, ...data}]);
+        },
+
+        async saveParticipations(context, datasets) {
+            await Promise.all(
+                datasets.map(({eventId, userId, ...data}) => {
+                    let url = `/events/${eventId}/participations/${userId}`;
+                    return Backend.post(url, data);
+                }),
+            );
+
+            for (let dataset of datasets) {
+                Cache.invalidate('event', dataset.eventId);
+                Cache.invalidate('participations', dataset.eventId);
+                Cache.invalidate('participation', `${dataset.eventId}/${dataset.userId}`);
+            }
             Cache.invalidate('user');
             Cache.invalidate('users');
-            await context.dispatch('fetchParticipations', {eventId});
+
+            let eventIds = [...new Set(datasets.map(dataset => dataset.eventId))];
+            await Promise.all(
+                eventIds.map(eventId => context.dispatch('fetchParticipations', {eventId})),
+            );
 
             // Also refetch user balances, but do not wait until it completes.
             // noinspection ES6MissingAwait
@@ -307,8 +323,10 @@ export default new Vuex.Store({
             }
 
             if (eventId) {
-                await context.dispatch('fetchEvent', {eventId});
-                await context.dispatch('fetchParticipations', {eventId});
+                await Promise.all([
+                    context.dispatch('fetchEvent', {eventId}),
+                    context.dispatch('fetchParticipations', {eventId}),
+                ]);
             }
 
             return eventId;

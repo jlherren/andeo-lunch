@@ -22,6 +22,17 @@
                                   :min="0" :max="100" :step="5"/>
                 </template>
 
+                <div v-if="!eventId" class="helpers">
+                    <p class="text-body-2">
+                        Select helpers to automatically distribute the available points evenly.
+                    </p>
+                    <v-btn v-for="user of users" :key="user.id" :value="user.id" :disabled="isBusy || points === 0"
+                           :input-value="isHelper(user)" @click="toggleHelper(user)" small>
+                        <v-icon left :disabled="!isHelper(user)">{{ $icons.points }}</v-icon>
+                        {{ user.name }}
+                    </v-btn>
+                </div>
+
                 <!-- Button is to make it submittable by pressing enter -->
                 <v-btn type="submit" :disabled="isBusy" v-show="false">Save</v-btn>
             </v-form>
@@ -35,6 +46,8 @@
     import NumberField from '@/components/NumberField';
     import ShyProgress from '../../components/ShyProgress';
     import TheAppBar from '../../components/TheAppBar';
+    import Vue from 'vue';
+    import {mapGetters} from 'vuex';
 
     export default {
         name: 'EventEdit',
@@ -63,11 +76,16 @@
                 ],
 
                 isBusy: false,
+
+                helpers: {},
             };
         },
 
         async created() {
             if (!this.eventId) {
+                // noinspection ES6MissingAwait
+                this.$store.dispatch('fetchUsers');
+
                 let query = this.$route.query;
                 this.type = query?.type ?? 'lunch';
                 this.name = query?.name ?? '';
@@ -92,6 +110,10 @@
         },
 
         computed: {
+            ...mapGetters([
+                'users',
+            ]),
+
             title() {
                 let prefix = this.eventId ? 'Edit' : 'New';
                 return `${prefix} ${this.eventTypeName}`;
@@ -120,6 +142,14 @@
         },
 
         methods: {
+            isHelper(user) {
+                return this.helpers[user.id];
+            },
+
+            toggleHelper(user) {
+                Vue.set(this.helpers, user.id, !this.helpers[user.id]);
+            },
+
             async save() {
                 // For reasons I don't understand using <v-form v-model="valid"> will not work correctly.  The form
                 // will randomly be considered invalid when it's not.
@@ -131,13 +161,13 @@
                     let data = {
                         name: this.name,
                     };
-                    let eventId = this.eventId;
-                    if (eventId) {
-                        data.id = eventId;
-                    } else {
+                    let isNew = !this.eventId;
+                    if (isNew) {
                         data.type = this.type;
                         // Use noon in local time zone
                         data.date = new Date(`${this.date}T12:00:00`);
+                    } else {
+                        data.id = this.eventId;
                     }
                     if (this.type !== 'label') {
                         data.costs = {
@@ -149,7 +179,23 @@
                             },
                         };
                     }
-                    eventId = await this.$store.dispatch('saveEvent', data);
+
+                    let eventId = await this.$store.dispatch('saveEvent', data);
+
+                    if (isNew) {
+                        let userIds = Object.keys(this.helpers).map(id => parseInt(id, 10));
+                        let datasets = userIds.map(userId => {
+                            return {
+                                eventId,
+                                userId,
+                                credits: {
+                                    points: this.points / userIds.length,
+                                },
+                            };
+                        });
+                        await this.$store.dispatch('saveParticipations', datasets);
+                    }
+
                     await this.$router.push(`/events/${eventId}`);
                 } catch (err) {
                     // Disabled flag is only released on errors, otherwise we risk double saving after the first
@@ -161,3 +207,11 @@
         },
     };
 </script>
+
+<style lang="scss" scoped>
+    .helpers {
+        .v-btn {
+            margin: 0 8px 8px 0;
+        }
+    }
+</style>
