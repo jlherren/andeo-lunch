@@ -45,7 +45,7 @@ const eventUpdateSchema = Joi.object({
 });
 
 const participationSchema = Joi.object({
-    type:    participationTypeSchema.required(),
+    type:    participationTypeSchema,
     credits: Joi.object({
         points: nonNegativeSchema,
         money:  nonNegativeSchema,
@@ -362,13 +362,16 @@ async function saveParticipation(ctx) {
             lock:  transaction.LOCK.UPDATE,
         });
         let data = {
-            type:           Constants.PARTICIPATION_TYPE_IDS[apiParticipation.type],
+            type:           apiParticipation.type ? Constants.PARTICIPATION_TYPE_IDS[apiParticipation.type] : undefined,
             pointsCredited: apiParticipation.credits?.points,
             moneyCredited:  apiParticipation.credits?.money,
         };
         if (!participation) {
             data.event = event.id;
             data.user = user.id;
+            if (!data.type) {
+                data.type = Constants.PARTICIPATION_TYPES.UNDECIDED;
+            }
             participation = await Models.Participation.create(data, {transaction});
             await AuditManager.log(transaction, ctx.user, 'participation.create', {
                 event:        event.id,

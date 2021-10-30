@@ -132,6 +132,36 @@ describe('A simple event', () => {
         expect(response.body.participation).toEqual(sampleParticipation2);
     });
 
+    it('Can update a participations without updating the type', async () => {
+        // Create
+        let url = `/api/events/${eventId}/participations/${user1.id}`;
+        let response = await request.post(url).send(sampleParticipation1);
+        expect(response.status).toEqual(204);
+
+        // update it
+        response = await request.post(url).send({
+            credits: {
+                points: 2,
+            },
+        });
+        expect(response.status).toEqual(204);
+
+        // retrieve again
+        response = await request.get(url);
+        expect(response.status).toEqual(200);
+        expect(response.body.participation.userId).toEqual(user1.id);
+        expect(response.body.participation.eventId).toEqual(eventId);
+        Reflect.deleteProperty(response.body.participation, 'userId');
+        Reflect.deleteProperty(response.body.participation, 'eventId');
+        expect(response.body.participation).toEqual({
+            type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OMNIVOROUS],
+            credits: {
+                points: 2,
+                money:  0,
+            },
+        });
+    });
+
     it('Can delete a participations', async () => {
         let url = `/api/events/${eventId}/participations/${user1.id}`;
         let response = await request.post(url).send(sampleParticipation1);
@@ -173,6 +203,25 @@ describe('A simple event', () => {
         response = await request.get(`/api/events/${eventId}`);
         expect(response.status).toEqual(200);
         expect(response.body.event.costs.money).toEqual(sampleParticipation2.credits.money + sampleParticipation3.credits.money);
+    });
+
+    it('Can save participation without specifying its type', async () => {
+        // Add participant
+        let url = `/api/events/${eventId}/participations/${user1.id}`;
+        let response = await request.post(url).send({
+            credits: {
+                points: 1,
+            },
+        });
+        expect(response.status).toEqual(204);
+
+        // Retrieve again
+        response = await request.get(url);
+        expect(response.status).toEqual(200);
+        expect(response.body.participation.userId).toEqual(user1.id);
+        expect(response.body.participation.eventId).toEqual(eventId);
+        expect(response.body.participation.credits.points).toEqual(1);
+        expect(response.body.participation.type).toEqual(Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.UNDECIDED]);
     });
 });
 
