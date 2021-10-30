@@ -27,7 +27,7 @@
             </v-banner>
         </v-container>
 
-        <v-subheader>Next 7 days</v-subheader>
+        <v-subheader>Upcoming events</v-subheader>
 
         <v-container v-if="!loading && events.length === 0">
             <v-banner elevation="2" single-line :icon="$icons.information">
