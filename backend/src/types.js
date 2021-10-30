@@ -72,3 +72,10 @@
  * @property {number} eventId
  * @property {string} [eventName]
  */
+
+/**
+ * @typedef {Object} ApiGrocery
+ * @property {number} id
+ * @property {string} label
+ * @property {boolean} checked
+ */

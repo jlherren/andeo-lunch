@@ -325,6 +325,26 @@ class Audit extends Model {
     }
 }
 
+class Grocery extends Model {
+    /**
+     * @returns {ApiGrocery}
+     */
+    toApi() {
+        return {
+            id:      this.id,
+            label:   this.label,
+            checked: this.checked,
+        };
+    }
+
+    toSnapshot() {
+        return {
+            label:   this.label,
+            checked: this.checked,
+        };
+    }
+}
+
 exports.Configuration = Configuration;
 exports.User = User;
 exports.EventType = EventType;
@@ -336,6 +356,7 @@ exports.Transaction = Transaction;
 exports.Transfer = Transfer;
 exports.Absence = Absence;
 exports.Audit = Audit;
+exports.Grocery = Grocery;
 
 /**
  * @param {Sequelize} sequelize
@@ -533,4 +554,17 @@ exports.initModels = function initModels(sequelize) {
     Audit.belongsTo(User, {foreignKey: {name: 'actingUser'}, constraints: false, as: 'ActingUser'});
     Audit.belongsTo(Event, {foreignKey: {name: 'event'}, constraints: false, as: 'Event'});
     Audit.belongsTo(User, {foreignKey: {name: 'affectedUser'}, constraints: false, as: 'AffectedUser'});
+
+    Grocery.init({
+        label:   {type: DataTypes.STRING(255), allowNull: false},
+        checked: {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
+        order:   {type: DataTypes.INTEGER, allowNull: false},
+    }, {
+        sequelize,
+        modelName: 'grocery',
+        indexes:   [{
+            name:   'checked_order_idx',
+            fields: ['checked', 'order'],
+        }],
+    });
 };

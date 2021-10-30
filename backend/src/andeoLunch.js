@@ -13,6 +13,7 @@ const EventRoutes = require('./routes/event');
 const MiscRoutes = require('./routes/misc');
 const AuditRoutes = require('./routes/audit');
 const SettingsRoutes = require('./routes/settings');
+const GroceryRoutes = require('./routes/grocery');
 const RouteUtils = require('./routes/route-utils');
 const Db = require('./db');
 const ConfigProvider = require('./configProvider');
@@ -161,6 +162,7 @@ class AndeoLunch {
         MiscRoutes.register(router);
         AuditRoutes.register(router);
         SettingsRoutes.register(router);
+        GroceryRoutes.register(router);
 
         return router;
     }
