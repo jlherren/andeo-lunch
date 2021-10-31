@@ -101,6 +101,10 @@ const routes = [
         path:      '/about',
         component: () => import('@/views/settings/About'),
     },
+    {
+        path:      '/grocery-list',
+        component: () => import('@/views/GroceryList'),
+    },
 ];
 
 const router = new VueRouter({

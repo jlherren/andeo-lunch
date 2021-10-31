@@ -59,6 +59,8 @@ export default new Vuex.Store({
         audits: [],
 
         settings: {},
+
+        groceries: [],
     },
 
     getters: {
@@ -86,6 +88,9 @@ export default new Vuex.Store({
 
         // Transactions
         transactions: state => userId => state.transactions[userId],
+
+        // Grocery list
+        groceries: state => state.groceries,
 
         // Misc
         globalSnackbar:        state => state.globalSnackbar,
@@ -424,6 +429,53 @@ export default new Vuex.Store({
                 Cache.invalidate('absences', userId);
             }
             await context.dispatch('fetchAbsences', {userId});
+        },
+
+        fetchGroceries(context) {
+            return Cache.ifNotFresh('groceries', 0, 5000, async () => {
+                let response = await Backend.get('/groceries');
+                context.state.groceries = response.data.groceries;
+            });
+        },
+
+        async saveGrocery(context, {id, noUpdateOrder, ...grocery}) {
+            // Proactively adjust context.state.groceries, so the display updates immediately
+            if (id) {
+                let existing = context.state.groceries.find(g => g.id === id);
+                if (existing) {
+                    if (grocery.label !== undefined) {
+                        existing.label = grocery.label;
+                    }
+                    if (grocery.checked !== undefined) {
+                        existing.checked = grocery.checked;
+                    }
+                }
+            } else {
+                context.state.groceries.unshift({
+                    id: -parseInt(Math.random() * 1e9, 10),
+                    ...grocery,
+                });
+            }
+
+            let url = id ? `/groceries/${id}` : '/groceries';
+            if (noUpdateOrder) {
+                url += '?noUpdateOrder=1';
+            }
+
+            await Backend.post(url, grocery);
+            Cache.invalidate('groceries');
+            if (!id) {
+                // Need to update, otherwise we won't ever know the real ID
+                // noinspection ES6MissingAwait
+                context.dispatch('fetchGroceries');
+            }
+        },
+
+        async deleteGrocery(context, groceryId) {
+            // Proactively remove it
+            context.state.groceries = context.state.groceries.filter(g => g.id !== groceryId);
+            await Backend.delete(`/groceries/${groceryId}`);
+            Cache.invalidate('groceries');
         },
     },
 });

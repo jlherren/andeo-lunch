@@ -33,6 +33,7 @@ export const icons = {
     balanceHistory: mdi.mdiScaleBalance,
     darkMode:       mdi.mdiThemeLightDark,
     edit:           mdi.mdiPencil,
+    groceryList:    mdi.mdiCart,
     log:            mdi.mdiNotebook,
     lunch:          mdi.mdiFoodVariant,
     menu:           mdi.mdiSilverware,

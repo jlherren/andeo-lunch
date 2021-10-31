@@ -23,6 +23,17 @@
             </v-list-item-content>
         </v-list-item>
 
+        <v-list-item to="/grocery-list">
+            <v-list-item-icon>
+                <v-icon>{{ $icons.groceryList }}</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+                <v-list-item-title>
+                    Grocery list
+                </v-list-item-title>
+            </v-list-item-content>
+        </v-list-item>
+
         <v-list-item to="/history">
             <v-list-item-icon>
                 <v-icon>{{ $icons.balanceHistory }}</v-icon>
