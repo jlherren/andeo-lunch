@@ -10,13 +10,13 @@
     },
     "devDependencies": {
         "axios": "~0.24.0",
-        "cypress": "~8.7.0",
+        "cypress": "~9.1.1",
         "eslint": "~7.32.0",
         "eslint-plugin-cypress": "~2.12.1",
-        "eslint-plugin-import": "~2.25.2",
-        "eslint-plugin-jsdoc": "~37.0.3",
+        "eslint-plugin-import": "~2.25.3",
+        "eslint-plugin-jsdoc": "~37.1.0",
         "eslint-plugin-node": "~11.1.0",
-        "eslint-plugin-promise": "~5.1.1",
+        "eslint-plugin-promise": "~5.2.0",
         "eslint-plugin-standard": "~5.0.0",
         "mariadb": "~2.5.5"
     }
