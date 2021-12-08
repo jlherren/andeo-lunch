@@ -32,6 +32,7 @@ const eventCreateSchema = Joi.object({
         points: nonNegativeSchema,
     }),
     factors: discountFactorsSchema,
+    comment: Joi.string().allow(''),
 });
 
 const eventUpdateSchema = Joi.object({
@@ -42,6 +43,7 @@ const eventUpdateSchema = Joi.object({
         points: nonNegativeSchema,
     }),
     factors: discountFactorsSchema,
+    comment: Joi.string().allow(''),
 });
 
 const participationSchema = Joi.object({
@@ -193,10 +195,15 @@ async function createEvent(ctx) {
         }, {transaction});
 
         if ([Constants.EVENT_TYPES.LUNCH, Constants.EVENT_TYPES.SPECIAL].includes(type)) {
+            let comment = apiEvent?.comment;
+            if (comment === '') {
+                comment = null;
+            }
             event.Lunch = await Models.Lunch.create({
                 event:                 event.id,
                 pointsCost:            apiEvent?.costs?.points,
                 vegetarianMoneyFactor: apiEvent?.factors?.vegetarian?.money,
+                comment,
             }, {transaction});
         }
 
@@ -319,10 +326,15 @@ async function updateEvent(ctx) {
         );
 
         if ([Constants.EVENT_TYPES.LUNCH, Constants.EVENT_TYPES.SPECIAL].includes(event.type)) {
+            let comment = apiEvent?.comment;
+            if (comment === '') {
+                comment = null;
+            }
             await event.Lunch.update(
                 {
                     pointsCost:            apiEvent?.costs?.points,
                     vegetarianMoneyFactor: apiEvent?.factors?.vegetarian?.money,
+                    comment,
                 },
                 {transaction},
             );

@@ -4,6 +4,7 @@ CREATE TABLE `lunch` (
   `pointsCost` double NOT NULL DEFAULT 0,
   `moneyCost` double NOT NULL DEFAULT 0,
   `vegetarianMoneyFactor` double NOT NULL DEFAULT 1,
+  `comment` text DEFAULT NULL,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL,
   PRIMARY KEY (`id`),

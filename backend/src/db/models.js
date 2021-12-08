@@ -91,21 +91,23 @@ class Event extends Model {
                 },
             },
             transfers: this.Transfers?.map(transfer => transfer.toApi(systemUserId)),
+            comment:   this.Lunch?.comment,
         };
     }
 
     toSnapshot() {
         return {
-            date:      this.date,
-            name:      this.name,
-            costs:     this.Lunch && {
+            date:    this.date,
+            name:    this.name,
+            costs:   this.Lunch && {
                 points: this.Lunch.pointsCost,
             },
-            factors:   this.Lunch && {
+            factors: this.Lunch && {
                 [Constants.PARTICIPATION_TYPES.VEGETARIAN]: {
                     [Constants.CURRENCIES.MONEY]: this.Lunch.vegetarianMoneyFactor,
                 },
             },
+            comment: this.Lunch?.comment,
         };
     }
 }
@@ -114,6 +116,7 @@ class Event extends Model {
  * @property {number} pointsCost
  * @property {number} moneyCost
  * @property {number|null} vegetarianMoneyFactor
+ * @property {string|null} comment
  * @property {number} event
  * @property {Event} [Event]
  */
@@ -424,6 +427,7 @@ exports.initModels = function initModels(sequelize) {
         // of participations is what will actually be used for calculations.
         moneyCost:             {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
         vegetarianMoneyFactor: {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 1},
+        comment:               {type: DataTypes.TEXT, allowNull: true},
     }, {
         sequelize,
         modelName: 'lunch',

@@ -22,6 +22,8 @@
                                   :min="0" :max="100" :step="5"/>
                 </template>
 
+                <v-textarea v-model="comment" label="Comments" placeholder="Ingredients, instructions, etc."/>
+
                 <div v-if="!eventId" class="helpers">
                     <p class="text-body-2">
                         Select helpers to automatically distribute the available points evenly.
@@ -70,6 +72,7 @@
                 date:             null,
                 points:           0,
                 vegetarianFactor: 50,
+                comment:          '',
 
                 nameRules: [
                     v => !!v || 'A name is required',
@@ -90,6 +93,7 @@
                 this.type = query?.type ?? 'lunch';
                 this.name = query?.name ?? '';
                 this.date = query?.date ?? null;
+                this.comment = query?.comment ?? '';
                 return;
             }
 
@@ -106,6 +110,7 @@
             this.date = DateUtils.isoDate(event.date);
             this.points = event.costs.points;
             this.vegetarianFactor = parseFloat((event.factors.vegetarian.money * 100).toPrecision(4));
+            this.comment = event.comment ?? '';
             this.isBusy = false;
         },
 
@@ -159,7 +164,8 @@
                 try {
                     this.isBusy = true;
                     let data = {
-                        name: this.name,
+                        name:    this.name,
+                        comment: this.comment,
                     };
                     let isNew = !this.eventId;
                     if (isNew) {

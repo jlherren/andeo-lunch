@@ -22,6 +22,8 @@
                 </div>
             </v-container>
 
+            <v-container v-if="comment !== ''" class="comment">{{ comment }}</v-container>
+
             <v-container v-if="participations && event.type !== 'label' && ownParticipationMissing">
                 <v-banner elevation="2" :icon="$icons.undecided" icon-color="red">
                     Make up your mind!
@@ -170,6 +172,10 @@
 
             name() {
                 return this.event?.name || 'Loading...';
+            },
+
+            comment() {
+                return this.event?.comment ?? '';
             },
 
             participations() {
@@ -329,5 +335,10 @@
 
     .participants-and-cost {
         text-align: center;
+    }
+
+    .comment {
+        white-space: pre;
+        color: gray;
     }
 </style>
