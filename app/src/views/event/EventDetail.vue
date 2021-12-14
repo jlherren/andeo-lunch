@@ -22,7 +22,7 @@
                 </div>
             </v-container>
 
-            <v-container v-if="comment !== ''" class="comment">{{ comment }}</v-container>
+            <v-container v-if="commentHtml !== ''" class="comment" v-html="commentHtml"/>
 
             <v-container v-if="participations && event.type !== 'label' && ownParticipationMissing">
                 <v-banner elevation="2" :icon="$icons.undecided" icon-color="red">
@@ -98,8 +98,9 @@
 
 <script>
     import * as DateUtils from '@/utils/dateUtils';
+    import * as HtmlUtils from '@/utils/htmlUtils';
     import Balance from '@/components/Balance';
-    import DynamicButton from '../../components/DynamicButton';
+    import DynamicButton from '@/components/DynamicButton';
     import ParticipationEdit from '@/components/event/ParticipationEdit';
     import ParticipationListItem from '@/components/event/ParticipationListItem';
     import ParticipationSummary from '@/components/event/ParticipationSummary';
@@ -265,6 +266,16 @@
             optInIcon() {
                 return this.$icons[this.$store.getters.settings.quickOptIn];
             },
+
+            commentHtml() {
+                return this.comment.replace(/(?<link>https?:\/\/\S+)|\S+/gu, (match, link) => {
+                    match = HtmlUtils.encode(match);
+                    if (link !== undefined) {
+                        return `<a href="${match}" target="_blank" rel="noopener">${match}</a>`;
+                    }
+                    return match;
+                });
+            },
         },
 
         methods: {
@@ -338,7 +349,7 @@
     }
 
     .comment {
-        white-space: pre;
+        white-space: pre-wrap;
         color: gray;
     }
 </style>
