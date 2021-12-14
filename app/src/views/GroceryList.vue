@@ -11,17 +11,22 @@
                 <v-list-item>
                     <v-list-item-icon>
                         <v-icon>
-                            {{ $icons.plus }}
+                            {{ $icons.groceryList }}
                         </v-icon>
                     </v-list-item-icon>
                     <v-list-item-content>
                         <v-list-item-title>
                             <v-combobox ref="combobox" :items="autocompleteItems" item-text="label" item-value="id"
                                         v-model="newItemLabel"
-                                        hide-details dense hide-no-data
-                                        placeholder="Add item..." @input="changed($event)"/>
+                                        hide-details dense hide-no-data autofocus
+                                        placeholder="Add item..." @input="changed($event)" @keydown="keydown($event)"/>
                         </v-list-item-title>
                     </v-list-item-content>
+                    <v-list-item-action>
+                        <v-btn @click="addButton" fab small color="primary">
+                            <v-icon>{{ $icons.plus }}</v-icon>
+                        </v-btn>
+                    </v-list-item-action>
                 </v-list-item>
                 <v-list-item v-for="grocery of groceries" :key="grocery.id" :class="{checked: grocery.checked}">
                     <v-list-item-action>
@@ -87,14 +92,35 @@
         methods: {
             changed(event) {
                 if (typeof event === 'string') {
-                    this.addItem(event);
-                } else {
-                    this.addItem(event.label);
+                    return;
                 }
+                this.$refs.combobox.blur();
                 Vue.nextTick(() => {
+                    this.addItem(event.label);
                     this.newItemLabel = '';
                 });
+            },
+
+            keydown(event) {
+                if (event.key === 'Enter') {
+                    this.$refs.combobox.blur();
+                    Vue.nextTick(() => {
+                        this.addItem(this.newItemLabel);
+                        this.newItemLabel = '';
+                        // Somehow nextTick() does not work here
+                        setTimeout(() => {
+                            this.$refs.combobox.focus();
+                        });
+                    });
+                }
+            },
+
+            addButton() {
                 this.$refs.combobox.blur();
+                Vue.nextTick(() => {
+                    this.addItem(this.newItemLabel);
+                    this.newItemLabel = '';
+                });
             },
 
             addItem(label) {
