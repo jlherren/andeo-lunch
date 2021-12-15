@@ -350,6 +350,7 @@
 
     .comment {
         white-space: pre-wrap;
+        overflow-wrap: anywhere;
         color: gray;
     }
 </style>
