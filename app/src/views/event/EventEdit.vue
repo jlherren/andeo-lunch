@@ -24,7 +24,7 @@
 
                 <v-textarea v-model="comment" label="Comments" placeholder="Ingredients, instructions, etc."/>
 
-                <div v-if="!eventId" class="helpers">
+                <div v-if="type !== 'label' && !eventId" class="helpers">
                     <p class="text-body-2">
                         Select helpers to automatically distribute the available points evenly.
                     </p>
