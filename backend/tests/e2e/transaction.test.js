@@ -383,3 +383,30 @@ describe('Recalculates transactions and balances after event date change', () =>
         expect(response.body.user.balances).toEqual({points: 0, money: 0});
     });
 });
+
+describe('Events with vegetarian participation', () => {
+    it('Calculates correctly when vegetarian factor is more than 100%', async () => {
+        let eventId = await Helper.createEvent(request, {
+            name:  'Test event',
+            date:  EVENT_DATE_0,
+            type:  Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.LUNCH],
+            costs: {
+                points: 8,
+            },
+            factors: {
+                vegetarian: {
+                    money: 1.5,
+                },
+            },
+        });
+
+        await request.post(`/api/events/${eventId}/participations/${user1.id}`).send(participation1);
+        await request.post(`/api/events/${eventId}/participations/${user2.id}`).send(participation2);
+
+        // Get user balances
+        let response = await request.get(`/api/users/${user1.id}`);
+        expect(response.body.user.balances).toEqual({points: 4, money: -12});
+        response = await request.get(`/api/users/${user2.id}`);
+        expect(response.body.user.balances).toEqual({points: -4, money: -18 + 30});
+    });
+});

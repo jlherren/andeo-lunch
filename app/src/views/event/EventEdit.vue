@@ -18,8 +18,8 @@
 
                 <template v-if="type !== 'label'">
                     <number-field v-model="points" label="Points" :min="0" :icon="$icons.points"/>
-                    <number-field v-model="vegetarianFactor" label="Vegetarian factor" suffix="%"
-                                  :min="0" :max="100" :step="5"/>
+                    <number-field v-model="vegetarianFactor" label="Vegetarian money factor" suffix="%"
+                                  :min="0" :step="5"/>
                 </template>
 
                 <v-textarea v-model="comment" label="Comments" placeholder="Ingredients, instructions, etc."/>

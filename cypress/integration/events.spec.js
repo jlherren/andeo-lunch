@@ -21,7 +21,7 @@ describe('Create events', () => {
             .should('not.have.value', '');
         cy.followLabel('Points')
             .type('6');
-        cy.followLabel('Vegetarian factor')
+        cy.followLabel('Vegetarian money factor')
             .should('have.value', 50);
         cy.contains('button', 'Save')
             .click();
@@ -44,7 +44,7 @@ describe('Create events', () => {
             .click();
         cy.followLabel('Points')
             .type('0.5');
-        cy.followLabel('Vegetarian factor')
+        cy.followLabel('Vegetarian money factor')
             .type('{selectall}100');
         cy.contains('button', 'Save')
             .click();
@@ -66,7 +66,7 @@ describe('Create events', () => {
             .click();
         cy.followLabel('Points')
             .type('4');
-        cy.followLabel('Vegetarian factor')
+        cy.followLabel('Vegetarian money factor')
             .type('{selectall}100');
         cy.contains('button', 'Save')
             .click();
@@ -88,7 +88,7 @@ describe('Create events', () => {
             .click();
         cy.contains('label', 'Points')
             .should('not.exist');
-        cy.contains('label', 'Vegetarian factor')
+        cy.contains('label', 'Vegetarian money factor')
             .should('not.exist');
         cy.contains('button', 'Save')
             .click();
