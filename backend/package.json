@@ -16,6 +16,7 @@
         "lint:fix": "eslint --fix src tests migrations",
         "db:createUser": "node src/scripts/createUser.js",
         "db:editUser": "node src/scripts/editUser.js",
+        "db:rebuild-dry-run": "node src/scripts/rebuildTransactions.js --dry-run",
         "db:rebuild": "node src/scripts/rebuildTransactions.js",
         "db:setPaymentInfo": "node src/scripts/setPaymentInfo.js",
         "db:validate": "node src/scripts/validateDb.js"
