@@ -13,7 +13,7 @@
 
                 <v-row>
                     <v-col>
-                        <participation-type-widget v-model="type" :disabled="isBusy" label/>
+                        <participation-type-widget v-model="type" :disabled="isBusy" label :event-type="event.type"/>
                     </v-col>
                 </v-row>
 
@@ -65,11 +65,12 @@
         },
 
         data() {
+            let defaultType = this.event.type === 'special' ? 'opt-out' : 'undecided';
             return {
                 user:      this.participation?.userId,
                 points:    this.participation?.credits?.points ?? 0,
                 money:     this.participation?.credits?.money ?? 0,
-                type:      this.participation?.type ?? 'undecided',
+                type:      this.participation?.type ?? defaultType,
                 isBusy:    false,
                 userRules: [
                     user => !!user,
@@ -95,8 +96,9 @@
                         this.$store.getters.user(this.participation.userId),
                     ];
                 }
+                let passiveType = this.event.type === 'special' ? 'opt-out' : 'undecided';
                 let substantialExistingParticipationUserIds = this.$store.getters.participations(this.event.id)
-                    .filter(p => p.type !== 'undecided' || p.credits.points > 0 || p.credits.money > 0)
+                    .filter(p => p.type !== passiveType || p.credits.points > 0 || p.credits.money > 0)
                     .map(p => p.userId);
                 return this.$store.getters.users
                     .filter(u => !substantialExistingParticipationUserIds.includes(u.id));

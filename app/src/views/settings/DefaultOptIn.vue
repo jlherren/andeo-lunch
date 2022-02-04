@@ -21,7 +21,7 @@
             <div v-for="weekday of weekdays" :key="weekday.index">
                 {{ weekday.name }}<br/>
                 <participation-type-widget v-model="settings[`defaultOptIn${weekday.index}`]"
-                                           :disabled="isBusy"/>
+                                           :disabled="isBusy" event-type="lunch"/>
             </div>
 
             <v-switch hide-details :disabled="isBusy" v-model="settings.quickOptIn"

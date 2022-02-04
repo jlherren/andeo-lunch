@@ -80,7 +80,7 @@
         "consistent-return": "error",
         "consistent-this": "error",
         "curly": "error",
-        "default-case": "error",
+        "default-case": "off",
         "default-param-last": "error",
         "dot-location": [
             "error",

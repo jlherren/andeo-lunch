@@ -17,15 +17,33 @@
         name: 'ParticipationTypeWidget',
 
         props: {
-            value:    {
+            value:     {
                 type:     String,
                 required: true,
             },
-            disabled: Boolean,
-            label:    Boolean,
+            eventType: {
+                type:     String,
+                required: true,
+            },
+            disabled:  Boolean,
+            label:     Boolean,
         },
 
         data() {
+            if (this.eventType === 'special') {
+                return {
+                    types: [{
+                        id:   'opt-in',
+                        name: 'In',
+                        icon: this.$icons.optIn,
+                    }, {
+                        id:   'opt-out',
+                        name: 'Out',
+                        icon: this.$icons.optOut,
+                    }],
+                };
+            }
+
             return {
                 types: [{
                     id:   'omnivorous',

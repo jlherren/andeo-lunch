@@ -75,6 +75,7 @@
     const PARTICIPATION_TYPES = {
         [Constants.PARTICIPATION_TYPES.OMNIVOROUS]: 'Omni',
         [Constants.PARTICIPATION_TYPES.VEGETARIAN]: 'Vegi',
+        [Constants.PARTICIPATION_TYPES.OPT_IN]:     'Opt-in',
         [Constants.PARTICIPATION_TYPES.OPT_OUT]:    'Opt-out',
         [Constants.PARTICIPATION_TYPES.UNDECIDED]:  'Undecided',
     };
@@ -82,6 +83,7 @@
     const OPT_IN_TYPES = [
         Constants.PARTICIPATION_TYPES.OMNIVOROUS,
         Constants.PARTICIPATION_TYPES.VEGETARIAN,
+        Constants.PARTICIPATION_TYPES.OPT_IN,
     ];
 
     export default {

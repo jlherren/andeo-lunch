@@ -12,6 +12,8 @@ export function icon(participationType) {
             return icons.omnivorous;
         case 'vegetarian':
             return icons.vegetarian;
+        case 'opt-in':
+            return icons.optIn;
         case 'opt-out':
             return icons.optOut;
         case 'undecided':

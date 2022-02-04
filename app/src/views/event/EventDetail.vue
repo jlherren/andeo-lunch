@@ -24,7 +24,7 @@
 
             <v-container v-if="commentHtml !== ''" class="comment" v-html="commentHtml"/>
 
-            <v-container v-if="participations && event.type !== 'label' && ownParticipationMissing">
+            <v-container v-if="participations && event.type === 'lunch' && ownParticipationMissing">
                 <v-banner elevation="2" :icon="$icons.undecided" icon-color="red">
                     Make up your mind!
                     <template v-slot:actions>
@@ -108,13 +108,12 @@
     import TheAppBar from '@/components/TheAppBar';
     import Vue from 'vue';
 
-    const PASSIVE_TYPES = ['undecided'];
-
     const PARTICIPATION_TYPE_TO_ORDER = {
         // credit-less undecided participations are not shown at all, the ones that are shown are the ones that involve
         // some credits, we want them to show before opt-outs.
         'omnivorous': 1,
         'vegetarian': 1,
+        'opt-in':     1,
         'undecided':  2,
         'opt-out':    3,
     };
@@ -190,11 +189,12 @@
                 if (!participations) {
                     return [];
                 }
+                let passiveType = this.event.type === 'special' ? 'opt-out' : 'undecided';
                 participations = participations.filter(p => {
                     if (p.userId === this.ownUserId) {
                         return false;
                     }
-                    return !PASSIVE_TYPES.includes(p.type) || p.credits.points > 0 || p.credits.money > 0;
+                    return p.type !== passiveType || p.credits.points > 0 || p.credits.money > 0;
                 });
                 participations.sort((a, b) => {
                     let orderA = PARTICIPATION_TYPE_TO_ORDER[a.type] ?? 9;
@@ -226,7 +226,7 @@
                 return {
                     userId:  this.ownUserId,
                     eventId: this.eventId,
-                    type:    'undecided',
+                    type:    this.event.type === 'special' ? 'opt-out' : 'undecided',
                     credits: {
                         points: 0,
                         money:  0,

@@ -360,8 +360,13 @@ async function saveParticipation(ctx) {
     await ctx.sequelize.transaction(async transaction => {
         let event = await loadEventFromParam(ctx, transaction);
 
-        if (![Constants.EVENT_TYPES.LUNCH, Constants.EVENT_TYPES.SPECIAL].includes(event.type)) {
+        let validParticipationTypes = Constants.EVENT_TYPE_VALID_PARTICIPATIONS[event.type];
+        if (validParticipationTypes === undefined) {
             ctx.throw(400, 'This type of event cannot have participations');
+        }
+        let participationTypeId = apiParticipation.type ? Constants.PARTICIPATION_TYPE_IDS[apiParticipation.type] : undefined;
+        if (participationTypeId !== undefined && !validParticipationTypes.includes(participationTypeId)) {
+            ctx.throw(400, 'This type of participation is not allowed for this type of event');
         }
 
         let user = await loadUserFromParam(ctx, transaction);
@@ -374,7 +379,7 @@ async function saveParticipation(ctx) {
             lock:  transaction.LOCK.UPDATE,
         });
         let data = {
-            type:           apiParticipation.type ? Constants.PARTICIPATION_TYPE_IDS[apiParticipation.type] : undefined,
+            type:           participationTypeId,
             pointsCredited: apiParticipation.credits?.points,
             moneyCredited:  apiParticipation.credits?.money,
         };
@@ -382,7 +387,7 @@ async function saveParticipation(ctx) {
             data.event = event.id;
             data.user = user.id;
             if (!data.type) {
-                data.type = Constants.PARTICIPATION_TYPES.UNDECIDED;
+                data.type = validParticipationTypes[0];
             }
             participation = await Models.Participation.create(data, {transaction});
             await AuditManager.log(transaction, ctx.user, 'participation.create', {

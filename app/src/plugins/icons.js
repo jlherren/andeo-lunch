@@ -40,6 +40,7 @@ export const icons = {
     missingIcon:    mdi.mdiHelpCircle,
     money:          mdi.mdiCashMultiple,
     omnivorous:     mdi.mdiHamburger,
+    optIn:          mdi.mdiCheckBold,
     optOut:         mdi.mdiCancel,
     password:       mdi.mdiLock,
     points:         mdi.mdiHandshake,

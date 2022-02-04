@@ -23,6 +23,8 @@ let user1 = null;
 /** @type {User|null} */
 let user2 = null;
 /** @type {User|null} */
+let user3 = null;
+/** @type {User|null} */
 let systemUser = null;
 /** @type {string|null} */
 let jwt = null;
@@ -51,7 +53,7 @@ beforeEach(async () => {
     await andeoLunch.waitReady();
     systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
     let username = 'test-user-1';
-    [user1, user2] = await Models.User.bulkCreate([{
+    [user1, user2, user3] = await Models.User.bulkCreate([{
         username: username,
         password: Helper.passwordHash,
         active:   true,
@@ -61,6 +63,11 @@ beforeEach(async () => {
         password: Helper.passwordHash,
         active:   true,
         name:     'Test User 2',
+    }, {
+        username: 'test-user-3',
+        password: Helper.passwordHash,
+        active:   true,
+        name:     'Test User 3',
     }]);
     request = supertest.agent(andeoLunch.listen());
     if (jwt === null) {
@@ -387,10 +394,10 @@ describe('Recalculates transactions and balances after event date change', () =>
 describe('Events with vegetarian participation', () => {
     it('Calculates correctly when vegetarian factor is more than 100%', async () => {
         let eventId = await Helper.createEvent(request, {
-            name:  'Test event',
-            date:  EVENT_DATE_0,
-            type:  Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.LUNCH],
-            costs: {
+            name:    'Test event',
+            date:    EVENT_DATE_0,
+            type:    Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.LUNCH],
+            costs:   {
                 points: 8,
             },
             factors: {
@@ -408,5 +415,53 @@ describe('Events with vegetarian participation', () => {
         expect(response.body.user.balances).toEqual({points: 4, money: -12});
         response = await request.get(`/api/users/${user2.id}`);
         expect(response.body.user.balances).toEqual({points: -4, money: -18 + 30});
+    });
+});
+
+describe('Special events', () => {
+    it('Distributes points and money correctly', async () => {
+        let eventId = await Helper.createEvent(request, {
+            name:  'Special event',
+            date:  EVENT_DATE_0,
+            type:  Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.SPECIAL],
+            costs: {
+                points: 8,
+            },
+        });
+
+        let response = await request.post(`/api/events/${eventId}/participations/${user1.id}`)
+            .send({
+                type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OPT_IN],
+                credits: {
+                    points: 3,
+                    money:  10,
+                },
+            });
+        expect(response.status).toEqual(204);
+        response = await request.post(`/api/events/${eventId}/participations/${user2.id}`)
+            .send({
+                type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OPT_IN],
+                credits: {
+                    points: 1,
+                    money:  0,
+                },
+            });
+        expect(response.status).toEqual(204);
+        response = await request.post(`/api/events/${eventId}/participations/${user3.id}`)
+            .send({
+                type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OPT_OUT],
+                credits: {
+                    points: 0,
+                    money:  2,
+                },
+            });
+
+        // Get user balances
+        response = await request.get(`/api/users/${user1.id}`);
+        expect(response.body.user.balances).toEqual({points: 2, money: 4});
+        response = await request.get(`/api/users/${user2.id}`);
+        expect(response.body.user.balances).toEqual({points: -2, money: -6});
+        response = await request.get(`/api/users/${user3.id}`);
+        expect(response.body.user.balances).toEqual({points: 0, money: 2});
     });
 });

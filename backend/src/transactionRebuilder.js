@@ -13,27 +13,42 @@ const Constants = require('./constants');
  * @param {Participation} participation
  * @returns {{moneyWeight: number, pointsWeight: number}}
  */
-function getWeightsForParticipationType(event, participation) {
-    switch (participation.type) {
-        case Constants.PARTICIPATION_TYPES.OMNIVOROUS:
-            return {
-                pointsWeight: 1,
-                moneyWeight:  1,
-            };
-        case Constants.PARTICIPATION_TYPES.VEGETARIAN:
-            return {
-                pointsWeight: 1,
-                moneyWeight:  event.type === Constants.EVENT_TYPES.LUNCH ? event.Lunch.vegetarianMoneyFactor : 1,
-            };
-        case Constants.PARTICIPATION_TYPES.OPT_OUT:
-        case Constants.PARTICIPATION_TYPES.UNDECIDED:
-            return {
-                pointsWeight: 0,
-                moneyWeight:  0,
-            };
-        default:
-            throw new Error(`Unknown participation type ${participation.type}`);
+function getWeightsForParticipation(event, participation) {
+    if (event.type === Constants.EVENT_TYPES.LUNCH) {
+        switch (participation.type) {
+            case Constants.PARTICIPATION_TYPES.OMNIVOROUS:
+                return {
+                    pointsWeight: 1,
+                    moneyWeight:  1,
+                };
+            case Constants.PARTICIPATION_TYPES.VEGETARIAN:
+                return {
+                    pointsWeight: 1,
+                    moneyWeight:  event.Lunch.vegetarianMoneyFactor,
+                };
+            case Constants.PARTICIPATION_TYPES.OPT_OUT:
+            case Constants.PARTICIPATION_TYPES.UNDECIDED:
+                return {
+                    pointsWeight: 0,
+                    moneyWeight:  0,
+                };
+        }
+    } else {
+        switch (participation.type) {
+            case Constants.PARTICIPATION_TYPES.OPT_IN:
+                return {
+                    pointsWeight: 1,
+                    moneyWeight:  1,
+                };
+            case Constants.PARTICIPATION_TYPES.OPT_OUT:
+                return {
+                    pointsWeight: 0,
+                    moneyWeight:  0,
+                };
+        }
     }
+
+    throw new Error(`Invalid participation type ${participation.type} for event type ${event.type}`);
 }
 
 /**
@@ -190,7 +205,7 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
         let totalMoneyCredited = 0;
 
         for (let participation of participations) {
-            let {pointsWeight, moneyWeight} = getWeightsForParticipationType(event, participation);
+            let {pointsWeight, moneyWeight} = getWeightsForParticipation(event, participation);
             totalPointsWeight += pointsWeight;
             totalMoneyWeight += moneyWeight;
             totalPointsCredited += participation.pointsCredited;
@@ -213,7 +228,7 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
             totalMoneyWeight > Constants.EPSILON;
 
         for (let participation of participations) {
-            let {pointsWeight, moneyWeight} = getWeightsForParticipationType(event, participation);
+            let {pointsWeight, moneyWeight} = getWeightsForParticipation(event, participation);
 
             // credit points for organizing the event
             let points = participation.pointsCredited * pointsCostPerPointsCredited;

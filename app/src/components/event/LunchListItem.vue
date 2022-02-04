@@ -53,7 +53,7 @@
             ownParticipationType() {
                 let ownParticipation = this.$store.getters.participation(this.event.id, this.ownUserId);
                 if (!ownParticipation) {
-                    return 'undecided';
+                    return this.event.type === 'special' ? 'opt-out' : 'undecided';
                 }
                 return ownParticipation.type;
             },

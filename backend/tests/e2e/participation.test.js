@@ -223,6 +223,13 @@ describe('A simple event', () => {
         expect(response.body.participation.credits.points).toEqual(1);
         expect(response.body.participation.type).toEqual(Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.UNDECIDED]);
     });
+
+    it('Rejects participation type \'opt-in\'', async () => {
+        let response = await request.post(`/api/events/${eventId}/participations/${user1.id}`)
+            .send({type: Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OPT_IN]});
+        expect(response.status).toEqual(400);
+        expect(response.text).toEqual('This type of participation is not allowed for this type of event');
+    });
 });
 
 describe('A label event', () => {
@@ -248,6 +255,17 @@ describe('A label event', () => {
         expect(response.status).toEqual(400);
         expect(response.text).toEqual('This type of event cannot have participations');
     });
+
+    for (let type of Object.values(Constants.PARTICIPATION_TYPES)) {
+        let name = Constants.PARTICIPATION_TYPE_NAMES[type];
+        // eslint-disable-next-line no-loop-func
+        it(`Rejects participation type '${name}'`, async () => {
+            let response = await request.post(`/api/events/${eventId}/participations/${user1.id}`)
+                .send({type: name});
+            expect(response.status).toEqual(400);
+            expect(response.text).toEqual('This type of event cannot have participations');
+        });
+    }
 });
 
 describe('A special event', () => {
@@ -270,12 +288,24 @@ describe('A special event', () => {
         expect(response.body.participations).toEqual([]);
     });
 
-    it('participations correctly updates money', async () => {
+    it('Participations correctly updates money', async () => {
         let response = await request.post(`/api/events/${eventId}/participations/${user1.id}`)
-            .send(sampleParticipation1);
+            .send({
+                type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OPT_OUT],
+                credits: {
+                    points: 1,
+                    money:  0,
+                },
+            });
         expect(response.status).toEqual(204);
         response = await request.post(`/api/events/${eventId}/participations/${user2.id}`)
-            .send(sampleParticipation2);
+            .send({
+                type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OPT_IN],
+                credits: {
+                    points: 2,
+                    money:  30,
+                },
+            });
         expect(response.status).toEqual(204);
 
         // Check event again
@@ -284,6 +314,22 @@ describe('A special event', () => {
         expect(response.body.event.costs.points).toEqual(8);
         expect(response.body.event.costs.money).toEqual(30);
     });
+
+    let invalidTypes = [
+        Constants.PARTICIPATION_TYPES.OMNIVOROUS,
+        Constants.PARTICIPATION_TYPES.VEGETARIAN,
+        Constants.PARTICIPATION_TYPES.UNDECIDED,
+    ];
+    for (let type of invalidTypes) {
+        let name = Constants.PARTICIPATION_TYPE_NAMES[type];
+        // eslint-disable-next-line no-loop-func
+        it(`Rejects participation type '${name}'`, async () => {
+            let response = await request.post(`/api/events/${eventId}/participations/${user1.id}`)
+                .send({type: name});
+            expect(response.status).toEqual(400);
+            expect(response.text).toEqual('This type of participation is not allowed for this type of event');
+        });
+    }
 });
 
 describe('Default opt-in', () => {

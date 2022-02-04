@@ -5,6 +5,7 @@ exports.LUNCH_BLUE = '#043951';
 exports.PARTICIPATION_TYPES = Object.freeze({
     OMNIVOROUS: 1,
     VEGETARIAN: 2,
+    OPT_IN:     7,
     OPT_OUT:    8,
     UNDECIDED:  9,
 });
