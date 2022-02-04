@@ -11,7 +11,6 @@ const ConfigProvider = require('../configProvider');
  * Rebuild all transactions
  *
  * @param {boolean} doFix
- *
  * @returns {Promise<void>}
  */
 async function rebuildTransactions(doFix) {
