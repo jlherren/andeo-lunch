@@ -129,9 +129,14 @@ describe('creating events', () => {
 
     it('Accepts a special event', async () => {
         let specialEvent = {
-            ...sampleEvent,
-            type: 'special',
+            name:  'Birthday dinner',
+            type:  'special',
+            date:  '2020-01-15T11:00:00.000Z',
+            costs: {
+                points: 8,
+            },
         };
+
         let response = await request.post('/api/events').send(specialEvent);
         expect(response.status).toEqual(201);
         let {location} = response.headers;

@@ -203,7 +203,7 @@ async function createEvent(ctx) {
             event.Lunch = await Models.Lunch.create({
                 event:                 event.id,
                 pointsCost:            apiEvent?.costs?.points,
-                vegetarianMoneyFactor: apiEvent?.factors?.vegetarian?.money,
+                vegetarianMoneyFactor: type === Constants.EVENT_TYPES.LUNCH ? apiEvent?.factors?.vegetarian?.money : 1,
                 comment,
             }, {transaction});
         }

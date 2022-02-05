@@ -66,8 +66,6 @@ describe('Create events', () => {
             .click();
         cy.followLabel('Points')
             .type('4');
-        cy.followLabel('Vegetarian money factor')
-            .type('{selectall}100');
         cy.contains('button', 'Save')
             .click();
 

@@ -16,11 +16,9 @@
                               :append-icon="$icons.label"/>
                 <al-date-picker v-model="date" required :disabled="!!eventId"/>
 
-                <template v-if="type !== 'label'">
-                    <number-field v-model="points" label="Points" :min="0" :icon="$icons.points"/>
-                    <number-field v-model="vegetarianFactor" label="Vegetarian money factor" suffix="%"
-                                  :min="0" :step="5"/>
-                </template>
+                <number-field v-model="points" label="Points" :min="0" :icon="$icons.points" v-if="type !== 'label'"/>
+                <number-field v-model="vegetarianFactor" label="Vegetarian money factor" suffix="%"
+                              :min="0" :step="5" v-if="type === 'lunch'"/>
 
                 <v-textarea v-model="comment" label="Comments" placeholder="Ingredients, instructions, etc."/>
 
