@@ -25,14 +25,15 @@ const discountFactorsSchema = Joi.object({
 const nonNegativeSchema = Joi.number().min(0);
 
 const eventCreateSchema = Joi.object({
-    name:    eventNameSchema.required(),
-    date:    Joi.date().required(),
-    type:    eventTypeSchema.required(),
-    costs:   Joi.object({
+    name:                eventNameSchema.required(),
+    date:                Joi.date().required(),
+    type:                eventTypeSchema.required(),
+    costs:               Joi.object({
         points: nonNegativeSchema,
     }),
-    factors: discountFactorsSchema,
-    comment: Joi.string().allow(''),
+    factors:             discountFactorsSchema,
+    comment:             Joi.string().allow(''),
+    triggerDefaultOptIn: Joi.boolean().default(true),
 });
 
 const eventUpdateSchema = Joi.object({
@@ -207,7 +208,10 @@ async function createEvent(ctx) {
             }, {transaction});
         }
 
-        await setDefaultOptIns(event, transaction);
+        if (apiEvent.triggerDefaultOptIn) {
+            await setDefaultOptIns(event, transaction);
+        }
+
         await TransactionRebuilder.rebuildEvent(transaction, event);
         await AuditManager.log(transaction, ctx.user, 'event.create', {
             event:  event.id,

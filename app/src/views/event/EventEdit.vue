@@ -24,7 +24,13 @@
 
                 <v-textarea v-model="comment" label="Comments" placeholder="Ingredients, instructions, etc."/>
 
-                <div v-if="type !== 'label' && !eventId" class="helpers">
+                <div v-if="type === 'lunch' && !eventId">
+                    <v-checkbox label="Trigger default opt-ins" v-model="triggerDefaultOptIn" dense
+                                :disabled="dateIsInThePast"
+                                :hint="triggerDefaultOptIn ? null : 'No default opt-ins will be applied.  Be sure to inform participants accordingly.'" persistent-hint/>
+                </div>
+
+                <div v-if="type !== 'label' && !eventId" class="helpers v-text-field">
                     <p class="text-body-2">
                         Select helpers to automatically distribute the available points evenly.
                     </p>
@@ -67,12 +73,13 @@
 
             return {
                 eventId,
-                type:             null,
-                name:             '',
-                date:             null,
-                points:           0,
-                vegetarianFactor: 50,
-                comment:          '',
+                type:                null,
+                name:                '',
+                date:                null,
+                points:              0,
+                vegetarianFactor:    50,
+                comment:             '',
+                triggerDefaultOptIn: true,
 
                 nameRules: [
                     v => !!v || 'A name is required',
@@ -144,6 +151,10 @@
                 }
                 return '/calendar';
             },
+
+            dateIsInThePast() {
+                return new Date(`${this.date}T12:00:00`) < new Date();
+            },
         },
 
         methods: {
@@ -172,6 +183,7 @@
                         data.type = this.type;
                         // Use noon in local time zone
                         data.date = new Date(`${this.date}T12:00:00`);
+                        data.triggerDefaultOptIn = this.triggerDefaultOptIn;
                     } else {
                         data.id = this.eventId;
                     }
