@@ -368,9 +368,13 @@ async function saveParticipation(ctx) {
         if (validParticipationTypes === undefined) {
             ctx.throw(400, 'This type of event cannot have participations');
         }
-        let participationTypeId = apiParticipation.type ? Constants.PARTICIPATION_TYPE_IDS[apiParticipation.type] : undefined;
-        if (participationTypeId !== undefined && !validParticipationTypes.includes(participationTypeId)) {
-            ctx.throw(400, 'This type of participation is not allowed for this type of event');
+
+        let typeId = undefined;
+        if (apiParticipation.type) {
+            typeId = Constants.PARTICIPATION_TYPE_IDS[apiParticipation.type];
+            if (!validParticipationTypes.includes(typeId)) {
+                ctx.throw(400, 'This type of participation is not allowed for this type of event');
+            }
         }
 
         let user = await loadUserFromParam(ctx, transaction);
@@ -382,27 +386,38 @@ async function saveParticipation(ctx) {
             transaction,
             lock:  transaction.LOCK.UPDATE,
         });
-        let data = {
-            type:           participationTypeId,
-            pointsCredited: apiParticipation.credits?.points,
-            moneyCredited:  apiParticipation.credits?.money,
-        };
-        if (!participation) {
-            data.event = event.id;
-            data.user = user.id;
-            if (!data.type) {
-                data.type = validParticipationTypes[0];
-            }
-            participation = await Models.Participation.create(data, {transaction});
+
+        let before = null;
+        if (participation === null) {
+            participation = Models.Participation.build({
+                event: event.id,
+                user:  user.id,
+                type:  typeId ?? validParticipationTypes[0],
+            });
+        } else {
+            before = participation.toSnapshot();
+        }
+
+        if (typeId !== undefined) {
+            participation.type = typeId;
+        }
+        if (apiParticipation.credits?.points !== undefined) {
+            participation.pointsCredited = apiParticipation.credits?.points;
+        }
+        if (apiParticipation.credits?.money !== undefined) {
+            participation.moneyCredited = apiParticipation.credits?.money;
+        }
+
+        await participation.save({transaction});
+        let after = participation.toSnapshot();
+
+        if (before === null) {
             await AuditManager.log(transaction, ctx.user, 'participation.create', {
                 event:        event.id,
                 affectedUser: user.id,
-                values:       participation.toSnapshot(),
+                values:       after,
             });
         } else {
-            let before = participation.toSnapshot();
-            await participation.update(data, {transaction});
-            let after = participation.toSnapshot();
             await AuditManager.log(transaction, ctx.user, 'participation.update', {
                 event:        event.id,
                 affectedUser: user.id,
