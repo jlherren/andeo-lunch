@@ -109,6 +109,7 @@ describe('A simple event', () => {
         expect(response.body.participation.eventId).toEqual(eventId);
         Reflect.deleteProperty(response.body.participation, 'userId');
         Reflect.deleteProperty(response.body.participation, 'eventId');
+        Reflect.deleteProperty(response.body.participation, 'factors');
         expect(response.body.participation).toEqual(sampleParticipation1);
     });
 
@@ -129,6 +130,7 @@ describe('A simple event', () => {
         expect(response.body.participation.eventId).toEqual(eventId);
         Reflect.deleteProperty(response.body.participation, 'userId');
         Reflect.deleteProperty(response.body.participation, 'eventId');
+        Reflect.deleteProperty(response.body.participation, 'factors');
         expect(response.body.participation).toEqual(sampleParticipation2);
     });
 
@@ -153,6 +155,7 @@ describe('A simple event', () => {
         expect(response.body.participation.eventId).toEqual(eventId);
         Reflect.deleteProperty(response.body.participation, 'userId');
         Reflect.deleteProperty(response.body.participation, 'eventId');
+        Reflect.deleteProperty(response.body.participation, 'factors');
         expect(response.body.participation).toEqual({
             type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OMNIVOROUS],
             credits: {
@@ -229,6 +232,22 @@ describe('A simple event', () => {
             .send({type: Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OPT_IN]});
         expect(response.status).toEqual(400);
         expect(response.text).toEqual('This type of participation is not allowed for this type of event');
+    });
+
+    it('Does not save money factor', async () => {
+        let url = `/api/events/${eventId}/participations/${user1.id}`;
+        let response = await request.post(url)
+            .send({
+                type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OMNIVOROUS],
+                factors: {
+                    money: 0.5,
+                },
+            });
+        expect(response.status).toEqual(204);
+
+        // Check event again
+        response = await request.get(url);
+        expect(response.body?.participation?.factors?.money).toEqual(1);
     });
 });
 
@@ -330,6 +349,22 @@ describe('A special event', () => {
             expect(response.text).toEqual('This type of participation is not allowed for this type of event');
         });
     }
+
+    it('Can save money factor', async () => {
+        let url = `/api/events/${eventId}/participations/${user1.id}`;
+        let response = await request.post(url)
+            .send({
+                type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OPT_IN],
+                factors: {
+                    money: 0.5,
+                },
+            });
+        expect(response.status).toEqual(204);
+
+        // Check event again
+        response = await request.get(url);
+        expect(response.body?.participation?.factors?.money).toEqual(0.5);
+    });
 });
 
 describe('Default opt-in', () => {

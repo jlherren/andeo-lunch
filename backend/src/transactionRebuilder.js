@@ -33,12 +33,12 @@ function getWeightsForParticipation(event, participation) {
                     moneyWeight:  0,
                 };
         }
-    } else {
+    } else if (event.type === Constants.EVENT_TYPES.SPECIAL) {
         switch (participation.type) {
             case Constants.PARTICIPATION_TYPES.OPT_IN:
                 return {
                     pointsWeight: 1,
-                    moneyWeight:  1,
+                    moneyWeight:  participation.moneyFactor,
                 };
             case Constants.PARTICIPATION_TYPES.OPT_OUT:
                 return {

@@ -37,6 +37,7 @@
  * @property {number} eventId
  * @property {string} type
  * @property {{points: number, money: number}} credits
+ * @property {{money: number}} factors
  */
 
 /**

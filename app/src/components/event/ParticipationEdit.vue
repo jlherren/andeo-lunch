@@ -19,10 +19,13 @@
 
                 <v-row>
                     <v-col cols="6">
-                        <number-field v-model="points" label="Points credited" :icon="$icons.points"/>
+                        <number-field v-model="pointsCredited" label="Points credited" :icon="$icons.points"/>
                     </v-col>
                     <v-col cols="6">
-                        <v-text-field v-model="money" type="number" min="0" label="Money credited" :append-icon="$icons.money"/>
+                        <v-text-field v-model="moneyCredited" type="number" min="0"
+                                      label="Money credited" :append-icon="$icons.money"/>
+                        <number-field v-model="moneyFactor" min="0" step="5" v-if="event.type === 'special'"
+                                      label="Money factor" suffix="%" :icon="$icons.money"/>
                     </v-col>
                 </v-row>
 
@@ -67,12 +70,13 @@
         data() {
             let defaultType = this.event.type === 'special' ? 'opt-out' : 'undecided';
             return {
-                user:      this.participation?.userId,
-                points:    this.participation?.credits?.points ?? 0,
-                money:     this.participation?.credits?.money ?? 0,
-                type:      this.participation?.type ?? defaultType,
-                isBusy:    false,
-                userRules: [
+                user:           this.participation?.userId,
+                pointsCredited: this.participation?.credits?.points ?? 0,
+                moneyCredited:  this.participation?.credits?.money ?? 0,
+                moneyFactor:    (this.participation?.factors?.money ?? 1) * 100,
+                type:           this.participation?.type ?? defaultType,
+                isBusy:         false,
+                userRules:      [
                     user => !!user,
                 ],
             };
@@ -125,8 +129,11 @@
                         eventId: this.event.id,
                         type:    this.type,
                         credits: {
-                            points: this.points,
-                            money:  this.money,
+                            points: this.pointsCredited,
+                            money:  this.moneyCredited,
+                        },
+                        factors: {
+                            money: this.moneyFactor / 100,
                         },
                     });
                     this.$emit('saved');

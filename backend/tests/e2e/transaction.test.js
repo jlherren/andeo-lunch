@@ -464,4 +464,53 @@ describe('Special events', () => {
         response = await request.get(`/api/users/${user3.id}`);
         expect(response.body.user.balances).toEqual({points: 0, money: 2});
     });
+
+    it('Correctly considers money factors', async () => {
+        let eventId = await Helper.createEvent(request, {
+            name:  'Special event',
+            date:  EVENT_DATE_0,
+            type:  Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.SPECIAL],
+            costs: {
+                points: 8,
+            },
+        });
+
+        let response = await request.post(`/api/events/${eventId}/participations/${user1.id}`)
+            .send({
+                type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OPT_IN],
+                credits: {
+                    points: 3,
+                    money:  10,
+                },
+            });
+        expect(response.status).toEqual(204);
+        response = await request.post(`/api/events/${eventId}/participations/${user2.id}`)
+            .send({
+                type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OPT_IN],
+                credits: {
+                    points: 1,
+                    money:  0,
+                },
+                factors: {
+                    money: 0.5,
+                },
+            });
+        expect(response.status).toEqual(204);
+        response = await request.post(`/api/events/${eventId}/participations/${user3.id}`)
+            .send({
+                type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OPT_OUT],
+                credits: {
+                    points: 0,
+                    money:  2,
+                },
+            });
+
+        // Get user balances
+        response = await request.get(`/api/users/${user1.id}`);
+        expect(response.body.user.balances).toEqual({points: 2, money: 2});
+        response = await request.get(`/api/users/${user2.id}`);
+        expect(response.body.user.balances).toEqual({points: -2, money: -4});
+        response = await request.get(`/api/users/${user3.id}`);
+        expect(response.body.user.balances).toEqual({points: 0, money: 2});
+    });
 });

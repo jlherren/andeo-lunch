@@ -53,6 +53,9 @@ const participationSchema = Joi.object({
         points: nonNegativeSchema,
         money:  nonNegativeSchema,
     }),
+    factors: Joi.object({
+        money:  nonNegativeSchema,
+    }),
 });
 
 const transferSchema = Joi.object({
@@ -406,6 +409,9 @@ async function saveParticipation(ctx) {
         }
         if (apiParticipation.credits?.money !== undefined) {
             participation.moneyCredited = apiParticipation.credits?.money;
+        }
+        if (apiParticipation.factors?.money !== undefined && event.type === Constants.EVENT_TYPES.SPECIAL) {
+            participation.moneyFactor = apiParticipation.factors?.money;
         }
 
         await participation.save({transaction});

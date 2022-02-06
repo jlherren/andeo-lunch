@@ -176,6 +176,7 @@ class ParticipationType extends Model {
  * @property {number} type
  * @property {number} pointsCredited
  * @property {number} moneyCredited
+ * @property {number} moneyFactor
  */
 class Participation extends Model {
     /**
@@ -192,6 +193,9 @@ class Participation extends Model {
                 points: this.pointsCredited,
                 money:  this.moneyCredited,
             },
+            factors: {
+                money: this.moneyFactor,
+            },
         };
     }
 
@@ -201,6 +205,9 @@ class Participation extends Model {
             credits: {
                 points: this.pointsCredited,
                 money:  this.moneyCredited,
+            },
+            factors: {
+                money: this.moneyFactor,
             },
         };
     }
@@ -470,6 +477,7 @@ exports.initModels = function initModels(sequelize) {
         type:           {type: DataTypes.INTEGER, allowNull: false},
         pointsCredited: {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
         moneyCredited:  {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
+        moneyFactor:    {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 1.0},
     }, {
         sequelize,
         modelName: 'participation',
