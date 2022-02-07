@@ -9,4 +9,15 @@ export const USERS = {
             `);
         },
     },
+
+    robert: {
+        username: 'robert.smith',
+        password: 'andeolunchtest',
+        insert() {
+            cy.task('db:sql', `
+                INSERT INTO user (id, username, password, name, active, createdAt, updatedAt)
+                    VALUES (3, 'robert.smith', '$2a$10$EOq4EMCEzqoyWX.RezHdnuc/.oukv2lR2nVV1d8RyKVHMHwAq2/Wi', 'Robert Smith', 1, NOW(), NOW());
+            `);
+        },
+    },
 };
