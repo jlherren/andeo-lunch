@@ -16,7 +16,7 @@
                 <div class="text--secondary">{{ formattedDate }}</div>
 
                 <div v-if="event.type !== 'label'" class="costs">
-                    <participation-summary :participations="participations" large/>
+                    <participation-summary :event="event" :participations="participations" large/>
                     <balance :value="event.costs.points" points large no-sign/>
                     <balance :value="event.costs.money" money large no-sign/>
                 </div>

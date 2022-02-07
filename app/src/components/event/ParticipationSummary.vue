@@ -4,7 +4,7 @@
             <v-icon v-if="!large">{{ $icons.account }}</v-icon>
             {{ total }}
         </span>
-        <span class="details">
+        <span class="details" v-if="event.type === 'lunch'">
             <span class="icon-and-number">
                 <v-icon>{{ $icons.omnivorous }}</v-icon>
                 {{ omnivorous }}
@@ -14,6 +14,7 @@
                 {{ vegetarian }}
             </span>
         </span>
+        <v-icon large v-else-if="large">{{ $icons.account }}</v-icon>
     </span>
 </template>
 
@@ -22,7 +23,14 @@
         name: 'ParticipationSummary',
 
         props: {
-            participations: Array,
+            event:          {
+                type:     Object,
+                required: true,
+            },
+            participations: {
+                type:     Array,
+                required: true,
+            },
             large:          Boolean,
         },
 

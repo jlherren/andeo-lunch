@@ -10,7 +10,7 @@
             </v-list-item-title>
             <v-list-item-subtitle>
                 <span>{{ formattedDate }}</span>
-                <participation-summary v-if="event.type !== 'label'" :participations="participations"/>
+                <participation-summary v-if="event.type !== 'label'" :event="event" :participations="participations"/>
             </v-list-item-subtitle>
         </v-list-item-content>
 
