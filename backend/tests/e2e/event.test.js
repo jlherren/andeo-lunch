@@ -74,6 +74,7 @@ const sampleEvent = {
 
 const eventUpdates = {
     name:    'Other lunch',
+    comment: 'Ingredient list...',
     costs:   {
         points: 6,
     },
@@ -211,26 +212,27 @@ describe('Create events', () => {
 });
 
 describe('Updating lunch event', () => {
-    let eventId = null;
+    let url;
 
     beforeEach(async () => {
-        eventId = await Helper.createEvent(request, sampleEvent);
+        let eventId = await Helper.createEvent(request, sampleEvent);
+        url = `/api/events/${eventId}`;
     });
 
     it('allows to update an event', async () => {
         let expected = {...sampleEvent};
         for (let key of Object.keys(eventUpdates)) {
-            let response = await request.post(`/api/events/${eventId}`).send({[key]: eventUpdates[key]});
+            let response = await request.post(url).send({[key]: eventUpdates[key]});
             expect(response.status).toEqual(204);
             expected[key] = eventUpdates[key];
-            response = await request.get(`/api/events/${eventId}`);
+            response = await request.get(url);
             expect(response.body.event).toMatchObject(expected);
         }
     });
 
     it('rejects disallowed updates', async () => {
         for (let key of Object.keys(disallowedUpdate)) {
-            let response = await request.post(`/api/events/${eventId}`).send({[key]: disallowedUpdate[key]});
+            let response = await request.post(url).send({[key]: disallowedUpdate[key]});
             expect(response.status).toEqual(400);
         }
     });
@@ -238,7 +240,7 @@ describe('Updating lunch event', () => {
     it('rejects invalid updates', async () => {
         for (let key of Object.keys(invalidData)) {
             for (let value of invalidData[key]) {
-                let response = await request.post(`/api/events/${eventId}`).send({[key]: value});
+                let response = await request.post(url).send({[key]: value});
                 expect(response.status).toEqual(400);
             }
         }
@@ -246,6 +248,11 @@ describe('Updating lunch event', () => {
 });
 
 describe('Updating label events', () => {
+    const labelEvent = {
+        name: 'National holiday',
+        type: 'label',
+        date: '2020-01-15T11:00:00.000Z',
+    };
     let url = null;
 
     beforeEach(async () => {
@@ -259,6 +266,15 @@ describe('Updating label events', () => {
         response = await request.get(url);
         expect(response.status).toEqual(200);
         expect(response.body.event).toMatchObject(labelEvent);
+    });
+
+    it('Can update name', async () => {
+        let update = {name: 'Christmas'};
+        let response = await request.post(url).send(update);
+        expect(response.status).toEqual(204);
+        response = await request.get(url);
+        expect(response.status).toEqual(200);
+        expect(response.body.event).toMatchObject({...labelEvent, ...update});
     });
 
     it('Cannot update point costs', async () => {
