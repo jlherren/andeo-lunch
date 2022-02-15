@@ -20,7 +20,8 @@
                 <number-field v-model="vegetarianFactor" label="Vegetarian money factor" suffix="%"
                               :min="0" :step="5" v-if="type === 'lunch'"/>
 
-                <v-textarea v-model="comment" label="Comments" placeholder="Ingredients, instructions, etc."/>
+                <v-textarea v-model="comment" label="Comments" placeholder="Ingredients, instructions, etc."
+                            v-if="type !== 'label'"/>
 
                 <div v-if="type === 'lunch' && !eventId">
                     <v-checkbox label="Trigger default opt-ins" v-model="triggerDefaultOptIn" dense
@@ -113,8 +114,8 @@
             this.type = event.type;
             this.name = event.name;
             this.date = DateUtils.isoDate(event.date);
-            this.points = event.costs.points;
-            this.vegetarianFactor = parseFloat((event.factors.vegetarian.money * 100).toPrecision(4));
+            this.points = event.costs?.points;
+            this.vegetarianFactor = parseFloat((event.factors?.vegetarian.money * 100).toPrecision(4));
             this.comment = event.comment ?? '';
             this.isBusy = false;
         },
