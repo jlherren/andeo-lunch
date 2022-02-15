@@ -54,7 +54,7 @@ const participationSchema = Joi.object({
         money:  nonNegativeSchema,
     }),
     factors: Joi.object({
-        money:  nonNegativeSchema,
+        money: nonNegativeSchema,
     }),
 });
 
@@ -112,6 +112,10 @@ function validateEvent(ctx, type, apiEvent) {
         }
         if (apiEvent?.factors?.vegetarian?.money !== undefined) {
             ctx.throw(400, 'Label events cannot have a vegetarian money factor');
+        }
+    } else if (type === Constants.EVENT_TYPES.SPECIAL) {
+        if (apiEvent?.factors?.vegetarian?.money !== undefined) {
+            ctx.throw(400, 'Special events cannot have a vegetarian money factor');
         }
     }
 }

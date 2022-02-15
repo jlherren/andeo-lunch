@@ -106,7 +106,7 @@ const invalidData = {
     ],
 };
 
-describe('creating events', () => {
+describe('Create events', () => {
     it('Accepts a simple event', async () => {
         let response = await request.post('/api/events').send(sampleEvent);
         expect(response.status).toEqual(201);
@@ -176,6 +176,7 @@ describe('creating events', () => {
         };
         let response = await request.post('/api/events').send(event);
         expect(response.status).toEqual(400);
+        expect(response.text).toEqual('Label events cannot have point costs');
     });
 
     it('Rejects label vegetarian money factor', async () => {
@@ -189,6 +190,23 @@ describe('creating events', () => {
         };
         let response = await request.post('/api/events').send(event);
         expect(response.status).toEqual(400);
+        expect(response.text).toEqual('Label events cannot have a vegetarian money factor');
+    });
+
+    it('Rejects special event vegetarian money factor', async () => {
+        let event = {
+            name:    'Special',
+            type:    'special',
+            date:    '2020-01-15T11:00:00.000Z',
+            factors: {
+                vegetarian: {
+                    money: 1,
+                },
+            },
+        };
+        let response = await request.post('/api/events').send(event);
+        expect(response.status).toEqual(400);
+        expect(response.text).toEqual('Special events cannot have a vegetarian money factor');
     });
 });
 
@@ -228,30 +246,80 @@ describe('Updating lunch event', () => {
 });
 
 describe('Updating label events', () => {
-    let eventId = null;
+    let url = null;
 
     beforeEach(async () => {
-        eventId = await Helper.createEvent(request, labelEvent);
+        let eventId = await Helper.createEvent(request, labelEvent);
+        url = `/api/events/${eventId}`;
     });
 
-    it('Can update without anychanges', async () => {
-        let response = await request.post(`/api/events/${eventId}`).send({});
+    it('Can update without any changes', async () => {
+        let response = await request.post(url).send({});
         expect(response.status).toEqual(204);
+        response = await request.get(url);
+        expect(response.status).toEqual(200);
+        expect(response.body.event).toMatchObject(labelEvent);
     });
 
     it('Cannot update point costs', async () => {
-        let response = await request.post(`/api/events/${eventId}`).send({costs: {points: 1}});
+        let response = await request.post(url).send({costs: {points: 1}});
         expect(response.status).toEqual(400);
+        expect(response.text).toEqual('Label events cannot have point costs');
     });
 
     it('Cannot update money costs', async () => {
-        let response = await request.post(`/api/events/${eventId}`).send({costs: {money: 1}});
+        let response = await request.post(url).send({costs: {money: 1}});
         expect(response.status).toEqual(400);
+        expect(response.text).toEqual('"costs.money" is not allowed');
     });
 
     it('Cannot update vegetarian money factor', async () => {
-        let response = await request.post(`/api/events/${eventId}`).send({factors: {vegetarian: {money: 1}}});
+        let response = await request.post(url).send({factors: {vegetarian: {money: 1}}});
         expect(response.status).toEqual(400);
+        expect(response.text).toEqual('Label events cannot have a vegetarian money factor');
+    });
+});
+
+describe('Updating special events', () => {
+    let url = null;
+    let eventData = {
+        name: 'Special',
+        type: 'special',
+        date: '2020-01-15T11:00:00.000Z',
+    };
+
+    beforeEach(async () => {
+        let eventId = await Helper.createEvent(request, eventData);
+        url = `/api/events/${eventId}`;
+    });
+
+    it('Can update without any changes', async () => {
+        let response = await request.post(url).send({});
+        expect(response.status).toEqual(204);
+        response = await request.get(url);
+        expect(response.status).toEqual(200);
+        expect(response.body.event).toMatchObject(eventData);
+    });
+
+    it('Can update point costs', async () => {
+        let update = {costs: {points: 1}};
+        let response = await request.post(url).send(update);
+        expect(response.status).toEqual(204);
+        response = await request.get(url);
+        expect(response.status).toEqual(200);
+        expect(response.body.event).toMatchObject({...eventData, ...update});
+    });
+
+    it('Cannot update money costs', async () => {
+        let response = await request.post(url).send({costs: {money: 1}});
+        expect(response.status).toEqual(400);
+        expect(response.text).toEqual('"costs.money" is not allowed');
+    });
+
+    it('Cannot update vegetarian money factor', async () => {
+        let response = await request.post(url).send({factors: {vegetarian: {money: 1}}});
+        expect(response.status).toEqual(400);
+        expect(response.text).toEqual('Special events cannot have a vegetarian money factor');
     });
 });
 

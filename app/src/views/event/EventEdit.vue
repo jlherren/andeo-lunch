@@ -189,6 +189,8 @@
                         data.costs = {
                             points: this.points,
                         };
+                    }
+                    if (this.type === 'lunch') {
                         data.factors = {
                             vegetarian: {
                                 money: this.vegetarianFactor / 100,
