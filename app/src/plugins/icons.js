@@ -34,6 +34,7 @@ export const icons = {
     darkMode:       mdi.mdiThemeLightDark,
     edit:           mdi.mdiPencil,
     groceryList:    mdi.mdiCart,
+    help:           mdi.mdiHelpCircle,
     log:            mdi.mdiNotebook,
     lunch:          mdi.mdiFoodVariant,
     menu:           mdi.mdiSilverware,

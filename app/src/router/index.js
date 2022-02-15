@@ -70,6 +70,10 @@ const routes = [
         component: () => import('@/views/event/EventEdit'),
     },
     {
+        path:      '/events/help',
+        component: () => import('@/views/event/EventHelp'),
+    },
+    {
         path:      '/profile',
         component: () => import(/* webpackChunkName: "profile" */ '@/views/settings/Profile'),
     },

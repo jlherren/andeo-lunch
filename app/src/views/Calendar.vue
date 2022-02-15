@@ -53,6 +53,10 @@
                 <v-icon>{{ $icons.label }}</v-icon>
                 <span class="label">Label</span>
             </v-btn>
+            <v-btn color="primary" fab small to="/events/help">
+                <v-icon>{{ $icons.help }}</v-icon>
+                <span class="label">Help me choose</span>
+            </v-btn>
         </v-speed-dial>
     </v-main>
 </template>
