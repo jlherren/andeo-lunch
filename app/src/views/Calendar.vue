@@ -22,7 +22,7 @@
                             <v-list-item-subtitle>{{ formatDate(event.date) }}</v-list-item-subtitle>
                         </v-list-item-content>
                         <v-list-item-action>
-                            <v-btn icon :to="`/events/new?type=lunch&date=${event.isoDate}`">
+                            <v-btn icon color="primary" :to="`/events/new?type=lunch&date=${event.isoDate}`">
                                 <v-icon>{{ $icons.plus }}</v-icon>
                             </v-btn>
                         </v-list-item-action>
