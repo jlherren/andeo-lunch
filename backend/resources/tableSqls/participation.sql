@@ -5,6 +5,7 @@ CREATE TABLE `participation` (
   `type` int(11) NOT NULL,
   `pointsCredited` double NOT NULL DEFAULT 0,
   `moneyCredited` double NOT NULL DEFAULT 0,
+  `moneyFactor` double NOT NULL DEFAULT 1,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL,
   PRIMARY KEY (`id`),
