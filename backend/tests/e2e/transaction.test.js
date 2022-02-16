@@ -516,3 +516,123 @@ describe('Special events', () => {
         expect(response.body.user.balances).toEqual({points: 0, money: 2});
     });
 });
+
+describe('Flat-rate lunches', () => {
+    let eventId = null;
+    let eventUrl = null;
+
+    beforeEach(async () => {
+        eventId = await Helper.createEvent(request, {
+            name:                  'Flat lunch',
+            date:                  EVENT_DATE_1,
+            type:                  Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.LUNCH],
+            costs:                 {
+                points: 6,
+            },
+            factors:               {
+                vegetarian: {
+                    money: 0.5,
+                },
+            },
+            participationFlatRate: 0.5,
+        });
+        eventUrl = `/api/events/${eventId}`;
+    });
+
+    it('Transactions and balances for event look correct', async () => {
+        await request.post(`${eventUrl}/participations/${user1.id}`).send({
+            type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OMNIVOROUS],
+            credits: {
+                points: 6,
+                money:  0,
+            },
+        });
+        await request.post(`${eventUrl}/participations/${user2.id}`).send({
+            type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.VEGETARIAN],
+            credits: {
+                points: 0,
+                money:  30,
+            },
+        });
+
+        // Check user 1
+        let response = await request.get(`/api/users/${user1.id}/transactions`);
+        expect(response.status).toBe(200);
+        expect(response.body.transactions).toHaveLength(3);
+        expect(response.body.transactions[0]).toMatchObject({
+            eventId,
+            userId:       user1.id,
+            contraUserId: systemUser.id,
+            date:         EVENT_DATE_1,
+            currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            amount:       6,
+            balance:      6,
+        });
+        expect(response.body.transactions[1]).toMatchObject({
+            eventId,
+            userId:       user1.id,
+            contraUserId: systemUser.id,
+            date:         EVENT_DATE_1,
+            currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            amount:       -0.5,
+            balance:      5.5,
+        });
+        expect(response.body.transactions[2]).toMatchObject({
+            eventId,
+            userId:       user1.id,
+            contraUserId: systemUser.id,
+            date:         EVENT_DATE_1,
+            currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+            amount:       -20,
+            balance:      -20,
+        });
+        response = await request.get(`/api/users/${user1.id}`);
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toEqual({points: 5.5, money: -20});
+
+        // Check user 2
+        response = await request.get(`/api/users/${user2.id}/transactions`);
+        expect(response.status).toBe(200);
+        expect(response.body.transactions).toHaveLength(3);
+        expect(response.body.transactions[0]).toMatchObject({
+            eventId,
+            userId:       user2.id,
+            contraUserId: systemUser.id,
+            date:         EVENT_DATE_1,
+            currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            amount:       -0.5,
+            balance:      -0.5,
+        });
+        expect(response.body.transactions[1]).toMatchObject({
+            eventId,
+            userId:       user2.id,
+            contraUserId: systemUser.id,
+            date:         EVENT_DATE_1,
+            currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+            amount:       30,
+            balance:      30,
+        });
+        expect(response.body.transactions[2]).toMatchObject({
+            eventId,
+            userId:       user2.id,
+            contraUserId: systemUser.id,
+            date:         EVENT_DATE_1,
+            currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+            amount:       -10,
+            balance:      20,
+        });
+        response = await request.get(`/api/users/${user2.id}`);
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toEqual({points: -0.5, money: 20});
+
+        // Check system user (balance only)
+        response = await request.get('/api/users/system');
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toEqual({points: 0, money: 0});
+
+        // Check Andeo user (balance only)
+        response = await request.get('/api/users/andeo');
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toEqual({points: -5, money: 0});
+    });
+});

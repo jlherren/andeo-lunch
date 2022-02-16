@@ -53,6 +53,21 @@ async function getSystemUser(ctx) {
  * @param {Application.Context} ctx
  * @returns {Promise<void>}
  */
+async function getAndeoUser(ctx) {
+    let user = await Models.User.findOne({
+        where: {
+            username: Constants.ANDEO_USER_USERNAME,
+        },
+    });
+    ctx.body = {
+        user: user.toApi(),
+    };
+}
+
+/**
+ * @param {Application.Context} ctx
+ * @returns {Promise<void>}
+ */
 async function getUserPaymentInfo(ctx) {
     let config = await Models.Configuration.findOne({
         where: {
@@ -152,4 +167,5 @@ exports.register = function register(router) {
     router.post('/users/:user(\\d+)/absences', createUserAbsence);
     router.delete('/users/:user(\\d+)/absences/:absence(\\d+)', deleteUserAbsence);
     router.get('/users/system', getSystemUser);
+    router.get('/users/andeo', getAndeoUser);
 };
