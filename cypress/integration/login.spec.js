@@ -1,6 +1,6 @@
 const {USERS} = require('../helpers/sql');
 
-describe('login', () => {
+describe('Login', () => {
     before(() => {
         cy.task('db:purge');
         USERS.john.insert();

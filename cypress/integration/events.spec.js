@@ -27,6 +27,8 @@ describe('Create events', () => {
             .click();
 
         cy.contains('.headline', 'Brunch');
+        cy.contains('Participation flat-rate: 0.75')
+            .should('be.visible');
     });
 
     it('Manual lunch button', () => {
@@ -92,5 +94,51 @@ describe('Create events', () => {
             .click();
 
         cy.contains('.headline', 'Feiertag');
+    });
+
+    it('Add a comment', () => {
+        cy.get('.v-list-item a')
+            .first()
+            .click();
+        cy.followLabel('Name')
+            .type('Complex menu');
+        cy.followLabel('Comment')
+            .type('Here is how to do it...');
+        cy.contains('button', 'Save')
+            .click();
+        cy.contains('Here is how to do it...')
+            .should('be.visible');
+    });
+
+
+    it('Alternate flat-rate', () => {
+        cy.get('.v-list-item a')
+            .first()
+            .click();
+        cy.followLabel('Name')
+            .type('Gratin');
+        cy.followLabel('Participation cost')
+            .clear()
+            .type('0.5');
+        cy.contains('button', 'Save')
+            .click();
+        cy.contains('Participation flat-rate: 0.5')
+            .should('be.visible');
+    });
+
+    it('Non-flat-rate lunch', () => {
+        cy.get('.v-list-item a')
+            .first()
+            .click();
+
+        cy.followLabel('Name')
+            .type('Pizza');
+        cy.followLabel('Participation flat-rate')
+            .uncheck({force: true});
+        cy.contains('button', 'Save')
+            .click();
+
+        cy.contains('Participation flat-rate')
+            .should('not.exist');
     });
 });

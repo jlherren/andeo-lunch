@@ -2,7 +2,7 @@
     <v-list-item :class="itemClass" @click="openDialog()">
         <v-list-item-avatar>
             <v-avatar v-if="bigIcon !== null" :color="bigIconColor">
-                <v-icon dark>{{ bigIcon }}</v-icon>
+                <v-icon dark :data-type="participation.type">{{ bigIcon }}</v-icon>
             </v-avatar>
         </v-list-item-avatar>
 

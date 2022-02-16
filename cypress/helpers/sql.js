@@ -21,3 +21,33 @@ export const USERS = {
         },
     },
 };
+
+export const LUNCH = {
+    lasagna: {
+        insert() {
+            cy.task('db:sql', `
+                INSERT INTO event (id, type, date, name, createdAt, updatedAt)
+                    VALUES (1, 1, '2022-02-16T12:00:00', 'Lasagna', NOW(), NOW());
+            `);
+            cy.task('db:sql', `
+                INSERT INTO lunch (event, pointsCost, vegetarianMoneyFactor, participationFlatRate, createdAt, updatedAt)
+                    VALUES (1, 8, 0.75, NULL, NOW(), NOW());
+            `);
+        }
+    }
+}
+
+export const SPECIAL = {
+    lasagna: {
+        insert() {
+            cy.task('db:sql', `
+                INSERT INTO event (id, type, date, name, createdAt, updatedAt)
+                    VALUES (2, 2, '2022-02-17T12:00:00', 'Groceries', NOW(), NOW());
+            `);
+            cy.task('db:sql', `
+                INSERT INTO lunch (event, createdAt, updatedAt)
+                    VALUES (2, NOW(), NOW());
+            `);
+        }
+    }
+}
