@@ -57,6 +57,7 @@ export const icons = {
     transferTrade:  mdi.mdiSwapVerticalBold,
     transfers:      mdi.mdiSwapHorizontalBold,
     undecided:      mdi.mdiHelpCircle,
+    update:         mdi.mdiCellphoneArrowDown,
     vegetarian:     mdi.mdiFoodApple,
 };
 
