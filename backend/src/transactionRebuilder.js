@@ -219,20 +219,23 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
             totalMoneyCredited += participation.moneyCredited;
         }
 
-        let pointsCostPerWeightUnit = totalPointsWeight > Constants.EPSILON ? event.Lunch.pointsCost / totalPointsWeight : 0.0;
-        let pointsCostPerPointsCredited = totalPointsCredited > Constants.EPSILON ? event.Lunch.pointsCost / totalPointsCredited : 0.0;
-        let moneyCostPerWeightUnit = totalMoneyWeight > Constants.EPSILON ? totalMoneyCredited / totalMoneyWeight : 0.0;
-        // Note: pointsCostPerPointsCredited *should* usually be equal to 1, but let's not trust it anyway
+        let pointsCostPerWeightUnit = 0.0;
+        let pointsCreditPerPointsCredited = 0.0;
+        // Note: pointsCreditPerPointsCredited *should* usually be equal to 1, but let's not trust it anyway
 
-        if (pointsCostPerPointsCredited < Constants.EPSILON) {
-            // No points are being credited to anyone, probably because nobody is organizing the event.
-            // Therefore no points should be debited either.
-            pointsCostPerWeightUnit = 0.0;
+        if (totalPointsWeight > Constants.EPSILON && totalPointsCredited > Constants.EPSILON) {
+            pointsCreditPerPointsCredited = totalPointsCredited > Constants.EPSILON ? event.Lunch.pointsCost / totalPointsCredited : 0.0;
+            pointsCostPerWeightUnit = totalPointsWeight > Constants.EPSILON ? event.Lunch.pointsCost / totalPointsWeight : 0.0;
         }
+        // else: Either no participants or no cook.  In either case, no points can be transacted.
 
-        // Disable all money calculations if there is no paying participant
-        let enableMoneyCalculation = totalMoneyCredited > Constants.EPSILON &&
-            totalMoneyWeight > Constants.EPSILON;
+        let moneyCostPerWeightUnit = 0.0;
+        let enableMoneyCalculation = false;
+        if (totalMoneyCredited > Constants.EPSILON && totalMoneyWeight > Constants.EPSILON) {
+            enableMoneyCalculation = true;
+            moneyCostPerWeightUnit = totalMoneyCredited / totalMoneyWeight;
+        }
+        // else: Disable all money calculations if there is no paying participant
 
         let totalPointSum = 0.0;
 
@@ -240,7 +243,7 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
             let {pointsWeight, moneyWeight} = getWeightsForParticipation(event, participation);
 
             // credit points for organizing the event
-            let pointsCredited = participation.pointsCredited * pointsCostPerPointsCredited;
+            let pointsCredited = participation.pointsCredited * pointsCreditPerPointsCredited;
             if (Math.abs(pointsCredited) > Constants.EPSILON) {
                 addSystemTransaction(participation.user, pointsCredited, Constants.CURRENCIES.POINTS);
                 totalPointSum += pointsCredited;

@@ -82,7 +82,7 @@ afterEach(async () => {
     await andeoLunch.close();
 });
 
-describe('transactions for event', () => {
+describe('Transactions for lunch', () => {
     let eventId = null;
     let eventUrl = null;
 
@@ -103,7 +103,7 @@ describe('transactions for event', () => {
         eventUrl = `/api/events/${eventId}`;
     });
 
-    it('Transactions and balances for event look correct', async () => {
+    it('Two participants, one vegetarian', async () => {
         await request.post(`${eventUrl}/participations/${user1.id}`).send(participation1);
         await request.post(`${eventUrl}/participations/${user2.id}`).send(participation2);
 
@@ -179,6 +179,71 @@ describe('transactions for event', () => {
 
         // Check system user (balance only)
         response = await request.get('/api/users/system');
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toEqual({points: 0, money: 0});
+    });
+
+    it('No participants and no cook', async () => {
+        let response = await request.get(`/api/users/${user1.id}`);
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toEqual({points: 0, money: 0});
+
+        response = await request.get('/api/users/system');
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toEqual({points: 0, money: 0});
+
+        response = await request.get('/api/users/andeo');
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toEqual({points: 0, money: 0});
+    });
+
+    it('No participants but there is a cook', async () => {
+        await request.post(`${eventUrl}/participations/${user1.id}`).send({
+            type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OPT_OUT],
+            credits: {
+                points: 8,
+                money:  12,
+            },
+        });
+
+        let response = await request.get(`/api/users/${user1.id}/transactions`);
+        expect(response.body.transactions).toHaveLength(0);
+
+        response = await request.get(`/api/users/${user1.id}`);
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toEqual({points: 0, money: 0});
+
+        response = await request.get('/api/users/system');
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toEqual({points: 0, money: 0});
+
+        response = await request.get('/api/users/andeo');
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toEqual({points: 0, money: 0});
+    });
+
+    it('No cook but there is a participant', async () => {
+        await request.post(`${eventUrl}/participations/${user1.id}`).send({
+            type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OMNIVOROUS],
+            credits: {
+                points: 0,
+                money:  0,
+            },
+        });
+
+        let response = await request.get(`/api/users/${user1.id}/transactions`);
+        expect(response.status).toBe(200);
+        expect(response.body.transactions).toHaveLength(0);
+
+        response = await request.get(`/api/users/${user1.id}`);
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toEqual({points: 0, money: 0});
+
+        response = await request.get('/api/users/system');
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toEqual({points: 0, money: 0});
+
+        response = await request.get('/api/users/andeo');
         expect(response.status).toBe(200);
         expect(response.body.user.balances).toEqual({points: 0, money: 0});
     });
