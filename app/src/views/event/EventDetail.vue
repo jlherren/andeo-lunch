@@ -54,7 +54,7 @@
             </v-container>
 
             <v-list v-if="event.type !== 'label'">
-                <v-list-item @click="openAddParticipationDialog()">
+                <v-list-item @click="openAddParticipationDialog()" :disabled="isBusy">
                     <v-list-item-avatar>
                         <v-icon>{{ $icons.plus }}</v-icon>
                     </v-list-item-avatar>
@@ -141,20 +141,18 @@
                 eventId:                parseInt(this.$route.params.id, 10),
                 ownUserId:              this.$store.getters.ownUserId,
                 confirmDelete:          false,
-                isBusy:                 false,
+                isBusy:                 true,
                 addParticipationDialog: false,
                 userToAdd:              null,
             };
         },
 
         async created() {
-            // noinspection ES6MissingAwait
-            this.$store.dispatch('fetchSettings');
-
             try {
-                this.isBusy = true;
-
-                await this.$store.dispatch('fetchEvent', {eventId: this.eventId});
+                await Promise.all([
+                    await this.$store.dispatch('fetchSettings'),
+                    await this.$store.dispatch('fetchEvent', {eventId: this.eventId}),
+                ]);
                 let event = this.$store.getters.event(this.eventId);
                 if (event.type === 'transfer') {
                     // Oops, you're in the wrong view, redirect.

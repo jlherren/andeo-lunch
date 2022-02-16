@@ -95,7 +95,7 @@
                     v => !!v || 'A name is required',
                 ],
 
-                isBusy: false,
+                isBusy: true,
 
                 helpers: {},
             };
@@ -115,10 +115,10 @@
                 this.comment = query?.comment ?? '';
                 this.useParticipationFlatRate = defaultFlatRate !== null;
                 this.participationFlatRate = defaultFlatRate;
+                this.isBusy = false;
                 return;
             }
 
-            this.isBusy = true;
             await this.$store.dispatch('fetchEvent', {eventId: this.eventId});
             let event = this.$store.getters.event(this.eventId);
             if (event.type === 'transfer') {
@@ -155,6 +155,10 @@
                 switch (this.type) {
                     case 'special':
                         return 'special event';
+
+                    case null:
+                        // This happens during loading
+                        return '';
 
                     default:
                         // The rest of internal type names happen to coincide with english words

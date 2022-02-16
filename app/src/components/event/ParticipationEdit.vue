@@ -75,21 +75,24 @@
                 moneyCredited:  this.participation?.credits?.money ?? 0,
                 moneyFactor:    (this.participation?.factors?.money ?? 1) * 100,
                 type:           this.participation?.type ?? defaultType,
-                isBusy:         false,
+                isBusy:         true,
                 userRules:      [
                     user => !!user,
                 ],
             };
         },
 
-        created() {
+        async created() {
             if (this.participation) {
-                this.$store.dispatch('fetchUser', {userId: this.participation.userId});
+                await this.$store.dispatch('fetchUser', {userId: this.participation.userId});
             } else {
-                this.$store.dispatch('fetchUsers');
-                // Existing participations need to be refreshed for eligibleUsers to be correct
-                this.$store.dispatch('fetchParticipations', {eventId: this.event.id});
+                await Promise.all([
+                    this.$store.dispatch('fetchUsers'),
+                    // Existing participations need to be refreshed for eligibleUsers to be correct
+                    this.$store.dispatch('fetchParticipations', {eventId: this.event.id}),
+                ]);
             }
+            this.isBusy = false;
         },
 
         computed: {
