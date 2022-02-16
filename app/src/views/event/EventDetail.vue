@@ -20,6 +20,11 @@
                     <balance :value="event.costs.points" points large no-sign/>
                     <balance :value="event.costs.money" money large no-sign/>
                 </div>
+
+                <div v-if="event.participationFlatRate !== null" class="text--secondary">
+                    Participation flat-rate: {{ event.participationFlatRate }}
+                    <v-icon small>{{ $icons.points }}</v-icon>
+                </div>
             </v-container>
 
             <v-container v-if="commentHtml !== ''" class="comment" v-html="commentHtml"/>

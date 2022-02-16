@@ -72,7 +72,7 @@
                     case 'vegetarian':
                         return 'primary';
                     default:
-                        return 'grey';
+                        return 'gray';
                 }
             },
 
@@ -119,7 +119,7 @@
     .optOut {
         .v-list-item__content, .v-chip {
             // TODO: use text--secondary mixin?
-            color: grey;
+            color: gray;
         }
     }
 
