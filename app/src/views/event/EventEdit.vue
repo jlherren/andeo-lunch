@@ -65,8 +65,6 @@
     import Vue from 'vue';
     import {mapGetters} from 'vuex';
 
-    const DEFAULT_PARTICIPATION_FLAT_RATE = 0.75;
-
     export default {
         name: 'EventEdit',
 
@@ -90,7 +88,7 @@
                 vegetarianFactor:         50,
                 comment:                  '',
                 useParticipationFlatRate: true,
-                participationFlatRate:    DEFAULT_PARTICIPATION_FLAT_RATE,
+                participationFlatRate:    null,
                 triggerDefaultOptIn:      true,
 
                 nameRules: [
@@ -107,12 +105,16 @@
             if (!this.eventId) {
                 // noinspection ES6MissingAwait
                 this.$store.dispatch('fetchUsers');
+                await this.$store.dispatch('fetchDefaultFlatRate');
+                let defaultFlatRate = this.$store.getters.defaultFlatRate;
 
                 let query = this.$route.query;
                 this.type = query?.type ?? 'lunch';
                 this.name = query?.name ?? '';
                 this.date = query?.date ?? null;
                 this.comment = query?.comment ?? '';
+                this.useParticipationFlatRate = defaultFlatRate !== null;
+                this.participationFlatRate = defaultFlatRate;
                 return;
             }
 
@@ -131,7 +133,11 @@
             this.vegetarianFactor = parseFloat((event.factors?.vegetarian.money * 100).toPrecision(4));
             this.comment = event.comment ?? '';
             this.useParticipationFlatRate = event.participationFlatRate !== null;
-            this.participationFlatRate = event.participationFlatRate ?? DEFAULT_PARTICIPATION_FLAT_RATE;
+            this.participationFlatRate = event.participationFlatRate;
+            if (this.participationFlatRate === null) {
+                await this.$store.dispatch('fetchDefaultFlatRate');
+                this.participationFlatRate = this.$store.getters.defaultFlatRate;
+            }
             this.isBusy = false;
         },
 

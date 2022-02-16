@@ -12,6 +12,7 @@ export default new Vuex.Store({
 
         version:               PackageJson.version,
         payUpDefaultRecipient: null,
+        defaultFlatRate:       null,
 
         account: {
             initialCheckCompleted: false,
@@ -97,6 +98,7 @@ export default new Vuex.Store({
         audits:                state => state.audits,
         settings:              state => state.settings,
         payUpDefaultRecipient: state => state.payUpDefaultRecipient,
+        defaultFlatRate:       state => state.defaultFlatRate,
     },
 
     mutations: {
@@ -399,6 +401,13 @@ export default new Vuex.Store({
             return Cache.ifNotFresh('payUp.defaultRecipient', 0, 60000, async () => {
                 let response = await Backend.get('/pay-up/default-recipient');
                 context.state.payUpDefaultRecipient = response.data.defaultRecipient;
+            });
+        },
+
+        fetchDefaultFlatRate(context) {
+            return Cache.ifNotFresh('lunch.defaultFlatRate', 0, 60000, async () => {
+                let response = await Backend.get('/options/default-flat-rate');
+                context.state.defaultFlatRate = response.data.defaultFlatRate;
             });
         },
 
