@@ -3,6 +3,7 @@
 const Utils = require('./utils');
 
 exports.SYSTEM_USER_USERNAME = 'system';
+exports.ANDEO_USER_USERNAME = 'andeo';
 exports.EPSILON = 1e-6;
 
 exports.CURRENCIES = Object.freeze({

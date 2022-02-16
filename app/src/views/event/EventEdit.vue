@@ -23,9 +23,18 @@
                 <v-textarea v-model="comment" label="Comments" placeholder="Ingredients, instructions, etc."
                             v-if="type !== 'label'"/>
 
+                <v-row v-if="type === 'lunch'">
+                    <v-col cols="6">
+                        <v-checkbox v-model="useParticipationFlatRate" label="Participation flat-rate"/>
+                    </v-col>
+                    <v-col cols="6">
+                        <v-text-field type="number" v-model="participationFlatRate" label="Participation costs"
+                                      :append-icon="$icons.points" :disabled="!useParticipationFlatRate"/>
+                    </v-col>
+                </v-row>
+
                 <div v-if="type === 'lunch' && !eventId">
-                    <v-checkbox label="Trigger default opt-ins" v-model="triggerDefaultOptIn" dense
-                                :disabled="dateIsInThePast"
+                    <v-checkbox label="Trigger default opt-ins" v-model="triggerDefaultOptIn" :disabled="dateIsInThePast"
                                 :hint="triggerDefaultOptIn ? null : 'No default opt-ins will be applied.  Be sure to inform participants accordingly.'" persistent-hint/>
                 </div>
 
@@ -56,6 +65,8 @@
     import Vue from 'vue';
     import {mapGetters} from 'vuex';
 
+    const DEFAULT_PARTICIPATION_FLAT_RATE = 0.75;
+
     export default {
         name: 'EventEdit',
 
@@ -72,13 +83,15 @@
 
             return {
                 eventId,
-                type:                null,
-                name:                '',
-                date:                null,
-                points:              0,
-                vegetarianFactor:    50,
-                comment:             '',
-                triggerDefaultOptIn: true,
+                type:                     null,
+                name:                     '',
+                date:                     null,
+                points:                   0,
+                vegetarianFactor:         50,
+                comment:                  '',
+                useParticipationFlatRate: true,
+                participationFlatRate:    DEFAULT_PARTICIPATION_FLAT_RATE,
+                triggerDefaultOptIn:      true,
 
                 nameRules: [
                     v => !!v || 'A name is required',
@@ -117,6 +130,8 @@
             this.points = event.costs?.points;
             this.vegetarianFactor = parseFloat((event.factors?.vegetarian.money * 100).toPrecision(4));
             this.comment = event.comment ?? '';
+            this.useParticipationFlatRate = event.participationFlatRate !== null;
+            this.participationFlatRate = event.participationFlatRate ?? DEFAULT_PARTICIPATION_FLAT_RATE;
             this.isBusy = false;
         },
 
@@ -197,6 +212,7 @@
                                 money: this.vegetarianFactor / 100,
                             },
                         };
+                        data.participationFlatRate = this.useParticipationFlatRate ? this.participationFlatRate : null;
                     }
 
                     let eventId = await this.$store.dispatch('saveEvent', data);

@@ -26,7 +26,11 @@ it('Creates a sane empty DB', async () => {
     expect(systemUser).toBeInstanceOf(Models.User);
     expect(systemUser).toMatchObject({hidden: true, active: false, points: 0, money: 0, password: null});
 
-    expect(await Models.User.count()).toBe(1);
+    let andeoUser = await Models.User.findOne({where: {username: Constants.ANDEO_USER_USERNAME}});
+    expect(andeoUser).toBeInstanceOf(Models.User);
+    expect(andeoUser).toMatchObject({hidden: false, active: false, points: 0, money: 0, password: null});
+
+    expect(await Models.User.count()).toBe(2);
     expect(await Models.Event.count()).toBe(0);
     expect(await Models.Lunch.count()).toBe(0);
     expect(await Models.Absence.count()).toBe(0);

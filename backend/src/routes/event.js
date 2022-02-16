@@ -25,26 +25,28 @@ const discountFactorsSchema = Joi.object({
 const nonNegativeSchema = Joi.number().min(0);
 
 const eventCreateSchema = Joi.object({
-    name:                eventNameSchema.required(),
-    date:                Joi.date().required(),
-    type:                eventTypeSchema.required(),
-    costs:               Joi.object({
+    name:                  eventNameSchema.required(),
+    date:                  Joi.date().required(),
+    type:                  eventTypeSchema.required(),
+    costs:                 Joi.object({
         points: nonNegativeSchema,
     }),
-    factors:             discountFactorsSchema,
-    comment:             Joi.string().allow(''),
-    triggerDefaultOptIn: Joi.boolean().default(true),
+    factors:               discountFactorsSchema,
+    participationFlatRate: Joi.number().allow(null),
+    comment:               Joi.string().allow(''),
+    triggerDefaultOptIn:   Joi.boolean().default(true),
 });
 
 const eventUpdateSchema = Joi.object({
-    type:    Joi.forbidden(),
-    name:    eventNameSchema,
-    date:    Joi.forbidden(),
-    costs:   Joi.object({
+    type:                  Joi.forbidden(),
+    name:                  eventNameSchema,
+    date:                  Joi.forbidden(),
+    costs:                 Joi.object({
         points: nonNegativeSchema,
     }),
-    factors: discountFactorsSchema,
-    comment: Joi.string().allow(''),
+    factors:               discountFactorsSchema,
+    participationFlatRate: Joi.number().allow(null),
+    comment:               Joi.string().allow(''),
 });
 
 const participationSchema = Joi.object({
@@ -113,9 +115,15 @@ function validateEvent(ctx, type, apiEvent) {
         if (apiEvent?.factors?.vegetarian?.money !== undefined) {
             ctx.throw(400, 'Label events cannot have a vegetarian money factor');
         }
+        if (apiEvent?.participationFlatRate !== undefined) {
+            ctx.throw(400, 'Label events cannot have a participation flat-rate');
+        }
     } else if (type === Constants.EVENT_TYPES.SPECIAL) {
         if (apiEvent?.factors?.vegetarian?.money !== undefined) {
             ctx.throw(400, 'Special events cannot have a vegetarian money factor');
+        }
+        if (apiEvent?.participationFlatRate !== undefined) {
+            ctx.throw(400, 'Special events cannot have a participation flat-rate');
         }
     }
 }
@@ -211,6 +219,7 @@ async function createEvent(ctx) {
                 event:                 event.id,
                 pointsCost:            apiEvent?.costs?.points,
                 vegetarianMoneyFactor: type === Constants.EVENT_TYPES.LUNCH ? apiEvent?.factors?.vegetarian?.money : 1,
+                participationFlatRate: type === Constants.EVENT_TYPES.LUNCH ? apiEvent?.participationFlatRate : null,
                 comment,
             }, {transaction});
         }
@@ -345,6 +354,7 @@ async function updateEvent(ctx) {
                 {
                     pointsCost:            apiEvent?.costs?.points,
                     vegetarianMoneyFactor: apiEvent?.factors?.vegetarian?.money,
+                    participationFlatRate: apiEvent?.participationFlatRate,
                     comment,
                 },
                 {transaction},

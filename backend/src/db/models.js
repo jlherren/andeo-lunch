@@ -77,21 +77,22 @@ class Event extends Model {
      */
     toApi(systemUserId) {
         return {
-            id:        this.id,
-            type:      Constants.EVENT_TYPE_NAMES[this.type],
-            date:      this.date,
-            name:      this.name,
-            costs:     this.Lunch && {
+            id:                    this.id,
+            type:                  Constants.EVENT_TYPE_NAMES[this.type],
+            date:                  this.date,
+            name:                  this.name,
+            costs:                 this.Lunch && {
                 points: this.Lunch.pointsCost,
                 money:  this.Lunch.moneyCost,
             },
-            factors:   this.Lunch && {
+            factors:               this.Lunch && {
                 [Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.VEGETARIAN]]: {
                     [Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY]]: this.Lunch.vegetarianMoneyFactor,
                 },
             },
-            transfers: this.Transfers?.map(transfer => transfer.toApi(systemUserId)),
-            comment:   this.Lunch?.comment,
+            participationFlatRate: this.Lunch?.participationFlatRate,
+            transfers:             this.Transfers?.map(transfer => transfer.toApi(systemUserId)),
+            comment:               this.Lunch?.comment,
         };
     }
 
@@ -116,6 +117,7 @@ class Event extends Model {
  * @property {number} pointsCost
  * @property {number} moneyCost
  * @property {number|null} vegetarianMoneyFactor
+ * @property {number|null} participationFlatRate
  * @property {string|null} comment
  * @property {number} event
  * @property {Event} [Event]
@@ -390,14 +392,15 @@ exports.initModels = function initModels(sequelize) {
 
     User.init({
         username:           {type: ch.ascii(64), allowNull: false, unique: 'user_username_idx'},
-        password:           {type: ch.ascii(255), allowNull: true},
+        password:           {type: ch.ascii(255), allowNull: true, defaultValue: null},
+        // Investigate why defaultValue: null fails here
         lastPasswordChange: {type: DataTypes.DATE, allowNull: true},
         name:               {type: DataTypes.STRING(64), allowNull: false},
         active:             {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
         hidden:             {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
         points:             {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
         money:              {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
-        settings:           {type: DataTypes.JSON, allowNull: true},
+        settings:           {type: DataTypes.JSON, allowNull: true, defaultValue: null},
         // Note: Couldn't manage to set default on 'settings'
     }, {
         sequelize,
@@ -434,7 +437,8 @@ exports.initModels = function initModels(sequelize) {
         // of participations is what will actually be used for calculations.
         moneyCost:             {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
         vegetarianMoneyFactor: {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 1},
-        comment:               {type: DataTypes.TEXT, allowNull: true},
+        participationFlatRate: {type: DataTypes.DOUBLE, allowNull: true, defaultValue: null},
+        comment:               {type: DataTypes.TEXT, allowNull: true, defaultValue: null},
     }, {
         sequelize,
         modelName: 'lunch',
@@ -529,8 +533,8 @@ exports.initModels = function initModels(sequelize) {
 
     Absence.init({
         user:  {type: DataTypes.INTEGER, allowNull: false},
-        start: {type: DataTypes.DATEONLY, allowNull: true},
-        end:   {type: DataTypes.DATEONLY, allowNull: true},
+        start: {type: DataTypes.DATEONLY, allowNull: true, defaultValue: null},
+        end:   {type: DataTypes.DATEONLY, allowNull: true, defaultValue: null},
     }, {
         sequelize,
         modelName: 'absence',
@@ -545,9 +549,9 @@ exports.initModels = function initModels(sequelize) {
         date:         {type: DataTypes.DATE, allowNull: false},
         type:         {type: ch.ascii(32), allowNull: false},
         actingUser:   {type: DataTypes.INTEGER, allowNull: false},
-        event:        {type: DataTypes.INTEGER, allowNull: true},
-        affectedUser: {type: DataTypes.INTEGER, allowNull: true},
-        values:       {type: DataTypes.JSON, allowNull: true},
+        event:        {type: DataTypes.INTEGER, allowNull: true, defaultValue: null},
+        affectedUser: {type: DataTypes.INTEGER, allowNull: true, defaultValue: null},
+        values:       {type: DataTypes.JSON, allowNull: true, defaultValue: null},
     }, {
         sequelize,
         modelName: 'audit',

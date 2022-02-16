@@ -99,6 +99,13 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
     }
 
     let systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}, transaction: dbTransaction});
+    if (systemUser === null) {
+        throw new Error('System user not found');
+    }
+    let andeoUser = await Models.User.findOne({where: {username: Constants.ANDEO_USER_USERNAME}, transaction: dbTransaction});
+    if (andeoUser === null) {
+        throw new Error('Andeo user not found');
+    }
 
     // get all existing transactions for that event
     /** @type {Object<string, Array<Transaction>>} */
@@ -175,11 +182,11 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
     }
 
     /**
-     * Insert transactions for a lunch
+     * Insert transactions for a lunch of special event
      *
      * @returns {Promise<void>}
      */
-    async function handleLunchOrEvent() {
+    async function handleLunchOrSpecial() {
         if (!event.Lunch) {
             let opts = {
                 where:       {event: event.id},
@@ -227,19 +234,28 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
         let enableMoneyCalculation = totalMoneyCredited > Constants.EPSILON &&
             totalMoneyWeight > Constants.EPSILON;
 
+        let totalPointSum = 0.0;
+
         for (let participation of participations) {
             let {pointsWeight, moneyWeight} = getWeightsForParticipation(event, participation);
 
             // credit points for organizing the event
-            let points = participation.pointsCredited * pointsCostPerPointsCredited;
-            if (Math.abs(points) > Constants.EPSILON) {
-                addSystemTransaction(participation.user, points, Constants.CURRENCIES.POINTS);
+            let pointsCredited = participation.pointsCredited * pointsCostPerPointsCredited;
+            if (Math.abs(pointsCredited) > Constants.EPSILON) {
+                addSystemTransaction(participation.user, pointsCredited, Constants.CURRENCIES.POINTS);
+                totalPointSum += pointsCredited;
             }
 
             // debit points for participating in the event
-            points = -pointsCostPerWeightUnit * pointsWeight;
-            if (Math.abs(points) > Constants.EPSILON) {
-                addSystemTransaction(participation.user, points, Constants.CURRENCIES.POINTS);
+            let pointsDebited = null;
+            if (event.Lunch.participationFlatRate === null) {
+                pointsDebited = -pointsCostPerWeightUnit * pointsWeight;
+            } else {
+                pointsDebited = -event.Lunch.participationFlatRate;
+            }
+            if (Math.abs(pointsDebited) > Constants.EPSILON) {
+                addSystemTransaction(participation.user, pointsDebited, Constants.CURRENCIES.POINTS);
+                totalPointSum += pointsDebited;
             }
 
             if (enableMoneyCalculation) {
@@ -254,6 +270,11 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
                     addSystemTransaction(participation.user, money, Constants.CURRENCIES.MONEY);
                 }
             }
+        }
+
+        if (Math.abs(totalPointSum) > Constants.EPSILON) {
+            // Offset the difference with Andeo user
+            addSystemTransaction(andeoUser.id, -totalPointSum, Constants.CURRENCIES.POINTS);
         }
     }
 
@@ -335,7 +356,7 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
     switch (event.type) {
         case Constants.EVENT_TYPES.LUNCH:
         case Constants.EVENT_TYPES.SPECIAL:
-            await handleLunchOrEvent();
+            await handleLunchOrSpecial();
             break;
 
         case Constants.EVENT_TYPES.LABEL:

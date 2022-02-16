@@ -73,16 +73,17 @@ const sampleEvent = {
 };
 
 const eventUpdates = {
-    name:    'Other lunch',
-    comment: 'Ingredient list...',
-    costs:   {
+    name:                  'Other lunch',
+    comment:               'Ingredient list...',
+    costs:                 {
         points: 6,
     },
-    factors: {
+    factors:               {
         vegetarian: {
             money: 0.75,
         },
     },
+    participationFlatRate: 0.2,
 };
 
 const disallowedUpdate = {
@@ -297,6 +298,12 @@ describe('Updating label events', () => {
         expect(response.status).toBe(400);
         expect(response.text).toBe('Label events cannot have a vegetarian money factor');
     });
+
+    it('Cannot update participation flat-rate', async () => {
+        let response = await request.post(eventUrl).send({participationFlatRate: 0.5});
+        expect(response.status).toBe(400);
+        expect(response.text).toBe('Label events cannot have a participation flat-rate');
+    });
 });
 
 describe('Updating special events', () => {
@@ -339,6 +346,12 @@ describe('Updating special events', () => {
         let response = await request.post(eventUrl).send({factors: {vegetarian: {money: 1}}});
         expect(response.status).toBe(400);
         expect(response.text).toBe('Special events cannot have a vegetarian money factor');
+    });
+
+    it('Cannot update participation flat-rate', async () => {
+        let response = await request.post(eventUrl).send({participationFlatRate: 0.5});
+        expect(response.status).toBe(400);
+        expect(response.text).toBe('Special events cannot have a participation flat-rate');
     });
 });
 
