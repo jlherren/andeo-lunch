@@ -10,7 +10,7 @@
 exports.createEvent = async function createEvent(request, data) {
     let response = await request.post('/api/events').send(data);
     // eslint-disable-next-line jest/no-standalone-expect
-    expect(response.status).toEqual(201);
+    expect(response.status).toBe(201);
     return parseInt(response.headers.location.match(/(?<id>\d+)/u).groups.id, 10);
 };
 

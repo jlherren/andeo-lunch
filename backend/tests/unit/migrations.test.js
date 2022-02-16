@@ -48,7 +48,7 @@ describe('Migration test', () => {
             let refTables = await Validator.getReferenceCreateTableStatements();
             let tables = [...new Set(Object.keys(dbTables).concat(Object.keys(refTables)))];
             for (let table of tables) {
-                expect(dbTables[table]).toEqual(refTables[table]);
+                expect(dbTables[table]).toBe(refTables[table]);
             }
         } finally {
             await andeoLunch?.close();
@@ -75,7 +75,7 @@ describe('Migration test', () => {
             let refTables = await Validator.getReferenceCreateTableStatements();
             let tables = [...new Set(Object.keys(dbTables).concat(Object.keys(refTables)))];
             for (let table of tables) {
-                expect(dbTables[table]).toEqual(refTables[table]);
+                expect(dbTables[table]).toBe(refTables[table]);
             }
         } finally {
             await andeoLunch?.close();

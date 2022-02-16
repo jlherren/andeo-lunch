@@ -106,12 +106,12 @@ describe('transaction tests', () => {
         let nPointTransactions = await Models.Transaction.count({where: {event: event.id, currency: Constants.CURRENCIES.POINTS}});
         let nMoneyTransactions = await Models.Transaction.count({where: {event: event.id, currency: Constants.CURRENCIES.MONEY}});
 
-        expect(user1.points).toEqual(6);
-        expect(user2.points).toEqual(-6);
-        expect(user1.money).toEqual(30);
-        expect(user2.money).toEqual(-30);
-        expect(nPointTransactions).toEqual(6);
-        expect(nMoneyTransactions).toEqual(6);
+        expect(user1.points).toBe(6);
+        expect(user2.points).toBe(-6);
+        expect(user1.money).toBe(30);
+        expect(user2.money).toBe(-30);
+        expect(nPointTransactions).toBe(6);
+        expect(nMoneyTransactions).toBe(6);
     });
 
     it('reuse transactions on event modification', async () => {
@@ -120,7 +120,7 @@ describe('transaction tests', () => {
         await rebuildEvent(event);
 
         let transactions = await Models.Transaction.findAll();
-        expect(transactions.length).toEqual(12);
+        expect(transactions.length).toBe(12);
         let originalTransactionIds = new Set(transactions.map(transaction => transaction.id));
 
         // change costs and rebuild
@@ -128,7 +128,7 @@ describe('transaction tests', () => {
         await rebuildEvent(event);
 
         transactions = await Models.Transaction.findAll();
-        expect(transactions.length).toEqual(12);
+        expect(transactions.length).toBe(12);
         let newTransactionIds = new Set(transactions.map(transaction => transaction.id));
 
         expect(newTransactionIds).toEqual(originalTransactionIds);
@@ -153,8 +153,8 @@ describe('transaction tests', () => {
         await user1.reload();
 
         let transactions = await Models.Transaction.findAll();
-        expect(transactions.length).toEqual(12);
-        expect(user1.points).toEqual(6);
+        expect(transactions.length).toBe(12);
+        expect(user1.points).toBe(6);
     });
 
     it('correctly calculates a lunch with vegetarian participant', async () => {
@@ -181,10 +181,10 @@ describe('transaction tests', () => {
         await user1.reload();
         await user2.reload();
 
-        expect(user1.points).toEqual(6);
-        expect(user2.points).toEqual(-6);
-        expect(user1.money).toEqual(20);
-        expect(user2.money).toEqual(-20);
+        expect(user1.points).toBe(6);
+        expect(user2.points).toBe(-6);
+        expect(user1.money).toBe(20);
+        expect(user2.money).toBe(-20);
     });
 
     it('correctly calculates the points for a lunch with two cooks', async () => {
@@ -218,9 +218,9 @@ describe('transaction tests', () => {
         await user2.reload();
         await user3.reload();
 
-        expect(user1.points).toEqual(1);
-        expect(user2.points).toEqual(-4);
-        expect(user3.points).toEqual(3);
+        expect(user1.points).toBe(1);
+        expect(user2.points).toBe(-4);
+        expect(user3.points).toBe(3);
     });
 
     it('correctly calculates the money for a lunch with two buyers', async () => {
@@ -254,9 +254,9 @@ describe('transaction tests', () => {
         await user2.reload();
         await user3.reload();
 
-        expect(user1.money).toEqual(5);
-        expect(user2.money).toEqual(15);
-        expect(user3.money).toEqual(-20);
+        expect(user1.money).toBe(5);
+        expect(user2.money).toBe(15);
+        expect(user3.money).toBe(-20);
     });
 
     it('correctly ignores the money calculation if there is no buyers', async () => {
@@ -265,8 +265,8 @@ describe('transaction tests', () => {
         await rebuildEvent(event);
         await user1.reload();
         await user2.reload();
-        expect(user1.money).toEqual(0);
-        expect(user2.money).toEqual(0);
+        expect(user1.money).toBe(0);
+        expect(user2.money).toBe(0);
     });
 
     it('correctly calculates the points if the credited points do not add up to the lunch cost', async () => {
@@ -300,9 +300,9 @@ describe('transaction tests', () => {
         await user2.reload();
         await user3.reload();
 
-        expect(user1.points).toEqual(-1);
-        expect(user2.points).toEqual(5);
-        expect(user3.points).toEqual(-4);
+        expect(user1.points).toBe(-1);
+        expect(user2.points).toBe(5);
+        expect(user3.points).toBe(-4);
     });
 
     it('Correctly ignores points calculation if there is no cook', async () => {
@@ -311,10 +311,10 @@ describe('transaction tests', () => {
         await rebuildEvent(event);
         await user1.reload();
         await user2.reload();
-        expect(user1.points).toEqual(0);
-        expect(user2.points).toEqual(0);
-        expect(user1.money).toEqual(30);
-        expect(user2.money).toEqual(-30);
+        expect(user1.points).toBe(0);
+        expect(user2.points).toBe(0);
+        expect(user1.money).toBe(30);
+        expect(user2.money).toBe(-30);
     });
 
     it('Correctly ignores money calculation if there is no paying participant', async () => {
@@ -329,6 +329,6 @@ describe('transaction tests', () => {
         });
         await rebuildEvent(event);
         await user.reload();
-        expect(user.money).toEqual(0);
+        expect(user.money).toBe(0);
     });
 });

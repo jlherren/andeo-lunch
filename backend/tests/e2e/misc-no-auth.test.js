@@ -28,7 +28,7 @@ describe('misc route tests', () => {
         let response = await request.options('/api/')
             .set('Access-Control-Request-Method', 'GET')
             .set('Origin', 'http://www.example.com');
-        expect(response.status).toEqual(204);
-        expect(response.header['access-control-allow-origin']).toEqual('*');
+        expect(response.status).toBe(204);
+        expect(response.header['access-control-allow-origin']).toBe('*');
     });
 });

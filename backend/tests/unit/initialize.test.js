@@ -24,12 +24,15 @@ afterEach(async () => {
 it('Creates a sane empty DB', async () => {
     let systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
     expect(systemUser).toBeInstanceOf(Models.User);
-    expect(systemUser.hidden).toEqual(true);
-    expect(systemUser.active).toEqual(false);
-    expect(await Models.User.count()).toEqual(1);
-    expect(await Models.Event.findAll()).toEqual([]);
-    expect(await Models.Participation.findAll()).toEqual([]);
-    expect(await Models.Transaction.findAll()).toEqual([]);
+    expect(systemUser).toMatchObject({hidden: true, active: false, points: 0, money: 0, password: null});
+
+    expect(await Models.User.count()).toBe(1);
+    expect(await Models.Event.count()).toBe(0);
+    expect(await Models.Lunch.count()).toBe(0);
+    expect(await Models.Absence.count()).toBe(0);
+    expect(await Models.Grocery.count()).toBe(0);
+    expect(await Models.Participation.count()).toBe(0);
+    expect(await Models.Transaction.count()).toBe(0);
 });
 
 it('Correctly rebuilds user balances on an empty DB', async () => {
@@ -38,6 +41,6 @@ it('Correctly rebuilds user balances on an empty DB', async () => {
         await TransactionRebuilder.rebuildUserBalances(dbTransaction);
     });
     let systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
-    expect(systemUser.points).toEqual(0);
-    expect(systemUser.money).toEqual(0);
+    expect(systemUser.points).toBe(0);
+    expect(systemUser.money).toBe(0);
 });

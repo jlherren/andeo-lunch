@@ -43,20 +43,20 @@ afterEach(async () => {
 describe('Create groceries', () => {
     it('Create grocery with only label', async () => {
         let response = await request.post('/api/groceries').send({label: 'Food'});
-        expect(response.status).toEqual(201);
+        expect(response.status).toBe(201);
         let {location} = response.headers;
         expect(typeof location).toBe('string');
         expect(location).toMatch(/^\/api\/groceries\/\d+$/u);
         response = await request.get(location);
-        expect(response.status).toEqual(200);
+        expect(response.status).toBe(200);
         expect(response.body.grocery).toMatchObject({label: 'Food', checked: false});
     });
 
     it('Create already checked grocery', async () => {
         let response = await request.post('/api/groceries').send({label: 'Food', checked: true});
-        expect(response.status).toEqual(201);
+        expect(response.status).toBe(201);
         response = await request.get(response.headers.location);
-        expect(response.status).toEqual(200);
+        expect(response.status).toBe(200);
         expect(response.body.grocery).toMatchObject({label: 'Food', checked: true});
     });
 });
@@ -64,34 +64,34 @@ describe('Create groceries', () => {
 describe('Update groceries', () => {
     it('Update label', async () => {
         let response = await request.post('/api/groceries').send({label: 'Food'});
-        expect(response.status).toEqual(201);
+        expect(response.status).toBe(201);
         let url = response.headers.location;
         response = await request.post(url).send({label: 'Bananas'});
-        expect(response.status).toEqual(204);
+        expect(response.status).toBe(204);
         response = await request.get(url);
-        expect(response.status).toEqual(200);
+        expect(response.status).toBe(200);
         expect(response.body.grocery).toMatchObject({label: 'Bananas', checked: false});
     });
 
     it('Set to checked', async () => {
         let response = await request.post('/api/groceries').send({label: 'Food'});
-        expect(response.status).toEqual(201);
+        expect(response.status).toBe(201);
         let url = response.headers.location;
         response = await request.post(url).send({checked: true});
-        expect(response.status).toEqual(204);
+        expect(response.status).toBe(204);
         response = await request.get(url);
-        expect(response.status).toEqual(200);
+        expect(response.status).toBe(200);
         expect(response.body.grocery).toMatchObject({label: 'Food', checked: true});
     });
 
     it('Set to unchecked', async () => {
         let response = await request.post('/api/groceries').send({label: 'Food', checked: true});
-        expect(response.status).toEqual(201);
+        expect(response.status).toBe(201);
         let url = response.headers.location;
         response = await request.post(url).send({checked: false});
-        expect(response.status).toEqual(204);
+        expect(response.status).toBe(204);
         response = await request.get(url);
-        expect(response.status).toEqual(200);
+        expect(response.status).toBe(200);
         expect(response.body.grocery).toMatchObject({label: 'Food', checked: false});
     });
 });
@@ -99,24 +99,24 @@ describe('Update groceries', () => {
 describe('Delete groceries', () => {
     it('Create & delete', async () => {
         let response = await request.post('/api/groceries').send({label: 'Food'});
-        expect(response.status).toEqual(201);
+        expect(response.status).toBe(201);
         let url = response.headers.location;
         response = await request.delete(url);
-        expect(response.status).toEqual(204);
+        expect(response.status).toBe(204);
         response = await request.get(url);
-        expect(response.status).toEqual(404);
+        expect(response.status).toBe(404);
     });
 });
 
 describe('List groceries', () => {
     it('Create single and list', async () => {
         let response = await request.post('/api/groceries').send({label: 'Apples'});
-        expect(response.status).toEqual(201);
+        expect(response.status).toBe(201);
         response = await request.post('/api/groceries').send({label: 'Bananas', checked: true});
-        expect(response.status).toEqual(201);
+        expect(response.status).toBe(201);
 
         response = await request.get('/api/groceries');
-        expect(response.status).toEqual(200);
+        expect(response.status).toBe(200);
         expect(response.body.groceries).toEqual([
             {id: expect.any(Number), label: 'Apples', checked: false},
             {id: expect.any(Number), label: 'Bananas', checked: true},

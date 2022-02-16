@@ -62,14 +62,16 @@ afterEach(async () => {
 
 describe('Manipulate transfer events', () => {
     let eventId = null;
+    let eventUrl = null;
 
     beforeEach(async () => {
         eventId = await Helper.createEvent(request, minimalEvent);
+        eventUrl = `/api/events/${eventId}`;
     });
 
     it('initially has no transfers', async () => {
-        let response = await request.get(`/api/events/${eventId}/transfers`);
-        expect(response.status).toEqual(200);
+        let response = await request.get(`${eventUrl}/transfers`);
+        expect(response.status).toBe(200);
         expect(response.body.transfers).toEqual([]);
     });
 
@@ -80,15 +82,15 @@ describe('Manipulate transfer events', () => {
             amount:      10,
             currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
         }];
-        let response = await request.post(`/api/events/${eventId}/transfers`).send(transfers);
-        expect(response.status).toEqual(204);
+        let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+        expect(response.status).toBe(204);
 
         // Fetch again
-        response = await request.get(`/api/events/${eventId}/transfers`);
-        expect(response.status).toEqual(200);
-        expect(response.body.transfers.length).toEqual(1);
+        response = await request.get(`${eventUrl}/transfers`);
+        expect(response.status).toBe(200);
+        expect(response.body.transfers.length).toBe(1);
         expect(response.body.transfers[0]).toMatchObject({
-            eventId:     eventId,
+            eventId,
             senderId:    user1.id,
             recipientId: user2.id,
             amount:      10,
@@ -103,21 +105,21 @@ describe('Manipulate transfer events', () => {
             amount:      10,
             currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
         }];
-        let response = await request.post(`/api/events/${eventId}/transfers`).send(data);
-        expect(response.status).toEqual(204);
+        let response = await request.post(`${eventUrl}/transfers`).send(data);
+        expect(response.status).toBe(204);
         data = [{
             senderId:    user2.id,
             recipientId: user1.id,
             amount:      10,
             currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
         }];
-        response = await request.post(`/api/events/${eventId}/transfers`).send(data);
-        expect(response.status).toEqual(204);
+        response = await request.post(`${eventUrl}/transfers`).send(data);
+        expect(response.status).toBe(204);
 
         // Fetch again
-        response = await request.get(`/api/events/${eventId}/transfers`);
-        expect(response.status).toEqual(200);
-        expect(response.body.transfers.length).toEqual(2);
+        response = await request.get(`${eventUrl}/transfers`);
+        expect(response.status).toBe(200);
+        expect(response.body.transfers.length).toBe(2);
     });
 
     it('can update a transfer', async () => {
@@ -127,11 +129,11 @@ describe('Manipulate transfer events', () => {
             amount:      10,
             currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
         }];
-        let response = await request.post(`/api/events/${eventId}/transfers`).send(transfers);
-        expect(response.status).toEqual(204);
+        let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+        expect(response.status).toBe(204);
 
-        response = await request.get(`/api/events/${eventId}/transfers`);
-        expect(response.status).toEqual(200);
+        response = await request.get(`${eventUrl}/transfers`);
+        expect(response.status).toBe(200);
 
         let transferId = response.body.transfers[0].id;
         let newTransfer = {
@@ -140,15 +142,15 @@ describe('Manipulate transfer events', () => {
             amount:      11,
             currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
         };
-        response = await request.post(`/api/events/${eventId}/transfers/${transferId}`).send(newTransfer);
-        expect(response.status).toEqual(204);
+        response = await request.post(`${eventUrl}/transfers/${transferId}`).send(newTransfer);
+        expect(response.status).toBe(204);
 
         // Fetch again
-        response = await request.get(`/api/events/${eventId}/transfers`);
-        expect(response.status).toEqual(200);
-        expect(response.body.transfers.length).toEqual(1);
+        response = await request.get(`${eventUrl}/transfers`);
+        expect(response.status).toBe(200);
+        expect(response.body.transfers.length).toBe(1);
         expect(response.body.transfers[0]).toMatchObject({
-            eventId:     eventId,
+            eventId,
             senderId:    user2.id,
             recipientId: user1.id,
             amount:      11,
@@ -163,21 +165,21 @@ describe('Manipulate transfer events', () => {
             amount:      10,
             currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
         }];
-        let response = await request.post(`/api/events/${eventId}/transfers`).send(transfers);
-        expect(response.status).toEqual(204);
+        let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+        expect(response.status).toBe(204);
 
-        response = await request.get(`/api/events/${eventId}/transfers`);
-        expect(response.status).toEqual(200);
-        expect(response.body.transfers.length).toEqual(1);
+        response = await request.get(`${eventUrl}/transfers`);
+        expect(response.status).toBe(200);
+        expect(response.body.transfers.length).toBe(1);
         let transferId = response.body.transfers[0].id;
 
-        response = await request.delete(`/api/events/${eventId}/transfers/${transferId}`);
-        expect(response.status).toEqual(204);
+        response = await request.delete(`${eventUrl}/transfers/${transferId}`);
+        expect(response.status).toBe(204);
 
         // Fetch again
-        response = await request.get(`/api/events/${eventId}/transfers`);
-        expect(response.status).toEqual(200);
-        expect(response.body.transfers.length).toEqual(0);
+        response = await request.get(`${eventUrl}/transfers`);
+        expect(response.status).toBe(200);
+        expect(response.body.transfers.length).toBe(0);
     });
 
     it('refuses to transfer to itself on creation', async () => {
@@ -187,14 +189,14 @@ describe('Manipulate transfer events', () => {
             amount:      10,
             currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
         }];
-        let response = await request.post(`/api/events/${eventId}/transfers`).send(transfers);
-        expect(response.status).toEqual(400);
-        expect(response.text).toEqual('Cannot transfer back to sender');
+        let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+        expect(response.status).toBe(400);
+        expect(response.text).toBe('Cannot transfer back to sender');
 
         // Fetch again
-        response = await request.get(`/api/events/${eventId}/transfers`);
-        expect(response.status).toEqual(200);
-        expect(response.body.transfers.length).toEqual(0);
+        response = await request.get(`${eventUrl}/transfers`);
+        expect(response.status).toBe(200);
+        expect(response.body.transfers.length).toBe(0);
     });
 
     it('refuses to transfer to itself on update', async () => {
@@ -204,12 +206,12 @@ describe('Manipulate transfer events', () => {
             amount:      10,
             currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
         }];
-        let response = await request.post(`/api/events/${eventId}/transfers`).send(transfers);
-        expect(response.status).toEqual(204);
+        let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+        expect(response.status).toBe(204);
 
         // Fetch again
-        response = await request.get(`/api/events/${eventId}/transfers`);
-        expect(response.status).toEqual(200);
+        response = await request.get(`${eventUrl}/transfers`);
+        expect(response.status).toBe(200);
 
         let transferId = response.body.transfers[0].id;
         let newTransfer = {
@@ -218,17 +220,18 @@ describe('Manipulate transfer events', () => {
             amount:      10,
             currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
         };
-        response = await request.post(`/api/events/${eventId}/transfers/${transferId}`).send(newTransfer);
-        expect(response.status).toEqual(400);
-        expect(response.text).toEqual('Cannot transfer back to sender');
+        response = await request.post(`${eventUrl}/transfers/${transferId}`).send(newTransfer);
+        expect(response.status).toBe(400);
+        expect(response.text).toBe('Cannot transfer back to sender');
     });
 });
 
 describe('Balance calculation', () => {
-    let eventId = null;
+    let eventUrl = null;
 
     beforeEach(async () => {
-        eventId = await Helper.createEvent(request, minimalEvent);
+        let eventId = await Helper.createEvent(request, minimalEvent);
+        eventUrl = `/api/events/${eventId}`;
     });
 
     it('correctly calculates money transfers', async () => {
@@ -238,8 +241,8 @@ describe('Balance calculation', () => {
             amount:      10,
             currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
         }];
-        let response = await request.post(`/api/events/${eventId}/transfers`).send(transfers);
-        expect(response.status).toEqual(204);
+        let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+        expect(response.status).toBe(204);
 
         response = await request.get(`/api/users/${user1.id}`);
         expect(response.body.user.balances).toMatchObject({points: 0, money: -10});
@@ -255,8 +258,8 @@ describe('Balance calculation', () => {
             amount:      10,
             currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
         }];
-        let response = await request.post(`/api/events/${eventId}/transfers`).send(transfers);
-        expect(response.status).toEqual(204);
+        let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+        expect(response.status).toBe(204);
 
         response = await request.get(`/api/users/${user1.id}`);
         expect(response.body.user.balances).toMatchObject({points: -10, money: 0});
@@ -277,8 +280,8 @@ describe('Balance calculation', () => {
             amount:      15,
             currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
         }];
-        let response = await request.post(`/api/events/${eventId}/transfers`).send(transfers);
-        expect(response.status).toEqual(204);
+        let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+        expect(response.status).toBe(204);
 
         response = await request.get(`/api/users/${user1.id}`);
         expect(response.body.user.balances).toMatchObject({points: -10, money: 15});
@@ -294,11 +297,11 @@ describe('Balance calculation', () => {
             amount:      10,
             currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
         }];
-        let response = await request.post(`/api/events/${eventId}/transfers`).send(transfers);
-        expect(response.status).toEqual(204);
+        let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+        expect(response.status).toBe(204);
 
-        response = await request.get(`/api/events/${eventId}/transfers`);
-        expect(response.status).toEqual(200);
+        response = await request.get(`${eventUrl}/transfers`);
+        expect(response.status).toBe(200);
 
         let transferId = response.body.transfers[0].id;
         let newTransfer = {
@@ -307,8 +310,8 @@ describe('Balance calculation', () => {
             amount:      15,
             currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
         };
-        response = await request.post(`/api/events/${eventId}/transfers/${transferId}`).send(newTransfer);
-        expect(response.status).toEqual(204);
+        response = await request.post(`${eventUrl}/transfers/${transferId}`).send(newTransfer);
+        expect(response.status).toBe(204);
 
         response = await request.get(`/api/users/${user1.id}`);
         expect(response.body.user.balances).toMatchObject({points: -15, money: 0});
@@ -324,15 +327,15 @@ describe('Balance calculation', () => {
             amount:      10,
             currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
         }];
-        let response = await request.post(`/api/events/${eventId}/transfers`).send(transfers);
-        expect(response.status).toEqual(204);
+        let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+        expect(response.status).toBe(204);
 
-        response = await request.get(`/api/events/${eventId}/transfers`);
-        expect(response.status).toEqual(200);
+        response = await request.get(`${eventUrl}/transfers`);
+        expect(response.status).toBe(200);
 
         let transferId = response.body.transfers[0].id;
-        response = await request.delete(`/api/events/${eventId}/transfers/${transferId}`);
-        expect(response.status).toEqual(204);
+        response = await request.delete(`${eventUrl}/transfers/${transferId}`);
+        expect(response.status).toBe(204);
 
         response = await request.get(`/api/users/${user1.id}`);
         expect(response.body.user.balances).toMatchObject({points: 0, money: 0});
@@ -348,11 +351,11 @@ describe('Balance calculation', () => {
             amount:      10,
             currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
         }];
-        let response = await request.post(`/api/events/${eventId}/transfers`).send(transfers);
-        expect(response.status).toEqual(204);
+        let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+        expect(response.status).toBe(204);
 
-        response = await request.delete(`/api/events/${eventId}`);
-        expect(response.status).toEqual(204);
+        response = await request.delete(eventUrl);
+        expect(response.status).toBe(204);
 
         response = await request.get(`/api/users/${user1.id}`);
         expect(response.body.user.balances).toMatchObject({points: 0, money: 0});
@@ -363,19 +366,20 @@ describe('Balance calculation', () => {
 });
 
 describe('Label events', () => {
-    let eventId = null;
+    let eventUrl = null;
 
     beforeEach(async () => {
-        eventId = await Helper.createEvent(request, {
+        let eventId = await Helper.createEvent(request, {
             name: 'Test label',
             date: '2020-01-01',
             type: Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.LABEL],
         });
+        eventUrl = `/api/events/${eventId}`;
     });
 
     it('has no transfers', async () => {
-        let response = await request.get(`/api/events/${eventId}/transfers`);
-        expect(response.status).toEqual(200);
+        let response = await request.get(`${eventUrl}/transfers`);
+        expect(response.status).toBe(200);
         expect(response.body.transfers).toEqual([]);
     });
 
@@ -386,21 +390,22 @@ describe('Label events', () => {
             amount:      10,
             currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
         }];
-        let response = await request.post(`/api/events/${eventId}/transfers`).send(data);
-        expect(response.status).toEqual(400);
-        expect(response.text).toEqual('Label events cannot have transfers');
+        let response = await request.post(`${eventUrl}/transfers`).send(data);
+        expect(response.status).toBe(400);
+        expect(response.text).toBe('Label events cannot have transfers');
     });
 });
 
 describe('Pot transfers', () => {
-    let eventId = null;
+    let eventUrl = null;
 
     beforeEach(async () => {
-        eventId = await Helper.createEvent(request, {
+        let eventId = await Helper.createEvent(request, {
             name: 'Test transfer',
             date: '2020-01-01',
             type: Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.TRANSFER],
         });
+        eventUrl = `/api/events/${eventId}`;
     });
 
     it('Simple pot transfer with two users', async () => {
@@ -415,8 +420,8 @@ describe('Pot transfers', () => {
             amount:      5,
             currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
         }];
-        let response = await request.post(`/api/events/${eventId}/transfers`).send(transfers);
-        expect(response.status).toEqual(204);
+        let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+        expect(response.status).toBe(204);
 
         response = await request.get(`/api/users/${user1.id}`);
         expect(response.body.user.balances).toMatchObject({points: -10, money: 0});
@@ -443,8 +448,8 @@ describe('Pot transfers', () => {
             amount:      2,
             currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
         }];
-        let response = await request.post(`/api/events/${eventId}/transfers`).send(transfers);
-        expect(response.status).toEqual(204);
+        let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+        expect(response.status).toBe(204);
 
         response = await request.get(`/api/users/${user1.id}`);
         expect(response.body.user.balances).toMatchObject({points: -3, money: 0});
@@ -473,8 +478,8 @@ describe('Pot transfers', () => {
             amount:      2,
             currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
         }];
-        let response = await request.post(`/api/events/${eventId}/transfers`).send(transfers);
-        expect(response.status).toEqual(204);
+        let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+        expect(response.status).toBe(204);
 
         response = await request.get(`/api/users/${user1.id}`);
         expect(response.body.user.balances).toMatchObject({points: -30, money: 0});
@@ -559,8 +564,8 @@ describe('Pot transfers', () => {
             amount:      16,
             currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
         }];
-        let response = await request.post(`/api/events/${eventId}/transfers`).send(transfers);
-        expect(response.status).toEqual(204);
+        let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+        expect(response.status).toBe(204);
 
         response = await request.get(`/api/users/${user1.id}`);
         expect(response.body.user.balances).toMatchObject({points: 5, money: -13});
@@ -589,8 +594,8 @@ describe('Pot transfers', () => {
             amount:      1,
             currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
         }];
-        let response = await request.post(`/api/events/${eventId}/transfers`).send(transfers);
-        expect(response.status).toEqual(204);
+        let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+        expect(response.status).toBe(204);
 
         response = await request.get(`/api/users/${user1.id}`);
         expect(response.body.user.balances).toMatchObject({points: -12, money: 0});
@@ -617,8 +622,8 @@ describe('Pot transfers', () => {
             amount:      1,
             currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
         }];
-        let response = await request.post(`/api/events/${eventId}/transfers`).send(transfers);
-        expect(response.status).toEqual(204);
+        let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+        expect(response.status).toBe(204);
 
         response = await request.get(`/api/users/${user1.id}`);
         expect(response.body.user.balances).toMatchObject({points: -7, money: 0});

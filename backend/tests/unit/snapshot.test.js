@@ -10,7 +10,7 @@ describe('Snapshot diffs', () => {
 
     it('{} with {}', () => {
         let diff = Utils.snapshotDiff({}, {});
-        expect(diff).toEqual(undefined);
+        expect(diff).toBe(undefined);
     });
 
     it('Empty on the left', () => {
@@ -26,7 +26,7 @@ describe('Snapshot diffs', () => {
     it('Nested identical', () => {
         let value = {a: 1, b: {c: 2}};
         let diff = Utils.snapshotDiff(value, value);
-        expect(diff).toEqual(undefined);
+        expect(diff).toBe(undefined);
     });
 
     it('Nested diff', () => {
@@ -36,7 +36,7 @@ describe('Snapshot diffs', () => {
 
     it('Same dates', () => {
         let diff = Utils.snapshotDiff(new Date('2021-01-01T01:02:03Z'), new Date('2021-01-01T01:02:03Z'));
-        expect(diff).toEqual(undefined);
+        expect(diff).toBe(undefined);
     });
 
     it('Different dates', () => {
