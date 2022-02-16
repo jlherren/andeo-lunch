@@ -3696,7 +3696,7 @@ __metadata:
     "@vue/eslint-config-standard": ~6.1.0
     axios: ~0.26.0
     babel-eslint: ~10.1.0
-    core-js: ~3.21.0
+    core-js: ~3.21.1
     eslint: ~7.32.0
     eslint-plugin-import: ~2.25.4
     eslint-plugin-jsdoc: ~37.9.1
@@ -3758,7 +3758,7 @@ __metadata:
   resolution: "andeo-lunch-cypress@workspace:cypress"
   dependencies:
     axios: ~0.26.0
-    cypress: ~9.4.1
+    cypress: ~9.5.0
     eslint: ~7.32.0
     eslint-plugin-cypress: ~2.12.1
     eslint-plugin-import: ~2.25.4
@@ -6214,10 +6214,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"core-js@npm:^3.6.5, core-js@npm:~3.21.0":
-  version: 3.21.0
-  resolution: "core-js@npm:3.21.0"
-  checksum: 87df49aa2c5d0a521c52102b6669842dd30b334742e86dd4e0173c51230bc48d610060ab6de0f149766d188325b8c1b84598f901cf455674fe6c03ccc5c8026f
+"core-js@npm:^3.6.5, core-js@npm:~3.21.1":
+  version: 3.21.1
+  resolution: "core-js@npm:3.21.1"
+  checksum: d68eddd831340ad5b24ac29c72fda022a43b17f194c4278b6b875a843283d316502cb4abd07f28631d6ebc4387f66aa06e2b1b3c8fd7e08096a751b5c63f6889
   languageName: node
   linkType: hard
 
@@ -6606,9 +6606,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cypress@npm:~9.4.1":
-  version: 9.4.1
-  resolution: "cypress@npm:9.4.1"
+"cypress@npm:~9.5.0":
+  version: 9.5.0
+  resolution: "cypress@npm:9.5.0"
   dependencies:
     "@cypress/request": ^2.88.10
     "@cypress/xvfb": ^1.2.4
@@ -6654,7 +6654,7 @@ __metadata:
     yauzl: ^2.10.0
   bin:
     cypress: bin/cypress
-  checksum: d068704a1a13b6ab22db2cb6867683d0c2d383c41f4d8ded7529999ed1f2bc929f91edc0a69df56a272230c984458ee8198e007af611860dca6a4a1c918319e8
+  checksum: 0a4ef1413676e37c19526e86dba7bc82420b9afa840b2a68b94e749b878e6b394f4e64bb099bca12c44f4520e7a1cb07ab17d6c9ccf87746bc1bfc3c9555f334
   languageName: node
   linkType: hard
 
