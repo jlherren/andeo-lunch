@@ -97,19 +97,24 @@ class Event extends Model {
     }
 
     toSnapshot() {
+        // null comments don't need to appear in the log at all
+        let comment = this.Lunch?.comment;
+        if (comment === null) {
+            comment = undefined;
+        }
         return {
-            date:    this.date,
-            name:    this.name,
-            costs:   this.Lunch && {
+            date:                  this.date,
+            name:                  this.name,
+            costs:                 this.Lunch && {
                 points: this.Lunch.pointsCost,
             },
-            factors: this.Lunch && {
+            factors:               this.Lunch && {
                 [Constants.PARTICIPATION_TYPES.VEGETARIAN]: {
                     [Constants.CURRENCIES.MONEY]: this.Lunch.vegetarianMoneyFactor,
                 },
             },
             participationFlatRate: this.Lunch?.participationFlatRate,
-            comment: this.Lunch?.comment,
+            comment:               comment,
         };
     }
 }
