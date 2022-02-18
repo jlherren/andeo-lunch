@@ -53,6 +53,9 @@
         'transfer.delete':      'Transfer deleted',
         'absence.create':       'Absence created',
         'absence.delete':       'Absence deleted',
+        'grocery.create':       'Grocery created',
+        'grocery.update':       'Grocery updated',
+        'grocery.delete':       'Grocery deleted',
     };
 
     const NAMES = {
@@ -71,6 +74,8 @@
         'event.participationFlatRate':  'Flat-rate',
         'absence.start':                'Start',
         'absence.end':                  'End',
+        'grocery.label':                'Label',
+        'grocery.checked':              'Checked',
     };
 
     const PARTICIPATION_TYPES = {
@@ -138,6 +143,12 @@
                     details.push({
                         name:  'Event',
                         value: this.abbreviate(audit.eventName),
+                    });
+                }
+                if (audit.type !== 'grocery.delete' && audit.groceryLabel !== null) {
+                    details.push({
+                        name:  'Grocery',
+                        value: this.abbreviate(audit.groceryLabel),
                     });
                 }
                 if (audit.type.match(/^participation\./u) && audit.eventDate) {

@@ -53,6 +53,8 @@
  * @property {string|null} affectedUserName
  * @property {number|null} eventId
  * @property {string|null} eventName
+ * @property {number|null} groceryId
+ * @property {string|null} groceryName
  * @property {Date|null} eventDate
  * @property {object|null} values
  */

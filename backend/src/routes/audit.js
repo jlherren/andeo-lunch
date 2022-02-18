@@ -7,8 +7,10 @@ const Models = require('../db/models');
  * @returns {Promise<void>}
  */
 async function listAudits(ctx) {
+    let include = ctx.query.with === 'names' ? ['Event', 'Grocery', 'ActingUser', 'AffectedUser'] : [];
+
     let audits = await Models.Audit.findAll({
-        include: ctx.query.with === 'names' ? ['Event', 'ActingUser', 'AffectedUser'] : [],
+        include,
         order:   [
             ['date', 'DESC'],
             ['id', 'DESC'],

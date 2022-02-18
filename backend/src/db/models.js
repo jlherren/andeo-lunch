@@ -289,6 +289,8 @@ class Absence extends Model {
  * @property {string} type
  * @property {number|null} event
  * @property {Event|null} Event
+ * @property {number|null} grocery
+ * @property {Grocery|null} Grocery
  * @property {number|null} affectedUser
  * @property {User|null} AffectedUser
  * @property {object|null} values
@@ -309,6 +311,8 @@ class Audit extends Model {
             eventId:          this.event,
             eventName:        this.getEventName(),
             eventDate:        this.Event?.date,
+            groceryId:        this.grocery,
+            groceryLabel:     this.getGroceryLabel(),
             affectedUserId:   this.affectedUser,
             affectedUserName: this.getAffectedUserName(),
             values:           this.values,
@@ -329,6 +333,15 @@ class Audit extends Model {
             return this.Event.name;
         } else if (this.Event === null && this.event !== null) {
             return 'Deleted event';
+        }
+        return null;
+    }
+
+    getGroceryLabel() {
+        if (this.Grocery) {
+            return this.Grocery.label;
+        } else if (this.Grocery === null && this.grocery !== null) {
+            return 'Deleted grocery';
         }
         return null;
     }
@@ -551,11 +564,26 @@ exports.initModels = function initModels(sequelize) {
     });
     Absence.belongsTo(User, {foreignKey: {name: 'user'}, as: 'User', ...cascade});
 
+
+    Grocery.init({
+        label:   {type: DataTypes.STRING(255), allowNull: false},
+        checked: {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
+        order:   {type: DataTypes.INTEGER, allowNull: false},
+    }, {
+        sequelize,
+        modelName: 'grocery',
+        indexes:   [{
+            name:   'checked_order_idx',
+            fields: ['checked', 'order'],
+        }],
+    });
+
     Audit.init({
         date:         {type: DataTypes.DATE, allowNull: false},
         type:         {type: ch.ascii(32), allowNull: false},
         actingUser:   {type: DataTypes.INTEGER, allowNull: false},
         event:        {type: DataTypes.INTEGER, allowNull: true, defaultValue: null},
+        grocery:      {type: DataTypes.INTEGER, allowNull: true, defaultValue: null},
         affectedUser: {type: DataTypes.INTEGER, allowNull: true, defaultValue: null},
         values:       {type: DataTypes.JSON, allowNull: true, defaultValue: null},
     }, {
@@ -570,23 +598,14 @@ exports.initModels = function initModels(sequelize) {
         }, {
             name:   'audit_affectedUser_idx',
             fields: ['affectedUser'],
+        }, {
+            name:   'audit_grocery_idx',
+            fields: ['grocery'],
         }],
     });
     // These do not enforce the FK constraint on purpose, to allow deleting objects but keeping the audits for it
     Audit.belongsTo(User, {foreignKey: {name: 'actingUser'}, constraints: false, as: 'ActingUser'});
     Audit.belongsTo(Event, {foreignKey: {name: 'event'}, constraints: false, as: 'Event'});
+    Audit.belongsTo(Grocery, {foreignKey: {name: 'grocery'}, constraints: false, as: 'Grocery'});
     Audit.belongsTo(User, {foreignKey: {name: 'affectedUser'}, constraints: false, as: 'AffectedUser'});
-
-    Grocery.init({
-        label:   {type: DataTypes.STRING(255), allowNull: false},
-        checked: {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
-        order:   {type: DataTypes.INTEGER, allowNull: false},
-    }, {
-        sequelize,
-        modelName: 'grocery',
-        indexes:   [{
-            name:   'checked_order_idx',
-            fields: ['checked', 'order'],
-        }],
-    });
 };
