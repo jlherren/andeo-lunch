@@ -253,8 +253,10 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
             let pointsDebited = null;
             if (event.Lunch.participationFlatRate === null) {
                 pointsDebited = -pointsCostPerWeightUnit * pointsWeight;
-            } else {
+            } else if (pointsWeight > Constants.EPSILON) {
                 pointsDebited = -event.Lunch.participationFlatRate;
+            } else {
+                pointsDebited = 0;
             }
             if (Math.abs(pointsDebited) > Constants.EPSILON) {
                 addSystemTransaction(participation.user, pointsDebited, Constants.CURRENCIES.POINTS);

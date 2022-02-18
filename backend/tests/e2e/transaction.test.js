@@ -700,4 +700,65 @@ describe('Flat-rate lunches', () => {
         expect(response.status).toBe(200);
         expect(response.body.user.balances).toEqual({points: -5, money: 0});
     });
+
+    it('Regression: Ignore opt-out participation', async () => {
+        await request.post(`${eventUrl}/participations/${user1.id}`).send({
+            type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OMNIVOROUS],
+            credits: {
+                points: 6,
+                money:  0,
+            },
+        });
+        await request.post(`${eventUrl}/participations/${user2.id}`).send({
+            type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OPT_OUT],
+            credits: {
+                points: 0,
+                money:  0,
+            },
+        });
+
+        // Check user 1
+        let response = await request.get(`/api/users/${user1.id}/transactions`);
+        expect(response.status).toBe(200);
+        expect(response.body.transactions).toHaveLength(2);
+        expect(response.body.transactions[0]).toMatchObject({
+            eventId,
+            userId:       user1.id,
+            contraUserId: systemUser.id,
+            date:         EVENT_DATE_1,
+            currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            amount:       6,
+            balance:      6,
+        });
+        expect(response.body.transactions[1]).toMatchObject({
+            eventId,
+            userId:       user1.id,
+            contraUserId: systemUser.id,
+            date:         EVENT_DATE_1,
+            currency:     Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            amount:       -0.5,
+            balance:      5.5,
+        });
+        response = await request.get(`/api/users/${user1.id}`);
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toEqual({points: 5.5, money: 0});
+
+        // Check user 2
+        response = await request.get(`/api/users/${user2.id}/transactions`);
+        expect(response.status).toBe(200);
+        expect(response.body.transactions).toHaveLength(0);
+        response = await request.get(`/api/users/${user2.id}`);
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toEqual({points: 0, money: 0});
+
+        // Check system user (balance only)
+        response = await request.get('/api/users/system');
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toEqual({points: 0, money: 0});
+
+        // Check Andeo user (balance only)
+        response = await request.get('/api/users/andeo');
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toEqual({points: -5.5, money: 0});
+    });
 });
