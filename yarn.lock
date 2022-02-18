@@ -1494,14 +1494,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@es-joy/jsdoccomment@npm:~0.19.0":
-  version: 0.19.0
-  resolution: "@es-joy/jsdoccomment@npm:0.19.0"
+"@es-joy/jsdoccomment@npm:~0.20.1":
+  version: 0.20.1
+  resolution: "@es-joy/jsdoccomment@npm:0.20.1"
   dependencies:
     comment-parser: 1.3.0
     esquery: ^1.4.0
-    jsdoc-type-pratt-parser: ~2.2.2
-  checksum: 60614ccb08f421ff23a300063989c334d76450c44ed293fdfaaf53b5d4d96a79550873b4e054d75f293433ded5ee201758134f78dd54e9461cf102c08da0727a
+    jsdoc-type-pratt-parser: ~2.2.3
+  checksum: b64afeaddccbc8da185c640e608496f6d6f8ee564c6255cdb44b16e00fe441e1f0552b5748033df2baf42187cfbfa9f31c46716982945d4343f8eaf44e253087
   languageName: node
   linkType: hard
 
@@ -2288,7 +2288,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/geojson@npm:^7946.0.7":
+"@types/geojson@npm:^7946.0.8":
   version: 7946.0.8
   resolution: "@types/geojson@npm:7946.0.8"
   checksum: 6049a39b025cfe323d5cf87333d87c133ec963cdbd349c49295bee779827ee4b46a3041fd8bd2e7a4b02d6d1e26f3002968875928941bbed08477bfd5f6f9284
@@ -2499,10 +2499,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*":
-  version: 16.4.12
-  resolution: "@types/node@npm:16.4.12"
-  checksum: 1489aeba890629ca2ed9b8f04fb77f185123810afd3d518cf87c2a18a43a43f7d954550ae3572f3dac7e634f7db67e259ceb7ca25cb584ba0bcc023b0bfca2c9
+"@types/node@npm:*, @types/node@npm:^17.0.10":
+  version: 17.0.18
+  resolution: "@types/node@npm:17.0.18"
+  checksum: 6c4edfc2b3ba2342a9c3d56e934c5245948ab752f4dc04bd6790b9603e6ebc53bc4f5befc3662e207f7dba2ddd17ccf657f915e319ea7cdd4f77b851079d1611
   languageName: node
   linkType: hard
 
@@ -2513,7 +2513,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^14.14.28, @types/node@npm:^14.14.31":
+"@types/node@npm:^14.14.31":
   version: 14.17.9
   resolution: "@types/node@npm:14.17.9"
   checksum: e59b92e4346ed0db61e042d439f9658d1d3e8ad1d14825b714804cafae8ce22220ff6c8d907c4e4c6384aac748de07283fa321ef13cb8bdeb460eb789d634244
@@ -3699,11 +3699,11 @@ __metadata:
     core-js: ~3.21.1
     eslint: ~7.32.0
     eslint-plugin-import: ~2.25.4
-    eslint-plugin-jsdoc: ~37.9.1
+    eslint-plugin-jsdoc: ~37.9.3
     eslint-plugin-node: ~11.1.0
     eslint-plugin-promise: ~6.0.0
     eslint-plugin-standard: ~5.0.0
-    eslint-plugin-vue: ~7.18.0
+    eslint-plugin-vue: ~7.20.0
     node-sass: ~7.0.1
     register-service-worker: ~1.7.2
     sass: ~1.32.13
@@ -3735,7 +3735,7 @@ __metadata:
     chalk: ~4.1.2
     eslint: ~7.32.0
     eslint-plugin-jest: ~26.1.1
-    eslint-plugin-jsdoc: ~37.9.1
+    eslint-plugin-jsdoc: ~37.9.3
     jest: ~27.5.1
     jest-diff: ~27.5.1
     joi: ~17.6.0
@@ -3743,7 +3743,7 @@ __metadata:
     koa: ~2.13.4
     koa-bodyparser: ~4.3.0
     koa-logger: ~3.2.1
-    mariadb: ~2.5.5
+    mariadb: ~2.5.6
     nodemon: ~2.0.15
     sequelize: ~6.16.1
     sprintf-js: ~1.1.2
@@ -3762,11 +3762,11 @@ __metadata:
     eslint: ~7.32.0
     eslint-plugin-cypress: ~2.12.1
     eslint-plugin-import: ~2.25.4
-    eslint-plugin-jsdoc: ~37.9.1
+    eslint-plugin-jsdoc: ~37.9.3
     eslint-plugin-node: ~11.1.0
     eslint-plugin-promise: ~6.0.0
     eslint-plugin-standard: ~5.0.0
-    mariadb: ~2.5.5
+    mariadb: ~2.5.6
   languageName: unknown
   linkType: soft
 
@@ -6991,10 +6991,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"denque@npm:^1.5.0":
-  version: 1.5.0
-  resolution: "denque@npm:1.5.0"
-  checksum: 9c0d07a3a6789bccc24f7023a54c83b8850b36c8fbc3aff4bf43b01b76a93ae11c88139502913534fe913bac1b0418dbc30e487ce3d176cbbc001a7a18627c56
+"denque@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "denque@npm:2.0.1"
+  checksum: ec398d1e3c6c8d4f5213dcf9ad74d7faa3b461e29a0019c9742b49a97ac5e16aa7134db45fa9d841e318e7722dd1ba670a474fde9a5b0d870b3a5fc6fe914c30
   languageName: node
   linkType: hard
 
@@ -7780,11 +7780,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-jsdoc@npm:~37.9.1":
-  version: 37.9.1
-  resolution: "eslint-plugin-jsdoc@npm:37.9.1"
+"eslint-plugin-jsdoc@npm:~37.9.3":
+  version: 37.9.3
+  resolution: "eslint-plugin-jsdoc@npm:37.9.3"
   dependencies:
-    "@es-joy/jsdoccomment": ~0.19.0
+    "@es-joy/jsdoccomment": ~0.20.1
     comment-parser: 1.3.0
     debug: ^4.3.3
     escape-string-regexp: ^4.0.0
@@ -7794,7 +7794,7 @@ __metadata:
     spdx-expression-parse: ^3.0.1
   peerDependencies:
     eslint: ^7.0.0 || ^8.0.0
-  checksum: 32186fda33838a86df98c86febadf283b7c85ab3fe54e70d3a209af968cce05bba6abdbedc43888fb9a6f143e0c14e11114a14bc7c9449a23182fdc7fcde81ac
+  checksum: 753b759cfd65195d4b3abfca645389d1cbc86d57178808674ab54e9dbc40ca135c2a52726a51c85d43539f2e1636dc571a0ac6022461a5b24b98cfca9b2cea81
   languageName: node
   linkType: hard
 
@@ -7832,17 +7832,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-vue@npm:~7.18.0":
-  version: 7.18.0
-  resolution: "eslint-plugin-vue@npm:7.18.0"
+"eslint-plugin-vue@npm:~7.20.0":
+  version: 7.20.0
+  resolution: "eslint-plugin-vue@npm:7.20.0"
   dependencies:
     eslint-utils: ^2.1.0
     natural-compare: ^1.4.0
     semver: ^6.3.0
     vue-eslint-parser: ^7.10.0
   peerDependencies:
-    eslint: ^6.2.0 || ^7.0.0 || ^8.0.0-0
-  checksum: 5df7e23478cb1094c5a0918c4239d50126c1770e34d4fb9ad30737b58a9ad33d31dda7d05aad2bc28dc97651a6c34c67f243bd82145ff76b6aea81f5c06345fd
+    eslint: ^6.2.0 || ^7.0.0 || ^8.0.0
+  checksum: 7b724ed8317ce3621cfd94235a68af20ec355fca93092cc09ee73fbffcefa69e3c5202b8035aae8e7457df6924dfe713834ae46dee08acdd9316188c47933956
   languageName: node
   linkType: hard
 
@@ -11741,10 +11741,10 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"jsdoc-type-pratt-parser@npm:~2.2.2":
-  version: 2.2.2
-  resolution: "jsdoc-type-pratt-parser@npm:2.2.2"
-  checksum: 719ed04ab39f05849e293ae30253166a555c477e99f79025df1686d664764a9e1e8c679bdeba0f60381c4539dbce27687417d5f810ffedbc2adbede0bedec107
+"jsdoc-type-pratt-parser@npm:~2.2.3":
+  version: 2.2.3
+  resolution: "jsdoc-type-pratt-parser@npm:2.2.3"
+  checksum: 202a6c1f884234f0927fea82648f2401c24477231e127f28cdf4f5e169ca37535e694379eb440c627f7032504b5225155d8113a67499bec07cf8ce131265f1ed
   languageName: node
   linkType: hard
 
@@ -12531,6 +12531,13 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"long@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "long@npm:5.2.0"
+  checksum: 37aa4e67b9c3eebc6d9d675adcc9d06f06059ca268922a71273de389746bf07f0ff282f9e604d17fdf84c4149099b44e936ea2b621a6c4759a216621afa97efd
+  languageName: node
+  linkType: hard
+
 "lowdb@npm:^1.0.0":
   version: 1.0.0
   resolution: "lowdb@npm:1.0.0"
@@ -12714,18 +12721,18 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"mariadb@npm:~2.5.5":
-  version: 2.5.5
-  resolution: "mariadb@npm:2.5.5"
+"mariadb@npm:~2.5.6":
+  version: 2.5.6
+  resolution: "mariadb@npm:2.5.6"
   dependencies:
-    "@types/geojson": ^7946.0.7
-    "@types/node": ^14.14.28
-    denque: ^1.5.0
+    "@types/geojson": ^7946.0.8
+    "@types/node": ^17.0.10
+    denque: ^2.0.1
     iconv-lite: ^0.6.3
-    long: ^4.0.0
-    moment-timezone: ^0.5.33
+    long: ^5.2.0
+    moment-timezone: ^0.5.34
     please-upgrade-node: ^3.2.0
-  checksum: 28e09ad071f6983032982027efdaf7f3f09ac5cf36941ab0b32ad2b671b3096056ce5111257df5eca13e5d29dc737a9ef8410e791eea470c48f86966c29f2c84
+  checksum: 5614225514cee36a8f1760b72536a10c4c3ac120ac5f5efc6629d2489df518eacebbaecbc7f143e23ffd235f41ab0b967de592b8d80645ebfdd6f01de137e98b
   languageName: node
   linkType: hard
 
@@ -13149,7 +13156,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"moment-timezone@npm:^0.5.33, moment-timezone@npm:^0.5.34":
+"moment-timezone@npm:^0.5.34":
   version: 0.5.34
   resolution: "moment-timezone@npm:0.5.34"
   dependencies:
