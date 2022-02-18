@@ -68,6 +68,7 @@
         'event.costs.points':           'Points',
         'event.costs.money':            'Money',
         'event.factors.2.2':            'Vegi factor',
+        'event.participationFlatRate':  'Flat-rate',
         'absence.start':                'Start',
         'absence.end':                  'End',
     };

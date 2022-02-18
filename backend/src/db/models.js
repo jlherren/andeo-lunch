@@ -108,6 +108,7 @@ class Event extends Model {
                     [Constants.CURRENCIES.MONEY]: this.Lunch.vegetarianMoneyFactor,
                 },
             },
+            participationFlatRate: this.Lunch?.participationFlatRate,
             comment: this.Lunch?.comment,
         };
     }
