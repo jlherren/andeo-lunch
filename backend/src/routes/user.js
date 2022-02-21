@@ -152,9 +152,6 @@ exports.register = function register(router) {
     let opts = {
         model:  Models.User,
         mapper: user => user.toApi(),
-        where:  {
-            hidden: 0,
-        },
         order:  [
             ['name', 'ASC'],
         ],

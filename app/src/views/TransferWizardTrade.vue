@@ -17,11 +17,11 @@
 
             <v-form ref="form" :disabled="isBusy" @submit.prevent="save()">
                 <v-select v-model="buyer" label="Buyer"
-                          :items="users" item-text="name" item-value="id"
+                          :items="visibleUsers" item-text="name" item-value="id"
                           :rules="buyerRules"
                           :append-icon="$icons.account"/>
                 <v-select v-model="seller" label="Seller"
-                          :items="users" item-text="name" item-value="id"
+                          :items="visibleUsers" item-text="name" item-value="id"
                           :rules="sellerRules"
                           :append-icon="$icons.account"/>
 
@@ -81,7 +81,7 @@
 
         computed: {
             ...mapGetters([
-                'users',
+                'visibleUsers',
             ]),
 
             price() {

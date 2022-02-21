@@ -5,6 +5,7 @@
  * @property {number} id
  * @property {string} name
  * @property {{points: number, money: number}} balances
+ * @property {boolean} hidden
  */
 
 /**

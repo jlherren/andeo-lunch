@@ -84,7 +84,7 @@
 
         computed: {
             users() {
-                return this.$store.getters.users.concat({
+                return this.$store.getters.visibleUsers.concat({
                     id:   -1,
                     name: 'Temporary pot',
                 });

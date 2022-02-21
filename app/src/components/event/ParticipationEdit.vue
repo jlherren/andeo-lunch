@@ -107,7 +107,7 @@
                 let substantialExistingParticipationUserIds = this.$store.getters.participations(this.event.id)
                     .filter(p => p.type !== passiveType || p.credits.points > 0 || p.credits.money > 0)
                     .map(p => p.userId);
-                return this.$store.getters.users
+                return this.$store.getters.visibleUsers
                     .filter(u => !substantialExistingParticipationUserIds.includes(u.id));
             },
         },

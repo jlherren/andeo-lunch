@@ -18,7 +18,7 @@
 
             <v-form ref="form" :disabled="isBusy" @submit.prevent="save()">
                 <v-select v-model="recipient" label="Recipient of real money"
-                          :items="users" item-text="name" item-value="id"
+                          :items="visibleUsers" item-text="name" item-value="id"
                           :rules="recipientRules"
                           :append-icon="$icons.account"/>
                 <v-text-field type="number" v-model="amount" label="Amount in CHF"
@@ -82,7 +82,7 @@
 
         computed: {
             ...mapGetters([
-                'users',
+                'visibleUsers',
             ]),
 
             recipientPaymentInfo() {
@@ -93,10 +93,10 @@
             },
 
             recipientName() {
-                if (!this.users) {
+                if (!this.recipient) {
                     return null;
                 }
-                return this.users.filter(user => user.id === this.recipient)[0].name;
+                return this.$store.getters.user(this.recipient).name;
             },
         },
 

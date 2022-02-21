@@ -42,7 +42,7 @@
                     <p class="text-body-2">
                         Select helpers to automatically distribute the available points evenly.
                     </p>
-                    <v-btn v-for="user of users" :key="user.id" :value="user.id" :disabled="isBusy || points === 0"
+                    <v-btn v-for="user of visibleUsers" :key="user.id" :value="user.id" :disabled="isBusy || points === 0"
                            :input-value="isHelper(user)" @click="toggleHelper(user)" small>
                         <v-icon left :disabled="!isHelper(user)">{{ $icons.points }}</v-icon>
                         {{ user.name }}
@@ -143,7 +143,7 @@
 
         computed: {
             ...mapGetters([
-                'users',
+                'visibleUsers',
             ]),
 
             title() {

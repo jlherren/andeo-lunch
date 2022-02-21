@@ -71,7 +71,7 @@
             },
 
             tableItems() {
-                return this.$store.getters.users.map(user => {
+                return this.$store.getters.visibleUsers.map(user => {
                     return {
                         name:   user.name,
                         points: user.balances.points,
@@ -81,11 +81,11 @@
             },
 
             pointsSum() {
-                return this.$store.getters.users.reduce((acc, user) => acc + user.balances.points, 0);
+                return this.$store.getters.visibleUsers.reduce((acc, user) => acc + user.balances.points, 0);
             },
 
             moneySum() {
-                return this.$store.getters.users.reduce((acc, user) => acc + user.balances.money, 0);
+                return this.$store.getters.visibleUsers.reduce((acc, user) => acc + user.balances.money, 0);
             },
         },
     };

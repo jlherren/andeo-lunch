@@ -17,11 +17,11 @@
 
             <v-form ref="form" :disabled="isBusy" @submit.prevent="save()">
                 <v-select v-model="sender" label="Sender"
-                          :items="users" item-text="name" item-value="id"
+                          :items="visibleUsers" item-text="name" item-value="id"
                           :rules="senderRules"
                           :append-icon="$icons.account"/>
                 <v-select v-model="recipient" label="Recipient"
-                          :items="users" item-text="name" item-value="id"
+                          :items="visibleUsers" item-text="name" item-value="id"
                           :rules="recipientRules"
                           :append-icon="$icons.account"/>
 
@@ -98,7 +98,7 @@
 
         computed: {
             ...mapGetters([
-                'users',
+                'visibleUsers',
             ]),
         },
 

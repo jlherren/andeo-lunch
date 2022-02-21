@@ -54,6 +54,7 @@ class User extends Model {
                 points: this.points,
                 money:  this.money,
             },
+            hidden:   this.hidden,
         };
     }
 }

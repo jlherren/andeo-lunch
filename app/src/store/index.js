@@ -32,8 +32,9 @@ export default new Vuex.Store({
             // By user ID
         },
 
-        // All user IDs
-        allUserIds: [],
+        // All user IDs and visible user IDs
+        allUserIds:     [],
+        visibleUserIds: [],
 
         events: {
             // Events by ID
@@ -69,10 +70,12 @@ export default new Vuex.Store({
         version: state => state.version,
 
         // Users and account
-        user:        state => userId => state.users[userId] ?? {id: userId},
-        users:       (state, getters) => state.allUserIds.map(userId => getters.user(userId)),
-        paymentInfo: state => userId => state.paymentInfos[userId] ?? null,
-        absences:    state => userId => state.absences[userId] ?? null,
+        user:         state => userId => state.users[userId] ?? {id: userId},
+        users:        (state, getters) => state.visibleUserIds.map(userId => getters.user(userId)),
+        visibleUsers: (state, getters) => state.visibleUserIds.map(userId => getters.user(userId)),
+        allUsers:     (state, getters) => state.allUserIds.map(userId => getters.user(userId)),
+        paymentInfo:  state => userId => state.paymentInfos[userId] ?? null,
+        absences:     state => userId => state.absences[userId] ?? null,
 
         // Own user
         isLoggedIn:  state => state.account.userId !== null,
@@ -197,7 +200,11 @@ export default new Vuex.Store({
                     Cache.validate('user', user.id);
                 }
                 Vue.set(context.state, 'users', users);
-                context.state.allUserIds = response.data.users.map(user => user.id);
+                context.state.visibleUserIds = response.data.users
+                    .filter(user => !user.hidden)
+                    .map(user => user.id);
+                context.state.allUserIds = response.data.users
+                    .map(user => user.id);
             });
         },
 
