@@ -8,7 +8,7 @@
 
         <v-container v-if="$global.hasUpdate">
             <v-banner elevation="2" :icon="$icons.update">
-                An update for Andeo Lunch update is available!
+                An update for Andeo Lunch is available!
                 <template v-slot:actions>
                     <v-btn color="primary" @click="update()"  :loading="updating">
                         Update now
