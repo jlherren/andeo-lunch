@@ -21,7 +21,10 @@
         </v-list-item-content>
 
         <v-dialog v-model="editDialog" persistent>
-            <participation-edit :event="event" :participation="participation" @close="editDialog = false" @saved="saved()" ref="editForm"/>
+            <participation-edit v-if="editDialog"
+                                :event="event" :participation="participation"
+                                @close="editDialog = false" @saved="saved()"
+                                ref="editForm"/>
         </v-dialog>
     </v-list-item>
 </template>

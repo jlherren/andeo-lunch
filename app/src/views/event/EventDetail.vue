@@ -95,7 +95,9 @@
             </v-dialog>
 
             <v-dialog v-model="addParticipationDialog">
-                <participation-edit :event="event" @close="addParticipationDialog = false" @saved="refreshEvent()" ref="editForm"/>
+                <participation-edit v-if="addParticipationDialog" :event="event"
+                                    @close="addParticipationDialog = false" @saved="refreshEvent()"
+                                    ref="editForm"/>
             </v-dialog>
         </div>
     </v-main>
