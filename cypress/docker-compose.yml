@@ -29,6 +29,6 @@ services:
     app:
         image: andeo-lunch-app-cypress
         ports:
-            - '53768:80'
+            - '31978:80'
         depends_on:
             - backend
