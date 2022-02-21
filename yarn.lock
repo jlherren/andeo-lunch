@@ -3699,7 +3699,7 @@ __metadata:
     core-js: ~3.21.1
     eslint: ~7.32.0
     eslint-plugin-import: ~2.25.4
-    eslint-plugin-jsdoc: ~37.9.3
+    eslint-plugin-jsdoc: ~37.9.4
     eslint-plugin-node: ~11.1.0
     eslint-plugin-promise: ~6.0.0
     eslint-plugin-standard: ~5.0.0
@@ -3735,7 +3735,7 @@ __metadata:
     chalk: ~4.1.2
     eslint: ~7.32.0
     eslint-plugin-jest: ~26.1.1
-    eslint-plugin-jsdoc: ~37.9.3
+    eslint-plugin-jsdoc: ~37.9.4
     jest: ~27.5.1
     jest-diff: ~27.5.1
     joi: ~17.6.0
@@ -3745,7 +3745,7 @@ __metadata:
     koa-logger: ~3.2.1
     mariadb: ~2.5.6
     nodemon: ~2.0.15
-    sequelize: ~6.16.1
+    sequelize: ~6.16.2
     sprintf-js: ~1.1.2
     sqlite3: ~5.0.2
     supertest: ~6.2.2
@@ -3762,7 +3762,7 @@ __metadata:
     eslint: ~7.32.0
     eslint-plugin-cypress: ~2.12.1
     eslint-plugin-import: ~2.25.4
-    eslint-plugin-jsdoc: ~37.9.3
+    eslint-plugin-jsdoc: ~37.9.4
     eslint-plugin-node: ~11.1.0
     eslint-plugin-promise: ~6.0.0
     eslint-plugin-standard: ~5.0.0
@@ -7780,9 +7780,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-jsdoc@npm:~37.9.3":
-  version: 37.9.3
-  resolution: "eslint-plugin-jsdoc@npm:37.9.3"
+"eslint-plugin-jsdoc@npm:~37.9.4":
+  version: 37.9.4
+  resolution: "eslint-plugin-jsdoc@npm:37.9.4"
   dependencies:
     "@es-joy/jsdoccomment": ~0.20.1
     comment-parser: 1.3.0
@@ -7794,7 +7794,7 @@ __metadata:
     spdx-expression-parse: ^3.0.1
   peerDependencies:
     eslint: ^7.0.0 || ^8.0.0
-  checksum: 753b759cfd65195d4b3abfca645389d1cbc86d57178808674ab54e9dbc40ca135c2a52726a51c85d43539f2e1636dc571a0ac6022461a5b24b98cfca9b2cea81
+  checksum: 1e338f03020b2efab6077c91f2a8c251f1ee8be4a2299fa49db84ecb1f8f1e362be2d005ac7b9d9ceff5596bd7c0a9a5ed816edb8b3e904ed3edb0aab8b88799
   languageName: node
   linkType: hard
 
@@ -16413,9 +16413,9 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"sequelize@npm:~6.16.1":
-  version: 6.16.1
-  resolution: "sequelize@npm:6.16.1"
+"sequelize@npm:~6.16.2":
+  version: 6.16.2
+  resolution: "sequelize@npm:6.16.2"
   dependencies:
     "@types/debug": ^4.1.7
     debug: ^4.3.3
@@ -16449,7 +16449,7 @@ fsevents@^1.2.7:
       optional: true
     tedious:
       optional: true
-  checksum: 3103cf79279b5e8bdfaefbf239c6c6cbed40c2805ced64a85ac2f450f2f554eb89b880edc79f88d8b4257065b57e90e8e0ddd678f4ceb8e267608b9588df720f
+  checksum: 43799f8bcc9b608fe941d890bae19c62dfb028267baa5facdbed15a74ea1418c8c135d059522a5952d673b74e2399b48e95a9307d25fccf1c2a30703800174a7
   languageName: node
   linkType: hard
 
