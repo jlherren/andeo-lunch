@@ -22,7 +22,7 @@
         "db:validate": "node src/scripts/validateDb.js"
     },
     "dependencies": {
-        "@koa/cors": "~3.1.0",
+        "@koa/cors": "~3.3.0",
         "@koa/router": "~10.1.1",
         "bcryptjs": "~2.4.3",
         "chalk": "~4.1.2",
@@ -33,7 +33,7 @@
         "koa-bodyparser": "~4.3.0",
         "koa-logger": "~3.2.1",
         "mariadb": "~2.5.6",
-        "sequelize": "~6.16.2",
+        "sequelize": "~6.19.0",
         "sprintf-js": "~1.1.2",
         "umzug": "~2.3.0"
     },
@@ -43,13 +43,13 @@
         "@types/koa": "~2.13.4",
         "@types/koa-logger": "~3.1.2",
         "@types/koa-router": "~7.4.4",
-        "@types/supertest": "~2.0.11",
+        "@types/supertest": "~2.0.12",
         "eslint": "~7.32.0",
-        "eslint-plugin-jest": "~26.1.1",
-        "eslint-plugin-jsdoc": "~37.9.4",
+        "eslint-plugin-jest": "~26.1.5",
+        "eslint-plugin-jsdoc": "~39.2.8",
         "jest": "~27.5.1",
         "nodemon": "~2.0.15",
-        "sqlite3": "~5.0.2",
+        "sqlite3": "~5.0.5",
         "supertest": "~6.2.2"
     }
 }
