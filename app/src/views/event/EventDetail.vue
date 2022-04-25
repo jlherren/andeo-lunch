@@ -15,15 +15,17 @@
                 <div class="headline">{{ name }}</div>
                 <div class="text--secondary">{{ formattedDate }}</div>
 
-                <div v-if="event.type !== 'label'" class="costs">
-                    <participation-summary v-if="participations" :event="event" :participations="participations" large/>
-                    <balance :value="event.costs.points" points large no-sign/>
-                    <balance :value="event.costs.money" money large no-sign/>
-                </div>
+                <div v-if="event.type !== 'label'">
+                    <div class="costs">
+                        <participation-summary v-if="participations" :event="event" :participations="participations" large/>
+                        <balance :value="event.costs.points" points large no-sign/>
+                        <balance :value="event.costs.money" money large no-sign/>
+                    </div>
 
-                <div v-if="event.participationFlatRate !== null" class="text--secondary">
-                    Participation flat-rate: {{ event.participationFlatRate }}
-                    <v-icon small>{{ $icons.points }}</v-icon>
+                    <div v-if="event.participationFlatRate !== null" class="text--secondary">
+                        Participation flat-rate: {{ event.participationFlatRate }}
+                        <v-icon small>{{ $icons.points }}</v-icon>
+                    </div>
                 </div>
             </v-container>
 
