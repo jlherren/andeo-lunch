@@ -19,6 +19,8 @@
 </template>
 
 <script>
+    const OPT_IN_PARTICIPATIONS = ['omnivorous', 'vegetarian', 'opt-in'];
+
     export default {
         name: 'ParticipationSummary',
 
@@ -40,7 +42,7 @@
             },
 
             optIns() {
-                return this.participations.filter(p => ['omnivorous', 'vegetarian'].includes(p.type));
+                return this.participations.filter(p => OPT_IN_PARTICIPATIONS.includes(p.type));
             },
 
             omnivorous() {
