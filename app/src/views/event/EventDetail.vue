@@ -17,7 +17,7 @@
 
                 <div v-if="event.type !== 'label'">
                     <div class="costs">
-                        <participation-summary v-if="participations" :event="event" :participations="participations" large/>
+                        <participation-summary v-if="participationsAreLoaded" :event="event" :participations="participations" large/>
                         <balance :value="event.costs.points" points large no-sign/>
                         <balance :value="event.costs.money" money large no-sign/>
                     </div>
@@ -31,7 +31,7 @@
 
             <v-container v-if="commentHtml !== ''" class="comment" v-html="commentHtml"/>
 
-            <v-container v-if="participations && event.type === 'lunch' && ownParticipationMissing">
+            <v-container v-if="participationsAreLoaded && event.type === 'lunch' && ownParticipationMissing">
                 <v-banner elevation="2" :icon="$icons.undecided" icon-color="red">
                     Make up your mind!
                     <template v-slot:actions>
@@ -56,24 +56,9 @@
             </v-container>
 
             <v-list v-if="event.type !== 'label'">
-                <v-list-item @click="openAddParticipationDialog()" :disabled="isBusy">
-                    <v-list-item-avatar>
-                        <v-icon>{{ $icons.plus }}</v-icon>
-                    </v-list-item-avatar>
+                <v-skeleton-loader v-if="!participationsAreLoaded" type="list-item-avatar"/>
 
-                    <v-list-item-content>
-                        <v-list-item-title>
-                            Add participation
-                        </v-list-item-title>
-                    </v-list-item-content>
-                </v-list-item>
-
-                <v-skeleton-loader v-if="!participations" type="list-item-avatar"/>
-
-                <participation-list-item v-if="participations" :event="event" :participation="myParticipation"
-                                         @saved="refreshEvent()"/>
-
-                <participation-list-item v-for="participation of foreignParticipations"
+                <participation-list-item v-for="participation of sortedParticipations"
                                          :key="participation.userId"
                                          :event="event" :participation="participation"
                                          @saved="refreshEvent()"/>
@@ -95,12 +80,6 @@
                     </v-card-actions>
                 </v-card>
             </v-dialog>
-
-            <v-dialog v-model="addParticipationDialog">
-                <participation-edit v-if="addParticipationDialog" :event="event"
-                                    @close="addParticipationDialog = false" @saved="refreshEvent()"
-                                    ref="editForm"/>
-            </v-dialog>
         </div>
     </v-main>
 </template>
@@ -110,16 +89,13 @@
     import * as HtmlUtils from '@/utils/htmlUtils';
     import Balance from '@/components/Balance';
     import DynamicButton from '@/components/DynamicButton';
-    import ParticipationEdit from '@/components/event/ParticipationEdit';
     import ParticipationListItem from '@/components/event/ParticipationListItem';
     import ParticipationSummary from '@/components/event/ParticipationSummary';
     import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
-    import Vue from 'vue';
 
     const PARTICIPATION_TYPE_TO_ORDER = {
-        // credit-less undecided participations are not shown at all, the ones that are shown are the ones that involve
-        // some credits, we want them to show before opt-outs.
+        // order 0 is for own participation
         'omnivorous': 1,
         'vegetarian': 1,
         'opt-in':     1,
@@ -133,7 +109,6 @@
         components: {
             Balance,
             DynamicButton,
-            ParticipationEdit,
             ParticipationListItem,
             ParticipationSummary,
             ShyProgress,
@@ -142,18 +117,18 @@
 
         data() {
             return {
-                eventId:                parseInt(this.$route.params.id, 10),
-                ownUserId:              this.$store.getters.ownUserId,
-                confirmDelete:          false,
-                isBusy:                 true,
-                addParticipationDialog: false,
-                userToAdd:              null,
+                eventId:       parseInt(this.$route.params.id, 10),
+                ownUserId:     this.$store.getters.ownUserId,
+                confirmDelete: false,
+                isBusy:        true,
+                userToAdd:     null,
             };
         },
 
         async created() {
             try {
                 await Promise.all([
+                    this.$store.dispatch('fetchUsers'),
                     this.$store.dispatch('fetchSettings'),
                     this.$store.dispatch('fetchEvent', {eventId: this.eventId}),
                 ]);
@@ -189,56 +164,54 @@
                 return this.$store.getters.participations(this.eventId);
             },
 
-            foreignParticipations() {
-                // List of opt-inners as well as opt-out/undecided that cook or provide money.
-                // This excludes own participation
+            participationsAreLoaded() {
+                return !!this.participations;
+            },
+
+            visibleUsers() {
+                return this.$store.getters.visibleUsers;
+            },
+
+            sortedParticipations() {
                 let participations = this.participations;
                 if (!participations) {
                     return [];
                 }
-                let passiveType = this.event.type === 'special' ? 'opt-out' : 'undecided';
-                participations = participations.filter(p => {
-                    if (p.userId === this.ownUserId) {
-                        return false;
+
+                participations = this.visibleUsers.map(user => {
+                    let participation = participations.find(p => p.userId === user.id) ?? {
+                        userId:  user.id,
+                        eventId: this.eventId,
+                        type:    this.event.type === 'special' ? 'opt-out' : 'undecided',
+                        credits: {
+                            points: 0,
+                            money:  0,
+                        },
+                    };
+                    if (user.id === this.ownUserId) {
+                        participation.order = 0;
+                    } else {
+                        participation.order = PARTICIPATION_TYPE_TO_ORDER[participation.type] ?? 9;
                     }
-                    return p.type !== passiveType || p.credits.points > 0 || p.credits.money > 0;
+                    return participation;
                 });
-                participations.sort((a, b) => {
-                    let orderA = PARTICIPATION_TYPE_TO_ORDER[a.type] ?? 9;
-                    let orderB = PARTICIPATION_TYPE_TO_ORDER[b.type] ?? 9;
-                    let diff = orderA - orderB;
+
+                participations.sort((first, second) => {
+                    let diff = first.order - second.order;
                     if (diff) {
                         return diff;
                     }
-                    let nameA = this.$store.getters.user(a.userId)?.name;
-                    let nameB = this.$store.getters.user(b.userId)?.name;
-                    if (nameA < nameB) {
+                    let nameFirst = this.$store.getters.user(first.userId)?.name;
+                    let nameSecond = this.$store.getters.user(second.userId)?.name;
+                    if (nameFirst < nameSecond) {
                         return -1;
                     }
-                    if (nameA > nameB) {
+                    if (nameFirst > nameSecond) {
                         return 1;
                     }
                     return 0;
                 });
                 return participations;
-            },
-
-            myParticipation() {
-                // User's own opt-out/undecided
-                let participations = this.participations ? this.participations.filter(p => p.userId === this.ownUserId) : [];
-                if (participations.length > 0) {
-                    return participations[0];
-                }
-                // Participation is missing, fake it
-                return {
-                    userId:  this.ownUserId,
-                    eventId: this.eventId,
-                    type:    this.event.type === 'special' ? 'opt-out' : 'undecided',
-                    credits: {
-                        points: 0,
-                        money:  0,
-                    },
-                };
             },
 
             sumOfPointsCredited() {
@@ -325,12 +298,6 @@
 
             async refreshEvent() {
                 await this.$store.dispatch('fetchEvent', {eventId: this.eventId});
-            },
-
-            openAddParticipationDialog() {
-                this.$store.dispatch('fetchUsers');
-                this.addParticipationDialog = true;
-                Vue.nextTick(() => this.$refs.editForm.reset());
             },
         },
     };

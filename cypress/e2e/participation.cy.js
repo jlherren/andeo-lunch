@@ -30,15 +30,9 @@ describe('Lunch event', () => {
     });
 
     it('Can opt-in someone else', () => {
-        cy.contains('[role=listitem]', 'Add participation')
+        cy.contains('[role=listitem]', 'Robert Smith')
             .click();
         cy.getDialog().within(() => {
-            cy.contains('[role=button]', 'User')
-                .click();
-            cy.document()
-                .its('body')
-                .contains('[role=option]', 'Robert Smith')
-                .click();
             cy.get('button[value=vegetarian]')
                 .click();
             cy.contains('button:visible', 'Save')
@@ -75,7 +69,7 @@ describe('Lunch event', () => {
     });
 });
 
-describe('Lunch event', () => {
+describe('Special event', () => {
     beforeEach(() => {
         cy.task('db:purge');
         USERS.john.insert();
@@ -105,15 +99,9 @@ describe('Lunch event', () => {
     });
 
     it('Can opt-in someone else', () => {
-        cy.contains('[role=listitem]', 'Add participation')
+        cy.contains('[role=listitem]', 'Robert Smith')
             .click();
         cy.getDialog().within(() => {
-            cy.contains('[role=button]', 'User')
-                .click();
-            cy.document()
-                .its('body')
-                .contains('[role=option]', 'Robert Smith')
-                .click();
             cy.get('button[value=opt-in]')
                 .click();
             cy.contains('button:visible', 'Save')

@@ -64,17 +64,20 @@
                 type:     Object,
                 required: true,
             },
-            participation: Object,
+            participation: {
+                type:     Object,
+                required: true,
+            },
         },
 
         data() {
             let defaultType = this.event.type === 'special' ? 'opt-out' : 'undecided';
             return {
-                user:           this.participation?.userId,
-                pointsCredited: this.participation?.credits?.points ?? 0,
-                moneyCredited:  this.participation?.credits?.money ?? 0,
-                moneyFactor:    (this.participation?.factors?.money ?? 1) * 100,
-                type:           this.participation?.type ?? defaultType,
+                user:           this.participation.userId,
+                pointsCredited: this.participation.credits?.points ?? 0,
+                moneyCredited:  this.participation.credits?.money ?? 0,
+                moneyFactor:    (this.participation.factors?.money ?? 1) * 100,
+                type:           this.participation.type ?? defaultType,
                 isBusy:         true,
                 userRules:      [
                     user => !!user,
@@ -83,32 +86,14 @@
         },
 
         async created() {
-            if (this.participation) {
-                await this.$store.dispatch('fetchUser', {userId: this.participation.userId});
-            } else {
-                await Promise.all([
-                    this.$store.dispatch('fetchUsers'),
-                    // Existing participations need to be refreshed for eligibleUsers to be correct
-                    this.$store.dispatch('fetchParticipations', {eventId: this.event.id}),
-                ]);
-            }
+            await this.$store.dispatch('fetchUser', {userId: this.participation.userId});
             this.isBusy = false;
         },
 
         computed: {
             eligibleUsers() {
-                if (this.participation) {
-                    // Don't bother listing all users, since the dropdown is disabled anyway
-                    return [
-                        this.$store.getters.user(this.participation.userId),
-                    ];
-                }
-                let passiveType = this.event.type === 'special' ? 'opt-out' : 'undecided';
-                let substantialExistingParticipationUserIds = this.$store.getters.participations(this.event.id)
-                    .filter(p => p.type !== passiveType || p.credits.points > 0 || p.credits.money > 0)
-                    .map(p => p.userId);
-                return this.$store.getters.visibleUsers
-                    .filter(u => !substantialExistingParticipationUserIds.includes(u.id));
+                // Don't bother listing all users, since the dropdown is disabled anyway
+                return [this.$store.getters.user(this.participation.userId)];
             },
         },
 
