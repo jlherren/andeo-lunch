@@ -154,8 +154,8 @@
         async created() {
             try {
                 await Promise.all([
-                    await this.$store.dispatch('fetchSettings'),
-                    await this.$store.dispatch('fetchEvent', {eventId: this.eventId}),
+                    this.$store.dispatch('fetchSettings'),
+                    this.$store.dispatch('fetchEvent', {eventId: this.eventId}),
                 ]);
                 let event = this.$store.getters.event(this.eventId);
                 if (event.type === 'transfer') {
