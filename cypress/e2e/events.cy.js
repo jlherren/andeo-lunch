@@ -10,7 +10,7 @@ describe('Create events', () => {
     });
 
     it('Use quick add button', () => {
-        cy.get('.v-list-item a')
+        cy.contains('a', 'Add new lunch')
             .first()
             .click();
 
@@ -97,7 +97,7 @@ describe('Create events', () => {
     });
 
     it('Add a comment', () => {
-        cy.get('.v-list-item a')
+        cy.contains('a', 'Add new lunch')
             .first()
             .click();
         cy.followLabel('Name')
@@ -112,7 +112,7 @@ describe('Create events', () => {
 
 
     it('Alternate flat-rate', () => {
-        cy.get('.v-list-item a')
+        cy.contains('a', 'Add new lunch')
             .first()
             .click();
         cy.followLabel('Name')
@@ -127,7 +127,7 @@ describe('Create events', () => {
     });
 
     it('Non-flat-rate lunch', () => {
-        cy.get('.v-list-item a')
+        cy.contains('a', 'Add new lunch')
             .first()
             .click();
 

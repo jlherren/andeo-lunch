@@ -15,17 +15,12 @@
                 <template v-for="event of entries">
                     <lunch-list-item v-if="event.type !== 'placeholder'" :key="event.id" :event="event"/>
 
-                    <v-list-item v-if="event.type === 'placeholder'" :key="event.id">
+                    <v-list-item v-else :key="event.id" :to="`/events/new?type=lunch&date=${event.isoDate}`" class="placeholder">
                         <v-list-item-icon/>
                         <v-list-item-content>
-                            <v-list-item-title class="text--secondary">No event</v-list-item-title>
+                            <v-list-item-title class="text--secondary">Add new lunch</v-list-item-title>
                             <v-list-item-subtitle>{{ formatDate(event.date) }}</v-list-item-subtitle>
                         </v-list-item-content>
-                        <v-list-item-action>
-                            <v-btn icon color="primary" :to="`/events/new?type=lunch&date=${event.isoDate}`">
-                                <v-icon>{{ $icons.plus }}</v-icon>
-                            </v-btn>
-                        </v-list-item-action>
                     </v-list-item>
                 </template>
             </template>
@@ -199,5 +194,9 @@
             background: white;
             padding: 2px 0.33em;
         }
+    }
+
+    .placeholder {
+        opacity: 0.5;
     }
 </style>
