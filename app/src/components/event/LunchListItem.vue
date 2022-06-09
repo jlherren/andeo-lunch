@@ -1,5 +1,5 @@
 <template>
-    <v-list-item :to="link" :class="{past: isPast}">
+    <v-list-item :to="link" :class="{past: isPast}" two-line>
         <v-list-item-icon>
             <v-icon>{{ icon }}</v-icon>
         </v-list-item-icon>
@@ -14,9 +14,12 @@
             </v-list-item-subtitle>
         </v-list-item-content>
 
-        <v-list-item-action v-if="ownParticipationIcon">
+        <v-list-item-icon v-if="showPointCreditIcon">
+            <v-icon>{{ $icons.points }}</v-icon>
+        </v-list-item-icon>
+        <v-list-item-icon v-if="ownParticipationIcon">
             <v-icon :color="ownParticipationIconColor">{{ ownParticipationIcon }}</v-icon>
-        </v-list-item-action>
+        </v-list-item-icon>
     </v-list-item>
 </template>
 
@@ -33,7 +36,7 @@
         },
 
         props: {
-            event:     {
+            event: {
                 type:     Object,
                 required: true,
             },
@@ -50,12 +53,15 @@
         },
 
         computed: {
+            ownParticipation() {
+                return this.$store.getters.participation(this.event.id, this.ownUserId);
+            },
+
             ownParticipationType() {
-                let ownParticipation = this.$store.getters.participation(this.event.id, this.ownUserId);
-                if (!ownParticipation) {
+                if (!this.ownParticipation) {
                     return this.event.type === 'special' ? 'opt-out' : 'undecided';
                 }
-                return ownParticipation.type;
+                return this.ownParticipation.type;
             },
 
             ownParticipationIcon() {
@@ -67,6 +73,12 @@
 
             ownParticipationIconColor() {
                 return this.ownParticipationType === 'undecided' ? 'red' : null;
+            },
+
+            showPointCreditIcon() {
+                return this.ownParticipation?.credits?.points > 0;
+                // Note: We do not show any money credit icon, since this will annoy the person that usually
+                // does the weekly groceries.
             },
 
             icon() {
@@ -112,9 +124,14 @@
         margin-left: 0.5em;
     }
 
-    .v-list-item__action > .v-icon {
+    .v-list-item__icon:last-child > .v-icon {
         // Align equally with the plus buttons
         margin-right: 6px;
+    }
+
+    .v-list-item__icon:not(:first-child) {
+        // It seems that multiple icons isn't really a supported use-case, they lack the margin.
+        margin-left: 16px;
     }
 
     .past {
