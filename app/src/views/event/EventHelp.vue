@@ -7,8 +7,8 @@
         <v-container>
             <h5 class="text-h5">Lunch events</h5>
             <p class="text-body-1">
-                Lunch events are used for normal daily lunches where users can opt-in or opt-out.  Despite the name,
-                lunch events can also be used for a breakfast or dinner.  Feature set:
+                Lunch events are used for normal daily lunches where users can opt-in, opt-out or have their defaults
+                be applied.  Feature set:
             </p>
             <ul>
                 <li>Default opt-ins according to user settings.</li>
