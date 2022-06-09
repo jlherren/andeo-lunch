@@ -29,7 +29,7 @@ async function getDb() {
  * @param {object} config
  * @returns {Promise<null>}
  */
-async function dbPurge(config) {
+module.exports.dbPurge = async function dbPurge(config) {
     let connection = await getDb();
     await connection.query('DROP DATABASE andeolunchtest');
     await connection.query('CREATE DATABASE andeolunchtest');
@@ -37,7 +37,7 @@ async function dbPurge(config) {
     await connection.query('USE andeolunchtest');
     await axios.get(`${config.baseUrl}/api/migrate`);
     return null;
-}
+};
 
 /**
  * Run an SQL statement on the DB
@@ -45,15 +45,8 @@ async function dbPurge(config) {
  * @param {string} sql
  * @returns {Promise<null>}
  */
-async function dbSql(sql) {
+module.exports.dbSql = async function dbSql(sql) {
     let connection = await getDb();
     await connection.query(sql);
     return null;
-}
-
-module.exports = (on, config) => {
-    on('task', {
-        'db:purge': () => dbPurge(config),
-        'db:sql':   dbSql,
-    });
 };

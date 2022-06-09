@@ -26,14 +26,14 @@
         "@koa/router": "~10.1.1",
         "bcryptjs": "~2.4.3",
         "chalk": "~4.1.2",
-        "jest-diff": "~27.5.1",
+        "jest-diff": "~28.1.1",
         "joi": "~17.6.0",
         "jsonwebtoken": "~8.5.1",
         "koa": "~2.13.4",
         "koa-bodyparser": "~4.3.0",
         "koa-logger": "~3.2.1",
         "mariadb": "~2.5.6",
-        "sequelize": "~6.19.0",
+        "sequelize": "~6.20.1",
         "sprintf-js": "~1.1.2",
         "umzug": "~2.3.0"
     },
@@ -45,11 +45,11 @@
         "@types/koa-router": "~7.4.4",
         "@types/supertest": "~2.0.12",
         "eslint": "~7.32.0",
-        "eslint-plugin-jest": "~26.1.5",
-        "eslint-plugin-jsdoc": "~39.2.8",
-        "jest": "~27.5.1",
-        "nodemon": "~2.0.15",
-        "sqlite3": "~5.0.5",
-        "supertest": "~6.2.2"
+        "eslint-plugin-jest": "~26.5.3",
+        "eslint-plugin-jsdoc": "~39.3.2",
+        "jest": "~28.1.1",
+        "nodemon": "~2.0.16",
+        "sqlite3": "~5.0.8",
+        "supertest": "~6.2.3"
     }
 }
