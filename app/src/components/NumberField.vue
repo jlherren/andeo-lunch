@@ -18,10 +18,7 @@
         name: 'NumberField',
 
         props: {
-            value: {
-                type:     Number,
-                required: false,
-            },
+            value: Number,
 
             disabled: {
                 type:    Boolean,
