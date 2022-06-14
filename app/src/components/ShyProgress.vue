@@ -12,12 +12,6 @@
             };
         },
 
-        computed: {
-            showLoading() {
-                return this.loading;
-            },
-        },
-
         mounted() {
             setTimeout(() => {
                 this.show = true;
