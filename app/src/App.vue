@@ -181,4 +181,13 @@
             }
         }
     }
+
+    // This is to restore correct CSS precedence... not sure why it's broken.  There are other people with the same issues
+    // https://github.com/vuetifyjs/vuetify/issues/7933
+    // https://stackoverflow.com/questions/64037791/vuetify-css-for-buttons-loads-in-different-order-on-production-build-causing-is
+    .v-item-group.v-bottom-navigation .v-btn {
+        background-color: transparent;
+        height: inherit;
+        min-width: 80px;
+    }
 </style>

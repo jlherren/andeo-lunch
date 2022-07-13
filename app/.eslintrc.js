@@ -378,7 +378,7 @@ module.exports = {
         'jsdoc/require-returns-description':  'off',
         'jsdoc/require-property-description': 'off',
 
-        'vue/script-indent': [
+        'vue/script-indent':                 [
             'warn',
             4,
             {
@@ -386,11 +386,13 @@ module.exports = {
                 switchCase: 1,
             },
         ],
-        'vue/html-indent':   [
+        'vue/html-indent':                   [
             'warn',
             4,
             {},
         ],
+        'vue/multi-word-component-names':    'off',
+        'vue/no-v-text-v-html-on-component': 'off',
     },
     overrides:     [
         {
