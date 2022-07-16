@@ -11,15 +11,31 @@ let dbConnection = null;
  */
 async function getDb() {
     if (dbConnection === null) {
-        dbConnection = await MariaDB.createConnection({
-            host:     'localhost',
-            port:     52476,
-            database: 'andeolunchtest',
-            user:     'andeolunchtest',
-            password: 'andeolunchtest',
-        });
+        // When the docker container has just started, MariaDB is sometimes not ready yet.
+        let attempts = 0;
+        while (true) {
+            try {
+                attempts++;
+                dbConnection = await MariaDB.createConnection({
+                    host:     'localhost',
+                    port:     52476,
+                    database: 'andeolunchtest',
+                    user:     'andeolunchtest',
+                    password: 'andeolunchtest',
+                });
+                if (attempts > 1) {
+                    console.log(`DB connection succeeded on attempt ${attempts}`);
+                }
+                break;
+            } catch (err) {
+                if (attempts >= 5) {
+                    throw err;
+                }
+                console.log(`DB connection failed on attempt ${attempts}, will try again in a second`);
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+        }
     }
-
     return dbConnection;
 }
 
