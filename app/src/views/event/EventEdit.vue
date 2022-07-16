@@ -123,7 +123,7 @@
             let event = this.$store.getters.event(this.eventId);
             if (event.type === 'transfer') {
                 // Oops, you're in the wrong view, redirect.
-                await this.$router.push(`/transfers/${this.eventId}/edit`);
+                await this.$router.replace(`/transfers/${this.eventId}/edit`);
                 return;
             }
             this.type = event.type;
@@ -241,7 +241,7 @@
                         await this.$store.dispatch('saveParticipations', datasets);
                     }
 
-                    await this.$router.push(`/events/${eventId}`);
+                    await this.$router.back();
                 } catch (err) {
                     // Disabled flag is only released on errors, otherwise we risk double saving after the first
                     // one is successful and the modal is closing.

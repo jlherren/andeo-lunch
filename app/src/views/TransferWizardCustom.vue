@@ -74,7 +74,7 @@
                         type: 'transfer',
                     });
 
-                    await this.$router.push(`/events/${eventId}`);
+                    await this.$router.replace(`/transfers/${eventId}`);
                 } catch (err) {
                     this.isBusy = false;
                     throw err;

@@ -84,7 +84,7 @@
                         this.$store.commit('globalSnackbar', this.getReasonText(successOrReason));
                     } else {
                         this.$store.commit('globalSnackbar', 'Password changed successfully!');
-                        await this.$router.push('/');
+                        await this.$router.back();
                     }
                 } catch (err) {
                     this.isBusy = false;

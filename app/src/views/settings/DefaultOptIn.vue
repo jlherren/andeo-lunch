@@ -99,7 +99,7 @@
                     if (Object.keys(settingsUpdate).length) {
                         await this.$store.dispatch('saveSettings', settingsUpdate);
                     }
-                    await this.$router.push('/');
+                    await this.$router.back();
                 } catch (err) {
                     this.isBusy = false;
                     throw err;

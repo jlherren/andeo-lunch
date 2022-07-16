@@ -135,7 +135,7 @@
                 let event = this.$store.getters.event(this.eventId);
                 if (event.type === 'transfer') {
                     // Oops, you're in the wrong view, redirect.
-                    await this.$router.push(`/transfers/${this.eventId}`);
+                    await this.$router.replace(`/transfers/${this.eventId}`);
                     return;
                 }
                 if (event.type !== 'label') {

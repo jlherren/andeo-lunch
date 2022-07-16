@@ -26,6 +26,8 @@ describe('Create events', () => {
         cy.contains('button', 'Save')
             .click();
 
+        cy.contains('.v-list-item', 'Brunch')
+            .click();
         cy.contains('.headline', 'Brunch');
         cy.contains('Participation flat-rate: 0.75')
             .should('be.visible');
@@ -51,6 +53,8 @@ describe('Create events', () => {
         cy.contains('button', 'Save')
             .click();
 
+        cy.contains('.v-list-item', 'Spätzli')
+            .click();
         cy.contains('.headline', 'Spätzli');
     });
 
@@ -71,6 +75,8 @@ describe('Create events', () => {
         cy.contains('button', 'Save')
             .click();
 
+        cy.contains('.v-list-item', 'AoE Zyt Pizza')
+            .click();
         cy.contains('.headline', 'AoE Zyt Pizza');
     });
 
@@ -93,6 +99,8 @@ describe('Create events', () => {
         cy.contains('button', 'Save')
             .click();
 
+        cy.contains('.v-list-item', 'Feiertag')
+            .click();
         cy.contains('.headline', 'Feiertag');
     });
 
@@ -106,10 +114,11 @@ describe('Create events', () => {
             .type('Here is how to do it...');
         cy.contains('button', 'Save')
             .click();
+        cy.contains('.v-list-item', 'Complex menu')
+            .click();
         cy.contains('Here is how to do it...')
             .should('be.visible');
     });
-
 
     it('Alternate flat-rate', () => {
         cy.contains('a', 'Add new lunch')
@@ -121,6 +130,8 @@ describe('Create events', () => {
             .clear()
             .type('0.5');
         cy.contains('button', 'Save')
+            .click();
+        cy.contains('.v-list-item', 'Gratin')
             .click();
         cy.contains('Participation flat-rate: 0.5')
             .should('be.visible');
@@ -138,6 +149,8 @@ describe('Create events', () => {
         cy.contains('button', 'Save')
             .click();
 
+        cy.contains('.v-list-item', 'Pizza')
+            .click();
         cy.contains('Participation flat-rate')
             .should('not.exist');
     });

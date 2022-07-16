@@ -150,7 +150,7 @@
                 let event = this.$store.getters.event(this.eventId);
                 if (event.type !== 'transfer') {
                     // Oops, you're in the wrong view, redirect.
-                    await this.$router.push(`/events/${this.eventId}`);
+                    await this.$router.replace(`/events/${this.eventId}`);
                     return;
                 }
                 await this.$store.dispatch('fetchTransfers', {eventId: this.eventId});
