@@ -17,7 +17,7 @@ describe('Transfers', () => {
             .click();
         cy.contains('[role=button]', 'At the expense of')
             .click();
-        cy.contains('[role=option]', 'Robert Smith')
+        cy.contains('[role=option]', USERS.robert.name)
             .click();
         cy.followLabel('Amount in CHF')
             .type('10.50');
@@ -40,7 +40,7 @@ describe('Transfers', () => {
             .click();
         cy.contains('[role=button]', 'Recipient')
             .click();
-        cy.contains('[role=option]', 'Robert Smith')
+        cy.contains('[role=option]', USERS.robert.name)
             .click();
         cy.followLabel('Amount')
             .type('5');
@@ -63,7 +63,7 @@ describe('Transfers', () => {
             .click();
         cy.contains('[role=button]', 'Recipient of real money')
             .click();
-        cy.contains('[role=option]', 'Robert Smith')
+        cy.contains('[role=option]', USERS.robert.name)
             .click();
         cy.followLabel('Amount in CHF')
             .type('100');
@@ -84,14 +84,14 @@ describe('Transfers', () => {
             .click();
         cy.contains('[role=button]', 'Buyer')
             .click();
-        cy.contains('[role=option]:visible', 'John Doe')
+        cy.contains('[role=option]:visible', USERS.john.name)
             .click();
         // Wait until it's closed, otherwise the next one will fail
         cy.get('[role=option]:visible')
             .should('not.exist');
         cy.contains('[role=button]', 'Seller')
             .click();
-        cy.contains('[role=option]:visible', 'Robert Smith')
+        cy.contains('[role=option]:visible', USERS.robert.name)
             .click();
         cy.followLabel('Points')
             .type('4');

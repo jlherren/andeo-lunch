@@ -8,7 +8,7 @@ describe('Home screen', () => {
 
     it('Contains all expected elements', () => {
         cy.login(USERS.john.username, USERS.john.password);
-        cy.contains('header', 'John Doe');
+        cy.contains('header', USERS.john.name);
         cy.contains('main', 'Your balance');
         cy.contains('main', 'Upcoming events');
         cy.contains('main', 'No upcoming events');

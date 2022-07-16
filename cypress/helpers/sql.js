@@ -2,6 +2,7 @@ export const USERS = {
     john: {
         username: 'john.doe',
         password: 'andeolunchtest',
+        name:     'John Doe',
         insert() {
             cy.task('db:sql', `
                 INSERT INTO user (username, password, name, active, createdAt, updatedAt)
@@ -13,6 +14,7 @@ export const USERS = {
     robert: {
         username: 'robert.smith',
         password: 'andeolunchtest',
+        name:     'Robert Smith',
         insert() {
             cy.task('db:sql', `
                 INSERT INTO user (username, password, name, active, createdAt, updatedAt)
@@ -33,8 +35,8 @@ export const LUNCH = {
                 INSERT INTO lunch (event, pointsCost, vegetarianMoneyFactor, participationFlatRate, createdAt, updatedAt)
                     VALUES (1, 8, 0.75, NULL, NOW(), NOW());
             `);
-        }
-    }
+        },
+    },
 }
 
 export const SPECIAL = {
@@ -48,6 +50,6 @@ export const SPECIAL = {
                 INSERT INTO lunch (event, createdAt, updatedAt)
                     VALUES (2, NOW(), NOW());
             `);
-        }
-    }
-}
+        },
+    },
+};

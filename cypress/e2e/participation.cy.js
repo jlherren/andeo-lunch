@@ -11,26 +11,26 @@ describe('Lunch event', () => {
     });
 
     it('Is default undecided', () => {
-        cy.contains('[role=listitem]', 'John Doe')
+        cy.contains('[role=listitem]', USERS.john.name)
             .find('[data-type=undecided]');
     });
 
     it('Can quick opt-in', () => {
         cy.contains('button', 'Opt-in')
             .click();
-        cy.contains('[role=listitem]', 'John Doe')
+        cy.contains('[role=listitem]', USERS.john.name)
             .find('[data-type=omnivorous]');
     });
 
     it('Can quick opt-out', () => {
         cy.contains('button', 'Opt-out')
             .click();
-        cy.contains('[role=listitem]', 'John Doe')
+        cy.contains('[role=listitem]', USERS.john.name)
             .find('[data-type=opt-out]');
     });
 
     it('Can opt-in someone else', () => {
-        cy.contains('[role=listitem]', 'Robert Smith')
+        cy.contains('[role=listitem]', USERS.robert.name)
             .click();
         cy.getDialog().within(() => {
             cy.get('button[value=vegetarian]')
@@ -39,12 +39,12 @@ describe('Lunch event', () => {
                 .click();
         });
         cy.noDialog();
-        cy.contains('[role=listitem]', 'Robert Smith')
+        cy.contains('[role=listitem]', USERS.robert.name)
             .find('[data-type=vegetarian]');
     });
 
     it('Can edit participation twice in a row', () => {
-        cy.contains('[role=listitem]', 'John Doe')
+        cy.contains('[role=listitem]', USERS.john.name)
             .click();
         cy.getDialog().within(() => {
             cy.get('button[value=omnivorous]')
@@ -53,9 +53,9 @@ describe('Lunch event', () => {
                 .click();
         });
         cy.noDialog();
-        cy.contains('[role=listitem]', 'John Doe')
+        cy.contains('[role=listitem]', USERS.john.name)
             .find('[data-type=omnivorous]');
-        cy.contains('[role=listitem]', 'John Doe')
+        cy.contains('[role=listitem]', USERS.john.name)
             .click();
         cy.getDialog().within(() => {
             cy.get('button[value=vegetarian]')
@@ -64,7 +64,7 @@ describe('Lunch event', () => {
                 .click();
         });
         cy.noDialog();
-        cy.contains('[role=listitem]', 'John Doe')
+        cy.contains('[role=listitem]', USERS.john.name)
             .find('[data-type=vegetarian]');
     });
 });
@@ -80,12 +80,12 @@ describe('Special event', () => {
     });
 
     it('Is default opt-out', () => {
-        cy.contains('[role=listitem]', 'John Doe')
+        cy.contains('[role=listitem]', USERS.john.name)
             .find('[data-type=opt-out]');
     });
 
     it('Can opt-in', () => {
-        cy.contains('[role=listitem]', 'John Doe')
+        cy.contains('[role=listitem]', USERS.john.name)
             .click();
         cy.getDialog().within(() => {
             cy.get('button[value=opt-in]')
@@ -94,12 +94,12 @@ describe('Special event', () => {
                 .click();
         });
         cy.noDialog();
-        cy.contains('[role=listitem]', 'John Doe')
+        cy.contains('[role=listitem]', USERS.john.name)
             .find('[data-type=opt-in]');
     });
 
     it('Can opt-in someone else', () => {
-        cy.contains('[role=listitem]', 'Robert Smith')
+        cy.contains('[role=listitem]', USERS.robert.name)
             .click();
         cy.getDialog().within(() => {
             cy.get('button[value=opt-in]')
@@ -108,7 +108,7 @@ describe('Special event', () => {
                 .click();
         });
         cy.noDialog();
-        cy.contains('[role=listitem]', 'Robert Smith')
+        cy.contains('[role=listitem]', USERS.robert.name)
             .find('[data-type=opt-in]');
     });
 });
