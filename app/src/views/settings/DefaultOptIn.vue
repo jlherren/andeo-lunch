@@ -74,8 +74,8 @@
         },
 
         async created() {
-            await this.$store.dispatch('fetchSettings');
-            this.settings = this.$store.getters.settings;
+            await this.$store().fetchSettings();
+            this.settings = this.$store().settings;
             this.isBusy = false;
         },
 
@@ -97,7 +97,7 @@
                     }
                     console.log(settingsUpdate);
                     if (Object.keys(settingsUpdate).length) {
-                        await this.$store.dispatch('saveSettings', settingsUpdate);
+                        await this.$store().saveSettings(settingsUpdate);
                     }
                     await this.$router.back();
                 } catch (err) {

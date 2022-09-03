@@ -46,7 +46,8 @@
 
 <script>
     import TheAppBar from '../../components/TheAppBar';
-    import {mapGetters} from 'vuex';
+    import {mapState} from 'pinia';
+    import {useStore} from '@/store';
 
     export default {
         components: {
@@ -54,7 +55,7 @@
         },
 
         computed: {
-            ...mapGetters([
+            ...mapState(useStore, [
                 'ownUser',
                 'version',
             ]),

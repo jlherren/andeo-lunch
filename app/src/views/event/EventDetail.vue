@@ -118,7 +118,7 @@
         data() {
             return {
                 eventId:       parseInt(this.$route.params.id, 10),
-                ownUserId:     this.$store.getters.ownUserId,
+                ownUserId:     this.$store().ownUserId,
                 confirmDelete: false,
                 isBusy:        true,
                 userToAdd:     null,
@@ -128,18 +128,18 @@
         async created() {
             try {
                 await Promise.all([
-                    this.$store.dispatch('fetchUsers'),
-                    this.$store.dispatch('fetchSettings'),
-                    this.$store.dispatch('fetchEvent', {eventId: this.eventId}),
+                    this.$store().fetchUsers(),
+                    this.$store().fetchSettings(),
+                    this.$store().fetchEvent({eventId: this.eventId}),
                 ]);
-                let event = this.$store.getters.event(this.eventId);
+                let event = this.$store().event(this.eventId);
                 if (event.type === 'transfer') {
                     // Oops, you're in the wrong view, redirect.
                     await this.$router.replace(`/transfers/${this.eventId}`);
                     return;
                 }
                 if (event.type !== 'label') {
-                    await this.$store.dispatch('fetchParticipations', {eventId: this.eventId});
+                    await this.$store().fetchParticipations({eventId: this.eventId});
                 }
             } finally {
                 this.isBusy = false;
@@ -148,7 +148,7 @@
 
         computed: {
             event() {
-                let event = this.$store.getters.event(this.eventId);
+                let event = this.$store().event(this.eventId);
                 return event?.type !== 'transfer' ? event : null;
             },
 
@@ -161,7 +161,7 @@
             },
 
             participations() {
-                return this.$store.getters.participations(this.eventId);
+                return this.$store().participations(this.eventId);
             },
 
             participationsAreLoaded() {
@@ -169,7 +169,7 @@
             },
 
             visibleUsers() {
-                return this.$store.getters.visibleUsers;
+                return this.$store().visibleUsers;
             },
 
             sortedParticipations() {
@@ -201,8 +201,8 @@
                     if (diff) {
                         return diff;
                     }
-                    let nameFirst = this.$store.getters.user(first.userId)?.name;
-                    let nameSecond = this.$store.getters.user(second.userId)?.name;
+                    let nameFirst = this.$store().user(first.userId)?.name;
+                    let nameSecond = this.$store().user(second.userId)?.name;
                     if (nameFirst < nameSecond) {
                         return -1;
                     }
@@ -244,7 +244,7 @@
             },
 
             optInIcon() {
-                return this.$icons[this.$store.getters.settings.quickOptIn];
+                return this.$icons[this.$store().settings.quickOptIn];
             },
 
             commentHtml() {
@@ -260,7 +260,7 @@
 
         methods: {
             optIn() {
-                this.setParticipation(this.$store.getters.settings.quickOptIn);
+                this.setParticipation(this.$store().settings.quickOptIn);
             },
 
             optOut() {
@@ -270,7 +270,7 @@
             async setParticipation(type) {
                 try {
                     this.isBusy = true;
-                    await this.$store.dispatch('saveParticipation', {
+                    await this.$store().saveParticipation({
                         userId:  this.ownUserId,
                         eventId: this.eventId,
                         type,
@@ -287,7 +287,7 @@
             async deleteEvent() {
                 try {
                     this.isBusy = true;
-                    await this.$store.dispatch('deleteEvent', {eventId: this.eventId});
+                    await this.$store().deleteEvent({eventId: this.eventId});
                     this.confirmDelete = false;
                     this.$router.go(-1);
                 } catch (err) {
@@ -297,7 +297,7 @@
             },
 
             async refreshEvent() {
-                await this.$store.dispatch('fetchEvent', {eventId: this.eventId});
+                await this.$store().fetchEvent({eventId: this.eventId});
             },
         },
     };

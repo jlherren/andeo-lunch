@@ -79,12 +79,12 @@
 
         created() {
             // noinspection ES6MissingAwait
-            this.$store.dispatch('fetchUsers');
+            this.$store().fetchUsers();
         },
 
         computed: {
             users() {
-                return this.$store.getters.visibleUsers.concat({
+                return this.$store().visibleUsers.concat({
                     id:   -1,
                     name: 'Temporary pot',
                 });
@@ -112,7 +112,7 @@
                         amount:      this.amount,
                         currency:    this.currency,
                     }];
-                    await this.$store.dispatch('saveTransfers', {eventId: this.event.id, transfers});
+                    await this.$store().saveTransfers({eventId: this.event.id, transfers});
                     this.$emit('close');
                 } catch (err) {
                     // Disabled flag is only released on errors, otherwise we risk double saving after the first

@@ -14,7 +14,7 @@
                         Username
                     </v-list-item-title>
                     <v-list-item-subtitle>
-                        {{ $store.getters.ownUsername }}
+                        {{ ownUsername }}
                     </v-list-item-subtitle>
                 </v-list-item-content>
             </v-list-item>
@@ -28,7 +28,7 @@
                         Display name
                     </v-list-item-title>
                     <v-list-item-subtitle>
-                        {{ $store.getters.ownUser.name }}
+                        {{ ownUser.name }}
                     </v-list-item-subtitle>
                 </v-list-item-content>
             </v-list-item>
@@ -61,6 +61,8 @@
 
 <script>
     import TheAppBar from '@/components/TheAppBar';
+    import {mapState} from 'pinia';
+    import {useStore} from '@/store';
 
     export default {
         name: 'Profile',
@@ -70,12 +72,19 @@
         },
 
         created() {
-            this.$store.dispatch('fetchUser', {userId: this.$store.getters.ownUserId});
+            this.$store().fetchUser({userId: this.$store().ownUserId});
+        },
+
+        computed: {
+            ...mapState(useStore, [
+                'ownUser',
+                'ownUsername',
+            ]),
         },
 
         methods: {
             logout() {
-                this.$store.dispatch('logout');
+                this.$store().logout();
             },
         },
     };

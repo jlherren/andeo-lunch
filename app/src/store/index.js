@@ -2,15 +2,15 @@ import * as PackageJson from '../../../package.json';
 import Backend from '@/store/backend';
 import Cache from '@/store/cache';
 import Vue from 'vue';
-import Vuex from 'vuex';
+import {defineStore} from 'pinia';
 
-Vue.use(Vuex);
-
-export default new Vuex.Store({
-    state: {
+export let useStore = defineStore('main', {
+    state: () => ({
         globalSnackbar: null,
 
-        version:               PackageJson.version,
+        // System information
+        version: PackageJson.version,
+
         payUpDefaultRecipient: null,
         defaultFlatRate:       null,
 
@@ -20,119 +20,101 @@ export default new Vuex.Store({
             username:              null,
         },
 
-        users: {
+        usersById: {
             // Users by ID
         },
 
-        paymentInfos: {
+        paymentInfosById: {
             // By user ID
         },
 
-        absences: {
+        _absences: {
             // By user ID
         },
 
         // All user IDs and visible user IDs
-        allUserIds:     [],
-        visibleUserIds: [],
+        _allUserIds:     [],
+        _visibleUserIds: [],
 
-        events: {
+        _events: {
             // Events by ID
         },
 
-        participations: {
+        _participations: {
             // Participations by event ID
         },
 
-        singleParticipations: {
+        _singleParticipations: {
             // Single participations by event ID and user ID.  Key format `${eventId}/${userId}`
         },
 
-        transfers: {
+        transfersById: {
             // Transfers by event ID
         },
 
-        transactions: {
+        transactionsById: {
             // Transactions by user ID
 
             // TODO: Unload these again when not needed?  How to handle very old history to avoid memory pressure?
         },
 
-        audits: [],
-
+        // Misc
+        audits:   [],
         settings: {},
 
+        // Grocery list
         groceries: [],
-    },
+    }),
 
     getters: {
-        // System information
-        version: state => state.version,
-
         // Users and account
-        user:         state => userId => state.users[userId] ?? {id: userId},
-        users:        (state, getters) => state.visibleUserIds.map(userId => getters.user(userId)),
-        visibleUsers: (state, getters) => state.visibleUserIds.map(userId => getters.user(userId)),
-        allUsers:     (state, getters) => state.allUserIds.map(userId => getters.user(userId)),
-        paymentInfo:  state => userId => state.paymentInfos[userId] ?? null,
-        absences:     state => userId => state.absences[userId] ?? null,
+        user:         state => userId => state.usersById[userId] ?? {id: userId},
+        users:        state => state._visibleUserIds.map(userId => state.user(userId)),
+        visibleUsers: state => state._visibleUserIds.map(userId => state.user(userId)),
+        allUsers:     state => state._allUserIds.map(userId => state.user(userId)),
+        paymentInfo:  state => userId => state.paymentInfosById[userId] ?? null,
+        absences:     state => userId => state._absences[userId] ?? null,
 
         // Own user
         isLoggedIn:  state => state.account.userId !== null,
         ownUserId:   state => state.account.userId,
         ownUsername: state => state.account.username,
-        ownUser:     (state, getters) => getters.user(getters.ownUserId),
+        ownUser:     state => state.user(state.ownUserId),
 
         // Events
-        events:         state => Object.values(state.events),
-        event:          state => eventId => state.events[eventId],
-        participations: state => eventId => state.participations[eventId],
-        participation:  state => (eventId, userId) => state.singleParticipations[`${eventId}/${userId}`],
-        transfers:      state => eventId => state.transfers[eventId],
+        events:         state => Object.values(state._events),
+        event:          state => eventId => state._events[eventId],
+        participations: state => eventId => state._participations[eventId],
+        participation:  state => (eventId, userId) => state._singleParticipations[`${eventId}/${userId}`],
+        transfers:      state => eventId => state.transfersById[eventId],
 
         // Transactions
-        transactions: state => userId => state.transactions[userId],
-
-        // Grocery list
-        groceries: state => state.groceries,
-
-        // Misc
-        globalSnackbar:        state => state.globalSnackbar,
-        audits:                state => state.audits,
-        settings:              state => state.settings,
-        payUpDefaultRecipient: state => state.payUpDefaultRecipient,
-        defaultFlatRate:       state => state.defaultFlatRate,
-    },
-
-    mutations: {
-        updateSettings(state, newSettings) {
-            state.account.user.settings = newSettings;
-        },
-
-        globalSnackbar(state, text) {
-            state.globalSnackbar = text;
-        },
+        transactions: state => userId => state.transactionsById[userId],
     },
 
     actions: {
+        setGlobalSnackbar(text) {
+            this.globalSnackbar = text;
+        },
+
         // Account
-        async login(context, data) {
+        async login(data) {
             let response = await Backend.post('/account/login', data);
             localStorage.setItem('token', response.data.token);
             // Fetch all users, see comment in checkLogin()
-            await context.dispatch('fetchUsers');
+            await this.fetchUsers();
             // Don't set the following until after the user is fetched, otherwise 'ownUser' won't be reliable
-            context.state.account.userId = response.data.userId;
-            context.state.account.username = response.data.username;
+            this.account.userId = response.data.userId;
+            this.account.username = response.data.username;
         },
 
-        logout(context) {
+        logout() {
             localStorage.removeItem('token');
-            context.state.account.userId = null;
-            context.commit('globalSnackbar', 'You have been logged out');
+            this.account.userId = null;
+            this.setGlobalSnackbar('You have been logged out');
         },
 
-        async checkLogin(context) {
+        async checkLogin() {
             let userId = null;
             let username = null;
             let shouldRenew = false;
@@ -144,18 +126,18 @@ export default new Vuex.Store({
             if (userId) {
                 // Fetch all users, so that by policy we always have users available.  This allows us to never wait for
                 // promises that fetch users.
-                await context.dispatch('fetchUsers');
+                await this.fetchUsers();
             }
 
             // This should not be set before the above fetchUser is finished, otherwise 'ownUser' won't be reliable
-            context.state.account.userId = userId;
-            context.state.account.username = username;
-            context.state.account.initialCheckCompleted = true;
+            this.account.userId = userId;
+            this.account.username = username;
+            this.account.initialCheckCompleted = true;
 
             // Finally, renew the token if necessary, but don't wait for it to complete
             if (shouldRenew) {
                 // noinspection ES6MissingAwait
-                context.dispatch('renewToken');
+                this.renewToken();
             }
         },
 
@@ -167,11 +149,10 @@ export default new Vuex.Store({
         /**
          * Change the password
          *
-         * @param {ActionContext} context
          * @param {object} data
          * @returns {Promise<boolean|string>} True if successful, or a reason if not
          */
-        async changePassword(context, data) {
+        async changePassword(data) {
             let response = await Backend.post('/account/password', data);
             if (response.data.success) {
                 return true;
@@ -180,18 +161,18 @@ export default new Vuex.Store({
         },
 
         // Users
-        async fetchUser(context, {userId}) {
+        async fetchUser({userId}) {
             if (userId === -1) {
                 return;
             }
             await Cache.ifNotFresh('user', userId, 10000, async () => {
                 let response = await Backend.get(`/users/${userId}`);
                 let user = response.data.user;
-                Vue.set(context.state.users, user.id, user);
+                Vue.set(this.usersById, user.id, user);
             });
         },
 
-        fetchUsers(context) {
+        fetchUsers() {
             return Cache.ifNotFresh('users', 0, 10000, async () => {
                 let response = await Backend.get('/users');
                 let users = {};
@@ -199,64 +180,64 @@ export default new Vuex.Store({
                     users[user.id] = user;
                     Cache.validate('user', user.id);
                 }
-                Vue.set(context.state, 'users', users);
-                context.state.visibleUserIds = response.data.users
+                Vue.set(this, 'usersById', users);
+                this._visibleUserIds = response.data.users
                     .filter(user => !user.hidden)
                     .map(user => user.id);
-                context.state.allUserIds = response.data.users
+                this._allUserIds = response.data.users
                     .map(user => user.id);
             });
         },
 
         // Events
-        fetchEvents(context, params) {
+        fetchEvents(params) {
             return Cache.ifNotFresh('events', JSON.stringify(params), 10000, async () => {
                 let response = await Backend.get('/events', {params});
                 for (let event of response.data.events) {
                     event.date = new Date(event.date);
-                    Vue.set(context.state.events, event.id, event);
+                    Vue.set(this._events, event.id, event);
                 }
                 if (response.data.participations) {
                     for (let participation of response.data.participations) {
                         let key = `${participation.eventId}/${participation.userId}`;
-                        Vue.set(context.state.singleParticipations, key, participation);
+                        Vue.set(this._singleParticipations, key, participation);
                     }
                 }
             });
         },
 
-        fetchEvent(context, {eventId}) {
+        fetchEvent({eventId}) {
             return Cache.ifNotFresh('event', eventId, 10000, async () => {
                 let response = await Backend.get(`/events/${eventId}`);
                 let event = response.data.event;
                 event.date = new Date(event.date);
-                Vue.set(context.state.events, event.id, event);
+                Vue.set(this._events, event.id, event);
             });
         },
 
-        async fetchParticipations(context, {eventId}) {
+        async fetchParticipations({eventId}) {
             await Cache.ifNotFresh('participations', eventId, 10000, async () => {
                 let response = await Backend.get(`/events/${eventId}/participations`);
                 let participations = response.data.participations;
-                Vue.set(context.state.participations, eventId, participations);
+                Vue.set(this._participations, eventId, participations);
 
                 for (let participation of participations) {
                     let key = `${eventId}/${participation.userId}`;
                     Cache.validate('participation', key);
-                    Vue.set(context.state.singleParticipations, key, participation);
+                    Vue.set(this._singleParticipations, key, participation);
                 }
             });
 
             // Fetch all users, not just the ones from the participations
             // noinspection ES6MissingAwait
-            context.dispatch('fetchUsers');
+            this.fetchUsers();
         },
 
-        saveParticipation(context, {eventId, userId, ...data}) {
-            return context.dispatch('saveParticipations', [{eventId, userId, ...data}]);
+        saveParticipation({eventId, userId, ...data}) {
+            return this.saveParticipations([{eventId, userId, ...data}]);
         },
 
-        async saveParticipations(context, datasets) {
+        async saveParticipations(datasets) {
             await Promise.all(
                 datasets.map(({eventId, userId, ...data}) => {
                     let url = `/events/${eventId}/participations/${userId}`;
@@ -274,47 +255,47 @@ export default new Vuex.Store({
 
             let eventIds = [...new Set(datasets.map(dataset => dataset.eventId))];
             await Promise.all(
-                eventIds.map(eventId => context.dispatch('fetchParticipations', {eventId})),
+                eventIds.map(eventId => this.fetchParticipations({eventId})),
             );
 
             // Also refetch user balances, but do not wait until it completes.
             // noinspection ES6MissingAwait
-            context.dispatch('fetchUsers');
+            this.fetchUsers();
         },
 
-        async fetchTransfers(context, {eventId}) {
+        async fetchTransfers({eventId}) {
             await Cache.ifNotFresh('transfers', eventId, 10000, async () => {
                 let response = await Backend.get(`/events/${eventId}/transfers`);
                 let transfers = response.data.transfers;
-                Vue.set(context.state.transfers, eventId, transfers);
+                Vue.set(this.transfersById, eventId, transfers);
             });
 
             // Fetch all users, not just the ones from the transfers
             // noinspection ES6MissingAwait
-            context.dispatch('fetchUsers');
+            this.fetchUsers();
         },
 
-        async saveTransfers(context, {eventId, transfers}) {
+        async saveTransfers({eventId, transfers}) {
             await Backend.post(`/events/${eventId}/transfers`, transfers);
             Cache.invalidate('event', eventId);
             Cache.invalidate('transfers', eventId);
             Cache.invalidate('user');
             Cache.invalidate('users');
-            await context.dispatch('fetchEvent', {eventId});
-            await context.dispatch('fetchTransfers', {eventId});
+            await this.fetchEvent({eventId});
+            await this.fetchTransfers({eventId});
         },
 
-        async deleteTransfer(context, {eventId, transferId}) {
+        async deleteTransfer({eventId, transferId}) {
             await Backend.delete(`/events/${eventId}/transfers/${transferId}`);
             Cache.invalidate('event', eventId);
             Cache.invalidate('transfers', eventId);
             Cache.invalidate('user');
             Cache.invalidate('users');
-            await context.dispatch('fetchEvent', {eventId});
-            await context.dispatch('fetchTransfers', {eventId});
+            await this.fetchEvent({eventId});
+            await this.fetchTransfers({eventId});
         },
 
-        async saveEvent(context, data) {
+        async saveEvent(data) {
             let url = data.id ? `/events/${data.id}` : '/events';
             let response = await Backend.post(url, {...data, id: undefined});
 
@@ -338,18 +319,18 @@ export default new Vuex.Store({
 
             if (eventId) {
                 await Promise.all([
-                    context.dispatch('fetchEvent', {eventId}),
-                    context.dispatch('fetchParticipations', {eventId}),
+                    this.fetchEvent({eventId}),
+                    this.fetchParticipations({eventId}),
                 ]);
             }
 
             return eventId;
         },
 
-        async deleteEvent(context, {eventId}) {
+        async deleteEvent({eventId}) {
             let response = await Backend.delete(`/events/${eventId}`);
             if (response.status === 204) {
-                Vue.delete(context.state.events, eventId);
+                Vue.delete(this._events, eventId);
                 Cache.invalidate('event', eventId);
                 Cache.invalidate('events');
                 Cache.invalidate('user');
@@ -357,18 +338,18 @@ export default new Vuex.Store({
             }
         },
 
-        fetchTransactions(context, {userId}) {
+        fetchTransactions({userId}) {
             return Cache.ifNotFresh('transactions', userId, 10000, async () => {
                 let response = await Backend.get(`/users/${userId}/transactions?with=eventName`);
                 let transactions = response.data.transactions;
                 for (let transaction of transactions) {
                     transaction.date = new Date(transaction.date);
                 }
-                Vue.set(context.state.transactions, userId, transactions);
+                Vue.set(this.transactionsById, userId, transactions);
             });
         },
 
-        fetchAuditLog(context, force = false) {
+        fetchAuditLog(force = false) {
             if (force) {
                 Cache.invalidate('audits');
             }
@@ -381,11 +362,11 @@ export default new Vuex.Store({
                         audit.eventDate = new Date(audit.eventDate);
                     }
                 }
-                context.state.audits = audits;
+                this.audits = audits;
             });
         },
 
-        fetchSettings(context) {
+        fetchSettings() {
             return Cache.ifNotFresh('settings', 0, 5000, async () => {
                 let response = await Backend.get('/settings');
                 let settings = response.data.settings;
@@ -394,70 +375,70 @@ export default new Vuex.Store({
                     settings[`defaultOptIn${i}`] ??= 'undecided';
                 }
                 settings.quickOptIn ??= 'omnivorous';
-                context.state.settings = settings;
+                this.settings = settings;
             });
         },
 
-        async saveSettings(context, settings) {
+        async saveSettings(settings) {
             await Backend.post('/settings', settings);
             Cache.invalidate('settings');
-            await context.dispatch('fetchSettings');
+            await this.fetchSettings();
         },
 
-        fetchPayUpDefaultRecipient(context) {
+        fetchPayUpDefaultRecipient() {
             return Cache.ifNotFresh('payUp.defaultRecipient', 0, 60000, async () => {
                 let response = await Backend.get('/pay-up/default-recipient');
-                context.state.payUpDefaultRecipient = response.data.defaultRecipient;
+                this.payUpDefaultRecipient = response.data.defaultRecipient;
             });
         },
 
-        fetchDefaultFlatRate(context) {
+        fetchDefaultFlatRate() {
             return Cache.ifNotFresh('lunch.defaultFlatRate', 0, 60000, async () => {
                 let response = await Backend.get('/options/default-flat-rate');
-                context.state.defaultFlatRate = response.data.defaultFlatRate;
+                this.defaultFlatRate = response.data.defaultFlatRate;
             });
         },
 
-        fetchUserPaymentInfo(context, {userId}) {
+        fetchUserPaymentInfo({userId}) {
             return Cache.ifNotFresh('paymentInfo', userId, 60000, async () => {
                 let response = await Backend.get(`/users/${userId}/payment-info`);
-                Vue.set(context.state.paymentInfos, userId, response.data.paymentInfo);
+                Vue.set(this.paymentInfosById, userId, response.data.paymentInfo);
             });
         },
 
-        fetchAbsences(context, {userId}) {
+        fetchAbsences({userId}) {
             return Cache.ifNotFresh('absences', userId, 60000, async () => {
                 let response = await Backend.get(`/users/${userId}/absences`);
-                Vue.set(context.state.absences, userId, response.data.absences);
+                Vue.set(this._absences, userId, response.data.absences);
             });
         },
 
-        async saveAbsence(context, {userId, ...data}) {
+        async saveAbsence({userId, ...data}) {
             await Backend.post(`/users/${userId}/absences`, data);
             Cache.invalidate('absences', userId);
-            await context.dispatch('fetchAbsences', {userId});
+            await this.fetchAbsences({userId});
         },
 
-        async deleteAbsence(context, {userId, absenceId}) {
+        async deleteAbsence({userId, absenceId}) {
             let response = await Backend.delete(`/users/${userId}/absences/${absenceId}`);
             if (response.status === 204) {
-                Vue.delete(context.state.absences, absenceId);
+                Vue.delete(this._absences, absenceId);
                 Cache.invalidate('absences', userId);
             }
-            await context.dispatch('fetchAbsences', {userId});
+            await this.fetchAbsences({userId});
         },
 
-        fetchGroceries(context) {
+        fetchGroceries() {
             return Cache.ifNotFresh('groceries', 0, 5000, async () => {
                 let response = await Backend.get('/groceries');
-                context.state.groceries = response.data.groceries;
+                this.groceries = response.data.groceries;
             });
         },
 
-        async saveGrocery(context, {id, noUpdateOrder, ...grocery}) {
-            // Proactively adjust context.state.groceries, so the display updates immediately
+        async saveGrocery({id, noUpdateOrder, ...grocery}) {
+            // Proactively adjust this.groceries, so the display updates immediately
             if (id) {
-                let existing = context.state.groceries.find(g => g.id === id);
+                let existing = this.groceries.find(g => g.id === id);
                 if (existing) {
                     if (grocery.label !== undefined) {
                         existing.label = grocery.label;
@@ -467,7 +448,7 @@ export default new Vuex.Store({
                     }
                 }
             } else {
-                context.state.groceries.unshift({
+                this.groceries.unshift({
                     id: -parseInt(Math.random() * 1e9, 10),
                     ...grocery,
                 });
@@ -483,13 +464,13 @@ export default new Vuex.Store({
             if (!id) {
                 // Need to update, otherwise we won't ever know the real ID
                 // noinspection ES6MissingAwait
-                context.dispatch('fetchGroceries');
+                this.fetchGroceries();
             }
         },
 
-        async deleteGrocery(context, groceryId) {
+        async deleteGrocery(groceryId) {
             // Proactively remove it
-            context.state.groceries = context.state.groceries.filter(g => g.id !== groceryId);
+            this.groceries = this.groceries.filter(g => g.id !== groceryId);
             await Backend.delete(`/groceries/${groceryId}`);
             Cache.invalidate('groceries');
         },

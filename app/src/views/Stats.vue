@@ -44,7 +44,7 @@
         },
 
         created() {
-            this.$store.dispatch('fetchUsers');
+            this.$store().fetchUsers();
         },
 
         computed: {
@@ -71,7 +71,7 @@
             },
 
             tableItems() {
-                return this.$store.getters.visibleUsers.map(user => {
+                return this.$store().visibleUsers.map(user => {
                     return {
                         name:   user.name,
                         points: user.balances.points,
@@ -81,11 +81,11 @@
             },
 
             pointsSum() {
-                return this.$store.getters.visibleUsers.reduce((acc, user) => acc + user.balances.points, 0);
+                return this.$store().visibleUsers.reduce((acc, user) => acc + user.balances.points, 0);
             },
 
             moneySum() {
-                return this.$store.getters.visibleUsers.reduce((acc, user) => acc + user.balances.money, 0);
+                return this.$store().visibleUsers.reduce((acc, user) => acc + user.balances.money, 0);
             },
         },
     };

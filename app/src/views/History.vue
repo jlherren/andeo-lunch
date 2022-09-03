@@ -58,14 +58,14 @@
 
         data() {
             return {
-                ownUserId: this.$store.getters.ownUserId,
+                ownUserId: this.$store().ownUserId,
                 tab:       0,
                 loading:   true,
             };
         },
 
         async created() {
-            await this.$store.dispatch('fetchTransactions', {userId: this.ownUserId});
+            await this.$store().fetchTransactions({userId: this.ownUserId});
             this.loading = false;
             Vue.nextTick(() => this.scrollToBottom());
         },
@@ -73,7 +73,7 @@
         computed: {
             transactions() {
                 let currency = ['points', 'money'][this.tab];
-                let transactions = this.$store.getters.transactions(this.ownUserId) || [];
+                let transactions = this.$store().transactions(this.ownUserId) || [];
                 let now = new Date();
                 return transactions.filter(t => t.currency === currency)
                     .map((t, i) => {

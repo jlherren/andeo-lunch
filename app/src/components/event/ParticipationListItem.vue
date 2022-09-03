@@ -62,7 +62,7 @@
 
         computed: {
             user() {
-                return this.$store.getters.user(this.participation.userId) ?? {};
+                return this.$store().user(this.participation.userId) ?? {};
             },
 
             bigIcon() {

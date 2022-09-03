@@ -106,14 +106,14 @@
         },
 
         async created() {
-            await this.$store.dispatch('fetchAuditLog');
+            await this.$store().fetchAuditLog();
             this.loading = false;
             this.scrollToBottom();
         },
 
         computed: {
             audits() {
-                let audits = this.$store.getters.audits;
+                let audits = this.$store().audits;
                 return audits.map((audit, i) => {
                     return {
                         ...audit,
@@ -236,7 +236,7 @@
                         if (value === -1) {
                             return 'Temporary pot';
                         }
-                        return this.$store.getters.user(value)?.name ?? 'Unknown';
+                        return this.$store().user(value)?.name ?? 'Unknown';
 
                     case 'transfer.currency':
                         return value === 1 ? 'points' : 'money';
@@ -276,7 +276,7 @@
 
             async refresh() {
                 this.loading = true;
-                await this.$store.dispatch('fetchAuditLog', true);
+                await this.$store().fetchAuditLog(true);
                 this.loading = false;
                 this.scrollToBottom();
             },

@@ -44,7 +44,7 @@
 
         data() {
             return {
-                ownUserId: this.$store.getters.ownUserId,
+                ownUserId: this.$store().ownUserId,
             };
         },
 
@@ -54,7 +54,7 @@
 
         computed: {
             ownParticipation() {
-                return this.$store.getters.participation(this.event.id, this.ownUserId);
+                return this.$store().participation(this.event.id, this.ownUserId);
             },
 
             ownParticipationType() {
@@ -103,7 +103,7 @@
             },
 
             participations() {
-                return this.$store.getters.participations(this.event.id);
+                return this.$store().participations(this.event.id);
             },
 
             isPast() {
@@ -113,7 +113,7 @@
 
         methods: {
             async reload() {
-                await this.$store.dispatch('fetchParticipations', {eventId: this.event.id});
+                await this.$store().fetchParticipations({eventId: this.event.id});
             },
         },
     };

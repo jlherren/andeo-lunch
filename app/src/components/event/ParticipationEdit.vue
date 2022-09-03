@@ -86,14 +86,14 @@
         },
 
         async created() {
-            await this.$store.dispatch('fetchUser', {userId: this.participation.userId});
+            await this.$store().fetchUser({userId: this.participation.userId});
             this.isBusy = false;
         },
 
         computed: {
             eligibleUsers() {
                 // Don't bother listing all users, since the dropdown is disabled anyway
-                return [this.$store.getters.user(this.participation.userId)];
+                return [this.$store().user(this.participation.userId)];
             },
         },
 
@@ -112,7 +112,7 @@
                 }
                 this.isBusy = true;
                 try {
-                    await this.$store.dispatch('saveParticipation', {
+                    await this.$store().saveParticipation({
                         userId:  this.user,
                         eventId: this.event.id,
                         type:    this.type,

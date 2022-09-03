@@ -63,7 +63,8 @@
     import ShyProgress from '../../components/ShyProgress';
     import TheAppBar from '../../components/TheAppBar';
     import Vue from 'vue';
-    import {mapGetters} from 'vuex';
+    import {mapState} from 'pinia';
+    import {useStore} from '@/store';
 
     export default {
         name: 'EventEdit',
@@ -104,9 +105,9 @@
         async created() {
             if (!this.eventId) {
                 // noinspection ES6MissingAwait
-                this.$store.dispatch('fetchUsers');
-                await this.$store.dispatch('fetchDefaultFlatRate');
-                let defaultFlatRate = this.$store.getters.defaultFlatRate;
+                this.$store().fetchUsers();
+                await this.$store().fetchDefaultFlatRate();
+                let defaultFlatRate = this.$store().defaultFlatRate;
 
                 let query = this.$route.query;
                 this.type = query?.type ?? 'lunch';
@@ -119,8 +120,8 @@
                 return;
             }
 
-            await this.$store.dispatch('fetchEvent', {eventId: this.eventId});
-            let event = this.$store.getters.event(this.eventId);
+            await this.$store().fetchEvent({eventId: this.eventId});
+            let event = this.$store().event(this.eventId);
             if (event.type === 'transfer') {
                 // Oops, you're in the wrong view, redirect.
                 await this.$router.replace(`/transfers/${this.eventId}/edit`);
@@ -135,14 +136,14 @@
             this.useParticipationFlatRate = event.participationFlatRate !== null;
             this.participationFlatRate = event.participationFlatRate;
             if (this.participationFlatRate === null) {
-                await this.$store.dispatch('fetchDefaultFlatRate');
-                this.participationFlatRate = this.$store.getters.defaultFlatRate;
+                await this.$store().fetchDefaultFlatRate();
+                this.participationFlatRate = this.$store().defaultFlatRate;
             }
             this.isBusy = false;
         },
 
         computed: {
-            ...mapGetters([
+            ...mapState(useStore, [
                 'visibleUsers',
             ]),
 
@@ -225,7 +226,7 @@
                         data.participationFlatRate = this.useParticipationFlatRate ? this.participationFlatRate : null;
                     }
 
-                    let eventId = await this.$store.dispatch('saveEvent', data);
+                    let eventId = await this.$store().saveEvent(data);
 
                     if (isNew) {
                         let userIds = Object.keys(this.helpers).map(id => parseInt(id, 10));
@@ -238,7 +239,7 @@
                                 },
                             };
                         });
-                        await this.$store.dispatch('saveParticipations', datasets);
+                        await this.$store().saveParticipations(datasets);
                     }
 
                     await this.$router.back();

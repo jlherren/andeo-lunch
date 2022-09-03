@@ -36,7 +36,8 @@
     import {EventService} from '@/services/eventService';
     import Loading from '@/views/Loading';
     import Login from '@/views/Login';
-    import {mapGetters} from 'vuex';
+    import {mapState} from 'pinia';
+    import {useStore} from '@/store';
 
     export default {
         name: 'App',
@@ -84,29 +85,29 @@
             this.$vuetify.theme.dark = localStorage.getItem('dark-mode') === 'true';
 
             this.unregisterErrors = EventService.error.register(error => {
-                this.$store.commit('globalSnackbar', `Error: ${error.message}`);
+                this.$store().setGlobalSnackbar(`Error: ${error.message}`);
             });
             this.unregisterSystemMessage = EventService.systemMessage.register(message => {
-                this.$store.commit('globalSnackbar', message);
+                this.$store().setGlobalSnackbar(message);
             });
 
-            this.$store.dispatch('checkLogin');
+            this.$store().checkLogin();
         },
 
         computed: {
-            ...mapGetters([
+            ...mapState(useStore, [
                 'isLoggedIn',
                 'globalSnackbar',
             ]),
 
             initialCheckCompleted() {
-                return this.$store.state.account.initialCheckCompleted;
+                return this.$store().account.initialCheckCompleted;
             },
         },
 
         methods: {
             closeSnackbar() {
-                this.$store.commit('globalSnackbar', null);
+                this.$store().setGlobalSnackbar(null);
             },
         },
 

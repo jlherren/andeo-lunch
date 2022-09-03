@@ -57,7 +57,8 @@
     import ShyProgress from '../components/ShyProgress';
     import TheAppBar from '../components/TheAppBar';
     import Vue from 'vue';
-    import {mapGetters} from 'vuex';
+    import {mapState} from 'pinia';
+    import {useStore} from '@/store';
 
     export default {
         name: 'GroceryList',
@@ -75,12 +76,12 @@
         },
 
         async created() {
-            await this.$store.dispatch('fetchGroceries');
+            await this.$store().fetchGroceries();
             this.loading = false;
         },
 
         computed: {
-            ...mapGetters([
+            ...mapState(useStore, [
                 'groceries',
             ]),
 
@@ -130,28 +131,28 @@
                 // Check if an identical item exists already
                 let existing = this.groceries.find(grocery => grocery.label === label && grocery.checked);
                 if (existing) {
-                    this.$store.dispatch('saveGrocery', {
+                    this.$store().saveGrocery({
                         id:      existing.id,
                         checked: false,
                     });
                     return;
                 }
 
-                this.$store.dispatch('saveGrocery', {
+                this.$store().saveGrocery({
                     label,
                     checked: false,
                 });
             },
 
             onChangeChecked(grocery) {
-                this.$store.dispatch('saveGrocery', {
+                this.$store().saveGrocery({
                     id:      grocery.id,
                     checked: grocery.checked,
                 });
             },
 
             onChangeLabel(grocery) {
-                this.$store.dispatch('saveGrocery', {
+                this.$store().saveGrocery({
                     id:            grocery.id,
                     label:         grocery.label,
                     noUpdateOrder: true,
@@ -159,7 +160,7 @@
             },
 
             deleteItem(grocery) {
-                this.$store.dispatch('deleteGrocery', grocery.id);
+                this.$store().deleteGrocery(grocery.id);
             },
         },
     };

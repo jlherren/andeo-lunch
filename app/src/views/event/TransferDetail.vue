@@ -146,14 +146,14 @@
         async created() {
             try {
                 this.isBusy = true;
-                await this.$store.dispatch('fetchEvent', {eventId: this.eventId});
-                let event = this.$store.getters.event(this.eventId);
+                await this.$store().fetchEvent({eventId: this.eventId});
+                let event = this.$store().event(this.eventId);
                 if (event.type !== 'transfer') {
                     // Oops, you're in the wrong view, redirect.
                     await this.$router.replace(`/events/${this.eventId}`);
                     return;
                 }
-                await this.$store.dispatch('fetchTransfers', {eventId: this.eventId});
+                await this.$store().fetchTransfers({eventId: this.eventId});
             } finally {
                 this.isBusy = false;
             }
@@ -161,11 +161,11 @@
 
         computed: {
             event() {
-                return this.$store.getters.event(this.eventId);
+                return this.$store().event(this.eventId);
             },
 
             transfers: function () {
-                let transfers = this.$store.getters.transfers(this.eventId);
+                let transfers = this.$store().transfers(this.eventId);
                 if (!transfers) {
                     return null;
                 }
@@ -223,7 +223,7 @@
                 if (userId === -1) {
                     return 'Temporary pot';
                 }
-                return this.$store.getters.user(userId)?.name;
+                return this.$store().user(userId)?.name;
             },
 
             getOrdering(transfer) {
@@ -243,7 +243,7 @@
             async deleteEvent() {
                 try {
                     this.isBusy = true;
-                    await this.$store.dispatch('deleteEvent', {eventId: this.eventId});
+                    await this.$store().deleteEvent({eventId: this.eventId});
                     this.deleteEventDialog = false;
                     this.$router.go(-1);
                 } catch (err) {
@@ -260,7 +260,7 @@
             async deleteTransfer(transferId) {
                 try {
                     this.isBusy = true;
-                    await this.$store.dispatch('deleteTransfer', {eventId: this.event.id, transferId});
+                    await this.$store().deleteTransfer({eventId: this.event.id, transferId});
                     this.deleteTransferDialog = false;
                 } finally {
                     this.isBusy = false;

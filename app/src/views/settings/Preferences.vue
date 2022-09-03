@@ -114,12 +114,12 @@
         },
 
         created() {
-            this.$store.dispatch('fetchSettings');
+            this.$store().fetchSettings();
         },
 
         computed: {
             defaultOptIn() {
-                let settings = this.$store.getters.settings;
+                let settings = this.$store().settings;
                 let optInValues = ['omnivorous', 'vegetarian'];
                 let optInDays = [];
                 for (let i = 1; i <= 5; i++) {

@@ -42,7 +42,8 @@
 <script>
     import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
-    import {mapGetters} from 'vuex';
+    import {mapState} from 'pinia';
+    import {useStore} from '@/store';
 
     export default {
         name: 'TransferWizardPayUp',
@@ -58,7 +59,7 @@
                 amount:         null,
                 recipient:      null,
                 recipientRules: [
-                    v => !!v && v !== this.$store.getters.ownUserId,
+                    v => !!v && v !== this.$store().ownUserId,
                 ],
                 amountRules:    [
                     v => v > 0,
@@ -68,20 +69,20 @@
 
         async created() {
             // noinspection ES6MissingAwait
-            this.$store.dispatch('fetchUsers');
+            this.$store().fetchUsers();
 
-            await this.$store.dispatch('fetchPayUpDefaultRecipient');
+            await this.$store().fetchPayUpDefaultRecipient();
             if (this.recipient === null) {
-                let defaultRecipient = this.$store.getters.payUpDefaultRecipient;
+                let defaultRecipient = this.$store().payUpDefaultRecipient;
                 // Do not set if it is null/undefined, otherwise it triggers validation
-                if (defaultRecipient && defaultRecipient !== this.$store.getters.ownUserId) {
+                if (defaultRecipient && defaultRecipient !== this.$store().ownUserId) {
                     this.recipient = defaultRecipient;
                 }
             }
         },
 
         computed: {
-            ...mapGetters([
+            ...mapState(useStore, [
                 'visibleUsers',
             ]),
 
@@ -89,14 +90,14 @@
                 if (!this.recipient) {
                     return null;
                 }
-                return this.$store.getters.paymentInfo(this.recipient);
+                return this.$store().paymentInfo(this.recipient);
             },
 
             recipientName() {
                 if (!this.recipient) {
                     return null;
                 }
-                return this.$store.getters.user(this.recipient).name;
+                return this.$store().user(this.recipient).name;
             },
         },
 
@@ -108,7 +109,7 @@
                 try {
                     this.isBusy = true;
 
-                    let eventId = await this.$store.dispatch('saveEvent', {
+                    let eventId = await this.$store().saveEvent({
                         name: 'Pay up',
                         date: new Date(),
                         type: 'transfer',
@@ -116,11 +117,11 @@
 
                     let transfers = [{
                         senderId:    this.recipient,
-                        recipientId: this.$store.getters.ownUserId,
+                        recipientId: this.$store().ownUserId,
                         amount:      this.amount,
                         currency:    'money',
                     }];
-                    await this.$store.dispatch('saveTransfers', {eventId, transfers});
+                    await this.$store().saveTransfers({eventId, transfers});
 
                     await this.$router.replace(`/transfers/${eventId}`);
                 } catch (err) {
@@ -132,7 +133,7 @@
 
         watch: {
             recipient(userId) {
-                this.$store.dispatch('fetchUserPaymentInfo', {userId});
+                this.$store().fetchUserPaymentInfo({userId});
             },
         },
     };

@@ -51,7 +51,8 @@
 <script>
     import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
-    import {mapGetters} from 'vuex';
+    import {mapState} from 'pinia';
+    import {useStore} from '@/store';
 
     export default {
         name: 'TransferWizardSimple',
@@ -68,7 +69,7 @@
                 amount:      null,
                 reason:      '',
                 senderRules: [
-                    v => !!v && v !== this.$store.getters.ownUserId,
+                    v => !!v && v !== this.$store().ownUserId,
                 ],
                 amountRules: [
                     v => v > 0,
@@ -80,11 +81,11 @@
         },
 
         created() {
-            this.$store.dispatch('fetchUsers');
+            this.$store().fetchUsers();
         },
 
         computed: {
-            ...mapGetters([
+            ...mapState(useStore, [
                 'visibleUsers',
             ]),
         },
@@ -97,7 +98,7 @@
                 try {
                     this.isBusy = true;
 
-                    let eventId = await this.$store.dispatch('saveEvent', {
+                    let eventId = await this.$store().saveEvent({
                         name: this.reason,
                         date: new Date(),
                         type: 'transfer',
@@ -105,11 +106,11 @@
 
                     let transfers = [{
                         senderId:    this.sender,
-                        recipientId: this.$store.getters.ownUserId,
+                        recipientId: this.$store().ownUserId,
                         amount:      this.amount,
                         currency:    'money',
                     }];
-                    await this.$store.dispatch('saveTransfers', {eventId, transfers});
+                    await this.$store().saveTransfers({eventId, transfers});
 
                     await this.$router.replace(`/transfers/${eventId}`);
                 } catch (err) {

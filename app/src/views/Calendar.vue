@@ -106,7 +106,7 @@
 
             events() {
                 // TODO: This is a bit cheap, since potentially many events may be loaded at the time
-                return this.$store.getters.events.filter(event => {
+                return this.$store().events.filter(event => {
                     return EVENT_TYPES.includes(event.type) &&
                         event.date >= this.startDate && event.date < this.endDate;
                 });
@@ -157,7 +157,7 @@
                         to:   this.endDate,
                         with: 'ownParticipations',
                     };
-                    await this.$store.dispatch('fetchEvents', params);
+                    await this.$store().fetchEvents(params);
                 } finally {
                     this.loading = false;
                 }

@@ -86,13 +86,14 @@
 </template>
 
 <script>
-    import {mapGetters} from 'vuex';
+    import {mapState} from 'pinia';
+    import {useStore} from '@/store';
 
     export default {
         name: 'navigationDrawerContent',
 
         computed: {
-            ...mapGetters([
+            ...mapState(useStore, [
                 'ownUser',
             ]),
         },

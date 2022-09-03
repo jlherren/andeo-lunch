@@ -68,7 +68,7 @@
                 try {
                     this.isBusy = true;
 
-                    let eventId = await this.$store.dispatch('saveEvent', {
+                    let eventId = await this.$store().saveEvent({
                         name: this.name,
                         date: new Date(`${this.date}T${this.time}:00`),
                         type: 'transfer',

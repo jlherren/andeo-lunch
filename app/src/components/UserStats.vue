@@ -7,7 +7,8 @@
 
 <script>
     import Balance from '@/components/Balance';
-    import {mapGetters} from 'vuex';
+    import {mapState} from 'pinia';
+    import {useStore} from '@/store';
 
     export default {
         name: 'userStats',
@@ -17,7 +18,7 @@
         },
 
         computed: {
-            ...mapGetters([
+            ...mapState(useStore, [
                 'ownUser',
             ]),
         },

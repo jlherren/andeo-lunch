@@ -34,7 +34,7 @@
         },
 
         created() {
-            this.$store.dispatch('fetchTransfers', {eventId: this.event.id});
+            this.$store().fetchTransfers({eventId: this.event.id});
         },
 
         computed: {
@@ -43,7 +43,7 @@
             },
 
             involvedUsers() {
-                let transfers = this.$store.getters.transfers(this.event.id) ?? [];
+                let transfers = this.$store().transfers(this.event.id) ?? [];
                 let userIds = new Set();
                 for (let transfer of transfers) {
                     userIds.add(transfer.senderId);
@@ -51,13 +51,13 @@
                 }
                 userIds.delete(-1);
                 return Array.from(userIds)
-                    .map(userId => this.$store.getters.user(userId)?.name ?? 'Unknown')
+                    .map(userId => this.$store().user(userId)?.name ?? 'Unknown')
                     .join(', ');
             },
 
             selfInvolved() {
-                let transfers = this.$store.getters.transfers(this.event.id) ?? [];
-                let ownUser = this.$store.getters.ownUserId;
+                let transfers = this.$store().transfers(this.event.id) ?? [];
+                let ownUser = this.$store().ownUserId;
                 return transfers.some(transfer => transfer.senderId === ownUser || transfer.recipientId === ownUser);
             },
 

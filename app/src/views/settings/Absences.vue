@@ -122,12 +122,12 @@
         },
 
         created() {
-            this.$store.dispatch('fetchAbsences', {userId: this.$store.getters.ownUserId});
+            this.$store().fetchAbsences({userId: this.$store().ownUserId});
         },
 
         computed: {
             absences() {
-                return this.$store.getters.absences(this.$store.getters.ownUserId)?.map(absence => {
+                return this.$store().absences(this.$store().ownUserId)?.map(absence => {
                     return {
                         id:    absence.id,
                         start: absence.start ? absence.start : '\u221e',
@@ -144,8 +144,8 @@
                 }
                 this.isBusy = true;
                 try {
-                    await this.$store.dispatch('saveAbsence', {
-                        userId: this.$store.getters.ownUserId,
+                    await this.$store().saveAbsence({
+                        userId: this.$store().ownUserId,
                         start:  this.start,
                         end:    this.end,
                     });
@@ -165,8 +165,8 @@
             async deleteAbsence() {
                 try {
                     this.isBusy = true;
-                    await this.$store.dispatch('deleteAbsence', {
-                        userId:    this.$store.getters.ownUserId,
+                    await this.$store().deleteAbsence({
+                        userId:    this.$store().ownUserId,
                         absenceId: this.deleteAbsenceId,
                     });
                 } finally {

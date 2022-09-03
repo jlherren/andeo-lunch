@@ -66,7 +66,8 @@
     import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
     import UserStats from '@/components/UserStats';
-    import {mapGetters} from 'vuex';
+    import {mapState} from 'pinia';
+    import {useStore} from '@/store';
 
     export default {
         name: 'Home',
@@ -92,7 +93,7 @@
         },
 
         computed: {
-            ...mapGetters([
+            ...mapState(useStore, [
                 'ownUser',
             ]),
 
@@ -101,7 +102,7 @@
             },
 
             events() {
-                let events = this.$store.getters.events.filter(event => {
+                let events = this.$store().events.filter(event => {
                     return EVENT_TYPES.includes(event.type) &&
                         event.date >= this.startDate;
                 });
@@ -136,7 +137,7 @@
                         from: this.startDate,
                         with: 'ownParticipations',
                     };
-                    await this.$store.dispatch('fetchEvents', params);
+                    await this.$store().fetchEvents(params);
                 } finally {
                     this.loading = false;
                 }

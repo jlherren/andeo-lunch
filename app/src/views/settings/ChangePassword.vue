@@ -12,7 +12,7 @@
 
         <v-container>
             <p class="text-body-1 mt-4">
-                Change password for user <b>{{ $store.getters.ownUsername }}</b>.  If you forgot your password,
+                Change password for user <b>{{ $store().ownUsername }}</b>.  If you forgot your password,
                 please contact an admin.
             </p>
 
@@ -74,16 +74,16 @@
                 try {
                     this.isBusy = true;
 
-                    let successOrReason = await this.$store.dispatch('changePassword', {
+                    let successOrReason = await this.$store().changePassword({
                         oldPassword: this.oldPassword,
                         newPassword: this.newPassword,
                     });
 
                     if (successOrReason !== true) {
                         this.isBusy = false;
-                        this.$store.commit('globalSnackbar', this.getReasonText(successOrReason));
+                        this.$store().setGlobalSnackbar(this.getReasonText(successOrReason));
                     } else {
-                        this.$store.commit('globalSnackbar', 'Password changed successfully!');
+                        this.$store().setGlobalSnackbar('Password changed successfully!');
                         await this.$router.back();
                     }
                 } catch (err) {

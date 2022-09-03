@@ -81,7 +81,7 @@
             },
 
             events() {
-                let events = this.$store.getters.events.filter(event => {
+                let events = this.$store().events.filter(event => {
                     return event.type === 'transfer' &&
                         event.date >= this.startDate && event.date < this.endDate;
                 });
@@ -105,7 +105,7 @@
                         to:    this.endDate,
                         types: 'transfer',
                     };
-                    await this.$store.dispatch('fetchEvents', params);
+                    await this.$store().fetchEvents(params);
                 } finally {
                     this.loading = false;
                 }
