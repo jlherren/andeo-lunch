@@ -13,15 +13,15 @@ export TEST_DB_PASSWORD=andeolunchtest
 
 cd $(dirname "$0")/..
 
-# MariaDB 10.3 is mostly used for development, 10.6 is used for production.  However, we currently can't test 10.6
-# (or any >=10.5 for that matter), due to an outstanding bug with JSON columns.
+# MariaDB 10.5 is mostly used for development, 10.6 is used for production.
 
-for MARIADB_VERSION in 10.3 10.4; do
-    echo "Stopping existing container"
-    docker stop "$DB_CONTAINER_NAME" 2> /dev/null || true
+for MARIADB_VERSION in 10.5 10.6 10.7; do
+    echo "Removing existing container"
+    docker container rm --force "$DB_CONTAINER_NAME" 2> /dev/null || true
 
     echo "Starting MariaDB $MARIADB_VERSION"
     docker run \
+        --pull=always \
         --rm \
         --detach \
         --name "$DB_CONTAINER_NAME" \
