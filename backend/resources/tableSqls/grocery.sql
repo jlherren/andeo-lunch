@@ -7,4 +7,4 @@ CREATE TABLE `grocery` (
   `updatedAt` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `checked_order_idx` (`checked`,`order`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci

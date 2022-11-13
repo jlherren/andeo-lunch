@@ -15,4 +15,4 @@ CREATE TABLE `participation` (
   CONSTRAINT `participation_ibfk_1` FOREIGN KEY (`event`) REFERENCES `event` (`id`),
   CONSTRAINT `participation_ibfk_2` FOREIGN KEY (`user`) REFERENCES `user` (`id`),
   CONSTRAINT `participation_ibfk_3` FOREIGN KEY (`type`) REFERENCES `participationType` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci

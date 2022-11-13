@@ -17,4 +17,4 @@ CREATE TABLE `transaction` (
   CONSTRAINT `transaction_ibfk_1` FOREIGN KEY (`user`) REFERENCES `user` (`id`),
   CONSTRAINT `transaction_ibfk_2` FOREIGN KEY (`contraUser`) REFERENCES `user` (`id`),
   CONSTRAINT `transaction_ibfk_3` FOREIGN KEY (`event`) REFERENCES `event` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci

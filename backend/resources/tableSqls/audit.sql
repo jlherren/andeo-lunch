@@ -14,4 +14,4 @@ CREATE TABLE `audit` (
   KEY `audit_event_idx` (`event`),
   KEY `audit_affectedUser_idx` (`affectedUser`),
   KEY `audit_grocery_idx` (`grocery`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci

@@ -8,4 +8,4 @@ CREATE TABLE `event` (
   PRIMARY KEY (`id`),
   KEY `event_type_idx` (`type`),
   CONSTRAINT `event_ibfk_1` FOREIGN KEY (`type`) REFERENCES `eventType` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci

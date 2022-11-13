@@ -14,4 +14,4 @@ CREATE TABLE `transfer` (
   CONSTRAINT `transfer_ibfk_1` FOREIGN KEY (`event`) REFERENCES `event` (`id`),
   CONSTRAINT `transfer_ibfk_2` FOREIGN KEY (`sender`) REFERENCES `user` (`id`),
   CONSTRAINT `transfer_ibfk_3` FOREIGN KEY (`recipient`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
