@@ -6,7 +6,7 @@ CREATE TABLE `audit` (
   `event` int(11) DEFAULT NULL,
   `grocery` int(11) DEFAULT NULL,
   `affectedUser` int(11) DEFAULT NULL,
-  `values` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
+  `values` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`values`)),
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL,
   PRIMARY KEY (`id`),
