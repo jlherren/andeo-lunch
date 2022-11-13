@@ -41,7 +41,7 @@
     import TheAppBar from '@/components/TheAppBar';
 
     export default {
-        name: 'Profile',
+        name: 'ChangePassword',
 
         components: {
             ShyProgress,

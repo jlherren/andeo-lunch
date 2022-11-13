@@ -41,7 +41,7 @@
     import TransferListItem from '@/components/event/TransferListItem';
 
     export default {
-        name: 'Transfers',
+        name: 'TransferList',
 
         components: {
             DynamicButton,

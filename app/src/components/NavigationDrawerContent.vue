@@ -90,7 +90,7 @@
     import {useStore} from '@/store';
 
     export default {
-        name: 'navigationDrawerContent',
+        name: 'NavigationDrawerContent',
 
         computed: {
             ...mapState(useStore, [

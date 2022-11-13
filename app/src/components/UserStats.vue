@@ -11,7 +11,7 @@
     import {useStore} from '@/store';
 
     export default {
-        name: 'userStats',
+        name: 'UserStats',
 
         components: {
             Balance,
