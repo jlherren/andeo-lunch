@@ -4,7 +4,7 @@ version: '3.6'
 
 services:
     db:
-        image: mariadb:10.3
+        image: mariadb:10.6
         environment:
             MARIADB_RANDOM_ROOT_PASSWORD: 1
             MARIADB_ROOT_HOST: localhost
