@@ -63,7 +63,7 @@
             </v-list-item-content>
         </v-list-item>
 
-        <v-list-item to="/profile">
+        <v-list-item to="/account">
             <v-list-item-icon>
                 <v-icon>{{ $icons.accountCircle }}</v-icon>
             </v-list-item-icon>

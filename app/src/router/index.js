@@ -74,11 +74,11 @@ const routes = [
         component: () => import('@/views/event/EventHelp'),
     },
     {
-        path:      '/profile',
-        component: () => import(/* webpackChunkName: "profile" */ '@/views/settings/Profile'),
+        path:      '/account',
+        component: () => import(/* webpackChunkName: "profile" */ '@/views/settings/AccountSettings'),
     },
     {
-        path:      '/profile/password',
+        path:      '/account/password',
         component: () => import(/* webpackChunkName: "profile" */ '@/views/settings/ChangePassword'),
     },
     {

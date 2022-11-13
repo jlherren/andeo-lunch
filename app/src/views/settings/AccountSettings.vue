@@ -1,7 +1,7 @@
 <template>
     <v-main>
         <the-app-bar>
-            Profile
+            Account settings
         </the-app-bar>
 
         <v-list>
@@ -33,7 +33,7 @@
                 </v-list-item-content>
             </v-list-item>
 
-            <v-list-item to="/profile/password">
+            <v-list-item to="/account/password">
                 <v-list-item-icon>
                     <v-icon>{{ $icons.password }}</v-icon>
                 </v-list-item-icon>
@@ -65,7 +65,7 @@
     import {useStore} from '@/store';
 
     export default {
-        name: 'Profile',
+        name: 'AccountSettings',
 
         components: {
             TheAppBar,
