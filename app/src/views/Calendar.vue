@@ -189,10 +189,18 @@
             position: absolute;
             right: 48px;
             top: 3px;
-            color: $andeo-blue;
             font-weight: bold;
-            background: white;
             padding: 2px 0.33em;
+        }
+
+        a.theme--light .label {
+            color: $andeo-blue;
+            background: white;
+        }
+
+        a.theme--dark .label {
+            color: $andeo-blue;
+            background: #101010;
         }
     }
 
