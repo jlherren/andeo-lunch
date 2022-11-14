@@ -22,7 +22,8 @@ async function editUser(cli, user) {
         console.log('ID  Option');
         console.log('1   Change display name');
         console.log('2   Change password');
-        console.log('3   Activate/deactivate user');
+        console.log(`3   ${user.active ? 'Deactivate' : 'Activate'} user`);
+        console.log(`4   ${user.hidden ? 'Unhide' : 'Hide'} user`);
         console.log('x   Return to main menu');
         console.log('');
 
@@ -51,6 +52,10 @@ async function editUser(cli, user) {
             user.active = !user.active;
             await user.save();
             console.log(`User ${user.username} is now ${user.active ? 'ACTIVE' : 'INACTIVE'}`);
+        } else if (option === '4') {
+            user.hidden = !user.hidden;
+            await user.save();
+            console.log(`User ${user.username} is now ${user.hidden ? 'HIDDEN' : 'NO LONGER HIDDEN'}`);
         } else if (option === 'x') {
             break;
         } else {
