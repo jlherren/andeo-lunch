@@ -59,7 +59,9 @@ exports.getUser = async function (ctx) {
         // Happens on malformed tokens
         return null;
     }
-    let user = await Models.User.findByPk(userId);
+    let user = await Models.User.findByPk(userId, {
+        include: 'Permissions',
+    });
     /** @type {User} */
     if (user !== null && user.active) {
         return user;

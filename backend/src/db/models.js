@@ -29,6 +29,7 @@ class Configuration extends Model {
  * @property {number} points
  * @property {number} money
  * @property {Object} settings
+ * @property {Array<Permission>} Permissions
  */
 class User extends Model {
     /**
@@ -39,6 +40,17 @@ class User extends Model {
     generateToken(secret, options) {
         // sign() is supposed to return a promise, but it doesn't
         return Promise.resolve(jsonWebToken.sign({id: this.id}, secret, options));
+    }
+
+    /**
+     * @param {string} name
+     * @returns {boolean}
+     */
+    hasPermission(name) {
+        if (!this.Permissions) {
+            throw new Error('User object was not loaded with Permissions');
+        }
+        return this.Permissions.some(permission => permission.name === name);
     }
 
     /**
@@ -57,6 +69,15 @@ class User extends Model {
             hidden:   this.hidden,
         };
     }
+}
+
+/**
+ * @property {string} name
+ */
+class Permission extends Model {
+}
+
+class UserPermission extends Model {
 }
 
 class EventType extends Model {
@@ -379,6 +400,7 @@ class Grocery extends Model {
 
 exports.Configuration = Configuration;
 exports.User = User;
+exports.Permission = Permission;
 exports.EventType = EventType;
 exports.Event = Event;
 exports.Lunch = Lunch;
@@ -425,6 +447,29 @@ exports.initModels = function initModels(sequelize) {
     }, {
         sequelize,
         modelName: 'user',
+    });
+
+    Permission.init({
+        name: {type: ch.ascii(64), allowNull: false, unique: 'permission_name_idx'},
+    }, {
+        sequelize,
+        modelName: 'permission',
+    });
+
+    UserPermission.init({}, {
+        sequelize,
+        modelName:  'userPermission',
+        indexes:    [{
+            name:   'userPermission_permission_idx',
+            fields: ['permission'],
+        }],
+        timestamps: false,
+    });
+    User.belongsToMany(Permission, {
+        through:    UserPermission,
+        foreignKey: 'user',
+        otherKey:   'permission',
+        as:         'Permissions',
     });
 
     EventType.init({
@@ -564,7 +609,6 @@ exports.initModels = function initModels(sequelize) {
         }],
     });
     Absence.belongsTo(User, {foreignKey: {name: 'user'}, as: 'User', ...cascade});
-
 
     Grocery.init({
         label:   {type: DataTypes.STRING(255), allowNull: false},
