@@ -289,7 +289,7 @@ module.exports = {
         ],
         'operator-linebreak':                 [
             'warn',
-            'after',
+            'before',
         ],
         'padded-blocks':                      [
             'warn',

@@ -224,10 +224,10 @@
             },
 
             pointsAreMismatched() {
-                return this.event &&
-                    this.participations &&
-                    this.participations.length &&
-                    Math.abs(this.sumOfPointsCredited - this.event.costs.points) > 1e-6;
+                return this.event
+                    && this.participations
+                    && this.participations.length
+                    && Math.abs(this.sumOfPointsCredited - this.event.costs.points) > 1e-6;
             },
 
             formattedDate() {

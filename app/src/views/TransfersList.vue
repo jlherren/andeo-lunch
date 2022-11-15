@@ -82,8 +82,8 @@
 
             events() {
                 let events = this.$store().events.filter(event => {
-                    return event.type === 'transfer' &&
-                        event.date >= this.startDate && event.date < this.endDate;
+                    return event.type === 'transfer'
+                        && event.date >= this.startDate && event.date < this.endDate;
                 });
 
                 events.sort((a, b) => a.date.getTime() - b.date.getTime());

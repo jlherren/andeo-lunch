@@ -103,8 +103,8 @@
 
             events() {
                 let events = this.$store().events.filter(event => {
-                    return EVENT_TYPES.includes(event.type) &&
-                        event.date >= this.startDate;
+                    return EVENT_TYPES.includes(event.type)
+                        && event.date >= this.startDate;
                 });
 
                 events.sort((a, b) => a.date.getTime() - b.date.getTime());
@@ -112,9 +112,9 @@
                 // Add information about divider lines
                 let prev = null;
                 events = events.map(event => {
-                    let hasGap = prev !== null &&
-                        !DateUtils.isSameDay(prev.date, event.date) &&
-                        !DateUtils.isSuccessiveDays(prev.date, event.date);
+                    let hasGap = prev !== null
+                        && !DateUtils.isSameDay(prev.date, event.date)
+                        && !DateUtils.isSuccessiveDays(prev.date, event.date);
                     prev = event;
                     return {
                         ...event,
