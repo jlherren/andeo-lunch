@@ -178,39 +178,48 @@
                     return [];
                 }
 
-                participations = this.visibleUsers.map(user => {
-                    let participation = participations.find(p => p.userId === user.id) ?? {
-                        userId:  user.id,
-                        eventId: this.eventId,
-                        type:    this.event.type === 'special' ? 'opt-out' : 'undecided',
-                        credits: {
-                            points: 0,
-                            money:  0,
-                        },
+                participations = participations.map(participation => {
+                    let order = participation.userId === this.ownUserId
+                        ? 0
+                        : PARTICIPATION_TYPE_TO_ORDER[participation.type] ?? 9;
+                    return {
+                        ...participation,
+                        order,
                     };
-                    if (user.id === this.ownUserId) {
-                        participation.order = 0;
-                    } else {
-                        participation.order = PARTICIPATION_TYPE_TO_ORDER[participation.type] ?? 9;
-                    }
-                    return participation;
                 });
 
-                participations.sort((first, second) => {
-                    let diff = first.order - second.order;
-                    if (diff) {
-                        return diff;
-                    }
-                    let nameFirst = this.$store().user(first.userId)?.name;
-                    let nameSecond = this.$store().user(second.userId)?.name;
-                    if (nameFirst < nameSecond) {
-                        return -1;
-                    }
-                    if (nameFirst > nameSecond) {
-                        return 1;
-                    }
-                    return 0;
-                });
+                let fakeParticipationType = this.event.type === 'special' ? 'opt-out' : 'undecided';
+                let fakeOrdering = PARTICIPATION_TYPE_TO_ORDER[fakeParticipationType] ?? 9;
+                let fakeParticipations = this.visibleUsers.filter(user => !participations.some(participation => participation.userId === user.id))
+                    .map(user => {
+                        return {
+                            userId:  user.id,
+                            eventId: this.eventId,
+                            type:    fakeParticipationType,
+                            credits: {
+                                points: 0,
+                                money:  0,
+                            },
+                            order:   user.id === this.ownUserId ? 0 : fakeOrdering,
+                        };
+                    });
+
+                participations = participations.concat(fakeParticipations)
+                    .sort((first, second) => {
+                        let diff = first.order - second.order;
+                        if (diff) {
+                            return diff;
+                        }
+                        let nameFirst = this.$store().user(first.userId)?.name;
+                        let nameSecond = this.$store().user(second.userId)?.name;
+                        if (nameFirst < nameSecond) {
+                            return -1;
+                        }
+                        if (nameFirst > nameSecond) {
+                            return 1;
+                        }
+                        return 0;
+                    });
                 return participations;
             },
 
