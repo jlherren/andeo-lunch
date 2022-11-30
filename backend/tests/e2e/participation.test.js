@@ -369,6 +369,22 @@ describe('A special event', () => {
         response = await request.get(url);
         expect(response.body?.participation?.factors?.money).toBe(0.5);
     });
+
+    it('Does not save money factor on opt-out', async () => {
+        let url = `${eventUrl}/participations/${user1.id}`;
+        let response = await request.post(url)
+            .send({
+                type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OPT_OUT],
+                factors: {
+                    money: 0.5,
+                },
+            });
+        expect(response.status).toBe(204);
+
+        // Check event again
+        response = await request.get(url);
+        expect(response.body?.participation?.factors?.money).toBe(1.0);
+    });
 });
 
 describe('Default opt-in', () => {

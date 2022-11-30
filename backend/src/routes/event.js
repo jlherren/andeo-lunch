@@ -425,7 +425,9 @@ async function saveParticipation(ctx) {
             participation.moneyCredited = apiParticipation.credits?.money;
         }
         if (apiParticipation.factors?.money !== undefined && event.type === Constants.EVENT_TYPES.SPECIAL) {
-            participation.moneyFactor = apiParticipation.factors?.money;
+            participation.moneyFactor = participation.type !== Constants.PARTICIPATION_TYPES.OPT_OUT
+                ? apiParticipation.factors?.money
+                : 1.0;
         }
 
         await participation.save({transaction});
