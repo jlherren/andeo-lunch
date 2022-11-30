@@ -13,6 +13,8 @@
 </template>
 
 <script>
+    import {LUNCH_EVENT_PARTICIPATION_TYPES, SPECIAL_EVENT_PARTICIPATION_TYPES} from '@/utils/participationUtils';
+
     export default {
         name: 'ParticipationTypeWidget',
 
@@ -30,38 +32,10 @@
         },
 
         data() {
-            if (this.eventType === 'special') {
-                return {
-                    types: [{
-                        id:   'opt-in',
-                        name: 'In',
-                        icon: this.$icons.optIn,
-                    }, {
-                        id:   'opt-out',
-                        name: 'Out',
-                        icon: this.$icons.optOut,
-                    }],
-                };
-            }
-
             return {
-                types: [{
-                    id:   'omnivorous',
-                    name: 'Omni',
-                    icon: this.$icons.omnivorous,
-                }, {
-                    id:   'vegetarian',
-                    name: 'Vegi',
-                    icon: this.$icons.vegetarian,
-                }, {
-                    id:   'opt-out',
-                    name: 'Out',
-                    icon: this.$icons.optOut,
-                }, {
-                    id:   'undecided',
-                    name: 'Undecided',
-                    icon: this.$icons.undecided,
-                }],
+                types: this.eventType === 'special'
+                    ? SPECIAL_EVENT_PARTICIPATION_TYPES
+                    : LUNCH_EVENT_PARTICIPATION_TYPES,
             };
         },
 

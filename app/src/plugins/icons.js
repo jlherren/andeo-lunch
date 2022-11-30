@@ -19,6 +19,7 @@ export const icons = {
     close:                  mdi.mdiClose,
     cog:                    mdi.mdiCog,
     delete:                 mdi.mdiDelete,
+    grid:                   mdi.mdiGrid,
     home:                   mdi.mdiHome,
     information:            mdi.mdiInformation,
     label:                  mdi.mdiLabel,

@@ -22,3 +22,31 @@ export function icon(participationType) {
             return null;
     }
 }
+
+export const LUNCH_EVENT_PARTICIPATION_TYPES = [{
+    id:   'omnivorous',
+    name: 'Omni',
+    icon: icons.omnivorous,
+}, {
+    id:   'vegetarian',
+    name: 'Vegi',
+    icon: icons.vegetarian,
+}, {
+    id:   'opt-out',
+    name: 'Out',
+    icon: icons.optOut,
+}, {
+    id:   'undecided',
+    name: 'Undecided',
+    icon: icons.undecided,
+}];
+
+export const SPECIAL_EVENT_PARTICIPATION_TYPES = [{
+    id:   'opt-in',
+    name: 'In',
+    icon: icons.optIn,
+}, {
+    id:   'opt-out',
+    name: 'Out',
+    icon: icons.optOut,
+}];

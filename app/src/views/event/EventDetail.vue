@@ -3,6 +3,10 @@
         <the-app-bar sub-page :to="`/calendar/${isoDate}`">
             {{ name }}
             <template v-if="event" slot="buttons">
+                <dynamic-button label="Grid" :icon="$icons.grid" :disabled="isBusy" :to="`/events/${eventId}/grid`"
+                                class="hidden-xs-only"
+                                v-if="event.type !== 'label'"
+                />
                 <dynamic-button label="Edit" :icon="$icons.edit" :disabled="isBusy" :to="`/events/${eventId}/edit`"/>
                 <dynamic-button label="Delete" :icon="$icons.delete" :disabled="isBusy" @click="openConfirmDelete"/>
             </template>

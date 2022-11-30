@@ -66,6 +66,10 @@ const routes = [
         component: () => import('@/views/event/EventEdit'),
     },
     {
+        path:      '/events/:id(\\d+)/grid',
+        component: () => import('@/views/event/EventGridEdit'),
+    },
+    {
         path:      '/events/new',
         component: () => import('@/views/event/EventEdit'),
     },
