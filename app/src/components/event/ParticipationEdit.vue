@@ -25,7 +25,7 @@
                         <v-text-field v-model="moneyCredited" type="number" min="0"
                                       label="Money credited" :append-icon="$icons.money"/>
                         <number-field v-model="moneyFactor" :min="0" :step="5" v-if="event.type === 'special'"
-                                      label="Money factor" suffix="%" :icon="$icons.money"/>
+                                      label="Money factor" suffix="%" :icon="$icons.money" :disabled="type === 'opt-out'"/>
                     </v-col>
                 </v-row>
 
