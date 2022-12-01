@@ -3,7 +3,7 @@
 const fs = require('fs').promises;
 const path = require('path');
 const {Sequelize, ConnectionRefusedError} = require('sequelize');
-const Umzug = require('umzug');
+const {Umzug, SequelizeStorage} = require('umzug');
 
 const Models = require('./models');
 
@@ -93,18 +93,12 @@ exports.connect = async function connect(options, sequelizeOptions) {
 async function applyMigrations(sequelize, quiet) {
     // Apply migrations
     const umzug = new Umzug({
-        migrations:     {
-            path:    path.join(__dirname, '../../migrations'),
-            params:  [
-                sequelize,
-            ],
-            pattern: /^\d{4}-\d{2}-\d{2} \d{2} .*\.js$/u,
+        migrations: {
+            glob: path.join(__dirname, '../../migrations/????-??-?? ?? *.js'),
         },
-        storage:        'sequelize',
-        storageOptions: {
-            sequelize: sequelize,
-        },
-        logging:        quiet ? () => null : console.log,
+        context:    sequelize,
+        storage:    new SequelizeStorage({sequelize}),
+        logger:     quiet ? undefined : console,
     });
     await umzug.up();
 }

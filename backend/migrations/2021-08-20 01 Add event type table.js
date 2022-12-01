@@ -6,7 +6,7 @@ const {DataTypes} = require('sequelize');
  * @param {Sequelize} sequelize
  * @returns {Promise<void>}
  */
-async function up(sequelize) {
+async function up({context: sequelize}) {
     let queryInterface = sequelize.getQueryInterface();
     let cascade = {
         onDelete: 'restrict',
@@ -59,7 +59,7 @@ async function up(sequelize) {
  * @param {Sequelize} sequelize
  * @returns {Promise<void>}
  */
-async function down(sequelize) {
+async function down({context: sequelize}) {
     let queryInterface = sequelize.getQueryInterface();
     await queryInterface.removeConstraint('event', 'event_ibfk_1');
     await queryInterface.removeIndex('event', 'event_type_idx');

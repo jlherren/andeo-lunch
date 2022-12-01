@@ -8,7 +8,7 @@ const Constants = require('../src/constants');
  * @param {Sequelize} sequelize
  * @returns {Promise<void>}
  */
-async function up(sequelize) {
+async function up({context: sequelize}) {
     let queryInterface = sequelize.getQueryInterface();
     await queryInterface.addColumn('lunch', 'participationFlatRate', {
         type:      DataTypes.DOUBLE,
@@ -32,7 +32,7 @@ async function up(sequelize) {
  * @param {Sequelize} sequelize
  * @returns {Promise<void>}
  */
-async function down(sequelize) {
+async function down({context: sequelize}) {
     let queryInterface = sequelize.getQueryInterface();
     await queryInterface.removeColumn('lunch', 'participationFlatRate');
 }

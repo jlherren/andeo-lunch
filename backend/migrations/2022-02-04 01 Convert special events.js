@@ -8,7 +8,7 @@ const Constants = require('../src/constants');
  * @param {Sequelize} sequelize
  * @returns {Promise<void>}
  */
-async function up(sequelize) {
+async function up({context: sequelize}) {
     await sequelize.transaction(async transaction => {
         await Models.ParticipationType.create({
             id:    Constants.PARTICIPATION_TYPES.OPT_IN,
@@ -62,7 +62,7 @@ async function up(sequelize) {
  * @param {Sequelize} sequelize
  * @returns {Promise<void>}
  */
-async function down(sequelize) {
+async function down({context: sequelize}) {
     await sequelize.transaction(async transaction => {
         await sequelize.query(
             `

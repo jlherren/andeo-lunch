@@ -6,7 +6,7 @@ const {DataTypes} = require('sequelize');
  * @param {Sequelize} sequelize
  * @returns {Promise<void>}
  */
-async function up(sequelize) {
+async function up({context: sequelize}) {
     // These two columns were manually overridden in production to remove the CHECK() clause, due to bugs in sequelize.
     // The issues have now been fixed, so we can add them again.
     let queryInterface = sequelize.getQueryInterface();

@@ -11,7 +11,7 @@ const AuthUtils = require('../src/authUtils');
  * @param {Sequelize} sequelize
  * @returns {Promise<void>}
  */
-async function up(sequelize) {
+async function up({context: sequelize}) {
     let queryInterface = sequelize.getQueryInterface();
     let ch = new ColumnHelper(sequelize);
     let cascade = {
