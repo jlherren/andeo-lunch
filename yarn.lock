@@ -2468,10 +2468,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/geojson@npm:^7946.0.8":
-  version: 7946.0.9
-  resolution: "@types/geojson@npm:7946.0.9"
-  checksum: b858f06a27f4c11dbf441a7ea710a27563ebdd5a0326daee5869b0483a39642a19f39b0f415518e981278f911470f9275b99d86b9ede5d7b19a64c32a14cd36e
+"@types/geojson@npm:^7946.0.10":
+  version: 7946.0.10
+  resolution: "@types/geojson@npm:7946.0.10"
+  checksum: 12c407c2dc93ecb26c08af533ee732f1506a9b29456616ba7ba1d525df96206c28ddf44a528f6a5415d7d22893e9d967420940a9c095ee5e539c1eba5fefc1f4
   languageName: node
   linkType: hard
 
@@ -2700,7 +2700,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^17.0.10":
+"@types/node@npm:^17.0.45":
   version: 17.0.45
   resolution: "@types/node@npm:17.0.45"
   checksum: aa04366b9103b7d6cfd6b2ef64182e0eaa7d4462c3f817618486ea0422984c51fc69fd0d436eae6c9e696ddfdbec9ccaa27a917f7c2e8c75c5d57827fe3d95e8
@@ -3791,16 +3791,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"acorn@npm:^8.4.1, acorn@npm:^8.7.1":
-  version: 8.7.1
-  resolution: "acorn@npm:8.7.1"
-  bin:
-    acorn: bin/acorn
-  checksum: aca0aabf98826717920ac2583fdcad0a6fbe4e583fdb6e843af2594e907455aeafe30b1e14f1757cd83ce1776773cf8296ffc3a4acf13f0bd3dfebcf1db6ae80
-  languageName: node
-  linkType: hard
-
-"acorn@npm:^8.5.0":
+"acorn@npm:^8.4.1, acorn@npm:^8.5.0, acorn@npm:^8.7.1":
   version: 8.8.1
   resolution: "acorn@npm:8.8.1"
   bin:
@@ -3955,7 +3946,7 @@ __metadata:
     koa: ~2.13.4
     koa-bodyparser: ~4.3.0
     koa-logger: ~3.2.1
-    mariadb: ~2.5.6
+    mariadb: ~3.0.2
     nodemon: ~2.0.20
     sequelize: ~6.26.0
     sprintf-js: ~1.1.2
@@ -3978,7 +3969,7 @@ __metadata:
     eslint-plugin-node: ~11.1.0
     eslint-plugin-promise: ~6.1.1
     eslint-plugin-standard: ~5.0.0
-    mariadb: ~2.5.6
+    mariadb: ^3.0.2
   languageName: unknown
   linkType: soft
 
@@ -7125,10 +7116,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"denque@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "denque@npm:2.0.1"
-  checksum: ec398d1e3c6c8d4f5213dcf9ad74d7faa3b461e29a0019c9742b49a97ac5e16aa7134db45fa9d841e318e7722dd1ba670a474fde9a5b0d870b3a5fc6fe914c30
+"denque@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "denque@npm:2.1.0"
+  checksum: 1d4ae1d05e59ac3a3481e7b478293f4b4c813819342273f3d5b826c7ffa9753c520919ba264f377e09108d24ec6cf0ec0ac729a5686cbb8f32d797126c5dae74
   languageName: node
   linkType: hard
 
@@ -12447,13 +12438,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"long@npm:^5.2.0":
-  version: 5.2.0
-  resolution: "long@npm:5.2.0"
-  checksum: 37aa4e67b9c3eebc6d9d675adcc9d06f06059ca268922a71273de389746bf07f0ff282f9e604d17fdf84c4149099b44e936ea2b621a6c4759a216621afa97efd
-  languageName: node
-  linkType: hard
-
 "lowdb@npm:^1.0.0":
   version: 1.0.0
   resolution: "lowdb@npm:1.0.0"
@@ -12516,10 +12500,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lru-cache@npm:^7.7.1":
-  version: 7.13.0
-  resolution: "lru-cache@npm:7.13.0"
-  checksum: 95a13e0f3691db9be3e78b597e347c2a4911f7303a514076dbc185b472683fa6e06dcaad74b5fc35fa1192c2cfe4b0bbaf3778b5066503eedd1b92bfec864c4c
+"lru-cache@npm:^7.14.0, lru-cache@npm:^7.7.1":
+  version: 7.14.1
+  resolution: "lru-cache@npm:7.14.1"
+  checksum: d72c6713c6a6d86836a7a6523b3f1ac6764768cca47ec99341c3e76db06aacd4764620e5e2cda719a36848785a52a70e531822dc2b33fb071fa709683746c104
   languageName: node
   linkType: hard
 
@@ -12638,18 +12622,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mariadb@npm:~2.5.6":
-  version: 2.5.6
-  resolution: "mariadb@npm:2.5.6"
+"mariadb@npm:^3.0.2, mariadb@npm:~3.0.2":
+  version: 3.0.2
+  resolution: "mariadb@npm:3.0.2"
   dependencies:
-    "@types/geojson": ^7946.0.8
-    "@types/node": ^17.0.10
-    denque: ^2.0.1
+    "@types/geojson": ^7946.0.10
+    "@types/node": ^17.0.45
+    denque: ^2.1.0
     iconv-lite: ^0.6.3
-    long: ^5.2.0
-    moment-timezone: ^0.5.34
-    please-upgrade-node: ^3.2.0
-  checksum: 5614225514cee36a8f1760b72536a10c4c3ac120ac5f5efc6629d2489df518eacebbaecbc7f143e23ffd235f41ab0b967de592b8d80645ebfdd6f01de137e98b
+    lru-cache: ^7.14.0
+    moment-timezone: ^0.5.38
+  checksum: 1d84f9ab760b146eb6a4cd728cc84e34255f4c5d17a182d1f36f7d1738de32b3ace328d1d8f2e81dfb0df3f5a43844006b4b74bbeb5f7f92d6a9d862a513de40
   languageName: node
   linkType: hard
 
@@ -13087,12 +13070,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moment-timezone@npm:^0.5.34":
-  version: 0.5.34
-  resolution: "moment-timezone@npm:0.5.34"
+"moment-timezone@npm:^0.5.34, moment-timezone@npm:^0.5.38":
+  version: 0.5.39
+  resolution: "moment-timezone@npm:0.5.39"
   dependencies:
     moment: ">= 2.9.0"
-  checksum: 12a1d3d52e4ba509cf1fa36bbda59d898a08fa80ab35f6c358747e93aec1f07e617cec647eaf2e8acf5f9132e581d4704d34a9edffa9a80c5cd04bf23b277595
+  checksum: 9f972d3a29b2726d4fd1464df27738b756441fe57575f087cda91b7716a5a31d2cfd274255e3edfb15eb60af3ccf33fd339527b456092cac1a2a4124e4369c8b
   languageName: node
   linkType: hard
 
@@ -14432,15 +14415,6 @@ __metadata:
   dependencies:
     find-up: ^4.0.0
   checksum: 9863e3f35132bf99ae1636d31ff1e1e3501251d480336edb1c211133c8d58906bed80f154a1d723652df1fda91e01c7442c2eeaf9dc83157c7ae89087e43c8d6
-  languageName: node
-  linkType: hard
-
-"please-upgrade-node@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "please-upgrade-node@npm:3.2.0"
-  dependencies:
-    semver-compare: ^1.0.0
-  checksum: d87c41581a2a022fbe25965a97006238cd9b8cbbf49b39f78d262548149a9d30bd2bdf35fec3d810e0001e630cd46ef13c7e19c389dea8de7e64db271a2381bb
   languageName: node
   linkType: hard
 
@@ -16052,13 +16026,6 @@ __metadata:
   dependencies:
     node-forge: ^0.10.0
   checksum: 616d131b18516ba2876398f0230987511d50a13816e0709b9f0d20246a524a2e83dfb27ea46ce2bfe331519583a156afa67bc3ece8bf0f9804aec06e2e8c7a21
-  languageName: node
-  linkType: hard
-
-"semver-compare@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "semver-compare@npm:1.0.0"
-  checksum: dd1d7e2909744cf2cf71864ac718efc990297f9de2913b68e41a214319e70174b1d1793ac16e31183b128c2b9812541300cb324db8168e6cf6b570703b171c68
   languageName: node
   linkType: hard
 
