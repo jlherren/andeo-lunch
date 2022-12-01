@@ -1,7 +1,7 @@
 {
     "name": "andeo-lunch-cypress",
     "engines": {
-        "node": ">= 14.0.0"
+        "node": ">= 16.18.0"
     },
     "scripts": {
         "lint": "eslint e2e plugins support",

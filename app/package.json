@@ -2,7 +2,7 @@
     "name": "andeo-lunch-app",
     "private": true,
     "engines": {
-        "node": ">= 14.0.0"
+        "node": ">= 16.18.0"
     },
     "scripts": {
         "serve": "vue-cli-service serve",

@@ -7,7 +7,7 @@
         "cypress"
     ],
     "engines": {
-        "node": ">= 14.0.0"
+        "node": ">= 16.18.0"
     },
     "scripts": {
         "check": "yarn check:global && yarn check:app && yarn check:backend && yarn check:cypress",
