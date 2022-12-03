@@ -3,49 +3,53 @@ const DEFAULT_PASSWORD = 'andeolunchtest';
 
 export const USERS = {
     john: {
+        id:       10,
         username: 'john.doe',
         password: DEFAULT_PASSWORD,
         name:     'John Doe',
         insert() {
             cy.task('db:sql', `
-                INSERT INTO user (username, password, name, active, createdAt, updatedAt)
-                    VALUES ('john.doe', '${DEFAULT_PASSWORD_HASH}', 'John Doe', 1, NOW(), NOW());
+                INSERT INTO user (id, username, password, name, active, createdAt, updatedAt)
+                    VALUES (10, 'john.doe', '${DEFAULT_PASSWORD_HASH}', 'John Doe', 1, NOW(), NOW());
             `);
         },
     },
 
     robert: {
+        id:       11,
         username: 'robert.smith',
         password: DEFAULT_PASSWORD,
         name:     'Robert Smith',
         insert() {
             cy.task('db:sql', `
-                INSERT INTO user (username, password, name, active, createdAt, updatedAt)
-                    VALUES ('robert.smith', '${DEFAULT_PASSWORD_HASH}', 'Robert Smith', 1, NOW(), NOW());
+                INSERT INTO user (id, username, password, name, active, createdAt, updatedAt)
+                    VALUES (11, 'robert.smith', '${DEFAULT_PASSWORD_HASH}', 'Robert Smith', 1, NOW(), NOW());
             `);
         },
     },
 
     sarah: {
+        id:       12,
         username: 'sarah.hidden',
         password: DEFAULT_PASSWORD,
         name:     'Sarah Hidden',
         insert() {
             cy.task('db:sql', `
-                INSERT INTO user (username, password, name, active, hidden, createdAt, updatedAt)
-                    VALUES ('sarah.hidden', '${DEFAULT_PASSWORD_HASH}', 'Sarah Hidden', 1, 1, NOW(), NOW());
+                INSERT INTO user (id, username, password, name, active, hidden, createdAt, updatedAt)
+                    VALUES (12, 'sarah.hidden', '${DEFAULT_PASSWORD_HASH}', 'Sarah Hidden', 1, 1, NOW(), NOW());
             `);
         },
     },
 
     mike: {
+        id:       13,
         username: 'mike.inactive',
         password: DEFAULT_PASSWORD,
         name:     'Mike Inactive',
         insert() {
             cy.task('db:sql', `
-                INSERT INTO user (username, password, name, active, createdAt, updatedAt)
-                    VALUES ('mike.inactive', '${DEFAULT_PASSWORD_HASH}', 'Mike Inactive', 0, NOW(), NOW());
+                INSERT INTO user (id, username, password, name, active, createdAt, updatedAt)
+                    VALUES (13, 'mike.inactive', '${DEFAULT_PASSWORD_HASH}', 'Mike Inactive', 0, NOW(), NOW());
             `);
         },
     },
@@ -53,6 +57,7 @@ export const USERS = {
 
 export const LUNCH = {
     lasagna: {
+        id: 1,
         insert() {
             cy.task('db:sql', `
                 INSERT INTO event (id, type, date, name, createdAt, updatedAt)
@@ -68,6 +73,7 @@ export const LUNCH = {
 
 export const SPECIAL = {
     lasagna: {
+        id: 2,
         insert() {
             cy.task('db:sql', `
                 INSERT INTO event (id, type, date, name, createdAt, updatedAt)

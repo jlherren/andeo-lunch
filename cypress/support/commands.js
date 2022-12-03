@@ -16,6 +16,21 @@ function followLabel(label) {
 Cypress.Commands.add('followLabel', followLabel);
 
 /**
+ * Wait for the load to be completed.  Since we don't have traditional navigation, just checking for missing skeletons
+ * is not enough, as that might already be the case before anything has happened.  Thus, some text must be visible
+ * first, then the skeletons are checked.
+ *
+ * @param {string} text A text that indicates that the new view has loaded.
+ */
+function loadComplete(text) {
+    cy.contains(text);
+    cy.get('.v-skeleton-loader')
+        .should('not.exist');
+}
+
+Cypress.Commands.add('loadComplete', loadComplete);
+
+/**
  * Log in a user
  *
  * @param {string} username
@@ -30,7 +45,7 @@ function login(username, password) {
         .type(password);
     cy.get('button[type=submit]')
         .click();
-    cy.contains('Your balance');
+    cy.loadComplete('Your balance');
 }
 
 Cypress.Commands.add('login', login);
