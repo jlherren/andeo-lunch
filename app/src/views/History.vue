@@ -2,10 +2,10 @@
     <v-main>
         <the-app-bar extension-height="30">
             History
-            <template v-slot:buttons>
+            <template #buttons>
                 <user-stats/>
             </template>
-            <template v-slot:extension>
+            <template #extension>
                 <v-tabs v-model="tab" align-with-title>
                     <v-tab>
                         <v-icon size="18">{{ $icons.points }}</v-icon>
@@ -26,7 +26,7 @@
         </v-container>
 
         <v-virtual-scroll ref="scroll" :items="transactions" item-height="30" bench="1">
-            <template v-if="!loading" v-slot:default="{item: transaction}">
+            <template v-if="!loading" #default="{item: transaction}">
                 <v-list-item :key="transaction.id" :class="transaction.class" :to="'/events/' + transaction.eventId">
                     <span>{{ formatDate(transaction.date) }}</span>
                     <span>{{ transaction.eventName }}</span>

@@ -3,7 +3,7 @@
         <the-app-bar sub-page>
             Log an expense
 
-            <template v-slot:buttons>
+            <template #buttons>
                 <v-btn color="primary" @click="save()" :disabled="isBusy">Save</v-btn>
             </template>
         </the-app-bar>
@@ -30,7 +30,7 @@
                               :append-icon="$icons.label"/>
 
                 <v-checkbox label="This expense is related to an event" disabled>
-                    <template v-slot:label>
+                    <template #label>
                         Expense is related to an event
                         <v-icon small>{{ $icons.alert }}</v-icon>
                         Not implemented

@@ -1,7 +1,7 @@
 <template>
     <v-text-field type="number" :min="min" :max="max" :step="step" :label="label" :value="value"
                   @input="input($event)" class="no-spinner" :disabled="disabled" :suffix="suffix">
-        <template v-slot:append>
+        <template #append>
             <v-btn small icon @click="addPoints(-step)" :disabled="min !== undefined && value <= min">
                 <v-icon small>{{ $icons.minus }}</v-icon>
             </v-btn>

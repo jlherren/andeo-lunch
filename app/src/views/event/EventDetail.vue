@@ -38,7 +38,7 @@
             <v-container v-if="participationsAreLoaded && event.type === 'lunch' && ownParticipationMissing">
                 <v-banner elevation="2" :icon="$icons.undecided" icon-color="red">
                     Make up your mind!
-                    <template v-slot:actions>
+                    <template #actions>
                         <v-btn color="primary" class="ml-1" :disabled="isBusy" @click="optOut">
                             <v-icon small left>{{ $icons.optOut }}</v-icon>
                             Opt-out

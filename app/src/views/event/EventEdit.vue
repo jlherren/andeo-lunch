@@ -3,7 +3,7 @@
         <the-app-bar sub-page :to="backLink">
             {{ title }}
 
-            <template v-slot:buttons>
+            <template #buttons>
                 <v-btn :disabled="isBusy" color="primary" @click="save">Save</v-btn>
             </template>
         </the-app-bar>

@@ -3,7 +3,7 @@
         <the-app-bar sub-page>
             Custom transfer
 
-            <template v-slot:buttons>
+            <template #buttons>
                 <v-btn color="primary" disabled>Save</v-btn>
             </template>
         </the-app-bar>

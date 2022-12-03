@@ -3,7 +3,7 @@
         <the-app-bar sub-page :to="`/events/${eventId}`">
             Grid edit
 
-            <template v-slot:buttons>
+            <template #buttons>
                 <v-btn color="primary" @click="save()" :disabled="isBusy">Save</v-btn>
             </template>
         </the-app-bar>
@@ -12,7 +12,7 @@
 
         <v-form ref="form" :disabled="isBusy" @submit.prevent="save()">
             <v-simple-table>
-                <template v-slot:default>
+                <template #default>
                     <thead>
                         <tr>
                             <th>Name</th>

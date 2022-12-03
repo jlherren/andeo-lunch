@@ -19,7 +19,7 @@
             <v-banner elevation="2" :icon="$icons.alert" icon-color="red">
                 Your money balance is very low!  Please send money to a user with a high balance to even it out.
 
-                <template v-slot:actions>
+                <template #actions>
                     <v-btn to="/transfers/new/pay-up" color="primary" text>
                         Send money now
                     </v-btn>

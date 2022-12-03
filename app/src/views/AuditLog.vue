@@ -2,7 +2,7 @@
     <v-main>
         <the-app-bar>
             Audit log
-            <template v-slot:buttons>
+            <template #buttons>
                 <dynamic-button label="Refresh" :icon="$icons.refresh" @click="refresh()"/>
             </template>
         </the-app-bar>
@@ -16,7 +16,7 @@
         </v-container>
 
         <v-virtual-scroll :item-height="$vuetify.breakpoint.smAndDown ? 60 : 30" :items="audits" ref="scroll" bench="1">
-            <template v-slot:default="{item: audit}">
+            <template #default="{item: audit}">
                 <v-list-item :key="audit.id" :class="audit.class">
                     <span>{{ formatDate(audit.date) }}</span>
                     <span>{{ audit.actingUserName }}</span>

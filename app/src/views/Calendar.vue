@@ -2,7 +2,7 @@
     <v-main v-touch="touch">
         <the-app-bar>
             {{ title }}
-            <template v-slot:buttons>
+            <template #buttons>
                 <dynamic-button label="Previous week" :icon="$icons.chevronLeft" @click="previousWeek"/>
                 <dynamic-button label="Next week" :icon="$icons.chevronRight" right @click="nextWeek"/>
             </template>

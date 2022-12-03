@@ -23,7 +23,7 @@
         <v-snackbar :value="globalSnackbar !== null" timeout="5000" @input="closeSnackbar">
             {{ globalSnackbar }}
 
-            <template v-slot:action="{ attrs }">
+            <template #action="{ attrs }">
                 <v-btn v-bind="attrs" text @click="closeSnackbar">
                     Close
                 </v-btn>

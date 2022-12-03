@@ -16,16 +16,21 @@
                           mobile-breakpoint="300"
                           :loading="tableItems.length === 0"
             >
-                <template v-slot:[`header.points`]>
+                <!-- eslint-disable-next-line vue/valid-v-slot -->
+                <template #header.points>
                     <v-icon size="20">{{ $icons.points }}</v-icon>
                 </template>
-                <template v-slot:[`header.money`]>
+                <!-- eslint-disable-next-line vue/valid-v-slot -->
+                <template #header.money>
                     <v-icon size="20">{{ $icons.money }}</v-icon>
                 </template>
-                <template v-slot:[`item.points`]="{ item }">
+
+                <!-- eslint-disable-next-line vue/valid-v-slot -->
+                <template #item.points="{ item }">
                     <balance v-model="item.points" precise color/>
                 </template>
-                <template v-slot:[`item.money`]="{ item }">
+                <!-- eslint-disable-next-line vue/valid-v-slot -->
+                <template #item.money="{ item }">
                     <balance v-model="item.money" precise color/>
                 </template>
             </v-data-table>

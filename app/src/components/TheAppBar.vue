@@ -2,7 +2,7 @@
     <div>
         <v-app-bar app :extension-height="extensionHeight" flat dark>
             <v-app-bar-nav-icon v-if="!subPage && !noMenu" @click="toggleDrawer">
-                <template v-slot:default>
+                <template #default>
                     <v-icon>{{ $icons.appMenu }}</v-icon>
                 </template>
             </v-app-bar-nav-icon>
@@ -15,7 +15,7 @@
             <v-spacer/>
             <slot name="buttons"/>
             <img v-if="logo" src="/img/app-bar.svg" alt="">
-            <template v-if="$slots.extension" v-slot:extension>
+            <template v-if="$slots.extension" #extension>
                 <slot name="extension"/>
             </template>
         </v-app-bar>

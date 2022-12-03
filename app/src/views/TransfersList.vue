@@ -2,7 +2,7 @@
     <v-main v-touch="touch">
         <the-app-bar>
             {{ title }}
-            <template v-slot:buttons>
+            <template #buttons>
                 <dynamic-button label="Previous month" :icon="$icons.chevronLeft" @click="previousMonth"/>
                 <dynamic-button label="Next month" :icon="$icons.chevronRight" right @click="nextMonth"/>
             </template>

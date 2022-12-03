@@ -3,7 +3,7 @@
         <the-app-bar sub-page>
             Default opt-ins
 
-            <template v-slot:buttons>
+            <template #buttons>
                 <v-btn :disabled="isBusy" @click="save()" color="primary">
                     Save
                 </v-btn>
@@ -26,7 +26,7 @@
 
             <v-switch hide-details :disabled="isBusy" v-model="settings.quickOptIn"
                       false-value="omnivorous" true-value="vegetarian">
-                <template v-slot:label>
+                <template #label>
                     Quick opt-in as vegetarian
                 </template>
             </v-switch>
