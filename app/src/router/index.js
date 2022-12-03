@@ -54,7 +54,7 @@ const routes = [
         component: () => import(/* webpackChunkName: "wizards" */ '@/views/TransferWizardCustom'),
     },
     {
-        path:      '/history',
+        path:      '/history/:id(\\d+)',
         component: () => import('@/views/History.vue'),
     },
     {

@@ -34,7 +34,7 @@
             </v-list-item-content>
         </v-list-item>
 
-        <v-list-item to="/history">
+        <v-list-item :to="`/history/${ownUser.id}`">
             <v-list-item-icon>
                 <v-icon>{{ $icons.balanceHistory }}</v-icon>
             </v-list-item-icon>

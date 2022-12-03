@@ -15,6 +15,8 @@
                           dense disable-pagination hide-default-footer must-sort sort-by="points"
                           mobile-breakpoint="300"
                           :loading="tableItems.length === 0"
+                          @click:row="click"
+                          class="stats-table"
             >
                 <!-- eslint-disable-next-line vue/valid-v-slot -->
                 <template #header.points>
@@ -78,6 +80,7 @@
             tableItems() {
                 return this.$store().visibleUsers.map(user => {
                     return {
+                        id:     user.id,
                         name:   user.name,
                         points: user.balances.points,
                         money:  user.balances.money,
@@ -93,5 +96,18 @@
                 return this.$store().visibleUsers.reduce((acc, user) => acc + user.balances.money, 0);
             },
         },
+
+        methods: {
+            click(item) {
+                this.$router.push(`/history/${item.id}`);
+            },
+        },
     };
 </script>
+
+<style lang="scss">
+    // Scoped rules don't seem to work with v-data-table
+    .stats-table tr {
+        cursor: pointer;
+    }
+</style>

@@ -8,7 +8,7 @@
 
         <v-subheader>Your balance</v-subheader>
         <v-list fluid>
-            <v-list-item to="/history">
+            <v-list-item :to="`/history/${ownUser.id}`">
                 <v-list-item-content>
                     <user-stats/>
                 </v-list-item-content>
