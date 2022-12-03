@@ -100,10 +100,5 @@ module.exports = {
                 },
             ],
         },
-
-        workboxOptions: {
-            // See https://stackoverflow.com/questions/54145735/vue-pwa-not-getting-new-content-after-refresh
-            skipWaiting: true,
-        },
     },
 };

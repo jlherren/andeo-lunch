@@ -1,6 +1,5 @@
 // Exporting this allows values to be set even before Vue has initialized
 export let global = {
-    hasUpdate: false,
 };
 
 export default {

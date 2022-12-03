@@ -4,18 +4,7 @@
             {{ ownUser.name }}
         </the-app-bar>
 
-        <shy-progress v-if="loading || updating"/>
-
-        <v-container v-if="$global.hasUpdate">
-            <v-banner elevation="2" :icon="$icons.update">
-                An update for Andeo Lunch is available!
-                <template v-slot:actions>
-                    <v-btn color="primary" @click="update()"  :loading="updating">
-                        Update now
-                    </v-btn>
-                </template>
-            </v-banner>
-        </v-container>
+        <shy-progress v-if="loading"/>
 
         <v-subheader>Your balance</v-subheader>
         <v-list fluid>
@@ -84,7 +73,6 @@
             return {
                 startDate: midnight,
                 loading:   false,
-                updating:  false,
             };
         },
 
@@ -141,11 +129,6 @@
                 } finally {
                     this.loading = false;
                 }
-            },
-
-            update() {
-                this.updating = true;
-                setTimeout(() => window.location.reload());
             },
         },
     };

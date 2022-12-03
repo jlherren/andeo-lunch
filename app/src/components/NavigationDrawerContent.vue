@@ -52,17 +52,6 @@
             </v-list-item-content>
         </v-list-item>
 
-        <v-list-item v-if="$global.hasUpdate" @click="update()" color="primary" :input-value="true">
-            <v-list-item-icon>
-                <v-badge dot>
-                    <v-icon>{{ $icons.refresh }}</v-icon>
-                </v-badge>
-            </v-list-item-icon>
-            <v-list-item-content>
-                <v-list-item-title>Update available</v-list-item-title>
-            </v-list-item-content>
-        </v-list-item>
-
         <v-list-item to="/account">
             <v-list-item-icon>
                 <v-icon>{{ $icons.accountCircle }}</v-icon>
@@ -96,12 +85,6 @@
             ...mapState(useStore, [
                 'ownUser',
             ]),
-        },
-
-        methods: {
-            update() {
-                window.location.reload();
-            },
         },
     };
 </script>

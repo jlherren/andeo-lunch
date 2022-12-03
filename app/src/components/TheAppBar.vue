@@ -3,9 +3,7 @@
         <v-app-bar app :extension-height="extensionHeight" flat dark>
             <v-app-bar-nav-icon v-if="!subPage && !noMenu" @click="toggleDrawer">
                 <template v-slot:default>
-                    <v-badge :value="$global.hasUpdate" dot>
-                        <v-icon>{{ $icons.appMenu }}</v-icon>
-                    </v-badge>
+                    <v-icon>{{ $icons.appMenu }}</v-icon>
                 </template>
             </v-app-bar-nav-icon>
             <v-app-bar-nav-icon v-if="subPage" @click="goBack()">
