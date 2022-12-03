@@ -3988,7 +3988,7 @@ __metadata:
     eslint-plugin-node: ~11.1.0
     eslint-plugin-promise: ~6.1.1
     eslint-plugin-standard: ~5.0.0
-    mariadb: ^3.0.2
+    mariadb: ~3.0.2
   languageName: unknown
   linkType: soft
 
@@ -12665,7 +12665,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mariadb@npm:^3.0.2, mariadb@npm:~3.0.2":
+"mariadb@npm:~3.0.2":
   version: 3.0.2
   resolution: "mariadb@npm:3.0.2"
   dependencies:
