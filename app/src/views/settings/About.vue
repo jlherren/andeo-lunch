@@ -27,19 +27,19 @@
                 GNU General Public License for more details.
             </p>
 
-            <p class="text-body-2">
-                To read the full terms of the GNU General Public License
-                see <a href="https://www.gnu.org/licenses/">www.gnu.org/licenses/</a>.
-            </p>
+            <div class="buttons mt-8">
+                <v-btn href="https://www.gnu.org/licenses/" color="primary" block target="_blank" class="my-2">
+                    Read the full terms
+                </v-btn>
 
-            <p class="text-body-2">
-                Useful links:
-            </p>
+                <v-btn href="https://github.com/jlherren/andeo-lunch" color="primary" block target="_blank" class="my-2">
+                    Source / contribute
+                </v-btn>
 
-            <ul class="text-body-2">
-                <li><a href="https://github.com/jlherren/andeo-lunch" target="_blank">github.com/jlherren/andeo-lunch</a></li>
-                <li><a href="https://github.com/jlherren/andeo-lunch/issues/new" target="_blank">Report a bug</a></li>
-            </ul>
+                <v-btn href="https://github.com/jlherren/andeo-lunch/issues/new" color="primary" block target="_blank" class="my-2">
+                    Report a bug
+                </v-btn>
+            </div>
         </v-container>
     </v-main>
 </template>
@@ -66,3 +66,10 @@
         },
     };
 </script>
+
+<style lang="scss" scoped>
+    .buttons {
+        margin: 0 auto;
+        max-width: 400px;
+    }
+</style>
