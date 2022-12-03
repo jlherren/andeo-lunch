@@ -47,7 +47,7 @@
                 </v-list-item-action>
             </v-list-item>
 
-            <v-list-item @click.stop="logout">
+            <v-list-item @click="confirmLogout = true">
                 <v-list-item-icon>
                     <v-icon>{{ $icons.logout }}</v-icon>
                 </v-list-item-icon>
@@ -56,6 +56,22 @@
                 </v-list-item-content>
             </v-list-item>
         </v-list>
+
+        <v-dialog v-model="confirmLogout">
+            <v-card>
+                <v-card-title>
+                    Confirm
+                </v-card-title>
+                <v-card-text>
+                    Log out of the app?
+                </v-card-text>
+                <v-card-actions>
+                    <v-btn text @click="confirmLogout = false">Cancel</v-btn>
+                    <v-spacer/>
+                    <v-btn @click="logout" color="error">Logout</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-main>
 </template>
 
@@ -69,6 +85,12 @@
 
         components: {
             TheAppBar,
+        },
+
+        data() {
+            return {
+                confirmLogout: false,
+            };
         },
 
         created() {

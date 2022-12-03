@@ -32,6 +32,18 @@ describe('Profile', () => {
         cy.contains('[role=listitem]', 'Logout')
             .click();
 
+        cy.getDialog()
+            .within(() => {
+                cy.contains('button', 'Logout')
+                    .click();
+            });
+
+        cy.contains('[role=status]', 'You have been logged out')
+            .should('be.visible');
+
+        // Should be back at the login screen.
+        cy.contains('label', 'Username');
+
         cy.login(USERS.john.username, NEW_PASSWORD);
         cy.contains('.v-app-bar', USERS.john.name);
     });
