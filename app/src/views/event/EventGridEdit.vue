@@ -11,7 +11,7 @@
         <shy-progress v-if="isBusy"/>
 
         <v-form ref="form" :disabled="isBusy" @submit.prevent="save()">
-            <v-simple-table>
+            <v-simple-table class="grid-edit-table">
                 <template #default>
                     <thead>
                         <tr>
@@ -31,16 +31,18 @@
                                 <ParticipationTypeMiniWidget :event-type="event.type" v-model="row.type" :disabled="isBusy" @input="modified(row)"/>
                             </td>
                             <td>
-                                <v-text-field type="number" v-model="row.pointsCredit" min="0" class="no-spinner" :disabled="isBusy" dense hide-details @input="modified(row)"/>
+                                <v-text-field type="number" v-model="row.pointsCredit" min="0" class="no-spinner" :disabled="isBusy" dense hide-details
+                                              @input="modified(row)" :rules="rules"/>
                             </td>
                             <td>
-                                <v-text-field type="number" v-model="row.moneyCredit" min="0" class="no-spinner" :disabled="isBusy" dense hide-details @input="modified(row)"/>
+                                <v-text-field type="number" v-model="row.moneyCredit" min="0" class="no-spinner" :disabled="isBusy" dense hide-details
+                                              @input="modified(row)" :rules="rules"/>
                             </td>
                             <td>
                                 <v-text-field type="number" v-model="row.moneyFactor" min="0" step="5" class="no-spinner"
                                               dense hide-details
                                               :disabled="isBusy || event.type !== 'special' || row.type === 'opt-out'"
-                                              @input="modified(row)"
+                                              @input="modified(row)" :rules="rules"
                                 />
                             </td>
                         </tr>
@@ -78,6 +80,9 @@
                 name:   '',
                 isBusy: true,
                 rows:   [],
+                rules:  [
+                    v => v !== '' || 'This field is required',
+                ],
             };
         },
 
@@ -198,5 +203,15 @@
 <style lang="scss" scoped>
     .modified {
         color: $andeo-blue;
+    }
+</style>
+
+<style lang="scss">
+    .grid-edit-table.theme--light .error--text input {
+        background: #ffc0c0;
+    }
+
+    .grid-edit-table.theme--dark .error--text input {
+        background: #600000;
     }
 </style>
