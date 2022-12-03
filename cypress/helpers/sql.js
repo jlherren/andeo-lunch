@@ -1,24 +1,51 @@
+const DEFAULT_PASSWORD_HASH = '$2a$10$EOq4EMCEzqoyWX.RezHdnuc/.oukv2lR2nVV1d8RyKVHMHwAq2/Wi';
+const DEFAULT_PASSWORD = 'andeolunchtest';
+
 export const USERS = {
     john: {
         username: 'john.doe',
-        password: 'andeolunchtest',
+        password: DEFAULT_PASSWORD,
         name:     'John Doe',
         insert() {
             cy.task('db:sql', `
                 INSERT INTO user (username, password, name, active, createdAt, updatedAt)
-                    VALUES ('john.doe', '$2a$10$EOq4EMCEzqoyWX.RezHdnuc/.oukv2lR2nVV1d8RyKVHMHwAq2/Wi', 'John Doe', 1, NOW(), NOW());
+                    VALUES ('john.doe', '${DEFAULT_PASSWORD_HASH}', 'John Doe', 1, NOW(), NOW());
             `);
         },
     },
 
     robert: {
         username: 'robert.smith',
-        password: 'andeolunchtest',
+        password: DEFAULT_PASSWORD,
         name:     'Robert Smith',
         insert() {
             cy.task('db:sql', `
                 INSERT INTO user (username, password, name, active, createdAt, updatedAt)
-                    VALUES ('robert.smith', '$2a$10$EOq4EMCEzqoyWX.RezHdnuc/.oukv2lR2nVV1d8RyKVHMHwAq2/Wi', 'Robert Smith', 1, NOW(), NOW());
+                    VALUES ('robert.smith', '${DEFAULT_PASSWORD_HASH}', 'Robert Smith', 1, NOW(), NOW());
+            `);
+        },
+    },
+
+    sarah: {
+        username: 'sarah.hidden',
+        password: DEFAULT_PASSWORD,
+        name:     'Sarah Hidden',
+        insert() {
+            cy.task('db:sql', `
+                INSERT INTO user (username, password, name, active, hidden, createdAt, updatedAt)
+                    VALUES ('sarah.hidden', '${DEFAULT_PASSWORD_HASH}', 'Sarah Hidden', 1, 1, NOW(), NOW());
+            `);
+        },
+    },
+
+    mike: {
+        username: 'mike.inactive',
+        password: DEFAULT_PASSWORD,
+        name:     'Mike Inactive',
+        insert() {
+            cy.task('db:sql', `
+                INSERT INTO user (username, password, name, active, createdAt, updatedAt)
+                    VALUES ('mike.inactive', '${DEFAULT_PASSWORD_HASH}', 'Mike Inactive', 0, NOW(), NOW());
             `);
         },
     },
