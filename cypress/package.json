@@ -4,8 +4,8 @@
         "node": ">= 16.18.0"
     },
     "scripts": {
-        "lint": "eslint e2e plugins support",
-        "lint:fix": "eslint --fix e2e plugins support",
+        "lint": "eslint e2e helpers plugins support",
+        "lint:fix": "eslint --fix e2e helpers plugins support",
         "cypress:open": "cypress open",
         "cypress:run": "cypress run"
     },
