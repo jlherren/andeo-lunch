@@ -4,7 +4,7 @@
             Default opt-ins
 
             <template #buttons>
-                <v-btn :disabled="isBusy" @click="save()" color="primary">
+                <v-btn :disabled="isBusy" @click="save" color="primary">
                     Save
                 </v-btn>
             </template>

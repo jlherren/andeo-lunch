@@ -19,7 +19,7 @@
                             <v-combobox ref="combobox" :items="autocompleteItems" item-text="label" item-value="id"
                                         v-model="newItemLabel"
                                         hide-details dense hide-no-data autofocus
-                                        placeholder="Add item..." @input="changed($event)" @keydown="keydown($event)"/>
+                                        placeholder="Add item..." @input="changed" @keydown="keydown"/>
                         </v-list-item-title>
                     </v-list-item-content>
                     <v-list-item-action>

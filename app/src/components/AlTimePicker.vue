@@ -5,7 +5,7 @@
                           :label="label" :rules="rules" :value="value" readonly
             />
         </template>
-        <v-time-picker :value="value" @input="update($event)" @click:minute="open = false" format="24hr"/>
+        <v-time-picker :value="value" @input="update" @click:minute="open = false" format="24hr"/>
     </v-dialog>
 </template>
 

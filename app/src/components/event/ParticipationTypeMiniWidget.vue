@@ -1,5 +1,5 @@
 <template>
-    <v-btn :disabled="disabled" @click="toggle()">
+    <v-btn :disabled="disabled" @click="toggle">
         <v-icon :left="!$vuetify.breakpoint.xs">{{ current.icon }}</v-icon>
         <span class="hidden-xs-only">{{ current.name }}</span>
     </v-btn>

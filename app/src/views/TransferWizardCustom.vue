@@ -4,7 +4,7 @@
             Custom transfer
 
             <template #buttons>
-                <v-btn color="primary" @click="save()" :disabled="isBusy">Save</v-btn>
+                <v-btn color="primary" @click="save" :disabled="isBusy">Save</v-btn>
             </template>
         </the-app-bar>
 

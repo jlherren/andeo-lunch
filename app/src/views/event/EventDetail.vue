@@ -65,7 +65,7 @@
                 <participation-list-item v-for="participation of sortedParticipations"
                                          :key="participation.userId"
                                          :event="event" :participation="participation"
-                                         @saved="refreshEvent()"/>
+                                         @saved="refreshEvent"/>
             </v-list>
 
             <v-dialog v-model="confirmDelete">

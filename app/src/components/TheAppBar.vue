@@ -6,7 +6,7 @@
                     <v-icon>{{ $icons.appMenu }}</v-icon>
                 </template>
             </v-app-bar-nav-icon>
-            <v-app-bar-nav-icon v-if="subPage" @click="goBack()">
+            <v-app-bar-nav-icon v-if="subPage" @click="goBack">
                 <v-icon>{{ $icons.arrowLeft }}</v-icon>
             </v-app-bar-nav-icon>
             <v-app-bar-title>

@@ -5,7 +5,7 @@
                           :label="label" :rules="rules" :value="formatted" readonly :disabled="disabled"
             />
         </template>
-        <v-date-picker :value="value" @input="update($event)" first-day-of-week="1"/>
+        <v-date-picker :value="value" @input="update" first-day-of-week="1"/>
     </v-dialog>
 </template>
 

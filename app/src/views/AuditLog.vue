@@ -3,7 +3,7 @@
         <the-app-bar>
             Audit log
             <template #buttons>
-                <dynamic-button label="Refresh" :icon="$icons.refresh" @click="refresh()"/>
+                <dynamic-button label="Refresh" :icon="$icons.refresh" @click="refresh"/>
             </template>
         </the-app-bar>
 

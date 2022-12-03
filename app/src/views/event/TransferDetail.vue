@@ -62,7 +62,7 @@
 
             <v-skeleton-loader v-if="!transfers" type="list-item-avatar"/>
 
-            <v-list-item v-else @click="openAddTransferDialog()" :disabled="isBusy">
+            <v-list-item v-else @click="openAddTransferDialog" :disabled="isBusy">
                 <v-list-item-icon>
                     <v-icon>{{ $icons.plus }}</v-icon>
                 </v-list-item-icon>
