@@ -2,7 +2,7 @@
 
 ## Development quick start
 
-1. Make sure you have Node 14+ and Yarn installed.
+1. Make sure you have Node 16+ and Yarn installed.
 
 2. Create a file `backend/config.json` with this content:
 
