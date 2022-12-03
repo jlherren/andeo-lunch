@@ -77,15 +77,15 @@
         <v-dialog v-model="deleteEventDialog">
             <v-card>
                 <v-card-title>
-                    Confirm
+                    Delete this transfer?
                 </v-card-title>
                 <v-card-text>
-                    Really delete this transfer event? This cannot be undone.
+                    The transfer and all its entries will be permanently deleted!
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn text @click="deleteEventDialog = false" :disabled="isBusy">Cancel</v-btn>
+                    <v-btn text @click="deleteEventDialog = false" :disabled="isBusy">No, keep it</v-btn>
                     <v-spacer/>
-                    <v-btn @click="deleteEvent" :disabled="isBusy" color="error">Delete</v-btn>
+                    <v-btn @click="deleteEvent" :disabled="isBusy" color="error">Yes, delete</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -93,15 +93,12 @@
         <v-dialog v-model="deleteTransferDialog">
             <v-card>
                 <v-card-title>
-                    Confirm
+                    Delete transfer entry?
                 </v-card-title>
-                <v-card-text>
-                    Really delete this single transfer? This cannot be undone.
-                </v-card-text>
                 <v-card-actions>
-                    <v-btn text @click="deleteTransferDialog = false" :disabled="isBusy">Cancel</v-btn>
+                    <v-btn text @click="deleteTransferDialog = false" :disabled="isBusy">No, keep it</v-btn>
                     <v-spacer/>
-                    <v-btn @click="deleteTransfer(deleteTransferDialogTransferId)" :disabled="isBusy" color="error">Delete</v-btn>
+                    <v-btn @click="deleteTransfer(deleteTransferDialogTransferId)" :disabled="isBusy" color="error">Yes, delete</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>

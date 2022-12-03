@@ -71,16 +71,15 @@
             <v-dialog v-model="confirmDelete">
                 <v-card>
                     <v-card-title>
-                        Confirm
+                        Delete this event?
                     </v-card-title>
                     <v-card-text>
-                        Really delete this event? All event and participation data will be deleted, this cannot
-                        be undone.
+                        All event and participation data will be permanently deleted!
                     </v-card-text>
                     <v-card-actions>
-                        <v-btn text @click="confirmDelete = false" :disabled="isBusy">Cancel</v-btn>
+                        <v-btn text @click="confirmDelete = false" :disabled="isBusy">No, keep it</v-btn>
                         <v-spacer/>
-                        <v-btn @click="deleteEvent" :disabled="isBusy" color="error">Delete</v-btn>
+                        <v-btn @click="deleteEvent" :disabled="isBusy" color="error">Yes, delete</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-dialog>

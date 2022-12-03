@@ -79,15 +79,12 @@
         <v-dialog v-model="confirmDelete">
             <v-card>
                 <v-card-title>
-                    Confirm
+                    Delete absence?
                 </v-card-title>
-                <v-card-text>
-                    Really delete this absence?
-                </v-card-text>
                 <v-card-actions>
-                    <v-btn text @click="confirmDelete = false" :disabled="isBusy">Cancel</v-btn>
+                    <v-btn text @click="confirmDelete = false" :disabled="isBusy">No, keep it</v-btn>
                     <v-spacer/>
-                    <v-btn @click="deleteAbsence" :disabled="isBusy" color="error">Delete</v-btn>
+                    <v-btn @click="deleteAbsence" :disabled="isBusy" color="error">Yes, delete</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>

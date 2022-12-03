@@ -60,15 +60,15 @@
         <v-dialog v-model="confirmLogout">
             <v-card>
                 <v-card-title>
-                    Confirm
+                    Logout?
                 </v-card-title>
                 <v-card-text>
-                    Log out of the app?
+                    You will be logged out of the app, but you can always log back in later.
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn text @click="confirmLogout = false">Cancel</v-btn>
+                    <v-btn text @click="confirmLogout = false">No, stay</v-btn>
                     <v-spacer/>
-                    <v-btn @click="logout" color="error">Logout</v-btn>
+                    <v-btn @click="logout" color="error">Yes, logout</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>

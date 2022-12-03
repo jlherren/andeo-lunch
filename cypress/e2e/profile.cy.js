@@ -34,7 +34,7 @@ describe('Profile', () => {
 
         cy.getDialog()
             .within(() => {
-                cy.contains('button', 'Logout')
+                cy.contains('button', 'Yes, logout')
                     .click();
             });
 
