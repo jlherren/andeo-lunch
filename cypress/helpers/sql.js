@@ -55,7 +55,7 @@ export const USERS = {
     },
 };
 
-export const LUNCH = {
+export const EVENTS = {
     lasagna: {
         id: 1,
         insert() {
@@ -69,10 +69,8 @@ export const LUNCH = {
             `);
         },
     },
-};
 
-export const SPECIAL = {
-    lasagna: {
+    groceries: {
         id: 2,
         insert() {
             cy.task('db:sql', `

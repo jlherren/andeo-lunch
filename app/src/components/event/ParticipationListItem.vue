@@ -15,7 +15,7 @@
                 </v-chip>
 
                 <v-chip v-if="participation.credits.money > 0" class="mr-1" small>
-                    <v-icon small>{{ $icons.money }}</v-icon>
+                    <v-icon small data-icon="money">{{ $icons.money }}</v-icon>
                 </v-chip>
             </v-list-item-title>
         </v-list-item-content>

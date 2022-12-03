@@ -1,11 +1,11 @@
-const {USERS, LUNCH, SPECIAL} = require('../helpers/sql');
+const {USERS, EVENTS} = require('../helpers/sql');
 
 describe('Lunch event', () => {
     beforeEach(() => {
         cy.task('db:purge');
         USERS.john.insert();
         USERS.robert.insert();
-        LUNCH.lasagna.insert();
+        EVENTS.lasagna.insert();
         cy.login(USERS.john.username, USERS.john.password);
     });
 
@@ -90,7 +90,7 @@ describe('Lunch event', () => {
         USERS.sarah.insert();
         cy.task('db:sql', `
             INSERT INTO participation (event, user, type, pointsCredited, createdAt, updatedAt)
-                VALUES (${LUNCH.lasagna.id}, ${USERS.sarah.id}, 1, 8, NOW(), NOW());
+                VALUES (${EVENTS.lasagna.id}, ${USERS.sarah.id}, 1, 8, NOW(), NOW());
         `);
         cy.visit('/events/1');
         cy.contains(USERS.sarah.name);
@@ -102,7 +102,7 @@ describe('Special event', () => {
         cy.task('db:purge');
         USERS.john.insert();
         USERS.robert.insert();
-        SPECIAL.lasagna.insert();
+        EVENTS.groceries.insert();
         cy.login(USERS.john.username, USERS.john.password);
         cy.visit('/events/2');
     });
@@ -138,5 +138,68 @@ describe('Special event', () => {
         cy.noDialog();
         cy.contains('[role=listitem]', USERS.robert.name)
             .find('[data-type=opt-in]');
+    });
+});
+
+describe('Grid editor', () => {
+    beforeEach(() => {
+        cy.viewport(800, 800);
+        cy.task('db:purge');
+    });
+
+    it('edit', () => {
+        USERS.john.insert();
+        USERS.robert.insert();
+        USERS.sarah.insert();
+        USERS.mike.insert();
+        EVENTS.lasagna.insert();
+        cy.login(USERS.john.username, USERS.john.password);
+        cy.visit('/events/1');
+        cy.contains('a', 'Grid')
+            .click();
+        cy.contains('tr', USERS.john.name)
+            .within(() => {
+                cy.contains('button', 'Undecided')
+                    .click();
+                cy.get('td:nth(2) input')
+                    .type('{selectall}8');
+            });
+        cy.contains('tr', USERS.mike.name)
+            .within(() => {
+                cy.contains('button', 'Undecided')
+                    .click();
+                cy.contains('button', 'Omni')
+                    .click();
+                cy.get('td:nth(3) input')
+                    .type('{selectall}10');
+            });
+        cy.contains('button', 'Save')
+            .click();
+
+        cy.contains('[role=listitem]', USERS.john.name)
+            .within(() => {
+                cy.get('[data-type=omnivorous]');
+                cy.contains('+8');
+                cy.get('[data-icon=points]')
+                    .should('exist');
+                cy.get('[data-icon=money]')
+                    .should('not.exist');
+            });
+        cy.contains('[role=listitem]', USERS.mike.name)
+            .within(() => {
+                cy.get('[data-type=vegetarian]');
+                cy.get('[data-icon=points]')
+                    .should('not.exist');
+                cy.get('[data-icon=money]')
+                    .should('exist');
+            });
+        cy.contains('[role=listitem]', USERS.robert.name)
+            .within(() => {
+                cy.get('[data-type=undecided]');
+                cy.get('[data-icon=points]')
+                    .should('not.exist');
+                cy.get('[data-icon=money]')
+                    .should('not.exist');
+            });
     });
 });

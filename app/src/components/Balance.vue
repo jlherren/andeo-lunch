@@ -1,7 +1,7 @@
 <template>
     <span :class="valueClass">
         {{ formatted }}
-        <v-icon v-if="actualIcon !== null" :large="large" :small="small">{{ actualIcon }}</v-icon>
+        <v-icon v-if="actualIcon !== null" :large="large" :small="small" :data-icon="iconName">{{ actualIcon }}</v-icon>
     </span>
 </template>
 
@@ -66,6 +66,19 @@
                 }
                 if (this.money) {
                     return this.$icons.money;
+                }
+                return null;
+            },
+
+            iconName() {
+                if (this.icon) {
+                    return null;
+                }
+                if (this.points) {
+                    return 'points';
+                }
+                if (this.money) {
+                    return 'money';
                 }
                 return null;
             },
