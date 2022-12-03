@@ -24,22 +24,23 @@
                     </thead>
                     <tbody>
                         <tr v-for="row of rows" :key="row.id">
-                            <td>
+                            <td :class="{'modified': row.modified}">
                                 {{ row.name }}
                             </td>
                             <td>
-                                <ParticipationTypeMiniWidget :event-type="event.type" v-model="row.type" :disabled="isBusy"/>
+                                <ParticipationTypeMiniWidget :event-type="event.type" v-model="row.type" :disabled="isBusy" @input="modified(row)"/>
                             </td>
                             <td>
-                                <v-text-field type="number" v-model="row.pointsCredit" min="0" class="no-spinner" :disabled="isBusy" dense hide-details/>
+                                <v-text-field type="number" v-model="row.pointsCredit" min="0" class="no-spinner" :disabled="isBusy" dense hide-details @input="modified(row)"/>
                             </td>
                             <td>
-                                <v-text-field type="number" v-model="row.moneyCredit" min="0" class="no-spinner" :disabled="isBusy" dense hide-details/>
+                                <v-text-field type="number" v-model="row.moneyCredit" min="0" class="no-spinner" :disabled="isBusy" dense hide-details @input="modified(row)"/>
                             </td>
                             <td>
                                 <v-text-field type="number" v-model="row.moneyFactor" min="0" step="5" class="no-spinner"
                                               dense hide-details
                                               :disabled="isBusy || event.type !== 'special' || row.type === 'opt-out'"
+                                              @input="modified(row)"
                                 />
                             </td>
                         </tr>
@@ -125,6 +126,7 @@
                             pointsCredit: 0,
                             moneyCredit:  0,
                             moneyFactor:  0,
+                            modified:     false,
                         };
                     });
 
@@ -137,6 +139,7 @@
                             pointsCredit: participation.credits?.points ?? 0,
                             moneyCredit:  participation.credits?.money ?? 0,
                             moneyFactor:  (participation.factors?.money ?? 1) * 100,
+                            modified:     false,
                         };
                     },
                 );
@@ -154,32 +157,46 @@
                 return participations;
             },
 
+            modified(row) {
+                row.modified = true;
+            },
+
             async save() {
                 if (!this.$refs.form.validate()) {
                     return;
                 }
                 this.isBusy = true;
                 try {
-                    await Promise.all(this.rows.map(row => {
-                        return this.$store().saveParticipation({
-                            userId:  row.userId,
-                            eventId: this.eventId,
-                            type:    row.type,
-                            credits: {
-                                points: row.pointsCredit,
-                                money:  row.moneyCredit,
-                            },
-                            factors: {
-                                money: row.moneyFactor / 100,
-                            },
-                        });
-                    }));
+                    let saveData = this.rows.filter(row => row.modified)
+                        .map(row => this.createSaveData(row));
+                    await this.$store().saveParticipations(saveData);
                     await this.$router.back();
                 } catch (err) {
                     this.isBusy = false;
                     throw err;
                 }
             },
+
+            createSaveData(row) {
+                return {
+                    userId:  row.userId,
+                    eventId: this.eventId,
+                    type:    row.type,
+                    credits: {
+                        points: row.pointsCredit,
+                        money:  row.moneyCredit,
+                    },
+                    factors: {
+                        money: row.moneyFactor / 100,
+                    },
+                };
+            },
         },
     };
 </script>
+
+<style lang="scss" scoped>
+    .modified {
+        color: $andeo-blue;
+    }
+</style>
