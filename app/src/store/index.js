@@ -435,25 +435,7 @@ export let useStore = defineStore('main', {
             });
         },
 
-        async saveGrocery({id, noUpdateOrder, ...grocery}) {
-            // Proactively adjust this.groceries, so the display updates immediately
-            if (id) {
-                let existing = this.groceries.find(g => g.id === id);
-                if (existing) {
-                    if (grocery.label !== undefined) {
-                        existing.label = grocery.label;
-                    }
-                    if (grocery.checked !== undefined) {
-                        existing.checked = grocery.checked;
-                    }
-                }
-            } else {
-                this.groceries.unshift({
-                    id: -parseInt(Math.random() * 1e9, 10),
-                    ...grocery,
-                });
-            }
-
+        async saveGrocery({id, noUpdateOrder = false, refresh = true, ...grocery}) {
             let url = id ? `/groceries/${id}` : '/groceries';
             if (noUpdateOrder) {
                 url += '?noUpdateOrder=1';
@@ -461,18 +443,17 @@ export let useStore = defineStore('main', {
 
             await Backend.post(url, grocery);
             Cache.invalidate('groceries');
-            if (!id) {
-                // Need to update, otherwise we won't ever know the real ID
-                // noinspection ES6MissingAwait
-                this.fetchGroceries();
+            if (refresh) {
+                await this.fetchGroceries();
             }
         },
 
-        async deleteGrocery(groceryId) {
-            // Proactively remove it
-            this.groceries = this.groceries.filter(g => g.id !== groceryId);
-            await Backend.delete(`/groceries/${groceryId}`);
+        async deleteGrocery({id, refresh = true}) {
+            await Backend.delete(`/groceries/${id}`);
             Cache.invalidate('groceries');
+            if (refresh) {
+                await this.fetchGroceries();
+            }
         },
     },
 });

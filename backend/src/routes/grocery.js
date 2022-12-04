@@ -109,6 +109,7 @@ async function listGroceries(ctx) {
         order: [
             ['checked', 'ASC'],
             ['order', 'DESC'],
+            ['id', 'DESC'],
         ],
     });
     ctx.body = {
