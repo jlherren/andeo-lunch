@@ -398,6 +398,9 @@ class Grocery extends Model {
     }
 }
 
+class DeviceVersion extends Model {
+}
+
 exports.Configuration = Configuration;
 exports.User = User;
 exports.Permission = Permission;
@@ -411,6 +414,7 @@ exports.Transfer = Transfer;
 exports.Absence = Absence;
 exports.Audit = Audit;
 exports.Grocery = Grocery;
+exports.DeviceVersion = DeviceVersion;
 
 /**
  * @param {Sequelize} sequelize
@@ -653,4 +657,13 @@ exports.initModels = function initModels(sequelize) {
     Audit.belongsTo(Event, {foreignKey: {name: 'event'}, constraints: false, as: 'Event'});
     Audit.belongsTo(Grocery, {foreignKey: {name: 'grocery'}, constraints: false, as: 'Grocery'});
     Audit.belongsTo(User, {foreignKey: {name: 'affectedUser'}, constraints: false, as: 'AffectedUser'});
+
+    DeviceVersion.init({
+        device:   {type: ch.ascii(64), allowNull: false, unique: 'deviceVersion_device_idx'},
+        version:  {type: ch.ascii(16), allowNull: false},
+        lastSeen: {type: DataTypes.DATE, allowNull: false},
+    }, {
+        sequelize,
+        modelName: 'deviceVersion',
+    });
 };

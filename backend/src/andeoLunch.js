@@ -101,7 +101,10 @@ class AndeoLunch {
         });
 
         this.app.use(async (ctx, next) => {
-            if (!URLS_WITHOUT_AUTH.includes(ctx.request.url)) {
+            let url = ctx.request.url;
+            // remove the query part
+            url = url.replace(/\?.*/u, '');
+            if (!URLS_WITHOUT_AUTH.includes(url)) {
                 await RouteUtils.requireUser(ctx);
             }
             return next();

@@ -146,6 +146,19 @@ describe('account check route', () => {
         expect(response.status).toBe(200);
         expect(response.body).toEqual({userId: user.id, username: 'testuser', shouldRenew: false});
     });
+
+    it('updates version stats', async () => {
+        let device = 'abcd-efgh';
+        let response = await request.get(`/api/account/check?device=${device}&version=1.2.3`);
+        expect(response.status).toBe(200);
+        let dv = await Models.DeviceVersion.findOne({
+            where: {
+                device,
+            },
+        });
+        expect(dv).not.toBeNull();
+        expect(dv.version).toBe('1.2.3');
+    });
 });
 
 describe('Change password', () => {

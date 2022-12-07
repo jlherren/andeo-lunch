@@ -75,6 +75,13 @@ async function check(ctx) {
             // Happens on malformed tokens
         }
     }
+    if (ctx.query.device && ctx.query.version) {
+        await Models.DeviceVersion.upsert({
+            device:   ctx.query.device,
+            version:  ctx.query.version,
+            lastSeen: new Date(),
+        });
+    }
     ctx.body = {
         userId:   user?.id ?? null,
         username: user?.username ?? null,
