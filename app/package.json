@@ -15,7 +15,7 @@
     "dependencies": {
         "@fontsource/roboto": "~4.5.8",
         "@mdi/js": "~7.0.96",
-        "axios": "~1.2.0",
+        "axios": "~1.2.1",
         "core-js": "~3.26.1",
         "pinia": "~2.0.27",
         "register-service-worker": "~1.7.2",
