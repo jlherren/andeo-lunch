@@ -3,6 +3,7 @@ import Backend from '@/store/backend';
 import Cache from '@/store/cache';
 import Vue from 'vue';
 import {defineStore} from 'pinia';
+import {getDeviceId} from '@/utils/device';
 
 export let useStore = defineStore('main', {
     state: () => ({
@@ -119,7 +120,7 @@ export let useStore = defineStore('main', {
             let username = null;
             let shouldRenew = false;
             if (Backend.hasToken()) {
-                let response = await Backend.get('/account/check');
+                let response = await Backend.get(`/account/check?device=${getDeviceId()}&version=${this.version}`);
                 ({userId, username, shouldRenew} = response.data);
             }
 
