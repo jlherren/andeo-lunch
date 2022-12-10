@@ -1,8 +1,8 @@
 {
     "name": "andeo-lunch-backend",
-    "main": "src/andeoLunch.js",
-    "license": "UNLICENSED",
+    "license": "GPL-3.0-or-later",
     "private": true,
+    "main": "src/andeoLunch.js",
     "engines": {
         "node": ">= 16.18.0"
     },

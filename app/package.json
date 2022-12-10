@@ -1,5 +1,6 @@
 {
     "name": "andeo-lunch-app",
+    "license": "GPL-3.0-or-later",
     "private": true,
     "engines": {
         "node": ">= 16.18.0"
