@@ -30,6 +30,7 @@ module.exports = {
         assetsVersion:            randomVersion,
         appleMobileWebAppCapable: 'yes',
         iconPaths:                {
+            faviconSVG:     'img/logo-small.svg',
             favicon16:      'img/logo16.png',
             favicon32:      'img/logo32.png',
             appleTouchIcon: 'img/logo192.png',

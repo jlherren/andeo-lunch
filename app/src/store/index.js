@@ -1,6 +1,6 @@
-import * as PackageJson from '../../../package.json';
 import Backend from '@/store/backend';
 import Cache from '@/store/cache';
+import PackageJson from '../../../package.json';
 import Vue from 'vue';
 import {defineStore} from 'pinia';
 import {getDeviceId} from '@/utils/device';

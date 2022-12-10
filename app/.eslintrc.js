@@ -13,7 +13,7 @@ module.exports = {
     ],
     parserOptions: {
         ecmaVersion: 2018,
-        parser:      'babel-eslint',
+        parser:      '@babel/eslint-parser',
     },
     plugins:       ['jsdoc'],
     settings:      {
