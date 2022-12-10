@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+const randomBytes = require('randombytes');
 const DEVICE_ID_KEY = 'device-id';
 
 /**
@@ -17,5 +17,5 @@ export function getDeviceId() {
  * @returns {string}
  */
 function generateDeviceId() {
-    return crypto.randomBytes(16).toString('hex');
+    return randomBytes(16).toString('hex');
 }

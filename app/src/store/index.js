@@ -116,11 +116,13 @@ export let useStore = defineStore('main', {
         },
 
         async checkLogin() {
+            // Create a device ID even when there is no token.
+            let deviceId = getDeviceId();
             let userId = null;
             let username = null;
             let shouldRenew = false;
             if (Backend.hasToken()) {
-                let response = await Backend.get(`/account/check?device=${getDeviceId()}&version=${this.version}`);
+                let response = await Backend.get(`/account/check?device=${deviceId}&version=${this.version}`);
                 ({userId, username, shouldRenew} = response.data);
             }
 

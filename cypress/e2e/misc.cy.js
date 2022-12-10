@@ -1,6 +1,36 @@
 const {USERS} = require('../helpers/sql');
 
-describe('Misc', () => {
+describe('Misc not logged in', () => {
+    before(() => {
+        cy.task('db:purge');
+        USERS.john.insert();
+    });
+
+    it('Creates a persistent device ID', () => {
+        cy.visit('/');
+        cy.wrap(null)
+            .should(() => expect(localStorage.getItem('device-id')).to.not.be.null)
+            .then(() => {
+                let deviceId = localStorage.getItem('device-id');
+                expect(deviceId).to.be.a('string');
+                expect(deviceId).to.have.length.gte(10);
+                cy.wrap(deviceId)
+                    .as('deviceId');
+            });
+
+        cy.login(USERS.john.username, USERS.john.password);
+        cy.reload();
+        cy.loadComplete('Your balance');
+
+        cy.get('@deviceId')
+            .should(oldDeviceId => {
+                let newDeviceId = localStorage.getItem('device-id');
+                expect(newDeviceId).to.eq(oldDeviceId);
+            });
+    });
+});
+
+describe('Misc logged in', () => {
     before(() => {
         cy.task('db:purge');
         USERS.john.insert();

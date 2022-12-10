@@ -3942,6 +3942,7 @@ __metadata:
     eslint-plugin-vue: ~9.8.0
     node-sass: ~8.0.0
     pinia: ~2.0.28
+    randombytes: ~2.1.0
     register-service-worker: ~1.7.2
     sass: ~1.32.13
     sass-loader: ~10.2.1
@@ -15274,7 +15275,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"randombytes@npm:^2.0.0, randombytes@npm:^2.0.1, randombytes@npm:^2.0.5, randombytes@npm:^2.1.0":
+"randombytes@npm:^2.0.0, randombytes@npm:^2.0.1, randombytes@npm:^2.0.5, randombytes@npm:^2.1.0, randombytes@npm:~2.1.0":
   version: 2.1.0
   resolution: "randombytes@npm:2.1.0"
   dependencies:
