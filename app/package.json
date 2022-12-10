@@ -17,7 +17,7 @@
         "@mdi/js": "~7.0.96",
         "axios": "~1.2.1",
         "core-js": "~3.26.1",
-        "pinia": "~2.0.27",
+        "pinia": "~2.0.28",
         "register-service-worker": "~1.7.2",
         "vue": "~2.7.14",
         "vue-router": "~3.6.5",
