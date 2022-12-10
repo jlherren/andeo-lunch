@@ -20,6 +20,8 @@
 /backend/node_modules
 /backend/tests
 
+/cypress
+
 # These are mainly to improve the docker cache behavior
 /docker/Dockerfile.*
 /docker/*.secret
