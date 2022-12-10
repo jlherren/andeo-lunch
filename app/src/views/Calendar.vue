@@ -30,7 +30,7 @@
         </v-list>
 
         <v-speed-dial v-model="speedDial" fixed bottom right direction="top" transition="slide-y-reverse-transition">
-            <template slot="activator">
+            <template #activator>
                 <v-btn v-model="speedDial" color="primary" fab>
                     <v-icon v-if="speedDial">{{ $icons.close }}</v-icon>
                     <v-icon v-else>{{ $icons.plus }}</v-icon>

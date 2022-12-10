@@ -2,7 +2,7 @@
     <v-main>
         <the-app-bar sub-page :to="`/transfers/${isoDate}`">
             {{ name }}
-            <template v-if="event" slot="buttons">
+            <template v-if="event" #buttons>
                 <dynamic-button label="Edit" :icon="$icons.edit" disabled/>
                 <dynamic-button label="Delete" :icon="$icons.delete" :disabled="isBusy" @click="openDeleteEventDialog"/>
             </template>
