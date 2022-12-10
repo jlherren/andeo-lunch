@@ -1,6 +1,10 @@
 import Axios from 'axios';
 import {EventService} from '@/services/eventService';
 
+if (!process.env.VUE_APP_BACKEND_URL) {
+    throw new Error('VUE_APP_BACKEND_URL is not set, please read README.md');
+}
+
 const BACKEND_URL = process.env.VUE_APP_BACKEND_URL;
 
 let axios = Axios.create();

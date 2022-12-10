@@ -2,14 +2,6 @@ const crypto = require('crypto');
 
 const {LUNCH_BLUE} = require('./src/constants');
 
-if (!process.env.VUE_APP_BACKEND_URL) {
-    throw new Error('VUE_APP_BACKEND_URL is not set, please read README.md');
-}
-
-if (!process.env.VUE_APP_BRANDING_TITLE) {
-    throw new Error('VUE_APP_BRANDING_TITLE is not set, please read README.md');
-}
-
 const randomVersion = crypto.randomBytes(3).toString('hex');
 
 module.exports = {

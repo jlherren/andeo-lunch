@@ -41,12 +41,6 @@
             };
         },
 
-        computed: {
-            appTitle() {
-                return process.env.VUE_APP_BRANDING_TITLE;
-            },
-        },
-
         methods: {
             async login() {
                 this.isBusy = true;
