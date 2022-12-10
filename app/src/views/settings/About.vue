@@ -10,7 +10,7 @@
             </h1>
 
             <p class="text-body-2">
-                App version: {{ version }}<br>
+                App version: {{ version }}
             </p>
 
             <p class="text-body-2">
@@ -28,7 +28,7 @@
             </p>
 
             <div class="buttons mt-8">
-                <v-btn href="https://www.gnu.org/licenses/" color="primary" block target="_blank" class="my-2">
+                <v-btn href="https://www.gnu.org/licenses/gpl-3.0.html" color="primary" block target="_blank" class="my-2">
                     Read the full terms
                 </v-btn>
 
