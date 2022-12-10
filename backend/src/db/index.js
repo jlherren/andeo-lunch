@@ -65,7 +65,6 @@ exports.connect = async function connect(options, sequelizeOptions) {
                 if (attempt + 1 >= MAX_CONNECTION_ATTEMPTS) {
                     throw err;
                 }
-                console.log('Will try again in a bit...');
                 await new Promise(resolve => setTimeout(resolve, 5000));
             } else {
                 throw err;
