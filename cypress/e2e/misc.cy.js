@@ -53,5 +53,6 @@ describe('Misc logged in', () => {
             .should('be.visible');
         cy.contains('WITHOUT ANY WARRANTY')
             .should('be.visible');
+        cy.contains(/App version: \d+\.\d+\.\d+/u);
     });
 });
