@@ -24,6 +24,7 @@ async function getDb() {
                     password: 'andeolunchtest',
                 });
                 if (attempts > 1) {
+                    // eslint-disable-next-line no-console
                     console.log(`DB connection succeeded on attempt ${attempts}`);
                 }
                 break;
@@ -31,6 +32,7 @@ async function getDb() {
                 if (attempts >= 5) {
                     throw err;
                 }
+                // eslint-disable-next-line no-console
                 console.log(`DB connection failed on attempt ${attempts}, will try again in a second`);
                 await new Promise(resolve => setTimeout(resolve, 1000));
             }

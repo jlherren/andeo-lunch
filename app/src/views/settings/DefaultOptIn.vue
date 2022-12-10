@@ -95,7 +95,6 @@
                     for (let key of VALID_SETTINGS) {
                         settingsUpdate[key] = this.settings[key];
                     }
-                    console.log(settingsUpdate);
                     if (Object.keys(settingsUpdate).length) {
                         await this.$store().saveSettings(settingsUpdate);
                     }

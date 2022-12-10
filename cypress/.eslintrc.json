@@ -181,6 +181,7 @@
         "no-caller": "error",
         "no-catch-shadow": "error",
         "no-confusing-arrow": "error",
+        "no-console": "error",
         "no-constant-condition": [
             "error",
             {
@@ -189,6 +190,7 @@
         ],
         "no-constructor-return": "error",
         "no-continue": "off",
+        "no-debugger": "error",
         "no-div-regex": "error",
         "no-dupe-else-if": "error",
         "no-duplicate-imports": "error",
