@@ -38,6 +38,18 @@ module.exports = {
             msTileImage:    'img/logo-small.svg',
         },
 
+        workboxOptions: {
+            // This is important for the app to fully work offline.  Without it, non-root URLs such as /calendar would
+            // cause a cache miss in the service worker, and they would be fetched from the server.  This is an issue
+            // if the device is offline, or if the server already has a newer version deployed than is currently cached
+            // by the service worker.
+            navigateFallback:         '/index.html',
+            // Unsure why, but it also works without creating an exception for /api
+            navigateFallbackDenylist: [
+                /^\/api\//u,
+            ],
+        },
+
         manifestOptions: {
             // eslint-disable-next-line camelcase
             background_color: '#ffffff',
