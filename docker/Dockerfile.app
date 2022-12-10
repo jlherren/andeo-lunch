@@ -1,5 +1,4 @@
-# Cannot build on node 17+, due to the switch to OpenSSL 3, which removes some algorithms.
-FROM node:16.18-bullseye-slim AS app-build
+FROM node:18.12-bullseye-slim AS app-build
 ARG VUE_APP_BACKEND_URL
 ARG VUE_APP_BRANDING_TITLE
 WORKDIR /build
