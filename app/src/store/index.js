@@ -19,6 +19,7 @@ export let useStore = defineStore('main', {
             initialCheckCompleted: false,
             userId:                null,
             username:              null,
+            permissions:           [],
         },
 
         usersById: {
@@ -77,10 +78,11 @@ export let useStore = defineStore('main', {
         absences:     state => userId => state._absences[userId] ?? null,
 
         // Own user
-        isLoggedIn:  state => state.account.userId !== null,
-        ownUserId:   state => state.account.userId,
-        ownUsername: state => state.account.username,
-        ownUser:     state => state.user(state.ownUserId),
+        isLoggedIn:    state => state.account.userId !== null,
+        ownUserId:     state => state.account.userId,
+        ownUsername:   state => state.account.username,
+        ownUser:       state => state.user(state.ownUserId),
+        hasPermission: state => permission => state.account.permissions.includes(permission),
 
         // Events
         events:         state => Object.values(state._events),
@@ -107,6 +109,7 @@ export let useStore = defineStore('main', {
             // Don't set the following until after the user is fetched, otherwise 'ownUser' won't be reliable
             this.account.userId = response.data.userId;
             this.account.username = response.data.username;
+            this.account.permissions = response.data.permissions;
         },
 
         logout() {
@@ -120,10 +123,11 @@ export let useStore = defineStore('main', {
             let deviceId = getDeviceId();
             let userId = null;
             let username = null;
+            let permissions = [];
             let shouldRenew = false;
             if (Backend.hasToken()) {
                 let response = await Backend.get(`/account/check?device=${deviceId}&version=${this.version}`);
-                ({userId, username, shouldRenew} = response.data);
+                ({userId, username, shouldRenew, permissions} = response.data);
             }
 
             if (userId) {
@@ -135,6 +139,7 @@ export let useStore = defineStore('main', {
             // This should not be set before the above fetchUser is finished, otherwise 'ownUser' won't be reliable
             this.account.userId = userId;
             this.account.username = username;
+            this.account.permissions = permissions;
             this.account.initialCheckCompleted = true;
 
             // Finally, renew the token if necessary, but don't wait for it to complete
