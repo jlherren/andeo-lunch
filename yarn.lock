@@ -2860,6 +2860,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/jest@npm:~29.2.4":
+  version: 29.2.4
+  resolution: "@types/jest@npm:29.2.4"
+  dependencies:
+    expect: ^29.0.0
+    pretty-format: ^29.0.0
+  checksum: 9deb4756fe1b438d41ff1aae7d6c216c9e49e5fe60f539f8edb6698ffeb530ff7b25d37e223439b03602ca3a7397c9c2e53e1a39c7bd616353472fce0cc04107
+  languageName: node
+  linkType: hard
+
 "@types/jscodeshift@npm:^0.7.1":
   version: 0.7.2
   resolution: "@types/jscodeshift@npm:0.7.2"
@@ -4179,6 +4189,7 @@ __metadata:
     "@koa/cors": ~4.0.0
     "@koa/router": ~12.0.0
     "@types/bcryptjs": ~2.4.2
+    "@types/jest": ~29.2.4
     "@types/jsonwebtoken": ~8.5.9
     "@types/koa": ~2.13.5
     "@types/koa-logger": ~3.1.2
@@ -7629,7 +7640,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expect@npm:^29.3.1":
+"expect@npm:^29.0.0, expect@npm:^29.3.1":
   version: 29.3.1
   resolution: "expect@npm:29.3.1"
   dependencies:
@@ -13144,7 +13155,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pretty-format@npm:^29.3.1":
+"pretty-format@npm:^29.0.0, pretty-format@npm:^29.3.1":
   version: 29.3.1
   resolution: "pretty-format@npm:29.3.1"
   dependencies:
