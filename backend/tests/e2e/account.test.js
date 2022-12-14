@@ -42,13 +42,25 @@ afterEach(async () => {
 });
 
 describe('account login route', () => {
-    it('returns a token after correct login', async () => {
+    it('returns a token and data after correct login', async () => {
         let response = await request.post('/api/account/login')
             .send({username: 'testuser', password: 'abc123'});
         expect(response.status).toBe(200);
         let secret = await AuthUtils.getSecret();
+        expect(response.body.userId).toBe(user.id);
+        expect(response.body.username).toBe('testuser');
+        expect(response.body.permissions).toEqual([]);
         let data = await JsonWebToken.verify(response.body.token, secret);
         expect(data.id).toBe(user.id);
+    });
+
+    it('returns correct permission', async () => {
+        let permission = await Models.Permission.create({name: 'admin'});
+        await Models.UserPermission.create({user: user.id, permission: permission.id});
+        let response = await request.post('/api/account/login')
+            .send({username: 'testuser', password: 'abc123'});
+        expect(response.status).toBe(200);
+        expect(response.body.permissions).toEqual(['admin']);
     });
 
     it('returns failure for wrong password', async () => {
@@ -120,13 +132,17 @@ describe('account check route', () => {
     it('works when not providing a token', async () => {
         let response = await request.get('/api/account/check');
         expect(response.status).toBe(200);
-        expect(response.body).toEqual({userId: null, username: null, shouldRenew: false});
+        expect(response.body.userId).toBeNull();
+        expect(response.body.username).toBeNull();
+        expect(response.body.shouldRenew).toBe(false);
     });
 
     it('works when providing a non-parsable token', async () => {
         let response = await request.get('/api/account/check').set('Authorization', 'Bearer WHATEVER');
         expect(response.status).toBe(200);
-        expect(response.body).toEqual({userId: null, username: null, shouldRenew: false});
+        expect(response.body.userId).toBeNull();
+        expect(response.body.username).toBeNull();
+        expect(response.body.shouldRenew).toBe(false);
     });
 
     it('works when providing an expired token', async () => {
@@ -135,7 +151,9 @@ describe('account check route', () => {
         let token = await user.generateToken(secret, {expiresIn: '-1 day'});
         let response = await request.get('/api/account/check').set('Authorization', `Bearer ${token}`);
         expect(response.status).toBe(200);
-        expect(response.body).toEqual({userId: null, username: null, shouldRenew: false});
+        expect(response.body.userId).toBeNull();
+        expect(response.body.username).toBeNull();
+        expect(response.body.shouldRenew).toBe(false);
     });
 
     it('works when providing a valid token', async () => {
@@ -144,7 +162,19 @@ describe('account check route', () => {
         let token = await user.generateToken(secret);
         let response = await request.get('/api/account/check').set('Authorization', `Bearer ${token}`);
         expect(response.status).toBe(200);
-        expect(response.body).toEqual({userId: user.id, username: 'testuser', shouldRenew: false});
+        expect(response.body.userId).toBe(user.id);
+        expect(response.body.username).toBe('testuser');
+        expect(response.body.shouldRenew).toBe(false);
+    });
+
+    it('returns permissions on valid token', async () => {
+        let permission = await Models.Permission.create({name: 'admin'});
+        await Models.UserPermission.create({user: user.id, permission: permission.id});
+        let secret = await AuthUtils.getSecret();
+        let token = await user.generateToken(secret);
+        let response = await request.get('/api/account/check').set('Authorization', `Bearer ${token}`);
+        expect(response.status).toBe(200);
+        expect(response.body.permissions).toEqual(['admin']);
     });
 
     it('updates version stats', async () => {

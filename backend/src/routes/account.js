@@ -23,7 +23,12 @@ const changePasswordSchema = Joi.object({
  */
 async function login(ctx) {
     let requestBody = RouteUtils.validateBody(ctx, loginSchema);
-    let user = await Models.User.findOne({where: {username: requestBody.username}});
+    let user = await Models.User.findOne(
+        {
+            where:   {username: requestBody.username},
+            include: 'Permissions',
+        },
+    );
     if (user !== null && user.active) {
         if (await AuthUtils.comparePassword(requestBody.password, user.password)) {
             let config = ctx.andeoLunch.getConfig();
@@ -31,8 +36,9 @@ async function login(ctx) {
             let token = await user.generateToken(secret, {expiresIn: config.tokenExpiry});
             ctx.body = {
                 token,
-                userId:   user.id,
-                username: user.username,
+                userId:      user.id,
+                username:    user.username,
+                permissions: user.Permissions.map(permission => permission.name),
             };
             return;
         }
@@ -61,7 +67,7 @@ async function renew(ctx) {
 async function check(ctx) {
     let user = await RouteUtils.getUser(ctx);
     let shouldRenew = false;
-    if (user) {
+    if (user !== null) {
         let token = RouteUtils.getAuthorizationToken(ctx.request);
         let secret = await AuthUtils.getSecret();
         try {
@@ -75,6 +81,7 @@ async function check(ctx) {
             // Happens on malformed tokens
         }
     }
+
     if (ctx.query.device && ctx.query.version) {
         await Models.DeviceVersion.upsert({
             device:   ctx.query.device,
@@ -82,10 +89,12 @@ async function check(ctx) {
             lastSeen: new Date(),
         });
     }
+
     ctx.body = {
-        userId:   user?.id ?? null,
-        username: user?.username ?? null,
+        userId:      user?.id ?? null,
+        username:    user?.username ?? null,
         shouldRenew,
+        permissions: (user?.Permissions ?? []).map(permission => permission.name),
     };
 }
 

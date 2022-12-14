@@ -403,6 +403,7 @@ class DeviceVersion extends Model {
 
 exports.Configuration = Configuration;
 exports.User = User;
+exports.UserPermission = UserPermission;
 exports.Permission = Permission;
 exports.EventType = EventType;
 exports.Event = Event;
