@@ -17,7 +17,7 @@ const configSchema = Joi.object({
     }).required().unknown(true),
     port:        Joi.number().allow(null).default(3000),
     bind:        Joi.string().default('127.0.0.1'),
-    tokenExpiry: Joi.string().min(1).default('30 days'),
+    tokenExpiry: Joi.string().min(1).default('60 days'),
     lag:         Joi.number(),
 }).unknown(true);
 
