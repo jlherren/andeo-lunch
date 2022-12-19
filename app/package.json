@@ -35,7 +35,7 @@
         "@vue/cli-plugin-pwa": "~5.0.8",
         "@vue/cli-service": "~5.0.8",
         "@vue/eslint-config-standard": "~8.0.1",
-        "eslint": "~8.29.0",
+        "eslint": "~8.30.0",
         "eslint-plugin-import": "~2.26.0",
         "eslint-plugin-jsdoc": "~39.6.4",
         "eslint-plugin-node": "~11.1.0",
