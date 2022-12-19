@@ -4208,6 +4208,7 @@ __metadata:
     koa-bodyparser: ~4.3.0
     koa-logger: ~3.2.1
     mariadb: ~3.0.2
+    natural-compare: ~1.4.0
     nodemon: ~2.0.20
     sequelize: ~6.27.0
     sprintf-js: ~1.1.2
@@ -11749,7 +11750,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"natural-compare@npm:^1.4.0":
+"natural-compare@npm:^1.4.0, natural-compare@npm:~1.4.0":
   version: 1.4.0
   resolution: "natural-compare@npm:1.4.0"
   checksum: 23ad088b08f898fc9b53011d7bb78ec48e79de7627e01ab5518e806033861bef68d5b0cd0e2205c2f36690ac9571ff6bcb05eb777ced2eeda8d4ac5b44592c3d

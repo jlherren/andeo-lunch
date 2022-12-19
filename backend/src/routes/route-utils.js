@@ -70,7 +70,7 @@ exports.getUser = async function (ctx) {
 };
 
 /**
- * Makes sure the request is authenticated and authorized.  Sets ctx.user
+ * Makes sure the request is authenticated and authorized.  Sets ctx.user and ctx.permissions.
  *
  * @param {Application.Context} ctx
  * @returns {Promise<void>}
@@ -79,7 +79,21 @@ exports.requireUser = async function requireUser(ctx) {
     let user = await exports.getUser(ctx);
     if (user !== null) {
         ctx.user = user;
+        ctx.permissions = user.Permissions.map(permission => permission.name);
     } else {
         ctx.throw(401, 'No authentication token provided');
     }
+};
+
+/**
+ *
+ * @param {Application.Context} ctx
+ * @param {string} permission
+ */
+exports.requirePermission = function requirePermission(ctx, permission) {
+    if (ctx.permissions.includes(permission)) {
+        return;
+    }
+
+    ctx.throw(401, 'No permission');
 };
