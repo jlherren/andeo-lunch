@@ -82,8 +82,6 @@
             TheAppBar,
         },
 
-        props: {},
-
         data() {
             return {
                 darkMode:          this.$vuetify.theme.dark,
