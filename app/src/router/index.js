@@ -114,6 +114,14 @@ const routes = [
         component: () => import('@/views/GroceryList'),
     },
     {
+        path:      '/tools',
+        component: () => import('@/views/tools/Tools'),
+    },
+    {
+        path:      '/tools/device-versions',
+        component: () => import('@/views/tools/DeviceVersions'),
+    },
+    {
         path:     '*',
         redirect: '/',
     },

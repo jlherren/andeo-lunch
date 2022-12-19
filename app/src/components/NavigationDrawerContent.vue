@@ -63,6 +63,17 @@
             </v-list-item-content>
         </v-list-item>
 
+        <v-list-item to="/tools" v-if="hasPermissionPrefix('tools.')">
+            <v-list-item-icon>
+                <v-icon>{{ $icons.tools }}</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+                <v-list-item-title>
+                    Tools
+                </v-list-item-title>
+            </v-list-item-content>
+        </v-list-item>
+
         <v-list-item to="/about">
             <v-list-item-icon>
                 <v-icon>{{ $icons.information }}</v-icon>
@@ -84,6 +95,7 @@
         computed: {
             ...mapState(useStore, [
                 'ownUser',
+                'hasPermissionPrefix',
             ]),
         },
     };

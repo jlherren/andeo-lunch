@@ -48,6 +48,7 @@ export const icons = {
     points:         mdi.mdiHandshake,
     special:        mdi.mdiPartyPopper,
     stats:          mdi.mdiChartBar,
+    tools:          mdi.mdiTools,
     transferCustom: mdi.mdiCogs,
     transferFine:   mdi.mdiAccountAlert,
     transferIn:     mdi.mdiAccountArrowLeft,

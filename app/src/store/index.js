@@ -78,11 +78,12 @@ export let useStore = defineStore('main', {
         absences:     state => userId => state._absences[userId] ?? null,
 
         // Own user
-        isLoggedIn:    state => state.account.userId !== null,
-        ownUserId:     state => state.account.userId,
-        ownUsername:   state => state.account.username,
-        ownUser:       state => state.user(state.ownUserId),
-        hasPermission: state => permission => state.account.permissions.includes(permission),
+        isLoggedIn:          state => state.account.userId !== null,
+        ownUserId:           state => state.account.userId,
+        ownUsername:         state => state.account.username,
+        ownUser:             state => state.user(state.ownUserId),
+        hasPermission:       state => permission => state.account.permissions.includes(permission),
+        hasPermissionPrefix: state => prefix => state.account.permissions.some(permission => permission.startsWith(prefix)),
 
         // Events
         events:         state => Object.values(state._events),
@@ -462,6 +463,14 @@ export let useStore = defineStore('main', {
             if (refresh) {
                 await this.fetchGroceries();
             }
+        },
+
+        /**
+         * @returns {Promise<Array<{version: string, count: number}>>}
+         */
+        async deviceVersions() {
+            let response = await Backend.get('/tools/device-versions');
+            return response.data.versions;
         },
     },
 });
