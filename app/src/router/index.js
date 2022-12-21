@@ -122,6 +122,10 @@ const routes = [
         component: () => import('@/views/tools/DeviceVersions'),
     },
     {
+        path:      '/tools/configurations',
+        component: () => import('@/views/tools/Configurations'),
+    },
+    {
         path:     '*',
         redirect: '/',
     },

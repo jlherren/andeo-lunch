@@ -472,5 +472,13 @@ export let useStore = defineStore('main', {
             let response = await Backend.get('/tools/device-versions');
             return response.data.versions;
         },
+
+        /**
+         * @returns {Promise<Array<{name: string, value: any}>>}
+         */
+        async configurations() {
+            let response = await Backend.get('/tools/configurations');
+            return response.data.configurations;
+        },
     },
 });

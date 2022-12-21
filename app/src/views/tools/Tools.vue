@@ -15,6 +15,17 @@
                     </v-list-item-title>
                 </v-list-item-content>
             </v-list-item>
+
+            <v-list-item to="/tools/configurations" v-if="hasPermission('tools.configurations')">
+                <v-list-item-icon>
+                    <v-icon>{{ $icons.tools }}</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                    <v-list-item-title>
+                        Configurations
+                    </v-list-item-title>
+                </v-list-item-content>
+            </v-list-item>
         </v-list>
     </v-main>
 </template>
