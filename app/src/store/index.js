@@ -476,9 +476,22 @@ export let useStore = defineStore('main', {
         /**
          * @returns {Promise<Array<{name: string, value: any}>>}
          */
-        async configurations() {
+        async fetchConfigurations() {
             let response = await Backend.get('/tools/configurations');
             return response.data.configurations;
+        },
+
+        /**
+         * @param {string} name
+         * @param {string} value
+         * @returns {Promise<void>}
+         */
+        async saveConfiguration(name, value) {
+            await Backend.post('/tools/configurations', {
+                configurations: [
+                    {name, value},
+                ],
+            });
         },
     },
 });
