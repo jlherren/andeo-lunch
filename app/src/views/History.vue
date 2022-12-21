@@ -1,7 +1,7 @@
 <template>
     <v-main>
         <the-app-bar extension-height="30">
-            History for {{ user.name }}
+            {{ user.name }}
             <template #buttons>
                 <user-stats/>
             </template>
