@@ -45,13 +45,7 @@ describe('version list', () => {
 
     it('works correctly', async () => {
         // This test requires correct aggregation, correct sorting and correct skipping old 'lastSeen'.
-        let permission = await Models.Permission.findOne({
-            where: {name: 'tools.deviceVersions'},
-        });
-        await Models.UserPermission.create({
-            user:       user.id,
-            permission: permission.id,
-        });
+        await Helper.insertPermission(user.id, 'tools.deviceVersions');
 
         let recent = new Date();
         recent.setDate(recent.getDate() - 10);
@@ -95,6 +89,23 @@ describe('version list', () => {
                 version: '1.2.4',
                 count:   1,
             },
+        ]);
+    });
+});
+
+describe('configurations', () => {
+    it('is denied without permission', async () => {
+        let response = await request.get('/api/tools/configurations');
+        expect(response.status).toBe(401);
+    });
+
+    it('loads correctly', async () => {
+        await Helper.insertPermission(user.id, 'tools.configurations');
+
+        let response = await request.get('/api/tools/configurations');
+        expect(response.status).toBe(200);
+        expect(response.body.configurations).toEqual([
+            {name: 'lunch.defaultFlatRate', value: '0.75'},
         ]);
     });
 });

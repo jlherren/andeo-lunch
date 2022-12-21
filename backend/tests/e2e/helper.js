@@ -1,5 +1,7 @@
 'use strict';
 
+const Models = require('../../src/db/models');
+
 /**
  * Create an event and return the event ID
  *
@@ -20,3 +22,19 @@ exports.password = 'abc123';
 // The above password, but hashed very weakly to speed up tests.  Only use this in tests that are not
 // testing any security related things.
 exports.passwordHash = '$2a$04$coj9eKcxliBzr47q1nyOV.TiH0dI2v.fbQeLoMUAhJURm6yKFe8Ge';
+
+/**
+ * @param {number} userId
+ * @param {string} name
+ * @returns {Promise<void>}
+ */
+exports.insertPermission = async function insertPermission(userId, name) {
+    let permission = await Models.Permission.findOne({
+        where: {name},
+    });
+    await Models.UserPermission.create({
+        user:       userId,
+        permission: permission.id,
+    });
+};
+
