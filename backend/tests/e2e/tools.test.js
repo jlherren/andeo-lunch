@@ -108,4 +108,32 @@ describe('configurations', () => {
             {name: 'lunch.defaultFlatRate', value: '0.75'},
         ]);
     });
+
+    it('saves correctly', async () => {
+        await Helper.insertPermission(user.id, 'tools.configurations');
+
+        let response = await request.post('/api/tools/configurations')
+            .send({configurations: [{name: 'lunch.defaultFlatRate', value: '0.65'}]});
+        expect(response.status).toBe(204);
+
+        response = await request.get('/api/tools/configurations');
+        expect(response.status).toBe(200);
+        expect(response.body.configurations).toEqual([
+            {name: 'lunch.defaultFlatRate', value: '0.65'},
+        ]);
+    });
+
+    it('does not save invalid data', async () => {
+        await Helper.insertPermission(user.id, 'tools.configurations');
+
+        let response = await request.post('/api/tools/configurations')
+            .send({configurations: [{name: 'fake', value: 'fake'}]});
+        expect(response.status).toBe(400);
+    });
+
+    it('does not save without permission', async () => {
+        let response = await request.post('/api/tools/configurations')
+            .send({configurations: [{name: 'lunch.defaultFlatRate', value: '0.65'}]});
+        expect(response.status).toBe(401);
+    });
 });
