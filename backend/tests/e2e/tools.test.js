@@ -52,7 +52,7 @@ describe('version list', () => {
         let whileAgo = new Date();
         whileAgo.setDate(whileAgo.getDate() - 90);
 
-        Models.DeviceVersion.bulkCreate([{
+        await Models.DeviceVersion.bulkCreate([{
             version:  '1.2.3',
             device:   'B',
             lastSeen: recent,
