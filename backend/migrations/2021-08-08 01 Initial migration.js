@@ -3,7 +3,6 @@
 const {DataTypes} = require('sequelize');
 
 const {ColumnHelper} = require('../src/db/columnHelper');
-const Models = require('../src/db/models');
 const Constants = require('../src/constants');
 const AuthUtils = require('../src/authUtils');
 
@@ -65,7 +64,8 @@ async function up({context: sequelize}) {
             allowNull: false,
         },
         password:  {
-            type: ch.ascii(255),
+            type:      ch.ascii(255),
+            allowNull: true,
         },
         name:      {
             type:      DataTypes.STRING(64),
@@ -559,38 +559,55 @@ async function up({context: sequelize}) {
 
     // Insert essential data
     await sequelize.transaction(async transaction => {
-        // Insert system user
-        await Models.User.create({
-            username: Constants.SYSTEM_USER_USERNAME,
-            name:     'System user',
-            active:   false,
-            hidden:   true,
-            password: null,
+        let now = new Date();
+
+        // Avoid using Models.*, because not all columns exist yet.  Adding new fields to models would otherwise break
+        // this migration.
+
+        // Insert system user.
+        await queryInterface.insert(null, 'user', {
+            username:  Constants.SYSTEM_USER_USERNAME,
+            name:      'System user',
+            active:    false,
+            hidden:    true,
+            password:  null,
+            createdAt: now,
+            updatedAt: now,
         }, {
             transaction,
         });
 
         // Insert participation types
-        await Models.ParticipationType.bulkCreate([{
-            id:    Constants.PARTICIPATION_TYPES.OMNIVOROUS,
-            label: 'Omnivorous',
+        await queryInterface.bulkInsert('participationType', [{
+            id:        Constants.PARTICIPATION_TYPES.OMNIVOROUS,
+            label:     'Omnivorous',
+            createdAt: now,
+            updatedAt: now,
         }, {
-            id:    Constants.PARTICIPATION_TYPES.VEGETARIAN,
-            label: 'Vegetarian',
+            id:        Constants.PARTICIPATION_TYPES.VEGETARIAN,
+            label:     'Vegetarian',
+            createdAt: now,
+            updatedAt: now,
         }, {
-            id:    Constants.PARTICIPATION_TYPES.OPT_OUT,
-            label: 'Opt-out',
+            id:        Constants.PARTICIPATION_TYPES.OPT_OUT,
+            label:     'Opt-out',
+            createdAt: now,
+            updatedAt: now,
         }, {
-            id:    Constants.PARTICIPATION_TYPES.UNDECIDED,
-            label: 'Undecided',
+            id:        Constants.PARTICIPATION_TYPES.UNDECIDED,
+            label:     'Undecided',
+            createdAt: now,
+            updatedAt: now,
         }], {
             transaction,
         });
 
         // Generate secret to sign JWTs with
-        await Models.Configuration.create({
-            name:  'secret',
-            value: await AuthUtils.generateSecret(),
+        await queryInterface.insert(null, 'configuration', {
+            name:      'secret',
+            value:     await AuthUtils.generateSecret(),
+            createdAt: now,
+            updatedAt: now,
         }, {
             transaction,
         });

@@ -1,25 +1,28 @@
 'use strict';
 
-const Models = require('../src/db/models');
-
 /**
+ * @param {Sequelize} sequelize
  * @returns {Promise<void>}
  */
-async function up() {
-    await Models.Configuration.create({
-        name:  'lunch.defaultFlatRate',
-        value: '0.75',
+async function up({context: sequelize}) {
+    let queryInterface = sequelize.getQueryInterface();
+    let now = new Date();
+    await queryInterface.insert(null, 'configuration', {
+        name:      'lunch.defaultFlatRate',
+        value:     '0.75',
+        createdAt: now,
+        updatedAt: now,
     });
 }
 
 /**
+ * @param {Sequelize} sequelize
  * @returns {Promise<void>}
  */
-async function down() {
-    await Models.Configuration.destroy({
-        where: {
-            name: 'lunch.defaultFlatRate',
-        },
+async function down({context: sequelize}) {
+    let queryInterface = sequelize.getQueryInterface();
+    await queryInterface.bulkDelete('configuration', {
+        name: 'lunch.defaultFlatRate',
     });
 }
 

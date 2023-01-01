@@ -1,7 +1,6 @@
 'use strict';
 
 const {QueryTypes} = require('sequelize');
-const Models = require('../src/db/models');
 const Constants = require('../src/constants');
 
 /**
@@ -9,10 +8,15 @@ const Constants = require('../src/constants');
  * @returns {Promise<void>}
  */
 async function up({context: sequelize}) {
+    let queryInterface = sequelize.getQueryInterface();
+
     await sequelize.transaction(async transaction => {
-        await Models.ParticipationType.create({
-            id:    Constants.PARTICIPATION_TYPES.OPT_IN,
-            label: 'Opt-in',
+        let now = new Date();
+        await queryInterface.insert(null, 'participationType', {
+            id:        Constants.PARTICIPATION_TYPES.OPT_IN,
+            label:     'Opt-in',
+            createdAt: now,
+            updatedAt: now,
         }, {
             transaction,
         });
@@ -63,6 +67,8 @@ async function up({context: sequelize}) {
  * @returns {Promise<void>}
  */
 async function down({context: sequelize}) {
+    let queryInterface = sequelize.getQueryInterface();
+
     await sequelize.transaction(async transaction => {
         await sequelize.query(
             `
@@ -82,10 +88,9 @@ async function down({context: sequelize}) {
             },
         );
 
-        await Models.ParticipationType.delete({
-            where: {
-                id: Constants.PARTICIPATION_TYPES.OPT_IN,
-            },
+        await queryInterface.bulkDelete('participationType', {
+            id: Constants.PARTICIPATION_TYPES.OPT_IN,
+        }, {
             transaction,
         });
     });

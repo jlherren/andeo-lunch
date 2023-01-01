@@ -1,7 +1,6 @@
 'use strict';
 
 const {DataTypes} = require('sequelize');
-const Models = require('../src/db/models');
 const Constants = require('../src/constants');
 
 /**
@@ -16,15 +15,17 @@ async function up({context: sequelize}) {
         after:     'vegetarianMoneyFactor',
     });
 
-    // Insert andeo user, if it doesn't exist yet.
-    await Models.User.create({
-        username: Constants.ANDEO_USER_USERNAME,
-        name:     'Andeo',
-        active:   false,
-        hidden:   false,
-        password: null,
-    }, {
-        ignoreDuplicates: true,
+    let now = new Date();
+
+    // Insert andeo user.
+    await queryInterface.insert(null, 'user', {
+        username:  Constants.ANDEO_USER_USERNAME,
+        name:      'Andeo',
+        active:    false,
+        hidden:    false,
+        password:  null,
+        createdAt: now,
+        updatedAt: now,
     });
 }
 
