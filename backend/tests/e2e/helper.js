@@ -38,3 +38,12 @@ exports.insertPermission = async function insertPermission(userId, name) {
     });
 };
 
+/**
+ * @param {number} days
+ * @returns {Date}
+ */
+exports.daysAgo = function daysAgo(days) {
+    let date = new Date();
+    date.setDate(date.getDate() - days);
+    return date;
+};

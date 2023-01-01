@@ -252,6 +252,57 @@ describe('A simple event', () => {
     });
 });
 
+// tests for edit limit
+describe('Updates with edit limits', () => {
+    let eventId = null;
+    let eventUrl = null;
+
+    beforeEach(async () => {
+        eventId = await Helper.createEvent(request, {
+            name:  'Greek salad',
+            date:  Helper.daysAgo(5),
+            type:  'lunch',
+        });
+        eventUrl = `/api/events/${eventId}`;
+    });
+
+    it('Allows saving participation when edit limit is not reached', async () => {
+        await user1.update({maxPastDaysEdit: 6});
+        let response = await request.post(`${eventUrl}/participations/${user1.id}`)
+            .send({type: 'vegetarian'});
+        expect(response.status).toBe(204);
+    });
+
+    it('Rejects saving participation when edit limit is reached', async () => {
+        await user1.update({maxPastDaysEdit: 4});
+        let response = await request.post(`${eventUrl}/participations/${user1.id}`)
+            .send({type: 'vegetarian'});
+        expect(response.status).toBe(403);
+        expect(response.text).toBe('Event is too old for you to edit');
+    });
+
+    it('Allows deleting participation when edit limit is not reached', async () => {
+        let response = await request.post(`${eventUrl}/participations/${user1.id}`)
+            .send({type: 'vegetarian'});
+        expect(response.status).toBe(204);
+        await user1.update({maxPastDaysEdit: 6});
+        response = await request.delete(`${eventUrl}/participations/${user1.id}`)
+            .send({type: 'vegetarian'});
+        expect(response.status).toBe(204);
+    });
+
+    it('Rejects deleting participation when edit limit is reached', async () => {
+        let response = await request.post(`${eventUrl}/participations/${user1.id}`)
+            .send({type: 'vegetarian'});
+        expect(response.status).toBe(204);
+        await user1.update({maxPastDaysEdit: 4});
+        response = await request.post(`${eventUrl}/participations/${user1.id}`)
+            .send({type: 'vegetarian'});
+        expect(response.status).toBe(403);
+        expect(response.text).toBe('Event is too old for you to edit');
+    });
+});
+
 describe('A label event', () => {
     let eventUrl = null;
 

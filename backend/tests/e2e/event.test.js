@@ -213,6 +213,27 @@ describe('Create events', () => {
         expect(response.status).toBe(400);
         expect(response.text).toBe('Special events cannot have a vegetarian money factor');
     });
+
+    it('Accepts event in the past when edit limit is not reached', async () => {
+        await user.update({maxPastDaysEdit: 5});
+        let response = await request.post('/api/events').send({
+            name: 'Lunch',
+            type: 'lunch',
+            date: Helper.daysAgo(4),
+        });
+        expect(response.status).toBe(201);
+    });
+
+    it('Rejects event in the past when edit limit is reached', async () => {
+        await user.update({maxPastDaysEdit: 5});
+        let response = await request.post('/api/events').send({
+            name: 'Lunch',
+            type: 'lunch',
+            date: Helper.daysAgo(6),
+        });
+        expect(response.status).toBe(403);
+        expect(response.text).toBe('Event is too old for you to edit');
+    });
 });
 
 describe('Updating lunch event', () => {
@@ -248,6 +269,36 @@ describe('Updating lunch event', () => {
                 expect(response.status).toBe(400);
             }
         }
+    });
+});
+
+describe('Updating lunch events with edit limit', () => {
+    let eventUrl = null;
+
+    beforeEach(async () => {
+        let eventId = await Helper.createEvent(request, {
+            name: 'Lunch',
+            type: 'lunch',
+            date: Helper.daysAgo(5),
+        });
+        eventUrl = `/api/events/${eventId}`;
+    });
+
+    it('accepts update for past event when edit limit is not reached', async () => {
+        await user.update({maxPastDaysEdit: 6});
+        let response = await request.post(eventUrl).send({
+            name: 'Spaghetti',
+        });
+        expect(response.status).toBe(204);
+    });
+
+    it('rejects update for past event when edit limit is reached', async () => {
+        await user.update({maxPastDaysEdit: 4});
+        let response = await request.post(eventUrl).send({
+            name: 'Lasagna',
+        });
+        expect(response.status).toBe(403);
+        expect(response.text).toBe('Event is too old for you to edit');
     });
 });
 
@@ -384,6 +435,32 @@ describe('deleting events', () => {
 
         response = await request.delete(eventUrl);
         expect(response.status).toBe(204);
+    });
+});
+
+describe('deleting events with edit limit', () => {
+    let eventUrl = null;
+
+    beforeEach(async () => {
+        let eventId = await Helper.createEvent(request, {
+            name: 'Lunch',
+            type: 'lunch',
+            date: Helper.daysAgo(5),
+        });
+        eventUrl = `/api/events/${eventId}`;
+    });
+
+    it('can delete an event when edit limit not reached', async () => {
+        await user.update({maxPastDaysEdit: 6});
+        let response = await request.delete(eventUrl);
+        expect(response.status).toBe(204);
+    });
+
+    it('cannot delete an event when edit limit reached', async () => {
+        await user.update({maxPastDaysEdit: 4});
+        let response = await request.delete(eventUrl);
+        expect(response.status).toBe(403);
+        expect(response.text).toBe('Event is too old for you to edit');
     });
 });
 

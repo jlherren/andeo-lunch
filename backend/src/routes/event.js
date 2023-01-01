@@ -129,6 +129,27 @@ function validateEvent(ctx, type, apiEvent) {
 }
 
 /**
+ * Assert that the given date is editable by the current user.
+ *
+ * @param {Application.Context} ctx
+ * @param {Date} date
+ */
+function assertCanEditDate(ctx, date) {
+    let maxPastDaysEdit = ctx.user.maxPastDaysEdit;
+    if (maxPastDaysEdit === null) {
+        return;
+    }
+
+    let cutoff = new Date();
+    cutoff.setHours(0, 0, 0, 0);
+    cutoff.setDate(cutoff.getDate() - maxPastDaysEdit);
+
+    if (cutoff.getTime() > date.getTime()) {
+        ctx.throw(403, 'Event is too old for you to edit');
+    }
+}
+
+/**
  * Compute the default opt-in type for a user on a specific date
  *
  * @param {User} user
@@ -203,6 +224,7 @@ async function createEvent(ctx) {
     let eventId = await ctx.sequelize.transaction(async transaction => {
         let type = Constants.EVENT_TYPE_IDS[apiEvent.type];
         validateEvent(ctx, type, apiEvent);
+        assertCanEditDate(ctx, apiEvent.date);
 
         let event = await Models.Event.create({
             name: apiEvent.name,
@@ -270,16 +292,16 @@ function loadEventFromParam(ctx, transaction) {
 
 /**
  * @param {Application.Context} ctx
- * @param {number} eventId
+ * @param {number} transferId
  * @param {Transaction} [transaction]
  * @returns {Promise<Transfer>}
  */
-async function loadTransfer(ctx, eventId, transaction) {
+async function loadTransfer(ctx, transferId, transaction) {
     let options = {
         transaction,
         lock: transaction ? transaction.LOCK.UPDATE : undefined,
     };
-    let transfer = await Models.Transfer.findByPk(eventId, options);
+    let transfer = await Models.Transfer.findByPk(transferId, options);
     if (!transfer) {
         ctx.throw(404, 'No such transfer');
     }
@@ -337,6 +359,7 @@ async function updateEvent(ctx) {
     await ctx.sequelize.transaction(async transaction => {
         let event = await loadEventFromParam(ctx, transaction);
         validateEvent(ctx, event.type, apiEvent);
+        assertCanEditDate(ctx, event.date);
         let before = event.toSnapshot();
         await event.update(
             {
@@ -393,6 +416,8 @@ async function saveParticipation(ctx) {
                 ctx.throw(400, 'This type of participation is not allowed for this type of event');
             }
         }
+
+        assertCanEditDate(ctx, event.date);
 
         let user = await loadUserFromParam(ctx, transaction);
         let participation = await Models.Participation.findOne({
@@ -470,6 +495,7 @@ async function deleteParticipation(ctx) {
         if (!participation) {
             ctx.throw(404, 'No such participation');
         }
+        assertCanEditDate(ctx, event.date);
         let before = participation.toSnapshot();
         await participation.destroy({transaction});
         await TransactionRebuilder.rebuildEvent(transaction, event);
@@ -581,6 +607,8 @@ async function listEvents(ctx) {
 async function deleteEvent(ctx) {
     await ctx.sequelize.transaction(async transaction => {
         let event = await loadEventFromParam(ctx, transaction);
+        assertCanEditDate(ctx, event.date);
+
         let before = event.toSnapshot();
         await Models.Transaction.destroy({
             transaction,
@@ -680,6 +708,7 @@ async function createTransfers(ctx) {
             });
         }
 
+        assertCanEditDate(ctx, event.date);
         await Models.Transfer.bulkCreate(transactionInserts, {transaction});
         await TransactionRebuilder.rebuildEvent(transaction, event);
         await AuditManager.logMultiple(transaction, ctx.user, logEntries);
@@ -711,6 +740,8 @@ async function saveTransfer(ctx) {
         if (sender.id === recipient.id) {
             ctx.throw(400, 'Cannot transfer back to sender');
         }
+
+        assertCanEditDate(ctx, event.date);
 
         let before = transfer.toSnapshot(systemUser);
         await transfer.update({
@@ -745,6 +776,8 @@ async function deleteTransfer(ctx) {
         if (transfer.event !== event.id) {
             ctx.throw('400', 'Transfer does not belong to specified event');
         }
+
+        assertCanEditDate(ctx, event.date);
 
         let before = transfer.toSnapshot(systemUser);
         await transfer.destroy({transaction});

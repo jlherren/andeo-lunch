@@ -226,6 +226,85 @@ describe('Manipulate transfer events', () => {
     });
 });
 
+describe('Transfer manipulation with edit limits', () => {
+    let eventId = null;
+    let eventUrl = null;
+    let transfer = null;
+    let transferUpdate = null;
+
+    beforeEach(async () => {
+        eventId = await Helper.createEvent(request, {
+            name: 'Bet settlement',
+            type: 'transfer',
+            date: Helper.daysAgo(5),
+        });
+        eventUrl = `/api/events/${eventId}`;
+        transfer = {
+            senderId:    user1.id,
+            recipientId: user2.id,
+            amount:      10,
+            currency:    'points',
+        };
+        transferUpdate = {
+            senderId:    user1.id,
+            recipientId: user2.id,
+            amount:      11,
+            currency:    'points',
+        };
+    });
+
+    it('can create a transfer when edit limit is not reached', async () => {
+        await user1.update({maxPastDaysEdit: 6});
+        let response = await request.post(`${eventUrl}/transfers`).send([transfer]);
+        expect(response.status).toBe(204);
+    });
+
+    it('cannot create a transfer when edit limit is reached', async () => {
+        await user1.update({maxPastDaysEdit: 4});
+        let response = await request.post(`${eventUrl}/transfers`).send([transfer]);
+        expect(response.status).toBe(403);
+        expect(response.text).toBe('Event is too old for you to edit');
+    });
+
+    describe('Existing transfer', () => {
+        let transferId = null;
+
+        beforeEach(async () => {
+            let response = await request.post(`${eventUrl}/transfers`).send([transfer]);
+            // eslint-disable-next-line jest/no-standalone-expect
+            expect(response.status).toBe(204);
+            response = await request.get(`${eventUrl}/transfers`);
+            transferId = response.body.transfers[0].id;
+        });
+
+        it('can update a transfer when edit limit is not reached', async () => {
+            await user1.update({maxPastDaysEdit: 6});
+            let response = await request.post(`${eventUrl}/transfers/${transferId}`).send(transferUpdate);
+            expect(response.status).toBe(204);
+        });
+
+        it('cannot update a transfer when edit limit is reached', async () => {
+            await user1.update({maxPastDaysEdit: 4});
+            let response = await request.post(`${eventUrl}/transfers/${transferId}`).send(transferUpdate);
+            expect(response.status).toBe(403);
+            expect(response.text).toBe('Event is too old for you to edit');
+        });
+
+        it('can delete a transfer when edit limit is not reached', async () => {
+            await user1.update({maxPastDaysEdit: 6});
+            let response = await request.delete(`${eventUrl}/transfers/${transferId}`);
+            expect(response.status).toBe(204);
+        });
+
+        it('cannot delete a transfer when edit limit is reached', async () => {
+            await user1.update({maxPastDaysEdit: 4});
+            let response = await request.delete(`${eventUrl}/transfers/${transferId}`);
+            expect(response.status).toBe(403);
+            expect(response.text).toBe('Event is too old for you to edit');
+        });
+    });
+});
+
 describe('Balance calculation', () => {
     let eventUrl = null;
 

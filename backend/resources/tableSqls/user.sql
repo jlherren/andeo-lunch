@@ -8,6 +8,7 @@ CREATE TABLE `user` (
   `hidden` tinyint(1) NOT NULL DEFAULT 0,
   `points` double NOT NULL DEFAULT 0,
   `money` double NOT NULL DEFAULT 0,
+  `maxPastDaysEdit` smallint(6) DEFAULT NULL,
   `settings` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`settings`)),
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL,

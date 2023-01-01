@@ -28,6 +28,7 @@ class Configuration extends Model {
  * @property {string} name
  * @property {number} points
  * @property {number} money
+ * @property {number} maxPastDaysEdit
  * @property {Object} settings
  * @property {Array<Permission>} Permissions
  */
@@ -447,6 +448,7 @@ exports.initModels = function initModels(sequelize) {
         hidden:             {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
         points:             {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
         money:              {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
+        maxPastDaysEdit:    {type: DataTypes.SMALLINT, allowNull: true, defaultValue: null},
         settings:           {type: DataTypes.JSON, allowNull: true, defaultValue: null},
         // Note: Couldn't manage to set default on 'settings'
     }, {
