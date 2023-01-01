@@ -5,6 +5,9 @@ const fs = require('fs').promises;
 const Joi = require('joi');
 const MariaDB = require('mariadb');
 
+// Any string understood by package 'ms'.
+const DEFAULT_TOKEN_EXPIRY = '60 days';
+
 /**
  * @typedef {Object} Config
  * @property {Object<string, any>} database
@@ -17,7 +20,7 @@ const configSchema = Joi.object({
     }).required().unknown(true),
     port:        Joi.number().allow(null).default(3000),
     bind:        Joi.string().default('127.0.0.1'),
-    tokenExpiry: Joi.string().min(1).default('60 days'),
+    tokenExpiry: Joi.string().min(1).default(DEFAULT_TOKEN_EXPIRY),
     lag:         Joi.number(),
 }).unknown(true);
 

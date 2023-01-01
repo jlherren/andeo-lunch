@@ -8,7 +8,7 @@
 
         <v-container>
             <p class="body-2">
-                Versions seen in the last 30 days
+                Versions seen recently, period: {{ period }}
             </p>
 
             <v-simple-table v-if="versions !== null">
@@ -46,11 +46,14 @@
         data() {
             return {
                 versions: null,
+                period:   null,
             };
         },
 
         async created() {
-            this.versions = await this.$store().deviceVersions();
+            const deviceVersions = await this.$store().deviceVersions();
+            this.versions = deviceVersions.versions;
+            this.period = deviceVersions.period;
         },
     };
 </script>

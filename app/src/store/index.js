@@ -466,11 +466,14 @@ export let useStore = defineStore('main', {
         },
 
         /**
-         * @returns {Promise<Array<{version: string, count: number}>>}
+         * @returns {Promise<{
+         *     versions: Array<{version: string, count: number}>,
+         *     period: string,
+         * }>}
          */
         async deviceVersions() {
             let response = await Backend.get('/tools/device-versions');
-            return response.data.versions;
+            return response.data;
         },
 
         /**

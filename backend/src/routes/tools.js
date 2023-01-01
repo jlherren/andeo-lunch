@@ -3,6 +3,7 @@
 const Joi = require('joi');
 const {Sequelize, Op} = require('sequelize');
 const naturalCompare = require('natural-compare');
+const ms = require('ms');
 const Models = require('../db/models');
 const RouteUtils = require('./route-utils');
 
@@ -24,8 +25,9 @@ const saveConfigurationSchema = Joi.object({
 async function versions(ctx) {
     RouteUtils.requirePermission(ctx, 'tools.deviceVersions');
 
-    let cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - 30);
+    let config = ctx.andeoLunch.getConfig();
+    let period = ms(config.tokenExpiry);
+    let cutoff = new Date(Date.now() - period);
 
     let rows = await Models.DeviceVersion.findAll({
         raw:        true,
@@ -43,6 +45,7 @@ async function versions(ctx) {
 
     ctx.body = {
         versions: rows,
+        period:   ms(period, {long: true}),
     };
 }
 

@@ -90,6 +90,7 @@ describe('version list', () => {
                 count:   1,
             },
         ]);
+        expect(response.body.period).toBe('60 days');
     });
 });
 
