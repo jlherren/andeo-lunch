@@ -43,7 +43,7 @@ exports.getMainConfig = async function getMainConfig() {
 
     try {
         let fileContent = await fs.readFile(fullPath);
-        let config = JSON.parse(fileContent.toString('UTF-8'));
+        let config = JSON.parse(fileContent.toString('utf-8'));
         return validateConfig(config);
     } catch (err) {
         throw new Error(`No configuration file found at ${fullPath}!  Please read README.md first`);
