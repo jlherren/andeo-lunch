@@ -67,7 +67,11 @@ let cachedSecret = null;
 exports.getSecret = async function getSecret() {
     if (cachedSecret === null) {
         /** @type {Configuration|null} */
-        let configuration = await Models.Configuration.findOne({name: 'secret'});
+        let configuration = await Models.Configuration.findOne({
+            where: {
+                name: 'secret',
+            },
+        });
         if (!configuration) {
             throw new Error('Authentication secret is missing');
         }
