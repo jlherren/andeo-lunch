@@ -13,7 +13,10 @@
         <div v-if="event">
             <v-container class="text-center">
                 <div class="headline">{{ name }}</div>
-                <div class="text--secondary">{{ formattedDate }}</div>
+                <p class="text--secondary">{{ formattedDate }}</p>
+                <p v-if="!event?.canEdit" class="text--secondary">
+                    This transfer is too far in the past for you to edit.  Contact an admin if you need changes to be made.
+                </p>
             </v-container>
         </div>
 

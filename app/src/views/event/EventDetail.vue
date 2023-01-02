@@ -40,10 +40,14 @@
                         <balance :value="event.costs.money" money large no-sign/>
                     </div>
 
-                    <div v-if="event.participationFlatRate !== null" class="text--secondary">
+                    <p v-if="event.participationFlatRate !== null" class="text--secondary">
                         Participation flat-rate: {{ event.participationFlatRate }}
                         <v-icon small>{{ $icons.points }}</v-icon>
-                    </div>
+                    </p>
+
+                    <p v-if="!event.canEdit" class="text--secondary">
+                        This event is too far in the past for you to edit.  Contact an admin if you need changes to be made.
+                    </p>
                 </div>
             </v-container>
 
