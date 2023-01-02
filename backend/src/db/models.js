@@ -4,6 +4,7 @@ const jsonWebToken = require('jsonwebtoken');
 const {Model, DataTypes} = require('sequelize');
 const Constants = require('../constants');
 const {ColumnHelper} = require('./columnHelper');
+const EventManager = require('../eventManager');
 
 /**
  * @class Model
@@ -95,10 +96,11 @@ class Event extends Model {
     /**
      * Map a user to an object suitable to return over the API
      *
+     * @param {User} user
      * @param {number} systemUserId
      * @returns {ApiEvent}
      */
-    toApi(systemUserId) {
+    toApi(user, systemUserId) {
         return {
             id:                    this.id,
             type:                  Constants.EVENT_TYPE_NAMES[this.type],
@@ -116,6 +118,7 @@ class Event extends Model {
             participationFlatRate: this.Lunch?.participationFlatRate,
             transfers:             this.Transfers?.map(transfer => transfer.toApi(systemUserId)),
             comment:               this.Lunch?.comment,
+            canEdit:               EventManager.userCanEditDate(user, this.date),
         };
     }
 

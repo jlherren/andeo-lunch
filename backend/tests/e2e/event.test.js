@@ -272,7 +272,7 @@ describe('Updating lunch event', () => {
     });
 });
 
-describe('Updating lunch events with edit limit', () => {
+describe('Edit limits', () => {
     let eventUrl = null;
 
     beforeEach(async () => {
@@ -299,6 +299,20 @@ describe('Updating lunch events with edit limit', () => {
         });
         expect(response.status).toBe(403);
         expect(response.text).toBe('Event is too old for you to edit');
+    });
+
+    it('marks the event as editable when edit limit is not reached', async () => {
+        await user.update({maxPastDaysEdit: 6});
+        let response = await request.get(eventUrl);
+        expect(response.status).toBe(200);
+        expect(response.body.event?.canEdit).toBe(true);
+    });
+
+    it('marks the event as not editable when edit limit is reached', async () => {
+        await user.update({maxPastDaysEdit: 4});
+        let response = await request.get(eventUrl);
+        expect(response.status).toBe(200);
+        expect(response.body.event?.canEdit).toBe(false);
     });
 });
 
@@ -504,5 +518,31 @@ describe('Event lists', () => {
         response = await request.get('/api/events?types=label');
         expect(response.status).toBe(200);
         expect(response.body.events).toHaveLength(0);
+    });
+});
+
+describe('Event lists with edit limit', () => {
+    beforeEach(async () => {
+        await Helper.createEvent(request, {
+            name: 'Burgers and fries',
+            type: 'lunch',
+            date: Helper.daysAgo(5),
+        });
+    });
+
+    it('Lists events as editable when edit limit is not reached', async () => {
+        await user.update({maxPastDaysEdit: 6});
+        let response = await request.get('/api/events');
+        expect(response.status).toBe(200);
+        expect(response.body.events).toHaveLength(1);
+        expect(response.body.events[0]?.canEdit).toBe(true);
+    });
+
+    it('Lists events as not editable when edit limit is reached', async () => {
+        await user.update({maxPastDaysEdit: 4});
+        let response = await request.get('/api/events');
+        expect(response.status).toBe(200);
+        expect(response.body.events).toHaveLength(1);
+        expect(response.body.events[0]?.canEdit).toBe(false);
     });
 });

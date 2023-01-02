@@ -27,11 +27,11 @@
  * @property {string} type
  * @property {Date} date
  * @property {string} name
- * @property {{points: number, money: number}} costs
- * @property {{vegetarian: number}} factors
+ * @property {{points: number, money: number}} [costs]
+ * @property {{vegetarian: number}} [factors]
  * @property {Array<ApiTransfer>} [transfers]
  * @property {string} [comment]
- * @property {number|null} participationFlatRate
+ * @property {number|null} [participationFlatRate]
  */
 
 /**

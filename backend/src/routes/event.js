@@ -9,6 +9,7 @@ const Constants = require('../constants');
 const Utils = require('../utils');
 const TransactionRebuilder = require('../transactionRebuilder');
 const AuditManager = require('../auditManager');
+const EventManager = require('../eventManager');
 
 const eventNameSchema = Joi.string().normalize().min(1).regex(/\S/u);
 const eventTypeSchema = Joi.string().valid(...Object.values(Constants.EVENT_TYPE_NAMES));
@@ -135,16 +136,7 @@ function validateEvent(ctx, type, apiEvent) {
  * @param {Date} date
  */
 function assertCanEditDate(ctx, date) {
-    let maxPastDaysEdit = ctx.user.maxPastDaysEdit;
-    if (maxPastDaysEdit === null) {
-        return;
-    }
-
-    let cutoff = new Date();
-    cutoff.setHours(0, 0, 0, 0);
-    cutoff.setDate(cutoff.getDate() - maxPastDaysEdit);
-
-    if (cutoff.getTime() > date.getTime()) {
+    if (!EventManager.userCanEditDate(ctx.user, date)) {
         ctx.throw(403, 'Event is too old for you to edit');
     }
 }
@@ -519,7 +511,7 @@ async function getEvent(ctx) {
     }
     let systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
     ctx.body = {
-        event: event.toApi(systemUser.id),
+        event: event.toApi(ctx.user, systemUser.id),
     };
 }
 
@@ -591,11 +583,11 @@ async function listEvents(ctx) {
     });
     let systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
     ctx.body = {
-        events: events.map(event => event.toApi(systemUser.id)),
+        events: events.map(event => event.toApi(ctx.user, systemUser.id)),
     };
     if (ownParticipations) {
         ctx.body.participations = events.map(event => {
-            return event.Participations.map(p => p.toApi(systemUser.id));
+            return event.Participations.map(participation => participation.toApi(systemUser.id));
         }).flat();
     }
 }
