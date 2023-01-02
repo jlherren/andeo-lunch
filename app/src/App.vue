@@ -128,10 +128,6 @@
 
     @import './scss/global.scss';
 
-    .center-text {
-        text-align: center;
-    }
-
     .v-input.no-spinner {
         input {
             // Firefox

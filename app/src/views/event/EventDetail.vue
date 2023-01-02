@@ -29,7 +29,7 @@
         <shy-progress v-if="isBusy"/>
 
         <div v-if="event">
-            <v-container class="center-text">
+            <v-container class="text-center">
                 <div class="headline">{{ name }}</div>
                 <div class="text--secondary">{{ formattedDate }}</div>
 
