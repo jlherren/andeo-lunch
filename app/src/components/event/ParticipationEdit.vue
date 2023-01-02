@@ -1,8 +1,8 @@
 <template>
     <v-card>
-        <v-form :disabled="isBusy" @submit.prevent="save()" ref="form">
+        <v-form :disabled="isBusy || readonly" @submit.prevent="save()" ref="form">
             <v-card-title>
-                Edit participation
+                {{ readonly ? 'View' : 'Edit' }} participation
             </v-card-title>
 
             <v-card-text>
@@ -13,7 +13,7 @@
 
                 <v-row>
                     <v-col>
-                        <participation-type-widget v-model="type" :disabled="isBusy" label :event-type="event.type"/>
+                        <participation-type-widget v-model="type" :disabled="isBusy || readonly" label :event-type="event.type"/>
                     </v-col>
                 </v-row>
 
@@ -39,7 +39,7 @@
                 </v-btn>
                 <v-spacer></v-spacer>
                 <v-progress-circular v-if="isBusy" indeterminate size="20" width="2"/>
-                <v-btn color="primary" :disabled="isBusy" @click="save">
+                <v-btn color="primary" :disabled="isBusy || readonly" @click="save">
                     Save
                 </v-btn>
             </v-card-actions>
@@ -68,6 +68,7 @@
                 type:     Object,
                 required: true,
             },
+            readonly:      Boolean,
         },
 
         data() {
@@ -107,7 +108,7 @@
             },
 
             async save() {
-                if (!this.$refs.form.validate()) {
+                if (this.readonly || !this.$refs.form.validate()) {
                     return;
                 }
                 this.isBusy = true;

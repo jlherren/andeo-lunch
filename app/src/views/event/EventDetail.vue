@@ -3,12 +3,26 @@
         <the-app-bar sub-page :to="`/calendar/${isoDate}`">
             {{ name }}
             <template v-if="event" #buttons>
-                <dynamic-button label="Grid" :icon="$icons.grid" :disabled="isBusy" :to="`/events/${eventId}/grid`"
-                                class="hidden-xs-only"
-                                v-if="event.type !== 'label'"
+                <dynamic-button
+                    label="Grid"
+                    :icon="$icons.grid"
+                    :disabled="isBusy || !event.canEdit"
+                    :to="`/events/${eventId}/grid`"
+                    class="hidden-xs-only"
+                    v-if="event.type !== 'label'"
                 />
-                <dynamic-button label="Edit" :icon="$icons.edit" :disabled="isBusy" :to="`/events/${eventId}/edit`"/>
-                <dynamic-button label="Delete" :icon="$icons.delete" :disabled="isBusy" @click="openConfirmDelete"/>
+                <dynamic-button
+                    label="Edit"
+                    :icon="$icons.edit"
+                    :disabled="isBusy || !event.canEdit"
+                    :to="`/events/${eventId}/edit`"
+                />
+                <dynamic-button
+                    label="Delete"
+                    :icon="$icons.delete"
+                    :disabled="isBusy || !event.canEdit"
+                    @click="openConfirmDelete"
+                />
             </template>
         </the-app-bar>
 
@@ -35,7 +49,7 @@
 
             <v-container v-if="commentHtml !== ''" class="comment" v-html="commentHtml"/>
 
-            <v-container v-if="participationsAreLoaded && event.type === 'lunch' && ownParticipationMissing">
+            <v-container v-if="participationsAreLoaded && event.type === 'lunch' && ownParticipationMissing && event.canEdit">
                 <v-banner elevation="2" :icon="$icons.undecided" icon-color="red">
                     Make up your mind!
                     <template #actions>
@@ -62,10 +76,14 @@
             <v-list v-if="event.type !== 'label'">
                 <v-skeleton-loader v-if="!participationsAreLoaded" type="list-item-avatar"/>
 
-                <participation-list-item v-for="participation of sortedParticipations"
-                                         :key="participation.userId"
-                                         :event="event" :participation="participation"
-                                         @saved="refreshEvent"/>
+                <participation-list-item
+                    v-for="participation of sortedParticipations"
+                    :key="participation.userId"
+                    :event="event"
+                    :participation="participation"
+                    :readonly="!event.canEdit"
+                    @saved="refreshEvent"
+                />
             </v-list>
 
             <v-dialog v-model="confirmDelete">

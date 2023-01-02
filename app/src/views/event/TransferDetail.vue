@@ -4,7 +4,7 @@
             {{ name }}
             <template v-if="event" #buttons>
                 <dynamic-button label="Edit" :icon="$icons.edit" disabled/>
-                <dynamic-button label="Delete" :icon="$icons.delete" :disabled="isBusy" @click="openDeleteEventDialog"/>
+                <dynamic-button label="Delete" :icon="$icons.delete" :disabled="isBusy || !event?.canEdit" @click="openDeleteEventDialog"/>
             </template>
         </the-app-bar>
 
@@ -46,7 +46,7 @@
                     </v-list-item-subtitle>
                 </v-list-item-content>
                 <v-list-item-action>
-                    <v-btn icon @click="openDeleteTransferDialog(transfer.id)" :disabled="isBusy">
+                    <v-btn icon @click="openDeleteTransferDialog(transfer.id)" :disabled="!event?.canEdit">
                         <v-icon>{{ $icons.delete }}</v-icon>
                     </v-btn>
                 </v-list-item-action>
@@ -62,7 +62,7 @@
 
             <v-skeleton-loader v-if="!transfers" type="list-item-avatar"/>
 
-            <v-list-item v-else @click="openAddTransferDialog" :disabled="isBusy">
+            <v-list-item v-else @click="openAddTransferDialog" :disabled="isBusy || !event?.canEdit">
                 <v-list-item-icon>
                     <v-icon>{{ $icons.plus }}</v-icon>
                 </v-list-item-icon>

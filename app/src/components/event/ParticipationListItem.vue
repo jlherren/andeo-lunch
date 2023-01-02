@@ -21,10 +21,15 @@
         </v-list-item-content>
 
         <v-dialog v-model="editDialog" persistent>
-            <participation-edit v-if="editDialog"
-                                :event="event" :participation="participation"
-                                @close="editDialog = false" @saved="saved"
-                                ref="editForm"/>
+            <participation-edit
+                v-if="editDialog"
+                :event="event"
+                :participation="participation"
+                :readonly="readonly"
+                @close="editDialog = false"
+                @saved="saved"
+                ref="editForm"
+            />
         </v-dialog>
     </v-list-item>
 </template>
@@ -44,7 +49,7 @@
         },
 
         props: {
-            event: {
+            event:         {
                 type:     Object,
                 required: true,
             },
@@ -52,6 +57,7 @@
                 type:     Object,
                 required: true,
             },
+            readonly:      Boolean,
         },
 
         data() {
