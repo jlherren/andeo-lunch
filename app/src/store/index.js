@@ -496,5 +496,23 @@ export let useStore = defineStore('main', {
                 ],
             });
         },
+
+        /**
+         * @returns {Promise<Array<{username: string, name: string}>>}
+         */
+        async adminFetchUsers() {
+            let response = await Backend.get('/admin/users');
+            return response.data.users;
+        },
+
+        /**
+         * @param {Object} options
+         * @param {number} options.id
+         * @param {Object} options.user
+         * @returns {Promise<void>}
+         */
+        async adminSaveUser({id, ...user}) {
+            await Backend.post(`/admin/users/${id}`, user);
+        },
     },
 });

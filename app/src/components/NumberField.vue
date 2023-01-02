@@ -1,6 +1,18 @@
 <template>
-    <v-text-field type="number" :min="min" :max="max" :step="step" :label="label" :value="value"
-                  @input="input" class="no-spinner" :disabled="disabled" :suffix="suffix">
+    <v-text-field
+        type="number"
+        :min="min"
+        :max="max"
+        :step="step"
+        :label="label"
+        :value="value"
+        @input="input"
+        class="no-spinner"
+        :disabled="disabled"
+        :suffix="suffix"
+        :hint="hint"
+        :persistent-hint="hint !== null"
+    >
         <template #append>
             <v-btn small icon @click="addPoints(-step)" :disabled="min !== undefined && value <= min">
                 <v-icon small>{{ $icons.minus }}</v-icon>
@@ -18,39 +30,24 @@
         name: 'NumberField',
 
         props: {
-            value: Number,
-
-            disabled: {
-                type:    Boolean,
-                default: false,
-            },
-
-            min: {
+            value:    Number,
+            disabled: Boolean,
+            min:      {
                 type:    Number,
                 default: 0,
             },
-
-            max: {
+            max:      {
                 type:    Number,
                 default: undefined,
             },
-
-            step: {
+            step:     {
                 type:    Number,
                 default: 1,
             },
-
-            label: {
-                type: String,
-            },
-
-            suffix: {
-                type: String,
-            },
-
-            icon: {
-                type: String,
-            },
+            label:    String,
+            suffix:   String,
+            icon:     String,
+            hint:     String,
         },
 
         methods: {

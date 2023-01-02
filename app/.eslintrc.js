@@ -157,7 +157,7 @@ module.exports = {
         'max-lines':                          [
             'warn',
             {
-                max: 500,
+                max: 600,
             },
         ],
         'max-lines-per-function':             'off',

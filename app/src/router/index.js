@@ -114,6 +114,14 @@ const routes = [
         component: () => import('@/views/GroceryList'),
     },
     {
+        path:      '/admin',
+        component: () => import('@/views/admin/Admin'),
+    },
+    {
+        path:      '/admin/users',
+        component: () => import('@/views/admin/Users'),
+    },
+    {
         path:      '/tools',
         component: () => import('@/views/tools/Tools'),
     },

@@ -14,7 +14,7 @@
 
         <v-list-item to="/preferences">
             <v-list-item-icon>
-                <v-icon>{{ $icons.cog }}</v-icon>
+                <v-icon>{{ $icons.preferences }}</v-icon>
             </v-list-item-icon>
             <v-list-item-content>
                 <v-list-item-title>
@@ -59,6 +59,17 @@
             <v-list-item-content>
                 <v-list-item-title>
                     Account settings
+                </v-list-item-title>
+            </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item to="/admin" v-if="hasPermissionPrefix('admin.')">
+            <v-list-item-icon>
+                <v-icon>{{ $icons.admin }}</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+                <v-list-item-title>
+                    Admin
                 </v-list-item-title>
             </v-list-item-content>
         </v-list-item>

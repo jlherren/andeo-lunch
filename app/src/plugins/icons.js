@@ -17,7 +17,6 @@ export const icons = {
     chevronRight:           mdi.mdiChevronRight,
     clock:                  mdi.mdiClock,
     close:                  mdi.mdiClose,
-    cog:                    mdi.mdiCog,
     delete:                 mdi.mdiDelete,
     grid:                   mdi.mdiGrid,
     home:                   mdi.mdiHome,
@@ -30,6 +29,7 @@ export const icons = {
 
     // Add semantic aliases here (this is encouraged).  Keep this list sorted!
     absence:        mdi.mdiBeach,
+    admin:          mdi.mdiCog,
     appMenu:        mdi.mdiMenu,
     balanceHistory: mdi.mdiScaleBalance,
     darkMode:       mdi.mdiThemeLightDark,
@@ -46,6 +46,7 @@ export const icons = {
     optOut:         mdi.mdiCancel,
     password:       mdi.mdiLock,
     points:         mdi.mdiHandshake,
+    preferences:    mdi.mdiTune,
     special:        mdi.mdiPartyPopper,
     stats:          mdi.mdiChartBar,
     tools:          mdi.mdiTools,
