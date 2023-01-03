@@ -90,7 +90,7 @@
                 />
             </v-list>
 
-            <v-dialog v-model="confirmDelete">
+            <v-dialog v-model="confirmDelete" max-width="600">
                 <v-card>
                     <v-card-title>
                         Delete this event?

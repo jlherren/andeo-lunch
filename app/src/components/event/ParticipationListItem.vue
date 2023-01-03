@@ -20,7 +20,7 @@
             </v-list-item-title>
         </v-list-item-content>
 
-        <v-dialog v-model="editDialog" persistent>
+        <v-dialog v-model="editDialog" persistent max-width="600">
             <participation-edit
                 v-if="editDialog"
                 :event="event"

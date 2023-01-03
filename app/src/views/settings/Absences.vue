@@ -47,7 +47,7 @@
             </v-list-item>
         </v-list>
 
-        <v-dialog v-model="addModal">
+        <v-dialog v-model="addModal" max-width="600">
             <v-card>
                 <v-form :disabled="isBusy" ref="addForm">
                     <v-card-title>
@@ -76,7 +76,7 @@
             </v-card>
         </v-dialog>
 
-        <v-dialog v-model="confirmDelete">
+        <v-dialog v-model="confirmDelete" max-width="600">
             <v-card>
                 <v-card-title>
                     Delete absence?

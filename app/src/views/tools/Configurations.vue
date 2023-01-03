@@ -25,7 +25,7 @@
             </v-simple-table>
         </v-container>
 
-        <v-dialog v-model="dialog">
+        <v-dialog v-model="dialog" max-width="600">
             <v-card>
                 <v-card-title>
                     Edit {{ editName }}

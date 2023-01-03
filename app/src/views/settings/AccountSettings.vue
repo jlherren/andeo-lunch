@@ -57,7 +57,7 @@
             </v-list-item>
         </v-list>
 
-        <v-dialog v-model="confirmLogout">
+        <v-dialog v-model="confirmLogout" max-width="600">
             <v-card>
                 <v-card-title>
                     Logout?

@@ -77,7 +77,7 @@
             </v-list-item>
         </v-list>
 
-        <v-dialog v-model="deleteEventDialog">
+        <v-dialog v-model="deleteEventDialog" max-width="600">
             <v-card>
                 <v-card-title>
                     Delete this transfer?
@@ -93,7 +93,7 @@
             </v-card>
         </v-dialog>
 
-        <v-dialog v-model="deleteTransferDialog">
+        <v-dialog v-model="deleteTransferDialog" max-width="600">
             <v-card>
                 <v-card-title>
                     Delete transfer entry?
@@ -106,7 +106,7 @@
             </v-card>
         </v-dialog>
 
-        <v-dialog v-model="addTransferDialog">
+        <v-dialog v-model="addTransferDialog" max-width="600">
             <transfer-edit :event="event" @close="addTransferDialog = false" ref="addDialog"/>
         </v-dialog>
     </v-main>
