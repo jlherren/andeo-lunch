@@ -14,10 +14,10 @@
         :persistent-hint="hint !== null"
     >
         <template #append>
-            <v-btn small icon @click="addPoints(-step)" :disabled="min !== undefined && value <= min">
+            <v-btn small icon @click="addPoints(-step)" :disabled="disabled || min !== undefined && value <= min">
                 <v-icon small>{{ $icons.minus }}</v-icon>
             </v-btn>
-            <v-btn small icon @click="addPoints(step)" :disabled="max !== undefined && value >= max">
+            <v-btn small icon @click="addPoints(step)" :disabled="disabled || max !== undefined && value >= max">
                 <v-icon small>{{ $icons.plus }}</v-icon>
             </v-btn>
             <v-icon>{{ icon }}</v-icon>
