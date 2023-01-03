@@ -31,34 +31,24 @@
 
         <v-dialog v-model="dialog" max-width="600">
             <v-card>
-                <v-card-title>
-                    Edit {{ editName }}
-                </v-card-title>
-                <v-card-text>
-                    <v-text-field v-model="editUsername" label="Username" disabled/>
-                    <v-text-field v-model="editName" label="Display name" :disabled="isBusy"/>
-                    <v-row>
-                        <v-col cols="6">
-                            <v-checkbox v-model="editActive" label="Active" hint="Allow user to log in and use the app" persistent-hint :disabled="isBusy"/>
-                        </v-col>
-                        <v-col cols="6">
-                            <v-checkbox v-model="editHidden" label="Hidden" hint="Hide the user from most lists" persistent-hint :disabled="isBusy"/>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col cols="6">
-                            <v-checkbox v-model="editRestrictEdit" label="Restrict editing events" hint="Do not allow editing events far in the past" persistent-hint :disabled="isBusy"/>
-                        </v-col>
-                        <v-col cols="6">
-                            <number-field v-model="editMaxPastDaysEdit" hint="Number of days into the past to allow editing events" :disabled="isBusy || !editRestrictEdit"/>
-                        </v-col>
-                    </v-row>
-                </v-card-text>
-                <v-card-actions>
-                    <v-btn text @click="dialog = false" :disabled="isBusy">Cancel</v-btn>
-                    <v-spacer/>
-                    <v-btn @click="save" :disabled="isBusy" color="primary">Save</v-btn>
-                </v-card-actions>
+                <v-form ref="form" :disabled="isBusy" @submit.prevent="save">
+                    <v-card-title>
+                        Edit {{ editName }}
+                    </v-card-title>
+                    <v-card-text>
+                        <v-text-field v-model="editUsername" label="Username" disabled/>
+                        <v-text-field v-model="editName" label="Display name" :rules="nameRules"/>
+                        <v-checkbox v-model="editActive" label="Active" hint="Allow user to log in and use the app" persistent-hint/>
+                        <v-checkbox v-model="editHidden" label="Hidden" hint="Hide the user from most lists" persistent-hint/>
+                        <v-checkbox v-model="editRestrictEdit" label="Restrict editing events" hint="Do not allow editing events far in the past" persistent-hint/>
+                        <number-field v-model="editMaxPastDaysEdit" hint="Number of days into the past to allow editing events" :disabled="!editRestrictEdit"/>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-btn text @click="dialog = false" :disabled="isBusy">Cancel</v-btn>
+                        <v-spacer/>
+                        <v-btn type="submit" :disabled="isBusy" color="primary">Save</v-btn>
+                    </v-card-actions>
+                </v-form>
             </v-card>
         </v-dialog>
     </v-main>
@@ -90,6 +80,9 @@
                 editRestrictEdit:    false,
                 editMaxPastDaysEdit: null,
                 isBusy:              true,
+                nameRules:           [
+                    value => !!value || 'A display name is required',
+                ],
             };
         },
 
@@ -126,6 +119,9 @@
             },
 
             async save() {
+                if (!this.$refs.form.validate()) {
+                    return;
+                }
                 this.isBusy = true;
                 try {
                     await this.$store().adminSaveUser({
