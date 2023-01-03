@@ -24,6 +24,10 @@
                             <td>{{ row.version }}</td>
                             <td>{{ row.count }}</td>
                         </tr>
+                        <tr>
+                            <td>Total</td>
+                            <td>{{ deviceCount }}</td>
+                        </tr>
                     </tbody>
                 </template>
             </v-simple-table>
@@ -54,6 +58,12 @@
             const deviceVersions = await this.$store().deviceVersions();
             this.versions = deviceVersions.versions;
             this.period = deviceVersions.period;
+        },
+
+        computed: {
+            deviceCount() {
+                return this.versions.reduce((sum, row) => sum + row.count, 0);
+            },
         },
     };
 </script>
