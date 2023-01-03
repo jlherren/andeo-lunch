@@ -36,7 +36,7 @@
                 username:     '',
                 password:     '',
                 requiredRule: [
-                    v => !!v,
+                    value => !!value || 'This field is required',
                 ],
             };
         },

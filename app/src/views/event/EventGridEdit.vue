@@ -81,7 +81,7 @@
                 isBusy: true,
                 rows:   [],
                 rules:  [
-                    v => v !== '' || 'This field is required',
+                    value => value !== '' || 'This field is required',
                 ],
             };
         },

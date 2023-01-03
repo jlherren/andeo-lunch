@@ -35,7 +35,7 @@
             return {
                 open:  false,
                 rules: [
-                    v => this.required && !!v || 'A date is required',
+                    value => !this.required || !!value || 'A date is required',
                 ],
             };
         },

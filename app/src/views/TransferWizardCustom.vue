@@ -55,7 +55,7 @@
                 date:      DateFormatter.isoDate(now),
                 time:      DateFormatter.isoTime(now, false),
                 nameRules: [
-                    v => v !== '',
+                    value => value !== '' || 'A description is required',
                 ],
             };
         },

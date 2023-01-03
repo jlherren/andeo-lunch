@@ -93,7 +93,7 @@
                 triggerDefaultOptIn:      true,
 
                 nameRules: [
-                    v => !!v || 'A name is required',
+                    value => !!value || 'A name is required',
                 ],
 
                 isBusy: true,

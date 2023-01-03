@@ -65,13 +65,14 @@
                 amount:         null,
                 currency:       'points',
                 senderRules:    [
-                    v => !!v,
+                    value => !!value || 'A sender is required',
                 ],
                 recipientRules: [
-                    v => !!v && v !== this.sender,
+                    value => !!value || 'A recipient is required',
+                    value => value !== this.sender || 'Recipient must be different from sender',
                 ],
                 amountRules:    [
-                    v => v > 0,
+                    value => value > 0 || 'A positive amount is required',
                 ],
                 isBusy:         false,
             };

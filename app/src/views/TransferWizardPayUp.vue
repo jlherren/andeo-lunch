@@ -59,10 +59,11 @@
                 amount:         null,
                 recipient:      null,
                 recipientRules: [
-                    v => !!v && v !== this.$store().ownUserId,
+                    value => !!value || 'A recipient is required',
+                    value => value !== this.$store().ownUserId || 'The recipient cannot be you',
                 ],
                 amountRules:    [
-                    v => v > 0,
+                    value => value > 0 || 'A positive amount is required',
                 ],
             };
         },

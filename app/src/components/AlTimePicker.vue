@@ -29,7 +29,7 @@
             return {
                 open:  false,
                 rules: [
-                    v => this.required && !!v || 'A time is required',
+                    value => !this.required || !!value || 'A time is required',
                 ],
             };
         },

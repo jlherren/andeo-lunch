@@ -65,13 +65,14 @@
                 points:        null,
                 money:         null,
                 buyerRules:    [
-                    v => !!v,
+                    value => !!value || 'A buyer is required',
                 ],
                 sellerRules:   [
-                    v => !!v && v !== this.buyer,
+                    value => !!value || 'A seller is required',
+                    value => value !== this.buyer || 'Seller must be different from buyer',
                 ],
                 positiveRules: [
-                    v => v > 0,
+                    value => value > 0 || 'A positive amount is required',
                 ],
             };
         },

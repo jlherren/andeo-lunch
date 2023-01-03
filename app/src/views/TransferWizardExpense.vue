@@ -69,13 +69,14 @@
                 amount:      null,
                 reason:      '',
                 senderRules: [
-                    v => !!v && v !== this.$store().ownUserId,
+                    value => !!value || 'A sender is required',
+                    value => value !== this.$store().ownUserId || 'You cannot log an expense for yourself',
                 ],
                 amountRules: [
-                    v => v > 0,
+                    value => value > 0 || 'A positive amount is required',
                 ],
                 reasonRules: [
-                    v => v !== '',
+                    value => value !== '' || 'A reason is required',
                 ],
             };
         },

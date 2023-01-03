@@ -18,15 +18,15 @@
 
             <v-form ref="form" :disabled="isBusy" @submit.prevent="save()">
                 <v-text-field type="password" v-model="oldPassword" label="Current password" autofocus
-                              min="0" :rules="oldRules"
+                              :rules="oldRules"
                               :append-icon="$icons.password"/>
 
                 <v-text-field type="password" v-model="newPassword" label="New password"
-                              min="0" :rules="newRules"
+                              :rules="newRules"
                               :append-icon="$icons.password"/>
 
                 <v-text-field type="password" v-model="confirmPassword" label="Confirm new password"
-                              min="0" :rules="confirmRules"
+                              :rules="confirmRules"
                               :append-icon="$icons.password"/>
 
                 <!-- Button is to make it submittable by pressing enter -->
@@ -55,13 +55,13 @@
                 newPassword:     '',
                 confirmPassword: '',
                 oldRules:        [
-                    v => v !== '',
+                    value => value !== '' || 'The old password is required',
                 ],
                 newRules:        [
-                    v => v.length >= 6,
+                    value => value.length >= 6 || 'The password is too short',
                 ],
                 confirmRules:    [
-                    v => v === this.newPassword,
+                    value => value === this.newPassword || 'The password confirmation does not match',
                 ],
             };
         },
