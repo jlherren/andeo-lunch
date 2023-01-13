@@ -8,16 +8,16 @@
         :value="value"
         @input="input"
         class="no-spinner"
-        :disabled="disabled"
+        :disabled="isDisabled"
         :suffix="suffix"
         :hint="hint"
         :persistent-hint="hint !== null"
     >
         <template #append>
-            <v-btn small icon @click="addPoints(-step)" :disabled="disabled || min !== undefined && value <= min">
+            <v-btn small icon @click="addPoints(-step)" :disabled="isDisabled || min !== undefined && value <= min">
                 <v-icon small>{{ $icons.minus }}</v-icon>
             </v-btn>
-            <v-btn small icon @click="addPoints(step)" :disabled="disabled || max !== undefined && value >= max">
+            <v-btn small icon @click="addPoints(step)" :disabled="isDisabled || max !== undefined && value >= max">
                 <v-icon small>{{ $icons.plus }}</v-icon>
             </v-btn>
             <v-icon>{{ icon }}</v-icon>
@@ -28,6 +28,10 @@
 <script>
     export default {
         name: 'NumberField',
+
+        inject: [
+            'form',
+        ],
 
         props: {
             value:    Number,
@@ -48,6 +52,12 @@
             suffix:   String,
             icon:     String,
             hint:     String,
+        },
+
+        computed: {
+            isDisabled() {
+                return this.disabled || this.form?.disabled;
+            },
         },
 
         methods: {
