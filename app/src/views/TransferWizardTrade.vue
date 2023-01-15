@@ -59,7 +59,7 @@
 
         data() {
             return {
-                isBusy:        false,
+                isBusy:        true,
                 buyer:         null,
                 seller:        null,
                 points:        null,
@@ -79,6 +79,7 @@
 
         created() {
             this.$store().fetchUsers();
+            this.isBusy = false;
         },
 
         computed: {

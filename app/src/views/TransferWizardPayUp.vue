@@ -55,7 +55,7 @@
 
         data() {
             return {
-                isBusy:         false,
+                isBusy:         true,
                 amount:         null,
                 recipient:      null,
                 recipientRules: [
@@ -80,6 +80,8 @@
                     this.recipient = defaultRecipient;
                 }
             }
+
+            this.isBusy = false;
         },
 
         computed: {
