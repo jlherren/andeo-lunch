@@ -15,10 +15,10 @@ cd $(dirname "$0")/..
 
 # MariaDB 10.5 is mostly used for development, 10.6 is used for production.
 
-for MARIADB_VERSION in 10.5 10.6 10.7 10.8 10.9 10.10; do
-    echo "Removing existing container"
-    docker container rm --force "$DB_CONTAINER_NAME" 2> /dev/null || true
+echo "Removing existing container"
+docker stop "$DB_CONTAINER_NAME" 2> /dev/null || true
 
+for MARIADB_VERSION in 10.5 10.6 10.7 10.8 10.9 10.10; do
     echo "Starting MariaDB $MARIADB_VERSION"
     docker run \
         --pull=always \
@@ -51,7 +51,8 @@ for MARIADB_VERSION in 10.5 10.6 10.7 10.8 10.9 10.10; do
 
     # Run tests, in-band is necessary, since with only one DB we can't run them in parallel
     yarn jest --runInBand
-done
 
-echo "Stopping MariaDB"
-docker stop "$DB_CONTAINER_NAME"
+    # Stop and remove container
+    echo "Stopping MariaDB"
+    docker stop "$DB_CONTAINER_NAME"
+done
