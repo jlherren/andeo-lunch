@@ -55,17 +55,8 @@ beforeEach(async () => {
         quiet:  true,
     });
     await andeoLunch.waitReady();
-    [user1, user2] = await Models.User.bulkCreate([{
-        username: 'test-user-1',
-        password: Helper.passwordHash,
-        active:   true,
-        name:     'Test User',
-    }, {
-        username: 'test-user-2',
-        password: Helper.passwordHash,
-        active:   true,
-        name:     'Test User',
-    }]);
+    user1 = await Helper.createUser('test-user-1');
+    user2 = await Helper.createUser('test-user-2');
     request = supertest.agent(andeoLunch.listen());
     let response = await request.post('/api/account/login')
         .send({username: user1.username, password: Helper.password});
@@ -481,11 +472,8 @@ describe('Default opt-in', () => {
     });
 
     it('Does not set any default opt-in on disabled user', async () => {
-        let bob = await Models.User.create({
-            username: 'bob',
-            password: '',
+        let bob = await Helper.createUser('bob', {
             active:   false,
-            name:     'Bob',
             settings: {defaultOptIn1: 'omnivorous'},
         });
         let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2036-01-07T12:00:00Z'});

@@ -22,8 +22,6 @@ class Configuration extends Model {
 
 /**
  * @property {string} username
- * @property {string} [password]
- * @property {Date|null} lastPasswordChange
  * @property {boolean} active Whether this user can log in, and can be added or removed from events
  * @property {boolean} hidden Whether the user should be displayed in a normal user listing
  * @property {string} name
@@ -71,6 +69,13 @@ class User extends Model {
             hidden:   this.hidden,
         };
     }
+}
+
+/**
+ * @property {string} password
+ * @property {Date|null} lastPasswordChange
+ */
+class UserPassword extends Model {
 }
 
 /**
@@ -407,6 +412,7 @@ class DeviceVersion extends Model {
 
 exports.Configuration = Configuration;
 exports.User = User;
+exports.UserPassword = UserPassword;
 exports.UserPermission = UserPermission;
 exports.Permission = Permission;
 exports.EventType = EventType;
@@ -442,22 +448,30 @@ exports.initModels = function initModels(sequelize) {
     });
 
     User.init({
-        username:           {type: ch.ascii(64), allowNull: false, unique: 'user_username_idx'},
-        password:           {type: ch.ascii(255), allowNull: true, defaultValue: null},
-        // Investigate why defaultValue: null fails here
-        lastPasswordChange: {type: DataTypes.DATE, allowNull: true},
-        name:               {type: DataTypes.STRING(64), allowNull: false},
-        active:             {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
-        hidden:             {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
-        points:             {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
-        money:              {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
-        maxPastDaysEdit:    {type: DataTypes.SMALLINT, allowNull: true, defaultValue: null},
-        settings:           {type: DataTypes.JSON, allowNull: true, defaultValue: null},
+        username:        {type: ch.ascii(64), allowNull: false, unique: 'user_username_idx'},
+        name:            {type: DataTypes.STRING(64), allowNull: false},
+        active:          {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
+        hidden:          {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
+        points:          {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
+        money:           {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
+        maxPastDaysEdit: {type: DataTypes.SMALLINT, allowNull: true, defaultValue: null},
+        settings:        {type: DataTypes.JSON, allowNull: true, defaultValue: null},
         // Note: Couldn't manage to set default on 'settings'
     }, {
         sequelize,
         modelName: 'user',
     });
+
+    UserPassword.init({
+        user:       {type: DataTypes.INTEGER, allowNull: false, unique: 'userPassword_user_idx'},
+        password:   {type: ch.ascii(255), allowNull: false},
+        lastChange: {type: DataTypes.DATE, allowNull: true, defaultValue: null},
+    }, {
+        sequelize,
+        modelName: 'userPassword',
+    });
+    UserPassword.belongsTo(User, {foreignKey: {name: 'user'}, as: 'User', ...cascade});
+    User.hasOne(UserPassword, {foreignKey: {name: 'user'}, as: 'UserPassword', ...cascade});
 
     Permission.init({
         name: {type: ch.ascii(64), allowNull: false, unique: 'permission_name_idx'},

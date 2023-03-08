@@ -38,14 +38,20 @@ async function editUser(cli, user) {
                 console.log('Display name updated');
             }
         } else if (option === '2') {
+            let userPassword = await Models.UserPassword.findOne({where: {user: user.id}});
+            if (userPassword === null) {
+                console.log('User does not have a password entity');
+                continue;
+            }
             let password = await cli.password('Enter new password (leave blank to not change): ');
             if (password !== '') {
                 let confirm = await cli.password('Confirm new password: ');
                 if (password !== confirm) {
                     throw new Error('Passwords do not match');
                 }
-                user.password = await AuthUtils.hashPassword(password);
-                await user.save();
+                userPassword.password = await AuthUtils.hashPassword(password);
+                userPassword.lastChange = new Date();
+                await userPassword.save();
                 console.log('Password updated');
             }
         } else if (option === '3') {

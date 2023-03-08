@@ -26,11 +26,11 @@ async function login(ctx) {
     let user = await Models.User.findOne(
         {
             where:   {username: requestBody.username},
-            include: 'Permissions',
+            include: ['Permissions', 'UserPassword'],
         },
     );
-    if (user !== null && user.active) {
-        if (await AuthUtils.comparePassword(requestBody.password, user.password)) {
+    if (user !== null && user.active && user.UserPassword !== null) {
+        if (await AuthUtils.comparePassword(requestBody.password, user.UserPassword.password)) {
             let config = ctx.andeoLunch.getConfig();
             let secret = await AuthUtils.getSecret();
             let token = await user.generateToken(secret, {expiresIn: config.tokenExpiry});
@@ -105,7 +105,22 @@ async function check(ctx) {
 async function password(ctx) {
     let requestBody = RouteUtils.validateBody(ctx, changePasswordSchema);
 
-    if (!await AuthUtils.comparePassword(requestBody.oldPassword, ctx.user.password)) {
+    let userPassword = await Models.UserPassword.findOne({
+        where: {
+            user: ctx.user.id,
+        },
+    });
+
+    if (userPassword === null) {
+        await AuthUtils.fakeCompare(requestBody.oldPassword);
+        ctx.body = {
+            success: false,
+            reason:  'old-password-invalid',
+        };
+        return;
+    }
+
+    if (!await AuthUtils.comparePassword(requestBody.oldPassword, userPassword.password)) {
         ctx.body = {
             success: false,
             reason:  'old-password-invalid',
@@ -121,9 +136,9 @@ async function password(ctx) {
         return;
     }
 
-    ctx.user.password = await AuthUtils.hashPassword(requestBody.newPassword);
-    ctx.user.lastPasswordChange = new Date();
-    await ctx.user.save();
+    userPassword.password = await AuthUtils.hashPassword(requestBody.newPassword);
+    userPassword.lastChange = new Date();
+    await userPassword.save();
 
     ctx.body = {
         success: true,

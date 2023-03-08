@@ -52,27 +52,13 @@ beforeEach(async () => {
     });
     await andeoLunch.waitReady();
     systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
-    let username = 'test-user-1';
-    [user1, user2, user3] = await Models.User.bulkCreate([{
-        username: username,
-        password: Helper.passwordHash,
-        active:   true,
-        name:     'Test User 1',
-    }, {
-        username: 'test-user-2',
-        password: Helper.passwordHash,
-        active:   true,
-        name:     'Test User 2',
-    }, {
-        username: 'test-user-3',
-        password: Helper.passwordHash,
-        active:   true,
-        name:     'Test User 3',
-    }]);
+    user1 = await Helper.createUser('test-user-1');
+    user2 = await Helper.createUser('test-user-2');
+    user3 = await Helper.createUser('test-user-3');
     request = supertest.agent(andeoLunch.listen());
     if (jwt === null) {
         let response = await request.post('/api/account/login')
-            .send({username, password: Helper.password});
+            .send({username: user1.username, password: Helper.password});
         jwt = response.body.token;
     }
     request.set('Authorization', `Bearer ${jwt}`);

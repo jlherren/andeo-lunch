@@ -24,6 +24,26 @@ exports.password = 'abc123';
 exports.passwordHash = '$2a$04$coj9eKcxliBzr47q1nyOV.TiH0dI2v.fbQeLoMUAhJURm6yKFe8Ge';
 
 /**
+ * @param {string} username
+ * @param {object} attributes
+ * @returns {Promise<User>}
+ */
+exports.createUser = async function (username, attributes = {}) {
+    let user = await Models.User.create({
+        username,
+        active: true,
+        name:   `User ${username}`,
+        ...attributes,
+    });
+    await Models.UserPassword.create({
+        user:     user.id,
+        password: exports.passwordHash,
+        ...attributes,
+    });
+    return user;
+};
+
+/**
  * @param {number} userId
  * @param {string} name
  * @returns {Promise<void>}

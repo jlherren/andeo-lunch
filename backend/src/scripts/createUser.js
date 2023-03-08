@@ -39,11 +39,14 @@ async function createUser() {
         }
         let name = await cli.question('Display name: ');
         let hashed = await AuthUtils.hashPassword(password1);
-        await Models.User.create({
+        user = await Models.User.create({
             username,
             name,
+            active: true,
+        });
+        await Models.UserPassword.create({
+            user:     user.id,
             password: hashed,
-            active:   true,
         });
         console.log(`User ${username} created successfully`);
     } catch (err) {

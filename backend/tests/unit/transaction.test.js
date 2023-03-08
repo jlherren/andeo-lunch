@@ -5,6 +5,7 @@ const AndeoLunch = require('../../src/andeoLunch');
 const Constants = require('../../src/constants');
 const TransactionRebuilder = require('../../src/transactionRebuilder');
 const ConfigProvider = require('../../src/configProvider');
+const Helper = require('../e2e/helper');
 
 /** @type {AndeoLunch|null} */
 let andeoLunch = null;
@@ -28,16 +29,11 @@ afterEach(async () => {
  * @returns {Promise<Array<User>>}
  */
 function createUsers(n) {
-    let inserts = [];
+    let promises = [];
     for (let i = 0; i < n; i++) {
-        inserts.push({
-            username: `user-${i}`,
-            password: null,
-            active:   true,
-            name:     `User ${i}`,
-        });
+        promises.push(Helper.createUser(`user-${i}`));
     }
-    return Models.User.bulkCreate(inserts);
+    return Promise.all(promises);
 }
 
 /**

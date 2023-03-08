@@ -1,8 +1,6 @@
 CREATE TABLE `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
-  `password` varchar(255) CHARACTER SET ascii COLLATE ascii_bin DEFAULT NULL,
-  `lastPasswordChange` datetime DEFAULT NULL,
   `name` varchar(64) NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT 0,
   `hidden` tinyint(1) NOT NULL DEFAULT 0,

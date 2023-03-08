@@ -5,7 +5,6 @@ const supertest = require('supertest');
 const AndeoLunch = require('../../src/andeoLunch');
 const ConfigProvider = require('../../src/configProvider');
 const Constants = require('../../src/constants');
-const Models = require('../../src/db/models');
 const Helper = require('./helper');
 
 /** @type {AndeoLunch|null} */
@@ -33,22 +32,9 @@ beforeEach(async () => {
         quiet:  true,
     });
     await andeoLunch.waitReady();
-    [user1, user2, user3] = await Models.User.bulkCreate([{
-        username: 'test-user-1',
-        password: Helper.passwordHash,
-        active:   true,
-        name:     'Test User 1',
-    }, {
-        username: 'test-user-2',
-        password: Helper.passwordHash,
-        active:   true,
-        name:     'Test User 2',
-    }, {
-        username: 'test-user-3',
-        password: Helper.passwordHash,
-        active:   true,
-        name:     'Test User 3',
-    }]);
+    user1 = await Helper.createUser('test-user-1');
+    user2 = await Helper.createUser('test-user-2');
+    user3 = await Helper.createUser('test-user-3');
     request = supertest.agent(andeoLunch.listen());
     let response = await request.post('/api/account/login')
         .send({username: user1.username, password: Helper.password});

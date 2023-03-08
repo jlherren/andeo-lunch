@@ -4,7 +4,6 @@ const supertest = require('supertest');
 
 const AndeoLunch = require('../../src/andeoLunch');
 const ConfigProvider = require('../../src/configProvider');
-const Models = require('../../src/db/models');
 const Helper = require('./helper');
 
 /** @type {AndeoLunch|null} */
@@ -20,17 +19,11 @@ beforeEach(async () => {
         quiet:  true,
     });
     await andeoLunch.waitReady();
-    let username = 'test-user';
-    await Models.User.create({
-        username,
-        password: Helper.passwordHash,
-        active:   true,
-        name:     'Test User 1',
-    });
+    let user = await Helper.createUser('test-user');
     request = supertest.agent(andeoLunch.listen());
     if (jwt === null) {
         let response = await request.post('/api/account/login')
-            .send({username, password: Helper.password});
+            .send({username: user.username, password: Helper.password});
         jwt = response.body.token;
     }
     request.set('Authorization', `Bearer ${jwt}`);

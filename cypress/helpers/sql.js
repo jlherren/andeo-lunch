@@ -9,8 +9,12 @@ export const USERS = {
         name:     'John Doe',
         insert() {
             cy.task('db:sql', `
-                INSERT INTO user (id, username, password, name, active, createdAt, updatedAt)
-                    VALUES (10, 'john.doe', '${DEFAULT_PASSWORD_HASH}', 'John Doe', 1, NOW(), NOW());
+                INSERT INTO user (id, username, name, active, createdAt, updatedAt)
+                    VALUES (10, 'john.doe', 'John Doe', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+            `);
+            cy.task('db:sql', `
+                INSERT INTO userPassword (user, password, createdAt, updatedAt)
+                    VALUES (10, '${DEFAULT_PASSWORD_HASH}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
             `);
         },
     },
@@ -22,8 +26,12 @@ export const USERS = {
         name:     'Robert Smith',
         insert() {
             cy.task('db:sql', `
-                INSERT INTO user (id, username, password, name, active, createdAt, updatedAt)
-                    VALUES (11, 'robert.smith', '${DEFAULT_PASSWORD_HASH}', 'Robert Smith', 1, NOW(), NOW());
+                INSERT INTO user (id, username, name, active, createdAt, updatedAt)
+                    VALUES (11, 'robert.smith', 'Robert Smith', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+            `);
+            cy.task('db:sql', `
+                INSERT INTO userPassword (user, password, createdAt, updatedAt)
+                    VALUES (11, '${DEFAULT_PASSWORD_HASH}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
             `);
         },
     },
@@ -35,8 +43,12 @@ export const USERS = {
         name:     'Sarah Hidden',
         insert() {
             cy.task('db:sql', `
-                INSERT INTO user (id, username, password, name, active, hidden, createdAt, updatedAt)
-                    VALUES (12, 'sarah.hidden', '${DEFAULT_PASSWORD_HASH}', 'Sarah Hidden', 1, 1, NOW(), NOW());
+                INSERT INTO user (id, username, name, active, hidden, createdAt, updatedAt)
+                    VALUES (12, 'sarah.hidden', 'Sarah Hidden', 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+            `);
+            cy.task('db:sql', `
+                INSERT INTO userPassword (user, password, createdAt, updatedAt)
+                    VALUES (12, '${DEFAULT_PASSWORD_HASH}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
             `);
         },
     },
@@ -48,8 +60,12 @@ export const USERS = {
         name:     'Mike Inactive',
         insert() {
             cy.task('db:sql', `
-                INSERT INTO user (id, username, password, name, active, createdAt, updatedAt)
-                    VALUES (13, 'mike.inactive', '${DEFAULT_PASSWORD_HASH}', 'Mike Inactive', 0, NOW(), NOW());
+                INSERT INTO user (id, username, name, active, createdAt, updatedAt)
+                    VALUES (13, 'mike.inactive', 'Mike Inactive', 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+            `);
+            cy.task('db:sql', `
+                INSERT INTO userPassword (user, password, createdAt, updatedAt)
+                    VALUES (13, '${DEFAULT_PASSWORD_HASH}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
             `);
         },
     },
@@ -61,11 +77,11 @@ export const EVENTS = {
         insert() {
             cy.task('db:sql', `
                 INSERT INTO event (id, type, date, name, createdAt, updatedAt)
-                    VALUES (1, 1, '2022-02-16T12:00:00', 'Lasagna', NOW(), NOW());
+                    VALUES (1, 1, '2022-02-16T12:00:00', 'Lasagna', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
             `);
             cy.task('db:sql', `
                 INSERT INTO lunch (event, pointsCost, vegetarianMoneyFactor, participationFlatRate, createdAt, updatedAt)
-                    VALUES (1, 8, 0.75, NULL, NOW(), NOW());
+                    VALUES (1, 8, 0.75, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
             `);
         },
     },
@@ -75,11 +91,11 @@ export const EVENTS = {
         insert() {
             cy.task('db:sql', `
                 INSERT INTO event (id, type, date, name, createdAt, updatedAt)
-                    VALUES (2, 2, '2022-02-17T12:00:00', 'Groceries', NOW(), NOW());
+                    VALUES (2, 2, '2022-02-17T12:00:00', 'Groceries', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
             `);
             cy.task('db:sql', `
                 INSERT INTO lunch (event, createdAt, updatedAt)
-                    VALUES (2, NOW(), NOW());
+                    VALUES (2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
             `);
         },
     },

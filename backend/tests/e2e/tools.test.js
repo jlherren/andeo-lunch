@@ -21,12 +21,7 @@ beforeEach(async () => {
     });
     await andeoLunch.waitReady();
     request = supertest.agent(andeoLunch.listen());
-    user = await Models.User.create({
-        username: 'test-user-1',
-        password: Helper.passwordHash,
-        active:   true,
-        name:     'Test User',
-    });
+    user = await Helper.createUser('test-user-1');
     let response = await request.post('/api/account/login')
         .send({username: user.username, password: Helper.password});
     let jwt = response.body.token;

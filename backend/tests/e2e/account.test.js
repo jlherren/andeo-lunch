@@ -7,6 +7,7 @@ const AndeoLunch = require('../../src/andeoLunch');
 const ConfigProvider = require('../../src/configProvider');
 const Models = require('../../src/db/models');
 const AuthUtils = require('../../src/authUtils');
+const Helper = require('./helper');
 
 /** @type {AndeoLunch|null} */
 let andeoLunch = null;
@@ -23,17 +24,13 @@ beforeEach(async () => {
         quiet:  true,
     });
     await andeoLunch.waitReady();
-    [user, inactiveUser] = await Models.User.bulkCreate([{
-        username: 'testuser',
+    user = await Helper.createUser('testuser', {
         password: await AuthUtils.hashPassword('abc123'),
-        active:   true,
-        name:     'Test User',
-    }, {
-        username: 'inactiveuser',
+    });
+    inactiveUser = await Helper.createUser('inactiveuser', {
         password: await AuthUtils.hashPassword('qwe456'),
         active:   false,
-        name:     'Inactive User',
-    }]);
+    });
     request = supertest(andeoLunch.listen());
 });
 
