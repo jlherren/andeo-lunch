@@ -122,6 +122,10 @@ const routes = [
         component: () => import('@/views/admin/Users'),
     },
     {
+        path:      '/admin/users/:id(\\d+)',
+        component: () => import('@/views/admin/UserEdit'),
+    },
+    {
         path:      '/tools',
         component: () => import('@/views/tools/Tools'),
     },

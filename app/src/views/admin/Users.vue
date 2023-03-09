@@ -28,34 +28,10 @@
                 </template>
             </v-simple-table>
         </v-container>
-
-        <v-dialog v-model="dialog" max-width="600">
-            <v-card>
-                <v-form ref="form" :disabled="isBusy" @submit.prevent="save">
-                    <v-card-title>
-                        Edit {{ editName }}
-                    </v-card-title>
-                    <v-card-text>
-                        <v-text-field v-model="editUsername" label="Username" disabled/>
-                        <v-text-field v-model="editName" label="Display name" :rules="nameRules"/>
-                        <v-checkbox v-model="editActive" label="Active" hint="Allow user to log in and use the app" persistent-hint/>
-                        <v-checkbox v-model="editHidden" label="Hidden" hint="Hide the user from most lists" persistent-hint/>
-                        <v-checkbox v-model="editRestrictEdit" label="Restrict editing events" hint="Do not allow editing events far in the past" persistent-hint/>
-                        <number-field v-model="editMaxPastDaysEdit" hint="Number of days into the past to allow editing events" :disabled="!editRestrictEdit"/>
-                    </v-card-text>
-                    <v-card-actions>
-                        <v-btn text @click="dialog = false" :disabled="isBusy">Cancel</v-btn>
-                        <v-spacer/>
-                        <v-btn type="submit" :disabled="isBusy" color="primary">Save</v-btn>
-                    </v-card-actions>
-                </v-form>
-            </v-card>
-        </v-dialog>
     </v-main>
 </template>
 
 <script>
-    import NumberField from '@/components/NumberField.vue';
     import ShyProgress from '@/components/ShyProgress.vue';
     import TheAppBar from '@/components/TheAppBar.vue';
 
@@ -63,26 +39,14 @@
         name: 'Users',
 
         components: {
-            NumberField,
             ShyProgress,
             TheAppBar,
         },
 
         data() {
             return {
-                users:               null,
-                dialog:              false,
-                editId:              0,
-                editUsername:        '',
-                editName:            '',
-                editActive:          false,
-                editHidden:          false,
-                editRestrictEdit:    false,
-                editMaxPastDaysEdit: null,
-                isBusy:              true,
-                nameRules:           [
-                    value => !!value || 'A display name is required',
-                ],
+                users:  null,
+                isBusy: true,
             };
         },
 
@@ -96,15 +60,7 @@
                 if (this.isBusy) {
                     return;
                 }
-
-                this.editId = user.id;
-                this.editUsername = user.username;
-                this.editName = user.name;
-                this.editActive = user.active;
-                this.editHidden = user.hidden;
-                this.editRestrictEdit = user.maxPastDaysEdit !== null;
-                this.editMaxPastDaysEdit = user.maxPastDaysEdit ?? 30;
-                this.dialog = true;
+                this.$router.push(`/admin/users/${user.id}`);
             },
 
             getFlags(user) {
@@ -116,26 +72,6 @@
                     flags.push('Hidden');
                 }
                 return flags.join(', ');
-            },
-
-            async save() {
-                if (!this.$refs.form.validate()) {
-                    return;
-                }
-                this.isBusy = true;
-                try {
-                    await this.$store().adminSaveUser({
-                        id:              this.editId,
-                        name:            this.editName,
-                        active:          this.editActive,
-                        hidden:          this.editHidden,
-                        maxPastDaysEdit: this.editRestrictEdit ? this.editMaxPastDaysEdit : null,
-                    });
-                    this.dialog = false;
-                    this.users = await this.$store().adminFetchUsers();
-                } finally {
-                    this.isBusy = false;
-                }
             },
         },
     };
