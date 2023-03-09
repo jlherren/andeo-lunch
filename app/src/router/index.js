@@ -122,6 +122,10 @@ const routes = [
         component: () => import('@/views/admin/Users'),
     },
     {
+        path:      '/admin/users/new',
+        component: () => import('@/views/admin/UserCreate'),
+    },
+    {
         path:      '/admin/users/:id(\\d+)',
         component: () => import('@/views/admin/UserEdit'),
     },

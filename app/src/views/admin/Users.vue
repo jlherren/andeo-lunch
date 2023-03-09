@@ -2,6 +2,10 @@
     <v-main>
         <the-app-bar sub-page>
             Users
+
+            <template #buttons>
+                <dynamic-button icon="$icons.plus" label="Add" @click="createUser" :disabled="isBusy"/>
+            </template>
         </the-app-bar>
 
         <shy-progress v-if="users === null"/>
@@ -32,6 +36,7 @@
 </template>
 
 <script>
+    import DynamicButton from '@/components/DynamicButton.vue';
     import ShyProgress from '@/components/ShyProgress.vue';
     import TheAppBar from '@/components/TheAppBar.vue';
 
@@ -39,6 +44,7 @@
         name: 'Users',
 
         components: {
+            DynamicButton,
             ShyProgress,
             TheAppBar,
         },
@@ -56,6 +62,10 @@
         },
 
         methods: {
+            createUser() {
+                this.$router.push('/admin/users/new');
+            },
+
             edit(user) {
                 if (this.isBusy) {
                     return;

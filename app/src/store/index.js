@@ -514,5 +514,14 @@ export let useStore = defineStore('main', {
         async adminSaveUser({id, ...user}) {
             await Backend.post(`/admin/users/${id}`, user);
         },
+
+        /**
+         * @param {Object} user
+         * @returns {Promise<number>}
+         */
+        async adminCreateUser(user) {
+            let response = await Backend.post('/admin/users', user);
+            return response.data.userId;
+        },
     },
 });
