@@ -31,7 +31,7 @@ beforeEach(async () => {
         password: await AuthUtils.hashPassword('qwe456'),
         active:   false,
     });
-    request = supertest(andeoLunch.listen());
+    request = supertest.agent(andeoLunch.listen());
 });
 
 afterEach(async () => {

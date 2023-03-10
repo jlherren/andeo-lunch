@@ -84,6 +84,10 @@ class UserPassword extends Model {
 class Permission extends Model {
 }
 
+/**
+ * @property {number} user
+ * @property {number} permission
+ */
 class UserPermission extends Model {
 }
 
