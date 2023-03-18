@@ -49,6 +49,7 @@ export const icons = {
     preferences:    mdi.mdiTune,
     special:        mdi.mdiPartyPopper,
     stats:          mdi.mdiChartBar,
+    sus:            'm16 6c2 0 4 2 4 4s-2 4-4 4c0 0 2-2 2-4s-2-4-2-4zm-9 3v9c-1 0-2-1-2-2v-5c0-1 1-2 2-2zm5-1c-.5 0-1 .5-1 1v2c0 .5 0 1 1 1h4c1 0 2-1 2-2s-1-2-2-2zm-4 12 0-12c0-3 2-5 5-5s5 2 5 5v12c0 1-1 2-2 2-1 0-2-1-2-2v-2h-2v2c0 1-1 2-2 2-1 0-2-1-2-2z',
     tools:          mdi.mdiTools,
     transferCustom: mdi.mdiCogs,
     transferFine:   mdi.mdiAccountAlert,

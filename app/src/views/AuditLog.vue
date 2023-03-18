@@ -3,6 +3,7 @@
         <the-app-bar>
             Audit log
             <template #buttons>
+                <dynamic-button label="Sus" :icon="$icons.sus" :color="sus ? 'primary' : null" @click="toggleSus"/>
                 <dynamic-button label="Refresh" :icon="$icons.refresh" @click="refresh"/>
             </template>
         </the-app-bar>
@@ -102,6 +103,7 @@
         data() {
             return {
                 loading: true,
+                sus:     false,
             };
         },
 
@@ -114,14 +116,19 @@
         computed: {
             audits() {
                 let audits = this.$store().audits;
-                return audits.map((audit, i) => {
+                audits = audits.map((audit, i) => {
                     return {
                         ...audit,
                         display: AUDIT_TYPES[audit.type] ?? audit.type,
                         details: this.getDetails(audit),
+                        sus:     this.isSus(audit),
                         class:   i % 2 ? 'odd' : null,
                     };
                 });
+                if (this.sus) {
+                    audits = audits.filter(audit => audit.sus);
+                }
+                return audits;
             },
         },
 
@@ -135,6 +142,21 @@
                     let element = this.$refs.scroll.$el;
                     element.scrollTop = element.scrollHeight;
                 });
+            },
+
+            isSus(audit) {
+                if (audit.affectedUserId !== null && audit.affectedUserId !== audit.actingUserId) {
+                    return true;
+                }
+                if (audit.type.match(/^participation\./u) && audit.eventDate) {
+                    let [typeBefore, typeAfter] = this.getBeforeAfterParticipationType(audit);
+                    return typeBefore
+                        && typeAfter
+                        && typeBefore !== typeAfter
+                        && (OPT_IN_TYPES.includes(typeBefore) || OPT_IN_TYPES.includes(typeAfter))
+                        && DateUtils.previousMonday(audit.eventDate) < audit.date;
+                }
+                return false;
             },
 
             getDetails(audit) {
@@ -279,6 +301,10 @@
                 await this.$store().fetchAuditLog(true);
                 this.loading = false;
                 this.scrollToBottom();
+            },
+
+            toggleSus() {
+                this.sus = !this.sus;
             },
         },
     };
