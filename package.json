@@ -1,6 +1,6 @@
 {
     "name": "andeo-lunch",
-    "version": "1.4.7",
+    "version": "1.4.8",
     "license": "GPL-3.0-or-later",
     "private": true,
     "workspaces": [
