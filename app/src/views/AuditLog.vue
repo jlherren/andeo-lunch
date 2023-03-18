@@ -41,6 +41,7 @@
     import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
     import Vue from 'vue';
+    import susAudio from '@/media/sus.mp3';
 
     const AUDIT_TYPES = {
         'event.create':         'Event created',
@@ -305,6 +306,18 @@
 
             toggleSus() {
                 this.sus = !this.sus;
+                if (!this.sus) {
+                    return;
+                }
+                let suspendUntil = localStorage.getItem('sus');
+                if (suspendUntil !== null && parseInt(suspendUntil, 10) > Date.now()) {
+                    return;
+                }
+                localStorage.setItem('sus', (Date.now() + 60 * 60 * 1000).toString());
+                if (Math.random() < 0.1) {
+                    let audio = new Audio(susAudio);
+                    audio.addEventListener('canplay', () => audio.play());
+                }
             },
         },
     };
