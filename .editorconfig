@@ -17,7 +17,7 @@ ij_formatter_tags_enabled = true
 ij_visual_guides = 120
 ij_wrap_on_typing = false
 
-[{*.cjs, *.js, *.vue}]
+[{*.cjs,*.js,*.vue}]
 ij_javascript_align_imports = false
 ij_javascript_align_multiline_array_initializer_expression = true
 ij_javascript_align_multiline_binary_operation = false
@@ -181,7 +181,7 @@ ij_javascript_while_brace_force = always
 ij_javascript_while_on_new_line = false
 ij_javascript_wrap_comments = false
 
-[{.babelrc, .stylelintrc, .eslintrc, *.json}]
+[{.babelrc,.stylelintrc,.eslintrc,*.json}]
 ij_json_keep_blank_lines_in_code = 1
 ij_json_keep_indents_on_empty_lines = false
 ij_json_keep_line_breaks = true
@@ -193,7 +193,7 @@ ij_json_spaces_within_braces = false
 ij_json_spaces_within_brackets = false
 ij_json_wrap_long_lines = false
 
-[{*.markdown, *.md, todo}]
+[{*.markdown,*.md,todo}]
 ij_markdown_force_one_space_after_blockquote_symbol = true
 ij_markdown_force_one_space_after_header_symbol = true
 ij_markdown_force_one_space_after_list_bullet = true
@@ -227,7 +227,7 @@ ij_vue_keep_indents_on_empty_lines = false
 ij_vue_spaces_within_interpolation_expressions = true
 ij_vue_tab_width = 4
 
-[{*.html, *.vue}]
+[{*.html,*.vue}]
 ij_visual_guides = none
 ij_html_add_new_line_before_tags = body, div, p, form, h1, h2, h3
 ij_html_align_attributes = true
@@ -254,7 +254,7 @@ ij_html_space_around_equality_in_attribute = false
 ij_html_space_inside_empty_tag = false
 ij_html_text_wrap = off
 
-[{*.yaml, *.yml}]
+[{*.yaml,*.yml}]
 ij_visual_guides = none
 ij_yaml_align_values_properties = do_not_align
 ij_yaml_autoinsert_sequence_marker = true
@@ -267,7 +267,7 @@ ij_yaml_space_before_colon = false
 ij_yaml_spaces_within_braces = false
 ij_yaml_spaces_within_brackets = false
 
-[{*.markdown, *.md, todo}]
+[{*.markdown,*.md,todo}]
 max_line_length = 80
 ij_visual_guides = none
 ij_wrap_on_typing = true
