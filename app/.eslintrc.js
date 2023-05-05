@@ -377,6 +377,14 @@ module.exports = {
         'jsdoc/require-param-description':    'off',
         'jsdoc/require-returns-description':  'off',
         'jsdoc/require-property-description': 'off',
+        'jsdoc/tag-lines':                    [
+            'warn',
+            'any',
+            {
+                startLines: 1,
+                endLines:   0,
+            },
+        ],
 
         'vue/script-indent':                 [
             'warn',

@@ -2,19 +2,31 @@ const {USERS} = require('../helpers/sql');
 
 /**
  * @param {string} name
+ * @returns {Cypress.Chainable<HTMLInputElement>}
+ */
+function getItem(name) {
+    // Not sure how to select by value, since input[value=...] does checks attributes, not properties.
+    return cy.get('[role=listitem] input[type=text]:not([placeholder^="Add item"])')
+        .filter((i, element) => element.value === name)
+        .should('have.length', 1);
+}
+
+/**
+ * @param {string} name
  */
 function addItem(name) {
     cy.get('[role=listitem] input[placeholder^="Add item"]')
         .type(`${name}{enter}`);
+    // Wait for the item to appear
+    getItem(name);
 }
 
 /**
  * @param {string} name
  */
 function checkItem(name) {
-    // Not sure how to select by value, since input[value=...] does checks attributes, not properties.
-    cy.get('[role=listitem] input[type=text]')
-        .each(input => {
+    getItem(name)
+        .then(input => {
             if (input.val() !== name) {
                 return;
             }
@@ -23,7 +35,10 @@ function checkItem(name) {
                 .find('input[type=checkbox]')
                 .should('not.be.disabled')
                 .should('not.be.checked')
-                .click({force: true})
+                .click({force: true});
+            cy.wrap(input)
+                .closest('[role=listitem]')
+                .find('input[type=checkbox]')
                 .should('be.checked');
         });
 }

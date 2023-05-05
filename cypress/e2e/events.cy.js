@@ -127,8 +127,7 @@ describe('Create events', () => {
         cy.followLabel('Name')
             .type('Gratin');
         cy.followLabel('Participation cost')
-            .clear()
-            .type('0.5');
+            .type('{selectall}{backspace}0.5');
         cy.contains('button', 'Save')
             .click();
         cy.contains('.v-list-item', 'Gratin')
