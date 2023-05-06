@@ -10,7 +10,8 @@
             </h1>
 
             <p class="text-body-2">
-                App version: {{ version }}
+                App version: {{ version }}<br>
+                Build date: {{ buildDate }}
             </p>
 
             <p class="text-body-2">
@@ -62,6 +63,15 @@
 
             appTitle() {
                 return process.env.VUE_APP_BRANDING_TITLE;
+            },
+
+            buildDate() {
+                let buildDate = useStore().buildDate;
+                buildDate = new Date();
+                if (!buildDate) {
+                    return 'No build date';
+                }
+                return buildDate.toISOString();
             },
         },
     };

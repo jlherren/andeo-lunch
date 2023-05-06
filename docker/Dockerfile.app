@@ -1,6 +1,7 @@
 FROM node:18.15-bullseye-slim AS app-build
 ARG VUE_APP_BACKEND_URL
 ARG VUE_APP_BRANDING_TITLE
+ARG VUE_APP_BUILD_TIMESTAMP
 WORKDIR /build
 # Copy only what is necessary for installing Yarn packages, to improve caching.
 COPY package.json yarn.lock .yarnrc.yml ./

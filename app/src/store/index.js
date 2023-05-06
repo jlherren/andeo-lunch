@@ -10,7 +10,8 @@ export let useStore = defineStore('main', {
         globalSnackbar: null,
 
         // System information
-        version: PackageJson.version,
+        version:   PackageJson.version,
+        buildDate: process.env.VUE_APP_BUILD_TIMESTAMP ? new Date(process.env.VUE_APP_BUILD_TIMESTAMP) : null,
 
         payUpDefaultRecipient: null,
         defaultFlatRate:       null,
