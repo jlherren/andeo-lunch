@@ -27,7 +27,7 @@
         </v-container>
 
         <v-list v-if="absences != null && absences.length">
-            <v-list-item v-for="absence of absences" :key="absence.id">
+            <v-list-item v-for="absence of absences" :key="absence.id" :disabled="absence.past">
                 <v-list-item-icon>
                     <v-icon>{{ $icons.absence }}</v-icon>
                 </v-list-item-icon>
@@ -124,11 +124,28 @@
 
         computed: {
             absences() {
-                return this.$store().absences(this.$store().ownUserId)?.map(absence => {
+                let absences = this.$store().absences(this.$store().ownUserId);
+                if (absences === null) {
+                    return null;
+                }
+                absences.sort((a, b) => {
+                    if (a.start < b.start) {
+                        return 1;
+                    }
+                    if (a.start > b.start) {
+                        return -1;
+                    }
+                    return 0;
+                });
+                let now = Date.now();
+                return absences.map(absence => {
+                    let date = new Date(absence.end);
+                    date.setHours(23, 59, 59, 999);
                     return {
                         id:    absence.id,
                         start: absence.start ? absence.start : '\u221e',
                         end:   absence.end ? absence.end : '\u221e',
+                        past:  date.getTime() < now,
                     };
                 });
             },
