@@ -17,10 +17,6 @@
                 However, it will never affect already existing events.
             </p>
 
-            <p class="text-body-1">
-                Absences cannot be created here yet, please contact an admin for creating absences.
-            </p>
-
             <v-banner elevation="2" single-line :icon="$icons.information" v-if="absences && absences.length === 0">
                 You have no absences
             </v-banner>
