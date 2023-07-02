@@ -10,8 +10,6 @@ if [[ -z "$VUE_APP_BACKEND_URL" || -z "$VUE_APP_BRANDING_TITLE" ]]; then
     exit 1
 fi
 
-export VUE_APP_BUILD_TIMESTAMP=$(date +%s)
-
 cd $(dirname "$0")/..
 
 docker build \
@@ -19,7 +17,6 @@ docker build \
     -t andeo-lunch-app${DOCKER_IMAGE_SUFFIX:-} \
     --build-arg VUE_APP_BACKEND_URL="$VUE_APP_BACKEND_URL" \
     --build-arg VUE_APP_BRANDING_TITLE="$VUE_APP_BRANDING_TITLE" \
-    --build-arg VUE_APP_BUILD_TIMESTAMP="$VUE_APP_BUILD_TIMESTAMP" \
     -f docker/Dockerfile.app \
     .
 

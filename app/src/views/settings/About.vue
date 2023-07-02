@@ -67,11 +67,10 @@
 
             buildDate() {
                 let buildDate = useStore().buildDate;
-                buildDate = new Date();
                 if (!buildDate) {
                     return 'No build date';
                 }
-                return buildDate.toISOString();
+                return `${buildDate.toISOString().slice(0, 19)}Z`;
             },
         },
     };

@@ -11,7 +11,7 @@ export let useStore = defineStore('main', {
 
         // System information
         version:   PackageJson.version,
-        buildDate: process.env.VUE_APP_BUILD_TIMESTAMP ? new Date(process.env.VUE_APP_BUILD_TIMESTAMP) : null,
+        buildDate: process.env.VUE_APP_BUILD_TIMESTAMP ? new Date(+process.env.VUE_APP_BUILD_TIMESTAMP * 1000) : null,
 
         payUpDefaultRecipient: null,
         defaultFlatRate:       null,
