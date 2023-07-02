@@ -35,11 +35,12 @@ class User extends Model {
     /**
      * @param {string} secret
      * @param {object} [options]
+     * @param {object} [extraPayload] Only for testing.
      * @returns {Promise<string>}
      */
-    generateToken(secret, options) {
+    generateToken(secret, options, extraPayload = {}) {
         // sign() is supposed to return a promise, but it doesn't
-        return Promise.resolve(jsonWebToken.sign({id: this.id}, secret, options));
+        return Promise.resolve(jsonWebToken.sign({...extraPayload, id: this.id}, secret, options));
     }
 
     /**

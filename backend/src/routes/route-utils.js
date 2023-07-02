@@ -41,32 +41,34 @@ exports.getAuthorizationToken = function (request) {
 };
 
 /**
- * Get the user from the request, if any
+ * Populate ctx.user with the user if the user authenticates in a valid way; or with null otherwise.
  *
  * @param {Application.Context} ctx
- * @returns {Promise<User|null>}
  */
-exports.getUser = async function (ctx) {
+exports.populateUser = async function (ctx) {
+    ctx.user = null;
     let token = exports.getAuthorizationToken(ctx.request);
     if (token === null) {
-        return null;
+        return;
     }
     let secret = await AuthUtils.getSecret();
     let userId = null;
+    let tokenData = null;
     try {
-        userId = (await JsonWebToken.verify(token, secret)).id;
+        tokenData = await JsonWebToken.verify(token, secret);
+        userId = tokenData.id;
     } catch (err) {
         // Happens on malformed tokens
-        return null;
+        return;
     }
     let user = await Models.User.findByPk(userId, {
         include: 'Permissions',
     });
-    /** @type {User} */
     if (user !== null && user.active) {
-        return user;
+        ctx.user = user;
+        ctx.permissions = user.Permissions.map(permission => permission.name);
+        ctx.tokenData = tokenData;
     }
-    return null;
 };
 
 /**
@@ -76,11 +78,8 @@ exports.getUser = async function (ctx) {
  * @returns {Promise<void>}
  */
 exports.requireUser = async function requireUser(ctx) {
-    let user = await exports.getUser(ctx);
-    if (user !== null) {
-        ctx.user = user;
-        ctx.permissions = user.Permissions.map(permission => permission.name);
-    } else {
+    await exports.populateUser(ctx);
+    if (ctx.user === null) {
         ctx.throw(401, 'No authentication token provided');
     }
 };

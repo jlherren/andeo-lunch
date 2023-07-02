@@ -164,6 +164,18 @@ describe('account check route', () => {
         expect(response.body.shouldRenew).toBe(false);
     });
 
+    it('works when providing a valid token close to expiry', async () => {
+        // Create a valid token that expires soon
+        let secret = await AuthUtils.getSecret();
+        let thirtyDaysAgo = Math.floor(Date.now() / 1000) - 30 * 24 * 60 * 60;
+        let token = await user.generateToken(secret, {expiresIn: '31 days'}, {iat: thirtyDaysAgo});
+        let response = await request.get('/api/account/check').set('Authorization', `Bearer ${token}`);
+        expect(response.status).toBe(200);
+        expect(response.body.userId).toBe(user.id);
+        expect(response.body.username).toBe('testuser');
+        expect(response.body.shouldRenew).toBe(true);
+    });
+
     it('returns permissions on valid token', async () => {
         let permission = await Models.Permission.create({name: 'admin'});
         await Models.UserPermission.create({user: user.id, permission: permission.id});

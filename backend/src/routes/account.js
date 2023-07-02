@@ -1,7 +1,6 @@
 'use strict';
 
 const Joi = require('joi');
-const JsonWebToken = require('jsonwebtoken');
 
 const Models = require('../db/models');
 const RouteUtils = require('./route-utils');
@@ -65,20 +64,13 @@ async function renew(ctx) {
  * @returns {Promise<void>}
  */
 async function check(ctx) {
-    let user = await RouteUtils.getUser(ctx);
+    await RouteUtils.populateUser(ctx);
     let shouldRenew = false;
-    if (user !== null) {
-        let token = RouteUtils.getAuthorizationToken(ctx.request);
-        let secret = await AuthUtils.getSecret();
-        try {
-            let tokenData = await JsonWebToken.verify(token, secret);
-            let lifetime = (Date.now() / 1000 - tokenData.iat) / (tokenData.exp - tokenData.iat);
-            if (lifetime > 0.25) {
-                // 25% of token lifetime has passed, ask the client to renew the token
-                shouldRenew = true;
-            }
-        } catch (err) {
-            // Happens on malformed tokens
+    if (ctx.user !== null) {
+        let lifetime = (Date.now() / 1000 - ctx.tokenData.iat) / (ctx.tokenData.exp - ctx.tokenData.iat);
+        if (lifetime > 0.25) {
+            // 25% of token lifetime has passed, ask the client to renew the token
+            shouldRenew = true;
         }
     }
 
@@ -91,10 +83,10 @@ async function check(ctx) {
     }
 
     ctx.body = {
-        userId:      user?.id ?? null,
-        username:    user?.username ?? null,
+        userId:      ctx.user?.id ?? null,
+        username:    ctx.user?.username ?? null,
         shouldRenew,
-        permissions: (user?.Permissions ?? []).map(permission => permission.name),
+        permissions: (ctx.user?.Permissions ?? []).map(permission => permission.name),
     };
 }
 
