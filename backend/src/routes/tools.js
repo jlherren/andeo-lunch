@@ -41,7 +41,7 @@ async function versions(ctx) {
         group:      'version',
     });
 
-    rows.sort(naturalCompare);
+    rows.sort((a, b) => naturalCompare(a.version, b.version));
 
     ctx.body = {
         versions: rows,
