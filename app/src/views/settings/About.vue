@@ -11,7 +11,8 @@
 
             <p class="text-body-2">
                 App version: {{ version }}<br>
-                Build date: {{ buildDate }}
+                Build date: {{ buildDate }}<br>
+                Build commit: {{ buildCommit }}
             </p>
 
             <p class="text-body-2">
@@ -59,6 +60,7 @@
             ...mapState(useStore, [
                 'ownUser',
                 'version',
+                'buildCommit',
             ]),
 
             appTitle() {
