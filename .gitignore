@@ -2,14 +2,7 @@
 /.vscode
 /node_modules
 
-# https://yarnpkg.com/getting-started/qa#which-files-should-be-gitignored
-/.yarn/*
-!/.yarn/patches
-!/.yarn/releases
-!/.yarn/plugins
-!/.yarn/sdks
-!/.yarn/versions
-/.pnp.*
+/.yarn/install-state.gz
 
 /app/.env
 /app/cypress.env.json

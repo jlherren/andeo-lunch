@@ -6,8 +6,7 @@ WORKDIR /build
 # Copy only what is necessary for installing Yarn packages, to improve caching.
 COPY package.json yarn.lock .yarnrc.yml ./
 COPY app/package.json app/package.json
-COPY .yarn/releases .yarn/releases
-COPY .yarn/plugins .yarn/plugins
+COPY .yarn .yarn
 RUN yarn workspaces focus andeo-lunch-app
 COPY app app
 RUN yarn workspace andeo-lunch-app build

@@ -3,8 +3,7 @@ WORKDIR /build
 # Copy only what is necessary for installing Yarn packages, to improve caching.
 COPY package.json yarn.lock .yarnrc.yml ./
 COPY backend/package.json backend/package.json
-COPY .yarn/releases .yarn/releases
-COPY .yarn/plugins .yarn/plugins
+COPY .yarn .yarn
 RUN yarn workspaces focus --production andeo-lunch-backend
 # Assert that backend/node_modules does not exist.  If it exists, then we must copy it below as well.
 RUN test ! -e backend/node_modules

@@ -3,13 +3,7 @@
 /.vscode
 /node_modules
 
-/.yarn
-!/.yarn/patches
-!/.yarn/releases
-!/.yarn/plugins
-!/.yarn/sdks
-!/.yarn/versions
-/.pnp.*
+/.yarn/install-state.gz
 
 /app/.env
 /app/dist
