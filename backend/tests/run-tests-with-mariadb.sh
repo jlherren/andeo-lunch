@@ -13,12 +13,13 @@ export TEST_DB_PASSWORD=andeolunchtest
 
 cd $(dirname "$0")/..
 
-# MariaDB 10.5 is mostly used for development, 10.6 is used for production.
-
 echo "Removing existing container"
 docker stop "$DB_CONTAINER_NAME" 2> /dev/null || true
 
-for MARIADB_VERSION in 10.5 10.6 10.7 10.8 10.9 10.10; do
+# MariaDB 10.5 is mostly used for development, 10.6 is used for production (it's an LTS version).
+# Versions 10.7, 10.8, 10.9 are already or soon to be end-of-life.  10.11 is an LTS version.
+
+for MARIADB_VERSION in 10.5 10.6 10.10 10.11; do
     echo "Starting MariaDB $MARIADB_VERSION"
     docker run \
         --pull=always \
