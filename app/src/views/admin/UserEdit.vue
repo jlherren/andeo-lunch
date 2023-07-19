@@ -12,6 +12,7 @@
 
         <v-container>
             <v-form ref="form" :disabled="isBusy" @submit.prevent="save">
+                <v-text-field v-model="userId" label="User ID" disabled/>
                 <v-text-field v-model="username" label="Username" disabled/>
                 <v-text-field v-model="name" label="Display name" :rules="nameRules"/>
                 <v-checkbox v-model="active" label="Active" hint="Allow user to log in and use the app" persistent-hint/>
