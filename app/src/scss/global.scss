@@ -62,3 +62,8 @@
 .v-btn {
     box-shadow: none !important;
 }
+
+html {
+    // This is mainly to improve the scrolling behavior within Cypress.
+    scroll-padding-top: 56px + 4px;
+}
