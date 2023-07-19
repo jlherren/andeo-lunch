@@ -153,4 +153,30 @@ describe('Create events', () => {
         cy.contains('Participation flat-rate')
             .should('not.exist');
     });
+
+    it('Test helper regression', () => {
+        // There was a bug where unsetting a helper would still add it as a helper.
+        cy.contains('a', 'Add new lunch')
+            .first()
+            .click();
+        cy.followLabel('Name')
+            .type('Brunch');
+        cy.followLabel('Points')
+            .type('6');
+        cy.contains('button', 'Andeo')
+            .click();
+        cy.contains('button', 'John Doe')
+            .click();
+        cy.contains('button', 'Andeo')
+            .click();
+        cy.contains('button', 'Save')
+            .click();
+        cy.contains('.v-list-item', 'Brunch')
+            .click();
+        cy.contains('.v-list-item:visible', 'John Doe')
+            .contains('.v-chip', '+6');
+        cy.contains('.v-list-item', 'Andeo')
+            .find('.v-chip')
+            .should('not.exist');
+    });
 });

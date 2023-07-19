@@ -184,11 +184,15 @@
 
         methods: {
             isHelper(user) {
-                return this.helpers[user.id];
+                return user.id in this.helpers;
             },
 
             toggleHelper(user) {
-                Vue.set(this.helpers, user.id, !this.helpers[user.id]);
+                if (user.id in this.helpers) {
+                    Vue.delete(this.helpers, user.id);
+                } else {
+                    Vue.set(this.helpers, user.id, null);
+                }
             },
 
             async save() {
