@@ -12,7 +12,7 @@
 
         <v-container>
             <v-form ref="form" :disabled="isBusy" @submit.prevent="save">
-                <v-text-field v-model="username" label="Username" :rules="usernameRules"/>
+                <v-text-field v-model="username" label="Username" :rules="usernameRules" autofocus/>
                 <v-text-field v-model="name" label="Display name" :rules="nameRules"/>
                 <v-text-field type="password" v-model="password" label="Password" :rules="passwordRules"/>
 
