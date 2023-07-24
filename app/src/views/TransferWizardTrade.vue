@@ -101,23 +101,21 @@
                     this.isBusy = true;
 
                     let eventId = await this.$store().saveEvent({
-                        name: 'Trade',
-                        date: new Date(),
-                        type: 'transfer',
+                        name:      'Trade',
+                        date:      new Date(),
+                        type:      'transfer',
+                        transfers: [{
+                            senderId:    this.buyer,
+                            recipientId: this.seller,
+                            amount:      this.money,
+                            currency:    'money',
+                        }, {
+                            senderId:    this.seller,
+                            recipientId: this.buyer,
+                            amount:      this.points,
+                            currency:    'points',
+                        }],
                     });
-
-                    let transfers = [{
-                        senderId:    this.buyer,
-                        recipientId: this.seller,
-                        amount:      this.money,
-                        currency:    'money',
-                    }, {
-                        senderId:    this.seller,
-                        recipientId: this.buyer,
-                        amount:      this.points,
-                        currency:    'points',
-                    }];
-                    await this.$store().saveTransfers({eventId, transfers});
 
                     await this.$router.replace(`/transfers/${eventId}`);
                 } catch (err) {
