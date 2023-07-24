@@ -25,6 +25,14 @@ const discountFactorsSchema = Joi.object({
 });
 const nonNegativeSchema = Joi.number().min(0);
 
+const createTransferSchema = Joi.object({
+    currency:    currencySchema.required(),
+    amount:      nonNegativeSchema.required(),
+    senderId:    Joi.number().required(),
+    recipientId: Joi.number().required(),
+});
+const createTransfersSchema = Joi.array().items(createTransferSchema).required();
+
 const eventCreateSchema = Joi.object({
     name:                  eventNameSchema.required(),
     date:                  Joi.date().required(),
@@ -36,6 +44,7 @@ const eventCreateSchema = Joi.object({
     participationFlatRate: Joi.number().allow(null),
     comment:               Joi.string().allow(''),
     triggerDefaultOptIn:   Joi.boolean().default(true),
+    transfers:             createTransfersSchema.optional(),
 });
 
 const eventUpdateSchema = Joi.object({
@@ -60,14 +69,6 @@ const participationSchema = Joi.object({
         money: nonNegativeSchema,
     }),
 });
-
-const transferSchema = Joi.object({
-    currency:    currencySchema.required(),
-    amount:      nonNegativeSchema.required(),
-    senderId:    Joi.number().required(),
-    recipientId: Joi.number().required(),
-});
-const transfersSchema = Joi.array().items(transferSchema).required();
 
 /**
  * @param {Application.Context} ctx
@@ -119,12 +120,22 @@ function validateEvent(ctx, type, apiEvent) {
         if (apiEvent?.participationFlatRate !== undefined) {
             ctx.throw(400, 'Label events cannot have a participation flat-rate');
         }
+        if (apiEvent?.transfers !== undefined) {
+            ctx.throw(400, 'Label events cannot have transfers');
+        }
     } else if (type === Constants.EVENT_TYPES.SPECIAL) {
         if (apiEvent?.factors?.vegetarian?.money !== undefined) {
             ctx.throw(400, 'Special events cannot have a vegetarian money factor');
         }
         if (apiEvent?.participationFlatRate !== undefined) {
             ctx.throw(400, 'Special events cannot have a participation flat-rate');
+        }
+        if (apiEvent?.transfers !== undefined) {
+            ctx.throw(400, 'Special events cannot have transfers');
+        }
+    } else if (type === Constants.EVENT_TYPES.LUNCH) {
+        if (apiEvent?.transfers !== undefined) {
+            ctx.throw(400, 'Lunch events cannot have transfers');
         }
     }
 }
@@ -237,6 +248,8 @@ async function createEvent(ctx) {
                 comment,
             }, {transaction});
         }
+
+        await createTransfersImpl(ctx, event, apiEvent.transfers ?? [], transaction);
 
         if (apiEvent.triggerDefaultOptIn) {
             await setDefaultOptIns(event, transaction);
@@ -660,7 +673,7 @@ async function getTransferList(ctx) {
  */
 async function createTransfers(ctx) {
     /** @type {Array<ApiTransfer>} */
-    let apiTransfers = RouteUtils.validateBody(ctx, transfersSchema);
+    let apiTransfers = RouteUtils.validateBody(ctx, createTransfersSchema);
     await ctx.sequelize.transaction(async transaction => {
         let event = await loadEventFromParam(ctx, transaction);
 
@@ -668,44 +681,56 @@ async function createTransfers(ctx) {
             ctx.throw(400, 'Label events cannot have transfers');
         }
 
-        let transactionInserts = [];
-        let logEntries = [];
+        assertCanEditDate(ctx, event.date);
 
-        for (let apiTransfer of apiTransfers) {
-            let sender = await loadUser(ctx, apiTransfer.senderId, transaction, true);
-            let recipient = await loadUser(ctx, apiTransfer.recipientId, transaction, true);
+        await createTransfersImpl(ctx, event, apiTransfers, transaction);
+        await TransactionRebuilder.rebuildEvent(transaction, event);
+    });
+    ctx.status = 204;
+}
 
-            // Need to check this after loading the user, since there are two ways to specify the system user
-            if (sender.id === recipient.id) {
-                ctx.throw(400, 'Cannot transfer back to sender');
-            }
+/**
+ * @param {Application.Context} ctx
+ * @param {Event} event
+ * @param {Array<ApiTransfer>} apiTransfers
+ * @param {Transaction} transaction
+ * @returns {Promise<void>}
+ */
+async function createTransfersImpl(ctx, event, apiTransfers, transaction) {
+    let transactionInserts = [];
+    let logEntries = [];
 
-            transactionInserts.push({
-                event:     event.id,
+    for (let apiTransfer of apiTransfers) {
+        let sender = await loadUser(ctx, apiTransfer.senderId, transaction, true);
+        let recipient = await loadUser(ctx, apiTransfer.recipientId, transaction, true);
+
+        // Need to check this after loading the user, since there are two ways to specify the system user
+        if (sender.id === recipient.id) {
+            ctx.throw(400, 'Cannot transfer back to sender');
+        }
+
+        transactionInserts.push({
+            event:     event.id,
+            sender:    sender.id,
+            recipient: recipient.id,
+            amount:    apiTransfer.amount,
+            currency:  Constants.CURRENCY_IDS[apiTransfer.currency],
+        });
+
+        logEntries.push({
+            type:   'transfer.create',
+            event:  event.id,
+            values: {
                 sender:    sender.id,
                 recipient: recipient.id,
                 amount:    apiTransfer.amount,
                 currency:  Constants.CURRENCY_IDS[apiTransfer.currency],
-            });
+            },
+        });
+    }
 
-            logEntries.push({
-                type:   'transfer.create',
-                event:  event.id,
-                values: {
-                    sender:    sender.id,
-                    recipient: recipient.id,
-                    amount:    apiTransfer.amount,
-                    currency:  Constants.CURRENCY_IDS[apiTransfer.currency],
-                },
-            });
-        }
-
-        assertCanEditDate(ctx, event.date);
-        await Models.Transfer.bulkCreate(transactionInserts, {transaction});
-        await TransactionRebuilder.rebuildEvent(transaction, event);
-        await AuditManager.logMultiple(transaction, ctx.user, logEntries);
-    });
-    ctx.status = 204;
+    await Models.Transfer.bulkCreate(transactionInserts, {transaction});
+    await AuditManager.logMultiple(transaction, ctx.user, logEntries);
 }
 
 /**
@@ -716,7 +741,7 @@ async function saveTransfer(ctx) {
     let systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
 
     /** @type {ApiTransfer} */
-    let apiTransfer = RouteUtils.validateBody(ctx, transferSchema);
+    let apiTransfer = RouteUtils.validateBody(ctx, createTransferSchema);
     await ctx.sequelize.transaction(async transaction => {
         let event = await loadEventFromParam(ctx, transaction);
         let transfer = await loadTransferFromParam(ctx, transaction);

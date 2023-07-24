@@ -14,7 +14,9 @@ let request = null;
 /** @type {string|null} */
 let jwt = null;
 /** @type {User} */
-let user = null;
+let user1 = null;
+/** @type {User} */
+let user2 = null;
 
 beforeEach(async () => {
     andeoLunch = new AndeoLunch({
@@ -22,11 +24,12 @@ beforeEach(async () => {
         quiet:  true,
     });
     await andeoLunch.waitReady();
-    user = await Helper.createUser('test-user');
+    user1 = await Helper.createUser('test-user-1');
+    user2 = await Helper.createUser('test-user-2');
     request = supertest.agent(andeoLunch.listen());
     if (jwt === null) {
         let response = await request.post('/api/account/login')
-            .send({username: user.username, password: Helper.password});
+            .send({username: user1.username, password: Helper.password});
         jwt = response.body.token;
     }
     request.set('Authorization', `Bearer ${jwt}`);
@@ -151,6 +154,23 @@ describe('Create events', () => {
         }
     });
 
+    it('Rejects lunch transfers', async () => {
+        let event = {
+            name:      'Lunch',
+            type:      'lunch',
+            date:      '2020-01-15T11:00:00.000Z',
+            transfers: [{
+                senderId:    user1.id,
+                recipientId: user2.id,
+                amount:      10,
+                currency:    'points',
+            }],
+        };
+        let response = await request.post('/api/events').send(event);
+        expect(response.status).toBe(400);
+        expect(response.text).toBe('Lunch events cannot have transfers');
+    });
+
     it('Accepts a label event', async () => {
         let event = {
             name: 'National holiday',
@@ -191,6 +211,23 @@ describe('Create events', () => {
         expect(response.text).toBe('Label events cannot have a vegetarian money factor');
     });
 
+    it('Rejects label transfers', async () => {
+        let event = {
+            name:      'National holiday',
+            type:      'label',
+            date:      '2020-01-15T11:00:00.000Z',
+            transfers: [{
+                senderId:    user1.id,
+                recipientId: user2.id,
+                amount:      10,
+                currency:    'points',
+            }],
+        };
+        let response = await request.post('/api/events').send(event);
+        expect(response.status).toBe(400);
+        expect(response.text).toBe('Label events cannot have transfers');
+    });
+
     it('Rejects special event vegetarian money factor', async () => {
         let event = {
             name:    'Special',
@@ -207,8 +244,25 @@ describe('Create events', () => {
         expect(response.text).toBe('Special events cannot have a vegetarian money factor');
     });
 
+    it('Rejects special transfers', async () => {
+        let event = {
+            name:      'Special',
+            type:      'special',
+            date:      '2020-01-15T11:00:00.000Z',
+            transfers: [{
+                senderId:    user1.id,
+                recipientId: user2.id,
+                amount:      10,
+                currency:    'points',
+            }],
+        };
+        let response = await request.post('/api/events').send(event);
+        expect(response.status).toBe(400);
+        expect(response.text).toBe('Special events cannot have transfers');
+    });
+
     it('Accepts event in the past when edit limit is not reached', async () => {
-        await user.update({maxPastDaysEdit: 5});
+        await user1.update({maxPastDaysEdit: 5});
         let response = await request.post('/api/events').send({
             name: 'Lunch',
             type: 'lunch',
@@ -218,7 +272,7 @@ describe('Create events', () => {
     });
 
     it('Rejects event in the past when edit limit is reached', async () => {
-        await user.update({maxPastDaysEdit: 5});
+        await user1.update({maxPastDaysEdit: 5});
         let response = await request.post('/api/events').send({
             name: 'Lunch',
             type: 'lunch',
@@ -278,7 +332,7 @@ describe('Edit limits', () => {
     });
 
     it('accepts update for past event when edit limit is not reached', async () => {
-        await user.update({maxPastDaysEdit: 6});
+        await user1.update({maxPastDaysEdit: 6});
         let response = await request.post(eventUrl).send({
             name: 'Spaghetti',
         });
@@ -286,7 +340,7 @@ describe('Edit limits', () => {
     });
 
     it('rejects update for past event when edit limit is reached', async () => {
-        await user.update({maxPastDaysEdit: 4});
+        await user1.update({maxPastDaysEdit: 4});
         let response = await request.post(eventUrl).send({
             name: 'Lasagna',
         });
@@ -295,14 +349,14 @@ describe('Edit limits', () => {
     });
 
     it('marks the event as editable when edit limit is not reached', async () => {
-        await user.update({maxPastDaysEdit: 6});
+        await user1.update({maxPastDaysEdit: 6});
         let response = await request.get(eventUrl);
         expect(response.status).toBe(200);
         expect(response.body.event?.canEdit).toBe(true);
     });
 
     it('marks the event as not editable when edit limit is reached', async () => {
-        await user.update({maxPastDaysEdit: 4});
+        await user1.update({maxPastDaysEdit: 4});
         let response = await request.get(eventUrl);
         expect(response.status).toBe(200);
         expect(response.body.event?.canEdit).toBe(false);
@@ -436,7 +490,7 @@ describe('deleting events', () => {
     });
 
     it('deleting an event with participations works', async () => {
-        let response = await request.post(`${eventUrl}/participations/${user.id}`)
+        let response = await request.post(`${eventUrl}/participations/${user1.id}`)
             .send({type: Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OMNIVOROUS]});
         expect(response.status).toBe(204);
 
@@ -458,13 +512,13 @@ describe('deleting events with edit limit', () => {
     });
 
     it('can delete an event when edit limit not reached', async () => {
-        await user.update({maxPastDaysEdit: 6});
+        await user1.update({maxPastDaysEdit: 6});
         let response = await request.delete(eventUrl);
         expect(response.status).toBe(204);
     });
 
     it('cannot delete an event when edit limit reached', async () => {
-        await user.update({maxPastDaysEdit: 4});
+        await user1.update({maxPastDaysEdit: 4});
         let response = await request.delete(eventUrl);
         expect(response.status).toBe(403);
         expect(response.text).toBe('Event is too old for you to edit');
@@ -524,7 +578,7 @@ describe('Event lists with edit limit', () => {
     });
 
     it('Lists events as editable when edit limit is not reached', async () => {
-        await user.update({maxPastDaysEdit: 6});
+        await user1.update({maxPastDaysEdit: 6});
         let response = await request.get('/api/events');
         expect(response.status).toBe(200);
         expect(response.body.events).toHaveLength(1);
@@ -532,7 +586,7 @@ describe('Event lists with edit limit', () => {
     });
 
     it('Lists events as not editable when edit limit is reached', async () => {
-        await user.update({maxPastDaysEdit: 4});
+        await user1.update({maxPastDaysEdit: 4});
         let response = await request.get('/api/events');
         expect(response.status).toBe(200);
         expect(response.body.events).toHaveLength(1);

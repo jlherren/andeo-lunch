@@ -46,6 +46,36 @@ afterEach(async () => {
     await andeoLunch.close();
 });
 
+describe('Create transfer events', () => {
+    it('Accepts a transfer event', async () => {
+        let response = await request.post('/api/events').send(minimalEvent);
+        expect(response.status).toBe(201);
+        let {location} = response.headers;
+        expect(typeof location).toBe('string');
+        expect(location).toMatch(/^\/api\/events\/\d+$/u);
+        response = await request.get(location);
+        expect(response.body.event).toMatchObject(minimalEvent);
+    });
+
+    it('Accepts a transfer event with transfers', async () => {
+        let transfer = {
+            senderId:    user1.id,
+            recipientId: user2.id,
+            amount:      10,
+            currency:    'points',
+        };
+        let response = await request.post('/api/events').send({
+            ...minimalEvent,
+            transfers: [transfer],
+        });
+        expect(response.status).toBe(201);
+        let {location} = response.headers;
+        response = await request.get(`${location}/transfers`);
+        expect(response.body.transfers.length).toBe(1);
+        expect(response.body.transfers[0]).toMatchObject(transfer);
+    });
+});
+
 describe('Manipulate transfer events', () => {
     let eventId = null;
     let eventUrl = null;

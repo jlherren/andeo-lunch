@@ -32,6 +32,7 @@
  * @property {Array<ApiTransfer>} [transfers]
  * @property {string} [comment]
  * @property {number|null} [participationFlatRate]
+ * @property {boolean} [triggerDefaultOptIn]
  */
 
 /**
