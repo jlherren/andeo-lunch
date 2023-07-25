@@ -74,7 +74,7 @@ describe('Create label events', () => {
         };
         let response = await request.post('/api/events').send(event);
         expect(response.status).toBe(400);
-        expect(response.text).toBe('Label events cannot have point costs');
+        expect(response.text).toBe('Event type cannot have point costs');
     });
 
     it('Rejects label vegetarian money factor', async () => {
@@ -88,7 +88,7 @@ describe('Create label events', () => {
         };
         let response = await request.post('/api/events').send(event);
         expect(response.status).toBe(400);
-        expect(response.text).toBe('Label events cannot have a vegetarian money factor');
+        expect(response.text).toBe('Event type cannot have a vegetarian money factor');
     });
 
     it('Rejects label transfers', async () => {
@@ -98,7 +98,7 @@ describe('Create label events', () => {
         };
         let response = await request.post('/api/events').send(event);
         expect(response.status).toBe(400);
-        expect(response.text).toBe('Label events cannot have transfers');
+        expect(response.text).toBe('Event type cannot have transfers');
     });
 });
 
@@ -135,7 +135,7 @@ describe('Updating label events', () => {
     it('Cannot update point costs', async () => {
         let response = await request.post(eventUrl).send({costs: {points: 1}});
         expect(response.status).toBe(400);
-        expect(response.text).toBe('Label events cannot have point costs');
+        expect(response.text).toBe('Event type cannot have point costs');
     });
 
     it('Cannot update money costs', async () => {
@@ -147,12 +147,12 @@ describe('Updating label events', () => {
     it('Cannot update vegetarian money factor', async () => {
         let response = await request.post(eventUrl).send({factors: {vegetarian: {money: 1}}});
         expect(response.status).toBe(400);
-        expect(response.text).toBe('Label events cannot have a vegetarian money factor');
+        expect(response.text).toBe('Event type cannot have a vegetarian money factor');
     });
 
     it('Cannot update participation flat-rate', async () => {
         let response = await request.post(eventUrl).send({participationFlatRate: 0.5});
         expect(response.status).toBe(400);
-        expect(response.text).toBe('Label events cannot have a participation flat-rate');
+        expect(response.text).toBe('Event type cannot have a participation flat-rate');
     });
 });

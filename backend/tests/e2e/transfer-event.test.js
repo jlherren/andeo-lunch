@@ -468,7 +468,7 @@ describe('Label events', () => {
         }];
         let response = await request.post(`${eventUrl}/transfers`).send(data);
         expect(response.status).toBe(400);
-        expect(response.text).toBe('Label events cannot have transfers');
+        expect(response.text).toBe('Event type cannot have transfers');
     });
 });
 

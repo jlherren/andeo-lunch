@@ -112,30 +112,30 @@ async function getSingleParticipation(ctx) {
 function validateEvent(ctx, type, apiEvent) {
     if (type === Constants.EVENT_TYPES.LABEL) {
         if (apiEvent?.costs?.points !== undefined) {
-            ctx.throw(400, 'Label events cannot have point costs');
+            ctx.throw(400, 'Event type cannot have point costs');
         }
         if (apiEvent?.factors?.vegetarian?.money !== undefined) {
-            ctx.throw(400, 'Label events cannot have a vegetarian money factor');
+            ctx.throw(400, 'Event type cannot have a vegetarian money factor');
         }
         if (apiEvent?.participationFlatRate !== undefined) {
-            ctx.throw(400, 'Label events cannot have a participation flat-rate');
+            ctx.throw(400, 'Event type cannot have a participation flat-rate');
         }
         if (apiEvent?.transfers !== undefined) {
-            ctx.throw(400, 'Label events cannot have transfers');
+            ctx.throw(400, 'Event type cannot have transfers');
         }
     } else if (type === Constants.EVENT_TYPES.SPECIAL) {
         if (apiEvent?.factors?.vegetarian?.money !== undefined) {
-            ctx.throw(400, 'Special events cannot have a vegetarian money factor');
+            ctx.throw(400, 'Event type cannot have a vegetarian money factor');
         }
         if (apiEvent?.participationFlatRate !== undefined) {
             ctx.throw(400, 'Special events cannot have a participation flat-rate');
         }
         if (apiEvent?.transfers !== undefined) {
-            ctx.throw(400, 'Special events cannot have transfers');
+            ctx.throw(400, 'Event type cannot have transfers');
         }
     } else if (type === Constants.EVENT_TYPES.LUNCH) {
         if (apiEvent?.transfers !== undefined) {
-            ctx.throw(400, 'Lunch events cannot have transfers');
+            ctx.throw(400, 'Event type cannot have transfers');
         }
     }
 }

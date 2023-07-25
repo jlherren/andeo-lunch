@@ -86,7 +86,7 @@ describe('Create special events', () => {
         };
         let response = await request.post('/api/events').send(event);
         expect(response.status).toBe(400);
-        expect(response.text).toBe('Special events cannot have a vegetarian money factor');
+        expect(response.text).toBe('Event type cannot have a vegetarian money factor');
     });
 
     it('Rejects special transfers', async () => {
@@ -96,6 +96,6 @@ describe('Create special events', () => {
         };
         let response = await request.post('/api/events').send(event);
         expect(response.status).toBe(400);
-        expect(response.text).toBe('Special events cannot have transfers');
+        expect(response.text).toBe('Event type cannot have transfers');
     });
 });
