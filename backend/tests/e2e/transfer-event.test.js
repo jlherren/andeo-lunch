@@ -4,7 +4,6 @@ const supertest = require('supertest');
 
 const AndeoLunch = require('../../src/andeoLunch');
 const ConfigProvider = require('../../src/configProvider');
-const Constants = require('../../src/constants');
 const Helper = require('./helper');
 
 /** @type {AndeoLunch|null} */
@@ -22,9 +21,23 @@ let jwt = null;
 
 const minimalEvent = {
     name: 'Oli\'s bet',
-    type: Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.TRANSFER],
+    type: 'transfer',
     date: '2020-01-15T11:00:00.000Z',
 };
+
+/**
+ * Create a sample transfer
+ *
+ * @returns {object}
+ */
+function makeSampleTransfer() {
+    return {
+        senderId:    user1.id,
+        recipientId: user2.id,
+        amount:      10,
+        currency:    'money',
+    };
+}
 
 beforeEach(async () => {
     andeoLunch = new AndeoLunch({
@@ -58,21 +71,15 @@ describe('Create transfer events', () => {
     });
 
     it('Accepts a transfer event with transfers', async () => {
-        let transfer = {
-            senderId:    user1.id,
-            recipientId: user2.id,
-            amount:      10,
-            currency:    'points',
-        };
         let response = await request.post('/api/events').send({
             ...minimalEvent,
-            transfers: [transfer],
+            transfers: [makeSampleTransfer()],
         });
         expect(response.status).toBe(201);
         let {location} = response.headers;
         response = await request.get(`${location}/transfers`);
         expect(response.body.transfers.length).toBe(1);
-        expect(response.body.transfers[0]).toMatchObject(transfer);
+        expect(response.body.transfers[0]).toMatchObject(makeSampleTransfer());
     });
 });
 
@@ -92,13 +99,8 @@ describe('Manipulate transfer events', () => {
     });
 
     it('can create a transfer', async () => {
-        let transfers = [{
-            senderId:    user1.id,
-            recipientId: user2.id,
-            amount:      10,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
-        }];
-        let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+        let transfer = makeSampleTransfer();
+        let response = await request.post(`${eventUrl}/transfers`).send([transfer]);
         expect(response.status).toBe(204);
 
         // Fetch again
@@ -107,29 +109,20 @@ describe('Manipulate transfer events', () => {
         expect(response.body.transfers.length).toBe(1);
         expect(response.body.transfers[0]).toMatchObject({
             eventId,
-            senderId:    user1.id,
-            recipientId: user2.id,
-            amount:      10,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+            ...transfer,
         });
     });
 
     it('can add another transfer', async () => {
-        let data = [{
-            senderId:    user1.id,
-            recipientId: user2.id,
-            amount:      10,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
-        }];
-        let response = await request.post(`${eventUrl}/transfers`).send(data);
+        let response = await request.post(`${eventUrl}/transfers`).send([makeSampleTransfer()]);
         expect(response.status).toBe(204);
-        data = [{
+        let transfers = [{
             senderId:    user2.id,
             recipientId: user1.id,
             amount:      10,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            currency:    'points',
         }];
-        response = await request.post(`${eventUrl}/transfers`).send(data);
+        response = await request.post(`${eventUrl}/transfers`).send(transfers);
         expect(response.status).toBe(204);
 
         // Fetch again
@@ -143,7 +136,7 @@ describe('Manipulate transfer events', () => {
             senderId:    user1.id,
             recipientId: user2.id,
             amount:      10,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+            currency:    'money',
         }];
         let response = await request.post(`${eventUrl}/transfers`).send(transfers);
         expect(response.status).toBe(204);
@@ -156,7 +149,7 @@ describe('Manipulate transfer events', () => {
             senderId:    user2.id,
             recipientId: user1.id,
             amount:      11,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            currency:    'points',
         };
         response = await request.post(`${eventUrl}/transfers/${transferId}`).send(newTransfer);
         expect(response.status).toBe(204);
@@ -170,18 +163,12 @@ describe('Manipulate transfer events', () => {
             senderId:    user2.id,
             recipientId: user1.id,
             amount:      11,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            currency:    'points',
         });
     });
 
     it('can delete a transfer', async () => {
-        let transfers = [{
-            senderId:    user1.id,
-            recipientId: user2.id,
-            amount:      10,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
-        }];
-        let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+        let response = await request.post(`${eventUrl}/transfers`).send([makeSampleTransfer()]);
         expect(response.status).toBe(204);
 
         response = await request.get(`${eventUrl}/transfers`);
@@ -203,7 +190,7 @@ describe('Manipulate transfer events', () => {
             senderId:    user1.id,
             recipientId: user1.id,
             amount:      10,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+            currency:    'money',
         }];
         let response = await request.post(`${eventUrl}/transfers`).send(transfers);
         expect(response.status).toBe(400);
@@ -216,13 +203,7 @@ describe('Manipulate transfer events', () => {
     });
 
     it('refuses to transfer to itself on update', async () => {
-        let transfers = [{
-            senderId:    user1.id,
-            recipientId: user2.id,
-            amount:      10,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
-        }];
-        let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+        let response = await request.post(`${eventUrl}/transfers`).send([makeSampleTransfer()]);
         expect(response.status).toBe(204);
 
         // Fetch again
@@ -234,7 +215,7 @@ describe('Manipulate transfer events', () => {
             senderId:    user1.id,
             recipientId: user1.id,
             amount:      10,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+            currency:    'money',
         };
         response = await request.post(`${eventUrl}/transfers/${transferId}`).send(newTransfer);
         expect(response.status).toBe(400);
@@ -334,7 +315,7 @@ describe('Balance calculation', () => {
             senderId:    user1.id,
             recipientId: user2.id,
             amount:      10,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+            currency:    'money',
         }];
         let response = await request.post(`${eventUrl}/transfers`).send(transfers);
         expect(response.status).toBe(204);
@@ -351,7 +332,7 @@ describe('Balance calculation', () => {
             senderId:    user1.id,
             recipientId: user2.id,
             amount:      10,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            currency:    'points',
         }];
         let response = await request.post(`${eventUrl}/transfers`).send(transfers);
         expect(response.status).toBe(204);
@@ -368,12 +349,12 @@ describe('Balance calculation', () => {
             senderId:    user1.id,
             recipientId: user2.id,
             amount:      10,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            currency:    'points',
         }, {
             senderId:    user2.id,
             recipientId: user1.id,
             amount:      15,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+            currency:    'money',
         }];
         let response = await request.post(`${eventUrl}/transfers`).send(transfers);
         expect(response.status).toBe(204);
@@ -390,7 +371,7 @@ describe('Balance calculation', () => {
             senderId:    user1.id,
             recipientId: user2.id,
             amount:      10,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+            currency:    'money',
         }];
         let response = await request.post(`${eventUrl}/transfers`).send(transfers);
         expect(response.status).toBe(204);
@@ -403,7 +384,7 @@ describe('Balance calculation', () => {
             senderId:    user1.id,
             recipientId: user2.id,
             amount:      15,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            currency:    'points',
         };
         response = await request.post(`${eventUrl}/transfers/${transferId}`).send(newTransfer);
         expect(response.status).toBe(204);
@@ -420,7 +401,7 @@ describe('Balance calculation', () => {
             senderId:    user1.id,
             recipientId: user2.id,
             amount:      10,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+            currency:    'money',
         }];
         let response = await request.post(`${eventUrl}/transfers`).send(transfers);
         expect(response.status).toBe(204);
@@ -444,7 +425,7 @@ describe('Balance calculation', () => {
             senderId:    user1.id,
             recipientId: user2.id,
             amount:      10,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+            currency:    'money',
         }];
         let response = await request.post(`${eventUrl}/transfers`).send(transfers);
         expect(response.status).toBe(204);
@@ -467,7 +448,7 @@ describe('Label events', () => {
         let eventId = await Helper.createEvent(request, {
             name: 'Test label',
             date: '2020-01-01',
-            type: Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.LABEL],
+            type: 'label',
         });
         eventUrl = `/api/events/${eventId}`;
     });
@@ -483,7 +464,7 @@ describe('Label events', () => {
             senderId:    user1.id,
             recipientId: user2.id,
             amount:      10,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+            currency:    'money',
         }];
         let response = await request.post(`${eventUrl}/transfers`).send(data);
         expect(response.status).toBe(400);
@@ -498,7 +479,7 @@ describe('Pot transfers', () => {
         let eventId = await Helper.createEvent(request, {
             name: 'Test transfer',
             date: '2020-01-01',
-            type: Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.TRANSFER],
+            type: 'transfer',
         });
         eventUrl = `/api/events/${eventId}`;
     });
@@ -508,12 +489,12 @@ describe('Pot transfers', () => {
             senderId:    user1.id,
             recipientId: -1,
             amount:      10,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            currency:    'points',
         }, {
             senderId:    -1,
             recipientId: user2.id,
             amount:      5,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            currency:    'points',
         }];
         let response = await request.post(`${eventUrl}/transfers`).send(transfers);
         expect(response.status).toBe(204);
@@ -531,17 +512,17 @@ describe('Pot transfers', () => {
             senderId:    user1.id,
             recipientId: -1,
             amount:      3,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            currency:    'points',
         }, {
             senderId:    user2.id,
             recipientId: -1,
             amount:      7,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            currency:    'points',
         }, {
             senderId:    -1,
             recipientId: user3.id,
             amount:      2,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            currency:    'points',
         }];
         let response = await request.post(`${eventUrl}/transfers`).send(transfers);
         expect(response.status).toBe(204);
@@ -561,17 +542,17 @@ describe('Pot transfers', () => {
             senderId:    user1.id,
             recipientId: -1,
             amount:      30,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            currency:    'points',
         }, {
             senderId:    -1,
             recipientId: user2.id,
             amount:      1,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            currency:    'points',
         }, {
             senderId:    -1,
             recipientId: user3.id,
             amount:      2,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            currency:    'points',
         }];
         let response = await request.post(`${eventUrl}/transfers`).send(transfers);
         expect(response.status).toBe(204);
@@ -592,72 +573,72 @@ describe('Pot transfers', () => {
             senderId:    -1,
             recipientId: user1.id,
             amount:      5,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            currency:    'points',
         }, {
             senderId:    -1,
             recipientId: user1.id,
             amount:      1,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+            currency:    'money',
         }, {
             senderId:    -1,
             recipientId: user2.id,
             amount:      2,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            currency:    'points',
         }, {
             senderId:    -1,
             recipientId: user2.id,
             amount:      2,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+            currency:    'money',
         }, {
             senderId:    -1,
             recipientId: user3.id,
             amount:      3,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            currency:    'points',
         }, {
             senderId:    -1,
             recipientId: user3.id,
             amount:      5,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+            currency:    'money',
         }, {
             senderId:    user3.id,
             recipientId: user1.id,
             amount:      2,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            currency:    'points',
         }, {
             senderId:    user2.id,
             recipientId: user3.id,
             amount:      3,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+            currency:    'money',
         }, {
             senderId:    user3.id,
             recipientId: -1,
             amount:      4,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            currency:    'points',
         }, {
             senderId:    user3.id,
             recipientId: -1,
             amount:      7,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+            currency:    'money',
         }, {
             senderId:    user2.id,
             recipientId: -1,
             amount:      9,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            currency:    'points',
         }, {
             senderId:    user2.id,
             recipientId: -1,
             amount:      1,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+            currency:    'money',
         }, {
             senderId:    user1.id,
             recipientId: -1,
             amount:      7,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            currency:    'points',
         }, {
             senderId:    user1.id,
             recipientId: -1,
             amount:      16,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+            currency:    'money',
         }];
         let response = await request.post(`${eventUrl}/transfers`).send(transfers);
         expect(response.status).toBe(204);
@@ -677,17 +658,17 @@ describe('Pot transfers', () => {
             senderId:    user1.id,
             recipientId: -1,
             amount:      12,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            currency:    'points',
         }, {
             senderId:    user1.id,
             recipientId: -1,
             amount:      15,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+            currency:    'money',
         }, {
             senderId:    -1,
             recipientId: user2.id,
             amount:      1,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            currency:    'points',
         }];
         let response = await request.post(`${eventUrl}/transfers`).send(transfers);
         expect(response.status).toBe(204);
@@ -705,17 +686,17 @@ describe('Pot transfers', () => {
             senderId:    user1.id,
             recipientId: -1,
             amount:      7,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            currency:    'points',
         }, {
             senderId:    -1,
             recipientId: user2.id,
             amount:      1,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.POINTS],
+            currency:    'points',
         }, {
             senderId:    -1,
             recipientId: user2.id,
             amount:      1,
-            currency:    Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY],
+            currency:    'money',
         }];
         let response = await request.post(`${eventUrl}/transfers`).send(transfers);
         expect(response.status).toBe(204);

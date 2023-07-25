@@ -4,7 +4,6 @@ const supertest = require('supertest');
 
 const AndeoLunch = require('../../src/andeoLunch');
 const ConfigProvider = require('../../src/configProvider');
-const Constants = require('../../src/constants');
 const Helper = require('./helper');
 
 /** @type {AndeoLunch|null} */
@@ -17,27 +16,6 @@ let jwt = null;
 let user1 = null;
 /** @type {User} */
 let user2 = null;
-
-beforeEach(async () => {
-    andeoLunch = new AndeoLunch({
-        config: await ConfigProvider.getTestConfig(),
-        quiet:  true,
-    });
-    await andeoLunch.waitReady();
-    user1 = await Helper.createUser('test-user-1');
-    user2 = await Helper.createUser('test-user-2');
-    request = supertest.agent(andeoLunch.listen());
-    if (jwt === null) {
-        let response = await request.post('/api/account/login')
-            .send({username: user1.username, password: Helper.password});
-        jwt = response.body.token;
-    }
-    request.set('Authorization', `Bearer ${jwt}`);
-});
-
-afterEach(async () => {
-    await andeoLunch.close();
-});
 
 const minimalEvent = {
     name: 'Lunch',
@@ -83,7 +61,7 @@ const eventUpdates = {
 };
 
 const disallowedUpdate = {
-    type: Constants.EVENT_TYPES.LUNCH,
+    type: 'lunch',
     date: '2020-01-20T13:00:00.000Z',
 };
 
@@ -98,7 +76,42 @@ const invalidData = {
     ],
 };
 
-describe('Create events', () => {
+/**
+ * Create a sample transfer
+ *
+ * @returns {object}
+ */
+function makeSampleTransfer() {
+    return {
+        senderId:    user1.id,
+        recipientId: user2.id,
+        amount:      10,
+        currency:    'points',
+    };
+}
+
+beforeEach(async () => {
+    andeoLunch = new AndeoLunch({
+        config: await ConfigProvider.getTestConfig(),
+        quiet:  true,
+    });
+    await andeoLunch.waitReady();
+    user1 = await Helper.createUser('test-user-1');
+    user2 = await Helper.createUser('test-user-2');
+    request = supertest.agent(andeoLunch.listen());
+    if (jwt === null) {
+        let response = await request.post('/api/account/login')
+            .send({username: user1.username, password: Helper.password});
+        jwt = response.body.token;
+    }
+    request.set('Authorization', `Bearer ${jwt}`);
+});
+
+afterEach(async () => {
+    await andeoLunch.close();
+});
+
+describe('Create lunch events', () => {
     it('Accepts a simple event', async () => {
         let response = await request.post('/api/events').send(sampleEvent);
         expect(response.status).toBe(201);
@@ -117,25 +130,6 @@ describe('Create events', () => {
         expect(location).toMatch(/^\/api\/events\/\d+$/u);
         response = await request.get(location);
         expect(response.body.event).toMatchObject({...minimalEvent, ...defaultValues});
-    });
-
-    it('Accepts a special event', async () => {
-        let specialEvent = {
-            name:  'Birthday dinner',
-            type:  'special',
-            date:  '2020-01-15T11:00:00.000Z',
-            costs: {
-                points: 8,
-            },
-        };
-
-        let response = await request.post('/api/events').send(specialEvent);
-        expect(response.status).toBe(201);
-        let {location} = response.headers;
-        expect(typeof location).toBe('string');
-        expect(location).toMatch(/^\/api\/events\/\d+$/u);
-        response = await request.get(location);
-        expect(response.body.event).toMatchObject(specialEvent);
     });
 
     it('Rejects missing data', async () => {
@@ -159,106 +153,11 @@ describe('Create events', () => {
             name:      'Lunch',
             type:      'lunch',
             date:      '2020-01-15T11:00:00.000Z',
-            transfers: [{
-                senderId:    user1.id,
-                recipientId: user2.id,
-                amount:      10,
-                currency:    'points',
-            }],
+            transfers: [makeSampleTransfer()],
         };
         let response = await request.post('/api/events').send(event);
         expect(response.status).toBe(400);
         expect(response.text).toBe('Lunch events cannot have transfers');
-    });
-
-    it('Accepts a label event', async () => {
-        let event = {
-            name: 'National holiday',
-            type: 'label',
-            date: '2020-01-15T11:00:00.000Z',
-        };
-        let response = await request.post('/api/events').send(event);
-        expect(response.status).toBe(201);
-    });
-
-    it('Rejects label event with point costs', async () => {
-        let event = {
-            name:  'National holiday',
-            type:  'label',
-            date:  '2020-01-15T11:00:00.000Z',
-            costs: {
-                points: 10,
-            },
-        };
-        let response = await request.post('/api/events').send(event);
-        expect(response.status).toBe(400);
-        expect(response.text).toBe('Label events cannot have point costs');
-    });
-
-    it('Rejects label vegetarian money factor', async () => {
-        let event = {
-            name:    'National holiday',
-            type:    'label',
-            date:    '2020-01-15T11:00:00.000Z',
-            factors: {
-                vegetarian: {
-                    money: 1,
-                },
-            },
-        };
-        let response = await request.post('/api/events').send(event);
-        expect(response.status).toBe(400);
-        expect(response.text).toBe('Label events cannot have a vegetarian money factor');
-    });
-
-    it('Rejects label transfers', async () => {
-        let event = {
-            name:      'National holiday',
-            type:      'label',
-            date:      '2020-01-15T11:00:00.000Z',
-            transfers: [{
-                senderId:    user1.id,
-                recipientId: user2.id,
-                amount:      10,
-                currency:    'points',
-            }],
-        };
-        let response = await request.post('/api/events').send(event);
-        expect(response.status).toBe(400);
-        expect(response.text).toBe('Label events cannot have transfers');
-    });
-
-    it('Rejects special event vegetarian money factor', async () => {
-        let event = {
-            name:    'Special',
-            type:    'special',
-            date:    '2020-01-15T11:00:00.000Z',
-            factors: {
-                vegetarian: {
-                    money: 1,
-                },
-            },
-        };
-        let response = await request.post('/api/events').send(event);
-        expect(response.status).toBe(400);
-        expect(response.text).toBe('Special events cannot have a vegetarian money factor');
-    });
-
-    it('Rejects special transfers', async () => {
-        let event = {
-            name:      'Special',
-            type:      'special',
-            date:      '2020-01-15T11:00:00.000Z',
-            transfers: [{
-                senderId:    user1.id,
-                recipientId: user2.id,
-                amount:      10,
-                currency:    'points',
-            }],
-        };
-        let response = await request.post('/api/events').send(event);
-        expect(response.status).toBe(400);
-        expect(response.text).toBe('Special events cannot have transfers');
     });
 
     it('Accepts event in the past when edit limit is not reached', async () => {
@@ -363,61 +262,6 @@ describe('Edit limits', () => {
     });
 });
 
-describe('Updating label events', () => {
-    const labelEvent = {
-        name: 'National holiday',
-        type: 'label',
-        date: '2020-01-15T11:00:00.000Z',
-    };
-    let eventUrl = null;
-
-    beforeEach(async () => {
-        let eventId = await Helper.createEvent(request, labelEvent);
-        eventUrl = `/api/events/${eventId}`;
-    });
-
-    it('Can update without any changes', async () => {
-        let response = await request.post(eventUrl).send({});
-        expect(response.status).toBe(204);
-        response = await request.get(eventUrl);
-        expect(response.status).toBe(200);
-        expect(response.body.event).toMatchObject(labelEvent);
-    });
-
-    it('Can update name', async () => {
-        let update = {name: 'Christmas'};
-        let response = await request.post(eventUrl).send(update);
-        expect(response.status).toBe(204);
-        response = await request.get(eventUrl);
-        expect(response.status).toBe(200);
-        expect(response.body.event).toMatchObject({...labelEvent, ...update});
-    });
-
-    it('Cannot update point costs', async () => {
-        let response = await request.post(eventUrl).send({costs: {points: 1}});
-        expect(response.status).toBe(400);
-        expect(response.text).toBe('Label events cannot have point costs');
-    });
-
-    it('Cannot update money costs', async () => {
-        let response = await request.post(eventUrl).send({costs: {money: 1}});
-        expect(response.status).toBe(400);
-        expect(response.text).toBe('"costs.money" is not allowed');
-    });
-
-    it('Cannot update vegetarian money factor', async () => {
-        let response = await request.post(eventUrl).send({factors: {vegetarian: {money: 1}}});
-        expect(response.status).toBe(400);
-        expect(response.text).toBe('Label events cannot have a vegetarian money factor');
-    });
-
-    it('Cannot update participation flat-rate', async () => {
-        let response = await request.post(eventUrl).send({participationFlatRate: 0.5});
-        expect(response.status).toBe(400);
-        expect(response.text).toBe('Label events cannot have a participation flat-rate');
-    });
-});
-
 describe('Updating special events', () => {
     let eventUrl = null;
     let eventData = {
@@ -491,7 +335,7 @@ describe('deleting events', () => {
 
     it('deleting an event with participations works', async () => {
         let response = await request.post(`${eventUrl}/participations/${user1.id}`)
-            .send({type: Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OMNIVOROUS]});
+            .send({type: 'omnivorous'});
         expect(response.status).toBe(204);
 
         response = await request.delete(eventUrl);
