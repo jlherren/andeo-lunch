@@ -112,42 +112,24 @@ async function getSingleParticipation(ctx) {
  * @param {ApiEvent} apiEvent
  */
 function validateEvent(ctx, type, apiEvent) {
-    if (type === Constants.EVENT_TYPES.LABEL) {
-        if (apiEvent?.costs?.points !== undefined) {
-            ctx.throw(400, 'Event type cannot have point costs');
-        }
-        if (apiEvent?.factors?.vegetarian?.money !== undefined) {
-            ctx.throw(400, 'Event type cannot have a vegetarian money factor');
-        }
-        if (apiEvent?.participationFlatRate !== undefined) {
-            ctx.throw(400, 'Event type cannot have a participation flat-rate');
-        }
-        if (apiEvent?.transfers !== undefined) {
-            ctx.throw(400, 'Event type cannot have transfers');
-        }
-        if (apiEvent?.immutable !== undefined) {
-            ctx.throw(400, 'Event type cannot be immutable');
-        }
-    } else if (type === Constants.EVENT_TYPES.SPECIAL) {
-        if (apiEvent?.factors?.vegetarian?.money !== undefined) {
-            ctx.throw(400, 'Event type cannot have a vegetarian money factor');
-        }
-        if (apiEvent?.participationFlatRate !== undefined) {
-            ctx.throw(400, 'Special events cannot have a participation flat-rate');
-        }
-        if (apiEvent?.transfers !== undefined) {
-            ctx.throw(400, 'Event type cannot have transfers');
-        }
-        if (apiEvent?.immutable !== undefined) {
-            ctx.throw(400, 'Event type cannot be immutable');
-        }
-    } else if (type === Constants.EVENT_TYPES.LUNCH) {
-        if (apiEvent?.transfers !== undefined) {
-            ctx.throw(400, 'Event type cannot have transfers');
-        }
-        if (apiEvent?.immutable !== undefined) {
-            ctx.throw(400, 'Event type cannot be immutable');
-        }
+    if (apiEvent?.costs?.points !== undefined && ![Constants.EVENT_TYPES.LUNCH, Constants.EVENT_TYPES.SPECIAL].includes(type)) {
+        ctx.throw(400, 'Event type cannot have point costs');
+    }
+
+    if (apiEvent?.factors?.vegetarian?.money !== undefined && type !== Constants.EVENT_TYPES.LUNCH) {
+        ctx.throw(400, 'Event type cannot have a vegetarian money factor');
+    }
+
+    if (apiEvent?.participationFlatRate !== undefined && type !== Constants.EVENT_TYPES.LUNCH) {
+        ctx.throw(400, 'Event type cannot have a participation flat-rate');
+    }
+
+    if (apiEvent?.transfers !== undefined && type !== Constants.EVENT_TYPES.TRANSFER) {
+        ctx.throw(400, 'Event type cannot have transfers');
+    }
+
+    if (apiEvent?.immutable !== undefined && type !== Constants.EVENT_TYPES.TRANSFER) {
+        ctx.throw(400, 'Event type cannot be immutable');
     }
 }
 

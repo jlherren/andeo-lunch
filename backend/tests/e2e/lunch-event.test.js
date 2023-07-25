@@ -317,7 +317,7 @@ describe('Updating special events', () => {
     it('Cannot update participation flat-rate', async () => {
         let response = await request.post(eventUrl).send({participationFlatRate: 0.5});
         expect(response.status).toBe(400);
-        expect(response.text).toBe('Special events cannot have a participation flat-rate');
+        expect(response.text).toBe('Event type cannot have a participation flat-rate');
     });
 });
 
