@@ -747,7 +747,7 @@ async function saveTransfer(ctx) {
         let transfer = await loadTransferFromParam(ctx, transaction);
 
         if (transfer.event !== event.id) {
-            ctx.throw('400', 'Transfer does not belong to specified event');
+            ctx.throw(400, 'Transfer does not belong to specified event');
         }
 
         let sender = await loadUser(ctx, apiTransfer.senderId, transaction, true);
@@ -791,7 +791,7 @@ async function deleteTransfer(ctx) {
         let transfer = await loadTransferFromParam(ctx, transaction);
 
         if (transfer.event !== event.id) {
-            ctx.throw('400', 'Transfer does not belong to specified event');
+            ctx.throw(400, 'Transfer does not belong to specified event');
         }
 
         assertCanEditDate(ctx, event.date);
