@@ -45,6 +45,8 @@ const eventCreateSchema = Joi.object({
     comment:               Joi.string().allow(''),
     triggerDefaultOptIn:   Joi.boolean().default(true),
     transfers:             createTransfersSchema.optional(),
+    // no default, to detect when it's not allowed
+    immutable:             Joi.boolean(),
 });
 
 const eventUpdateSchema = Joi.object({
@@ -123,6 +125,9 @@ function validateEvent(ctx, type, apiEvent) {
         if (apiEvent?.transfers !== undefined) {
             ctx.throw(400, 'Event type cannot have transfers');
         }
+        if (apiEvent?.immutable !== undefined) {
+            ctx.throw(400, 'Event type cannot be immutable');
+        }
     } else if (type === Constants.EVENT_TYPES.SPECIAL) {
         if (apiEvent?.factors?.vegetarian?.money !== undefined) {
             ctx.throw(400, 'Event type cannot have a vegetarian money factor');
@@ -133,9 +138,15 @@ function validateEvent(ctx, type, apiEvent) {
         if (apiEvent?.transfers !== undefined) {
             ctx.throw(400, 'Event type cannot have transfers');
         }
+        if (apiEvent?.immutable !== undefined) {
+            ctx.throw(400, 'Event type cannot be immutable');
+        }
     } else if (type === Constants.EVENT_TYPES.LUNCH) {
         if (apiEvent?.transfers !== undefined) {
             ctx.throw(400, 'Event type cannot have transfers');
+        }
+        if (apiEvent?.immutable !== undefined) {
+            ctx.throw(400, 'Event type cannot be immutable');
         }
     }
 }
@@ -230,9 +241,10 @@ async function createEvent(ctx) {
         assertCanEditDate(ctx, apiEvent.date);
 
         let event = await Models.Event.create({
-            name: apiEvent.name,
-            date: apiEvent.date,
+            name:      apiEvent.name,
+            date:      apiEvent.date,
             type,
+            immutable: apiEvent.immutable,
         }, {transaction});
 
         if ([Constants.EVENT_TYPES.LUNCH, Constants.EVENT_TYPES.SPECIAL].includes(type)) {
@@ -677,8 +689,12 @@ async function createTransfers(ctx) {
     await ctx.sequelize.transaction(async transaction => {
         let event = await loadEventFromParam(ctx, transaction);
 
-        if (event.type === Constants.EVENT_TYPES.LABEL) {
-            ctx.throw(400, 'Label events cannot have transfers');
+        if (event.type !== Constants.EVENT_TYPES.TRANSFER) {
+            ctx.throw(400, 'Event type cannot have transfers');
+        }
+
+        if (event.immutable) {
+            ctx.throw(403, 'Event is immutable');
         }
 
         assertCanEditDate(ctx, event.date);
@@ -758,6 +774,10 @@ async function saveTransfer(ctx) {
             ctx.throw(400, 'Cannot transfer back to sender');
         }
 
+        if (event.immutable) {
+            ctx.throw(403, 'Event is immutable');
+        }
+
         assertCanEditDate(ctx, event.date);
 
         let before = transfer.toSnapshot(systemUser);
@@ -792,6 +812,10 @@ async function deleteTransfer(ctx) {
 
         if (transfer.event !== event.id) {
             ctx.throw(400, 'Transfer does not belong to specified event');
+        }
+
+        if (event.immutable) {
+            ctx.throw(403, 'Event is immutable');
         }
 
         assertCanEditDate(ctx, event.date);

@@ -3,6 +3,7 @@ CREATE TABLE `event` (
   `type` tinyint(4) NOT NULL,
   `date` datetime NOT NULL,
   `name` varchar(255) NOT NULL,
+  `immutable` tinyint(1) NOT NULL DEFAULT 0,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL,
   PRIMARY KEY (`id`),

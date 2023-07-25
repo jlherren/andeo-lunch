@@ -33,6 +33,7 @@
  * @property {string} [comment]
  * @property {number|null} [participationFlatRate]
  * @property {boolean} [triggerDefaultOptIn]
+ * @property {boolean} [immutable]
  */
 
 /**

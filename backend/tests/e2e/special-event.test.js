@@ -98,4 +98,14 @@ describe('Create special events', () => {
         expect(response.status).toBe(400);
         expect(response.text).toBe('Event type cannot have transfers');
     });
+
+    it('Rejects immutable', async () => {
+        let event = {
+            ...sampleEvent,
+            immutable: true,
+        };
+        let response = await request.post('/api/events').send(event);
+        expect(response.status).toBe(400);
+        expect(response.text).toBe('Event type cannot be immutable');
+    });
 });

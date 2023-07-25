@@ -709,3 +709,99 @@ describe('Pot transfers', () => {
         expect(response.body.user.balances).toMatchObject({points: 0, money: 0});
     });
 });
+
+describe('Immutable transfer events', () => {
+    it('Transfer event are not immutable by default', async () => {
+        let eventId = await Helper.createEvent(request, minimalEvent);
+        let response = await request.get(`/api/events/${eventId}`);
+        expect(response.status).toBe(200);
+        expect(response.body.event.immutable).toBe(false);
+
+        // Deleting non-immutable transfer events is already tested elsewhere.
+    });
+
+    it('Immutable transfer event can be deleted', async () => {
+        let eventId = await Helper.createEvent(request, {
+            ...minimalEvent,
+            immutable: true,
+        });
+        let response = await request.get(`/api/events/${eventId}`);
+        expect(response.status).toBe(200);
+        expect(response.body.event.immutable).toBe(true);
+
+        // Delete it
+        response = await request.delete(`/api/events/${eventId}`);
+        expect(response.status).toBe(204);
+
+        // Should no longer exist
+        response = await request.get(`/api/events/${eventId}`);
+        expect(response.status).toBe(404);
+    });
+
+    it('Adding transfers to immutable transfer event is disallowed', async () => {
+        let eventId = await Helper.createEvent(request, {
+            ...minimalEvent,
+            immutable: true,
+        });
+        let transfers = [{
+            senderId:    user1.id,
+            recipientId: user2.id,
+            amount:      10,
+            currency:    'money',
+        }];
+        let response = await request.post(`/api/events/${eventId}/transfers`).send(transfers);
+        expect(response.status).toBe(403);
+        expect(response.text).toBe('Event is immutable');
+
+        // Verify it's unaltered
+        response = await request.get(`/api/events/${eventId}/transfers`);
+        expect(response.status).toBe(200);
+        expect(response.body.transfers.length).toBe(0);
+    });
+
+    it('Updating transfer on immutable transfer event is disallowed', async () => {
+        let eventId = await Helper.createEvent(request, {
+            ...minimalEvent,
+            transfers: [makeSampleTransfer()],
+            immutable: true,
+        });
+
+        let response = await request.get(`/api/events/${eventId}/transfers`);
+        expect(response.status).toBe(200);
+        let transfer = response.body.transfers[0];
+
+        let update = {
+            ...makeSampleTransfer(),
+            amount:      20,
+        };
+        response = await request.post(`/api/events/${eventId}/transfers/${transfer.id}`).send(update);
+        expect(response.status).toBe(403);
+        expect(response.text).toBe('Event is immutable');
+
+        // Fetch again
+        response = await request.get(`/api/events/${eventId}/transfers`);
+        expect(response.status).toBe(200);
+        expect(response.body.transfers[0].amount).toBe(10);
+    });
+
+    it('Deleting transfer on immutable transfer event is disallowed', async () => {
+        let eventId = await Helper.createEvent(request, {
+            ...minimalEvent,
+            transfers: [makeSampleTransfer()],
+            immutable: true,
+        });
+
+        let response = await request.get(`/api/events/${eventId}/transfers`);
+        expect(response.status).toBe(200);
+        let transfer = response.body.transfers[0];
+
+        response = await request.delete(`/api/events/${eventId}/transfers/${transfer.id}`);
+        expect(response.status).toBe(403);
+        expect(response.text).toBe('Event is immutable');
+
+        // Fetch again
+        response = await request.get(`/api/events/${eventId}/transfers`);
+        expect(response.status).toBe(200);
+        expect(response.body.transfers.length).toBe(1);
+    });
+});

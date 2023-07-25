@@ -101,6 +101,7 @@ class EventType extends Model {
  * @property {string} name
  * @property {Lunch} [Lunch]
  * @property {Array<Transfer>} [Transfers]
+ * @property {boolean} immutable
  */
 class Event extends Model {
     /**
@@ -129,6 +130,7 @@ class Event extends Model {
             transfers:             this.Transfers?.map(transfer => transfer.toApi(systemUserId)),
             comment:               this.Lunch?.comment,
             canEdit:               EventManager.userCanEditDate(user, this.date),
+            immutable:             this.type === Constants.EVENT_TYPES.TRANSFER ? this.immutable : undefined,
         };
     }
 
@@ -510,9 +512,11 @@ exports.initModels = function initModels(sequelize) {
     });
 
     Event.init({
-        type: {type: DataTypes.TINYINT, allowNull: false},
-        date: {type: DataTypes.DATE, allowNull: false},
-        name: {type: DataTypes.STRING(255), allowNull: false},
+        type:      {type: DataTypes.TINYINT, allowNull: false},
+        date:      {type: DataTypes.DATE, allowNull: false},
+        name:      {type: DataTypes.STRING(255), allowNull: false},
+        // immutable currently only affects transfer events
+        immutable: {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
     }, {
         sequelize,
         modelName: 'event',

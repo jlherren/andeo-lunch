@@ -180,6 +180,16 @@ describe('Create lunch events', () => {
         expect(response.status).toBe(403);
         expect(response.text).toBe('Event is too old for you to edit');
     });
+
+    it('Rejects immutable', async () => {
+        let event = {
+            ...minimalEvent,
+            immutable: true,
+        };
+        let response = await request.post('/api/events').send(event);
+        expect(response.status).toBe(400);
+        expect(response.text).toBe('Event type cannot be immutable');
+    });
 });
 
 describe('Updating lunch event', () => {
