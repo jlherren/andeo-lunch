@@ -114,11 +114,11 @@
 
 <script>
     import * as DateUtils from '@/utils/dateUtils';
-    import Balance from '@/components/Balance';
-    import DynamicButton from '../../components/DynamicButton';
-    import ShyProgress from '@/components/ShyProgress';
-    import TheAppBar from '@/components/TheAppBar';
-    import TransferEdit from '@/components/event/TransferEdit';
+    import Balance from '@/components/Balance.vue';
+    import DynamicButton from '@/components/DynamicButton.vue';
+    import ShyProgress from '@/components/ShyProgress.vue';
+    import TheAppBar from '@/components/TheAppBar.vue';
+    import TransferEdit from '@/components/event/TransferEdit.vue';
     import Vue from 'vue';
 
     export default {

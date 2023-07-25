@@ -35,10 +35,10 @@
 
 <script>
     import * as DateUtils from '@/utils/dateUtils';
-    import DynamicButton from '../components/DynamicButton';
-    import ShyProgress from '@/components/ShyProgress';
-    import TheAppBar from '@/components/TheAppBar';
-    import TransferListItem from '@/components/event/TransferListItem';
+    import DynamicButton from '@/components/DynamicButton.vue';
+    import ShyProgress from '@/components/ShyProgress.vue';
+    import TheAppBar from '@/components/TheAppBar.vue';
+    import TransferListItem from '@/components/event/TransferListItem.vue';
 
     export default {
         name: 'TransferList',

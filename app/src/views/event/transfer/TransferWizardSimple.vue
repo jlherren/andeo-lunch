@@ -57,8 +57,8 @@
 </template>
 
 <script>
-    import ShyProgress from '@/components/ShyProgress';
-    import TheAppBar from '@/components/TheAppBar';
+    import ShyProgress from '@/components/ShyProgress.vue';
+    import TheAppBar from '@/components/TheAppBar.vue';
     import {mapState} from 'pinia';
     import {useStore} from '@/store';
 

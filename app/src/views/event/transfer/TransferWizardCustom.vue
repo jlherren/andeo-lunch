@@ -32,10 +32,10 @@
 
 <script>
     import * as DateFormatter from '@/utils/dateUtils';
-    import AlDatePicker from '@/components/AlDatePicker';
-    import AlTimePicker from '@/components/AlTimePicker';
-    import ShyProgress from '@/components/ShyProgress';
-    import TheAppBar from '@/components/TheAppBar';
+    import AlDatePicker from '@/components/AlDatePicker.vue';
+    import AlTimePicker from '@/components/AlTimePicker.vue';
+    import ShyProgress from '@/components/ShyProgress.vue';
+    import TheAppBar from '@/components/TheAppBar.vue';
 
     export default {
         name: 'TransferWizardCustom',

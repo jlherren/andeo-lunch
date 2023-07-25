@@ -19,39 +19,39 @@ const routes = [
     },
     {
         path:      '/transfers/:date([0-9]{4}-[0-9]{2}-[0-9]{2})?',
-        component: () => import('@/views/TransfersList.vue'),
+        component: () => import('@/views/event/transfer/TransfersList.vue'),
     },
     {
         path:      '/transfers/:id(\\d+)',
-        component: () => import('@/views/event/TransferDetail'),
+        component: () => import('@/views/event/transfer/TransferDetail.vue'),
     },
     {
         path:      '/transfers/new',
-        component: () => import(/* webpackChunkName: "wizards" */ '@/views/TransferWizard'),
+        component: () => import(/* webpackChunkName: "wizards" */ '@/views/event/transfer/TransferWizard.vue'),
     },
     {
         path:      '/transfers/new/pay-up',
-        component: () => import(/* webpackChunkName: "wizards" */ '@/views/TransferWizardPayUp'),
+        component: () => import(/* webpackChunkName: "wizards" */ '@/views/event/transfer/TransferWizardPayUp.vue'),
     },
     {
         path:      '/transfers/new/simple',
-        component: () => import(/* webpackChunkName: "wizards" */ '@/views/TransferWizardSimple'),
+        component: () => import(/* webpackChunkName: "wizards" */ '@/views/event/transfer/TransferWizardSimple.vue'),
     },
     {
         path:      '/transfers/new/trade',
-        component: () => import(/* webpackChunkName: "wizards" */ '@/views/TransferWizardTrade'),
+        component: () => import(/* webpackChunkName: "wizards" */ '@/views/event/transfer/TransferWizardTrade.vue'),
     },
     {
         path:      '/transfers/new/expense',
-        component: () => import(/* webpackChunkName: "wizards" */ '@/views/TransferWizardExpense'),
+        component: () => import(/* webpackChunkName: "wizards" */ '@/views/event/transfer/TransferWizardExpense.vue'),
     },
     {
         path:      '/transfers/new/fine',
-        component: () => import(/* webpackChunkName: "wizards" */ '@/views/TransferWizardFine'),
+        component: () => import(/* webpackChunkName: "wizards" */ '@/views/event/transfer/TransferWizardFine.vue'),
     },
     {
         path:      '/transfers/new/custom',
-        component: () => import(/* webpackChunkName: "wizards" */ '@/views/TransferWizardCustom'),
+        component: () => import(/* webpackChunkName: "wizards" */ '@/views/event/transfer/TransferWizardCustom.vue'),
     },
     {
         path:      '/history/:id(\\d+)',

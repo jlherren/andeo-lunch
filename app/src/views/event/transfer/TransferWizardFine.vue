@@ -17,7 +17,7 @@
 </template>
 
 <script>
-    import TheAppBar from '@/components/TheAppBar';
+    import TheAppBar from '@/components/TheAppBar.vue';
 
     export default {
         name: 'TransferWizardFine',
