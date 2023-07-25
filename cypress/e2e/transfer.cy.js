@@ -129,4 +129,38 @@ describe('Transfers', () => {
         cy.contains('[role=listitem]', 'Add transfer entry')
             .should('not.exist');
     });
+
+    it('Can create a custom transfer', () => {
+        cy.login(USERS.john.username, USERS.john.password);
+        cy.contains('.v-bottom-navigation a', 'Transfers')
+            .click();
+        cy.get('.v-btn--fab')
+            .click();
+        cy.contains('Custom')
+            .click();
+        cy.followLabel('Description')
+            .type('5-Kampf');
+        cy.contains('button', 'Save')
+            .click();
+        cy.contains('[role=listitem]', 'Add transfer entry')
+            .click();
+        cy.contains('[role=button]', 'Sender')
+            .click();
+        cy.contains('[role=option]:visible', USERS.robert.name)
+            .click();
+        cy.contains('[role=button]', 'Recipient')
+            .click();
+        cy.contains('[role=option]:visible', USERS.john.name)
+            .click();
+        cy.followLabel('Amount')
+            .type('10');
+        cy.contains('button', 'Save')
+            .click();
+
+        cy.contains('[role=listitem]', 'Robert Smith → John Doe')
+            .contains('10.00');
+        cy.contains('[role=listitem]', 'Add transfer entry');
+        // Check that delete button exists.
+        cy.get('[role=listitem] button');
+    });
 });
