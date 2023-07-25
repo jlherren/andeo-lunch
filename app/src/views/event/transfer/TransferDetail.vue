@@ -48,7 +48,7 @@
                         </span>
                     </v-list-item-subtitle>
                 </v-list-item-content>
-                <v-list-item-action>
+                <v-list-item-action v-if="!event.immutable">
                     <v-btn icon @click="openDeleteTransferDialog(transfer.id)" :disabled="!event.canEdit">
                         <v-icon>{{ $icons.delete }}</v-icon>
                     </v-btn>
@@ -65,7 +65,7 @@
 
             <v-skeleton-loader v-if="!transfers" type="list-item-avatar"/>
 
-            <v-list-item v-else @click="openAddTransferDialog" :disabled="isBusy || !event.canEdit">
+            <v-list-item v-else-if="!event.immutable" @click="openAddTransferDialog" :disabled="isBusy || !event.canEdit">
                 <v-list-item-icon>
                     <v-icon>{{ $icons.plus }}</v-icon>
                 </v-list-item-icon>

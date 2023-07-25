@@ -28,6 +28,12 @@ describe('Transfers', () => {
 
         cy.contains('[role=listitem]', 'Robert Smith → John Doe')
             .contains('10.50');
+        // Check that delete button does not exist.
+        cy.contains('[role=listitem]', 'Robert Smith → John Doe')
+            .find('button')
+            .should('not.exist');
+        cy.contains('[role=listitem]', 'Add transfer entry')
+            .should('not.exist');
     });
 
     it('Can create a virtual money transfer', () => {
@@ -51,6 +57,12 @@ describe('Transfers', () => {
 
         cy.contains('[role=listitem]', 'John Doe → Robert Smith')
             .contains('5.00');
+        // Check that delete button does not exist.
+        cy.contains('[role=listitem]', 'John Doe → Robert Smith')
+            .find('button')
+            .should('not.exist');
+        cy.contains('[role=listitem]', 'Add transfer entry')
+            .should('not.exist');
     });
 
     it('Can create a pay up transfer', () => {
@@ -72,6 +84,12 @@ describe('Transfers', () => {
 
         cy.contains('[role=listitem]', 'Robert Smith → John Doe')
             .contains('100.00');
+        // Check that delete button does not exist.
+        cy.contains('[role=listitem]', 'Robert Smith → John Doe')
+            .find('button')
+            .should('not.exist');
+        cy.contains('[role=listitem]', 'Add transfer entry')
+            .should('not.exist');
     });
 
     it('Can create a trade transfer', () => {
@@ -104,5 +122,11 @@ describe('Transfers', () => {
             .contains('40.00');
         cy.contains('[role=listitem]', 'Robert Smith → John Doe')
             .contains('4.00');
+        // Check that delete button does not exist.
+        cy.contains('[role=listitem]', 'Robert Smith → John Doe')
+            .find('button')
+            .should('not.exist');
+        cy.contains('[role=listitem]', 'Add transfer entry')
+            .should('not.exist');
     });
 });

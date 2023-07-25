@@ -104,6 +104,7 @@
                         name:      'Trade',
                         date:      new Date(),
                         type:      'transfer',
+                        immutable: true,
                         transfers: [{
                             senderId:    this.buyer,
                             recipientId: this.seller,

@@ -116,6 +116,7 @@
                         name:      'Pay up',
                         date:      new Date(),
                         type:      'transfer',
+                        immutable: true,
                         transfers: [{
                             senderId:    this.recipient,
                             recipientId: this.$store().ownUserId,

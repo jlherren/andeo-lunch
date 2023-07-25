@@ -104,6 +104,7 @@
                         name:      this.reason,
                         date:      new Date(),
                         type:      'transfer',
+                        immutable: true,
                         transfers: [{
                             senderId:    this.sender,
                             recipientId: this.$store().ownUserId,
