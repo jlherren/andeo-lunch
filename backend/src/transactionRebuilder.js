@@ -413,7 +413,10 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
             deleteIds.push(transaction.id);
         }
     }
-    await Models.Transaction.destroy({where: {id: deleteIds}, transaction: dbTransaction});
+
+    if (deleteIds.length !== 0) {
+        await Models.Transaction.destroy({where: {id: deleteIds}, transaction: dbTransaction});
+    }
 
     return {
         earliestDate: earliestTimestamp !== null ? new Date(earliestTimestamp) : null,
