@@ -135,10 +135,10 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
             throw new Error('Attempt to insert NaN transaction');
         }
 
-        let existingTransactionKey = `${user}/${contra}/${currency}`;
+        let existing = existingTransactions[`${user}/${contra}/${currency}`] ?? [];
 
-        if (existingTransactionKey in existingTransactions && existingTransactions[existingTransactionKey].length) {
-            let transaction = existingTransactions[existingTransactionKey].shift();
+        if (existing.length !== 0) {
+            let transaction = existing.shift();
             if (transaction.date.getTime() !== event.date.getTime() || Math.abs(transaction.amount - amount) > Constants.EPSILON) {
                 transaction.date = new Date(event.date);
                 transaction.amount = amount;
