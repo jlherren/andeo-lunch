@@ -22,7 +22,7 @@ async function rebuildTransactions(doFix) {
     let transaction = await sequelize.transaction();
 
     try {
-        let events = await Models.Event.findAll({transaction});
+        let events = await Models.Event.findAll({transaction, order: [['id', 'ASC']]});
         let overallEarliestDate = null;
         let nUpdatesTotal = 0;
 
