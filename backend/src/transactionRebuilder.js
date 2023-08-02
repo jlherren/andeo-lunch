@@ -423,12 +423,12 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
  * Update transaction balances starting at the given date, assuming that transaction amounts have changed since then
  *
  * @param {Transaction} dbTransaction
- * @param {Date} startDate
+ * @param {Date|null} startDate
  * @returns {Promise<number>} Number of updates performed
  */
 exports.rebuildTransactionBalances = async function rebuildTransactionBalances(dbTransaction, startDate) {
-    // date and id of last handled transaction
-    let date = startDate;
+    // date and ID of last handled transaction
+    let date = startDate ?? new Date(0);
     let id = -1;
 
     let balancesByCurrencyAndUser = {};

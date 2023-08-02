@@ -8,6 +8,20 @@ const Models = require('../db/models');
 const ConfigProvider = require('../configProvider');
 
 /**
+ * @param {Transaction} transaction
+ * @returns {Promise<Object<string, number>>}
+ */
+async function getBalances(transaction) {
+    let users = await Models.User.findAll({transaction, order: [['username', 'ASC']]});
+    let balances = {};
+    for (let user of users) {
+        balances[`${user.username}/points`] = user.points;
+        balances[`${user.username}/money`] = user.money;
+    }
+    return balances;
+}
+
+/**
  * Rebuild all transactions
  *
  * @param {boolean} doFix
@@ -23,27 +37,32 @@ async function rebuildTransactions(doFix) {
 
     try {
         let events = await Models.Event.findAll({transaction, order: [['id', 'ASC']]});
-        let overallEarliestDate = null;
         let nUpdatesTotal = 0;
 
-        console.log(`Found ${events.length} events to rebuild`);
-
+        console.log(`Rebuilding ${events.length} events...`);
         for (let event of events) {
-            console.log(`Rebuilding event ${event.id}`);
+            console.log(`    rebuilding event ${event.id}`);
             await Transaction.rebuildLunchDetails(transaction, event);
-            let {earliestDate, nUpdates} = await Transaction.rebuildEventTransactions(transaction, event);
-            if (earliestDate !== null && (overallEarliestDate === null || earliestDate < overallEarliestDate)) {
-                overallEarliestDate = earliestDate;
-            }
+            let {nUpdates} = await Transaction.rebuildEventTransactions(transaction, event);
             nUpdatesTotal += nUpdates;
         }
+        console.log(`    updated ${nUpdatesTotal} transactions`);
 
-        console.log(`Updated ${nUpdatesTotal} transactions`);
-        console.log('Rebuilding transaction balances');
-        let n = await Transaction.rebuildTransactionBalances(transaction, overallEarliestDate);
-        console.log(`Updated ${n} transaction balances`);
-        console.log('Rebuilding final balances');
+        console.log('Rebuilding transaction balances...');
+        let n = await Transaction.rebuildTransactionBalances(transaction, null);
+        console.log(`    updated ${n} transaction balances`);
+
+        console.log('Rebuilding final balances...');
+        let beforeBalances = await getBalances(transaction);
         await Transaction.rebuildUserBalances(transaction);
+        let afterBalances = await getBalances(transaction);
+        for (let key of Object.keys(beforeBalances)) {
+            let after = afterBalances[key];
+            let before = beforeBalances[key];
+            if (before !== after) {
+                console.log(`    ${key} changed from ${before} to ${after}`);
+            }
+        }
     } catch (err) {
         await transaction.rollback();
         throw err;
