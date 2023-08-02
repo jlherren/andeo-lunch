@@ -114,6 +114,7 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
             where:       {
                 event: event.id,
             },
+            order:       [['id', 'ASC']],
             transaction: dbTransaction,
         }),
         transaction => `${transaction.user}/${transaction.contraUser}/${transaction.currency}`,
@@ -299,6 +300,7 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
         if (!event.Transfers) {
             let opts = {
                 where:       {event: event.id},
+                order:       [['id', 'ASC']],
                 transaction: dbTransaction,
             };
             /** @type {Array<Transfer>} */
