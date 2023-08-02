@@ -217,6 +217,10 @@ async function setDefaultOptIns(event, transaction) {
 async function createEvent(ctx) {
     /** @type {ApiEvent} */
     let apiEvent = RouteUtils.validateBody(ctx, eventCreateSchema);
+
+    // The DB only stores seconds.  We need to remove milliseconds, to avoid off-by-one errors in the transaction rebuilder.
+    apiEvent.date.setUTCMilliseconds(0);
+
     let eventId = await ctx.sequelize.transaction(async transaction => {
         let type = Constants.EVENT_TYPE_IDS[apiEvent.type];
         validateEvent(ctx, type, apiEvent);

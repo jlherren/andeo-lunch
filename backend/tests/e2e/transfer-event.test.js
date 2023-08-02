@@ -805,3 +805,25 @@ describe('Immutable transfer events', () => {
         expect(response.body.transfers.length).toBe(1);
     });
 });
+
+describe('Regressions', () => {
+    it('Correct transaction balances when submitting milliseconds', async () => {
+        // Note: This test reveals the bug only when running against MariaDB, not SQLite.
+
+        let response = await request.post('/api/events').send({
+            ...minimalEvent,
+            date:      new Date('2020-01-04T12:24:12.497Z'),
+            transfers: [makeSampleTransfer()],
+            immutable: true,
+        });
+        expect(response.status).toBe(201);
+
+        response = await request.get(`/api/users/${user1.id}`);
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toMatchObject({points: 0, money: -10});
+
+        response = await request.get(`/api/users/${user2.id}`);
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toMatchObject({points: 0, money: 10});
+    });
+});
