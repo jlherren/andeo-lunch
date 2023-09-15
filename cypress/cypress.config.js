@@ -6,6 +6,8 @@ module.exports = defineConfig({
     downloadsFolder:   'downloads',
     fixturesFolder:    'fixtures',
     screenshotsFolder: 'screenshots',
+    video:             true,
+    videoCompression:  true,
     videosFolder:      'videos',
     viewportHeight:    600,
     viewportWidth:     420,
