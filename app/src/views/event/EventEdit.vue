@@ -35,7 +35,7 @@
 
                 <div v-if="type === 'lunch' && !eventId">
                     <v-checkbox label="Trigger default opt-ins" v-model="triggerDefaultOptIn" :disabled="dateIsInThePast"
-                                :hint="triggerDefaultOptIn ? null : 'No default opt-ins will be applied.  Be sure to inform participants accordingly.'" persistent-hint/>
+                                :hint="defaultOptInHint" persistent-hint/>
                 </div>
 
                 <div v-if="type !== 'label' && !eventId" class="helpers v-text-field">
@@ -179,6 +179,13 @@
 
             dateIsInThePast() {
                 return new Date(`${this.date}T12:00:00`) < new Date();
+            },
+
+            defaultOptInHint() {
+                if (this.triggerDefaultOptIn) {
+                    return 'Automatic opt-in and opt-out will be applied.';
+                }
+                return 'No default opt-ins will be applied!  Use this only for non-lunch meals!';
             },
         },
 
