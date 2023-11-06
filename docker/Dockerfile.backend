@@ -1,4 +1,4 @@
-FROM node:18.17-bullseye-slim AS backend-build
+FROM node:18.18-bullseye-slim AS backend-build
 WORKDIR /build
 # Copy only what is necessary for installing Yarn packages, to improve caching.
 COPY package.json yarn.lock .yarnrc.yml ./
@@ -8,7 +8,7 @@ RUN yarn workspaces focus --production andeo-lunch-backend
 # Assert that backend/node_modules does not exist.  If it exists, then we must copy it below as well.
 RUN test ! -e backend/node_modules
 
-FROM node:18.17-bullseye-slim
+FROM node:18.18-bullseye-slim
 WORKDIR /srv/andeo-lunch/backend
 COPY --from=backend-build /build/node_modules /srv/andeo-lunch/node_modules
 COPY --from=backend-build /build/package.json /srv/andeo-lunch/package.json
