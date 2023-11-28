@@ -189,7 +189,7 @@ module.exports = {
             },
         ],
         'no-constructor-return':              'warn',
-        'no-continue':                        'warn',
+        'no-continue':                        'off',
         'no-div-regex':                       'warn',
         'no-dupe-else-if':                    'warn',
         'no-duplicate-imports':               'warn',

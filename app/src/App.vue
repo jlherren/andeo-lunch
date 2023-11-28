@@ -5,6 +5,8 @@
 
         <!-- If logged in, show app contents -->
         <template v-else-if="isLoggedIn">
+            <snow-overlay/>
+
             <router-view :key="$route.path"/>
 
             <v-bottom-navigation app>
@@ -36,6 +38,7 @@
     import {EventService} from '@/services/eventService';
     import Loading from '@/views/Loading';
     import Login from '@/views/Login';
+    import SnowOverlay from '@/components/SnowOverlay.vue';
     import {mapState} from 'pinia';
     import {useStore} from '@/store';
 
@@ -45,6 +48,7 @@
         components: {
             Loading,
             Login,
+            SnowOverlay,
         },
 
         data() {

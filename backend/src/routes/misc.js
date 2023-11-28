@@ -47,12 +47,38 @@ async function migrate(ctx) {
     };
 }
 
+let weatherCache = null;
+const WEATHER_TTL = 300 * 1000;
+
+/**
+ * @param {Application.Context} ctx
+ * @returns {Promise<void>}
+ */
+async function getSnowfall(ctx) {
+    if (weatherCache === null || weatherCache.timestamp + WEATHER_TTL < Date.now()) {
+        try {
+            let response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=47.4979387&longitude=8.7259215&current=snowfall');
+            let data = await response.json();
+            weatherCache = {
+                timestamp: Date.now(),
+                nFlakes:   Math.min(Math.round(data.current.snowfall * 250), 500),
+            };
+        } catch (err) {
+            console.error('Error fetching weather data', err);
+        }
+    }
+    ctx.body = {
+        nFlakes: weatherCache?.nFlakes ?? null,
+    };
+}
+
 /**
  * @param {Router} router
  */
 function register(router) {
     router.get('/pay-up/default-recipient', getPayUpDefaultRecipient);
     router.get('/options/default-flat-rate', getDefaultFlatRate);
+    router.get('/snowfall', getSnowfall);
     router.get('/migrate', migrate);
 }
 

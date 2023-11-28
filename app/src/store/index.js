@@ -68,6 +68,8 @@ export let useStore = defineStore('main', {
 
         // Grocery list
         groceries: [],
+
+        nSnowFlakes: null,
     }),
 
     getters: {
@@ -524,6 +526,13 @@ export let useStore = defineStore('main', {
         async adminCreateUser(user) {
             let response = await Backend.post('/admin/users', user);
             return response.data.userId;
+        },
+
+        fetchSnowfall() {
+            return Cache.ifNotFresh('nSnowFlakes', 0, 60000, async () => {
+                let response = await Backend.get('/snowfall');
+                this.nSnowFlakes = response.data.nFlakes;
+            });
         },
     },
 });
