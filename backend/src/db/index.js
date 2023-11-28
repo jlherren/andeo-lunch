@@ -93,7 +93,8 @@ async function applyMigrations(sequelize, quiet) {
     // Apply migrations
     const umzug = new Umzug({
         migrations: {
-            glob: path.join(__dirname, '../../migrations/????-??-?? ?? *.js'),
+            // glob requires forward slashes even on windows.
+            glob: path.join(__dirname, '../../migrations/????-??-?? ?? *.js').replaceAll('\\', '/'),
         },
         context:    sequelize,
         storage:    new SequelizeStorage({sequelize}),
