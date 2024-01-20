@@ -12,12 +12,12 @@
         "cypress:run": "cypress run"
     },
     "devDependencies": {
-        "axios": "~1.6.0",
-        "cypress": "~13.4.0",
-        "eslint": "~8.53.0",
+        "axios": "~1.6.5",
+        "cypress": "~13.6.3",
+        "eslint": "~8.56.0",
         "eslint-plugin-cypress": "~2.15.1",
-        "eslint-plugin-import": "~2.29.0",
-        "eslint-plugin-jsdoc": "~46.8.2",
+        "eslint-plugin-import": "~2.29.1",
+        "eslint-plugin-jsdoc": "~48.0.2",
         "eslint-plugin-node": "~11.1.0",
         "eslint-plugin-promise": "~6.1.1",
         "eslint-plugin-standard": "~5.0.0",
