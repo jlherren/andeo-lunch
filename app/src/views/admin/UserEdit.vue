@@ -15,10 +15,10 @@
                 <v-text-field v-model="userId" label="User ID" disabled/>
                 <v-text-field v-model="user.username" label="Username" disabled/>
                 <v-text-field v-model="name" label="Display name" :rules="nameRules"/>
-                <v-checkbox v-model="active" label="Active" hint="Allow user to log in and use the app" persistent-hint/>
-                <v-checkbox v-model="hidden" label="Hidden" hint="Hide the user from most lists" persistent-hint/>
-                <v-checkbox v-model="restrictEdit" label="Restrict editing events" hint="Do not allow editing events far in the past" persistent-hint/>
-                <number-field v-model="maxPastDaysEdit" hint="Number of days into the past to allow editing events" :disabled="!restrictEdit"/>
+                <v-checkbox v-model="active" label="Active" :hint="this.active ? 'User is allowed to log in and use the app' : 'User cannot log in or use the app'" persistent-hint/>
+                <v-checkbox v-model="hidden" label="Hidden" :hint="hidden ? 'User is not displayed in lists' : 'User appears normally in all lists'" persistent-hint/>
+                <v-checkbox v-model="restrictEdit" label="Restrict editing past events" persistent-hint/>
+                <number-field v-model="maxPastDaysEdit" label="Number of days into the past to allow editing events" :disabled="!restrictEdit"/>
 
                 <number-field v-model="user.points" label="Exact points balance" readonly/>
                 <number-field v-model="user.money" label="Exact money balance" readonly/>
