@@ -10,7 +10,7 @@
         <v-list fluid>
             <v-list-item :to="`/history/${ownUser.id}`">
                 <v-list-item-content>
-                    <user-stats/>
+                    <user-stats :user="ownUser"/>
                 </v-list-item-content>
             </v-list-item>
         </v-list>

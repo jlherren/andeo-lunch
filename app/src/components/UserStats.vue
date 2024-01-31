@@ -1,14 +1,12 @@
 <template>
     <span class="stats">
-        <balance :value="ownUser.balances.points" color points precise/>
-        <balance :value="ownUser.balances.money" color money precise/>
+        <balance :value="user?.balances?.points" color points precise/>
+        <balance :value="user?.balances?.money" color money precise/>
     </span>
 </template>
 
 <script>
     import Balance from '@/components/Balance';
-    import {mapState} from 'pinia';
-    import {useStore} from '@/store';
 
     export default {
         name: 'UserStats',
@@ -17,10 +15,11 @@
             Balance,
         },
 
-        computed: {
-            ...mapState(useStore, [
-                'ownUser',
-            ]),
+        props: {
+            user: {
+                type:     Object,
+                required: true,
+            },
         },
     };
 </script>

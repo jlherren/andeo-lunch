@@ -3,7 +3,7 @@
         <the-app-bar extension-height="30">
             {{ user.name }}
             <template #buttons>
-                <user-stats/>
+                <user-stats :user="user"/>
             </template>
             <template #extension>
                 <v-tabs v-model="tab" align-with-title>
