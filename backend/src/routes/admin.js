@@ -38,6 +38,8 @@ async function getUsers(ctx) {
             maxPastDaysEdit: user.maxPastDaysEdit,
             hidden:          user.hidden,
             active:          user.active,
+            points:          user.points,
+            money:           user.money,
         })),
     };
 }

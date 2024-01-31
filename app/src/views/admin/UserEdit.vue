@@ -8,17 +8,20 @@
             </template>
         </the-app-bar>
 
-        <shy-progress v-if="username === null"/>
+        <shy-progress v-if="user === null"/>
 
-        <v-container>
+        <v-container v-else>
             <v-form ref="form" :disabled="isBusy" @submit.prevent="save">
                 <v-text-field v-model="userId" label="User ID" disabled/>
-                <v-text-field v-model="username" label="Username" disabled/>
+                <v-text-field v-model="user.username" label="Username" disabled/>
                 <v-text-field v-model="name" label="Display name" :rules="nameRules"/>
                 <v-checkbox v-model="active" label="Active" hint="Allow user to log in and use the app" persistent-hint/>
                 <v-checkbox v-model="hidden" label="Hidden" hint="Hide the user from most lists" persistent-hint/>
                 <v-checkbox v-model="restrictEdit" label="Restrict editing events" hint="Do not allow editing events far in the past" persistent-hint/>
                 <number-field v-model="maxPastDaysEdit" hint="Number of days into the past to allow editing events" :disabled="!restrictEdit"/>
+
+                <number-field v-model="user.points" label="Exact points balance" readonly/>
+                <number-field v-model="user.money" label="Exact money balance" readonly/>
 
                 <!-- Button is to make it submittable by pressing enter -->
                 <v-btn type="submit" :disabled="isBusy" v-show="false">Save</v-btn>
@@ -44,7 +47,7 @@
         data() {
             return {
                 userId:          null,
-                username:        null,
+                user:            null,
                 name:            null,
                 active:          false,
                 hidden:          false,
@@ -61,7 +64,7 @@
             this.userId = parseInt(this.$route.params.id, 10);
             let users = await this.$store().adminFetchUsers();
             let user = users.find(u => u.id === this.userId);
-            this.username = user.username;
+            this.user = user;
             this.name = user.name;
             this.active = user.active;
             this.hidden = user.hidden;
