@@ -9,15 +9,16 @@
         @input="input"
         class="no-spinner"
         :disabled="isDisabled"
+        :readonly="readonly"
         :suffix="suffix"
         :hint="hint"
         :persistent-hint="hint !== null"
     >
         <template #append>
-            <v-btn small icon @click="addPoints(-step)" :disabled="isDisabled || min !== undefined && value <= min">
+            <v-btn small icon @click="addPoints(-step)" :disabled="min !== undefined && value <= min" v-if="!isDisabled && !readonly">
                 <v-icon small>{{ $icons.minus }}</v-icon>
             </v-btn>
-            <v-btn small icon @click="addPoints(step)" :disabled="isDisabled || max !== undefined && value >= max">
+            <v-btn small icon @click="addPoints(step)" :disabled="max !== undefined && value >= max" v-if="!isDisabled && !readonly">
                 <v-icon small>{{ $icons.plus }}</v-icon>
             </v-btn>
             <v-icon>{{ icon }}</v-icon>
@@ -36,6 +37,7 @@
         props: {
             value:    Number,
             disabled: Boolean,
+            readonly: Boolean,
             min:      {
                 type:    Number,
                 default: 0,
