@@ -17,6 +17,11 @@
                 <v-text-field v-model="name" label="Display name" :rules="nameRules"/>
                 <v-checkbox v-model="active" label="Active" :hint="this.active ? 'User is allowed to log in and use the app' : 'User cannot log in or use the app'" persistent-hint/>
                 <v-checkbox v-model="hidden" label="Hidden" :hint="hidden ? 'User is not displayed in lists' : 'User appears normally in all lists'" persistent-hint/>
+
+                <v-banner elevation="2" :icon="$icons.alert" icon-color="red" class="my-4" v-if="balanceWarning">
+                    Do not hide users with a non-zero balances!
+                </v-banner>
+
                 <v-checkbox v-model="restrictEdit" label="Restrict editing past events" persistent-hint/>
                 <number-field v-model="maxPastDaysEdit" label="Number of days into the past to allow editing events" :disabled="!restrictEdit"/>
 
@@ -91,6 +96,12 @@
                 } finally {
                     this.isBusy = false;
                 }
+            },
+        },
+
+        computed: {
+            balanceWarning() {
+                return this.hidden && (Math.abs(this.user.points) > 1e-6 || Math.abs(this.user.money) > 1e-6);
             },
         },
     };
