@@ -36,6 +36,21 @@ async function getDefaultFlatRate(ctx) {
  * @param {Application.Context} ctx
  * @returns {Promise<void>}
  */
+async function getDecommissionContraUser(ctx) {
+    let config = await Models.Configuration.findOne({
+        where: {
+            name: 'userAdmin.decommissionContraUser',
+        },
+    });
+    ctx.body = {
+        decommissionContraUser: config ? parseInt(config.value, 10) : null,
+    };
+}
+
+/**
+ * @param {Application.Context} ctx
+ * @returns {Promise<void>}
+ */
 async function migrate(ctx) {
     if (!process.env.ANDEO_LUNCH_CYPRESS) {
         ctx.throw(410, 'This endpoint only exists in testing environments');
@@ -78,6 +93,7 @@ async function getSnowfall(ctx) {
 function register(router) {
     router.get('/pay-up/default-recipient', getPayUpDefaultRecipient);
     router.get('/options/default-flat-rate', getDefaultFlatRate);
+    router.get('/options/decommission-contra-user', getDecommissionContraUser);
     router.get('/snowfall', getSnowfall);
     router.get('/migrate', migrate);
 }

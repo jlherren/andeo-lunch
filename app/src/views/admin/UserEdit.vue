@@ -28,10 +28,38 @@
                 <number-field v-model="user.points" label="Exact points balance" readonly/>
                 <number-field v-model="user.money" label="Exact money balance" readonly/>
 
+                <v-btn type="button" :disabled="isBusy || !decommissionContraUser || userId === decommissionContraUser" @click="openDecommissionConfirm">
+                    Clear balances {{ decommissionContraUser ? null : '(not configured)' }}
+                </v-btn>
+
                 <!-- Button is to make it submittable by pressing enter -->
                 <v-btn type="submit" :disabled="isBusy" v-show="false">Save</v-btn>
             </v-form>
         </v-container>
+
+        <v-dialog v-model="decommissionConfirm">
+            <v-card>
+                <v-card-title>
+                    Clear the balances of user "{{ user?.name }}"?
+                </v-card-title>
+                <v-card-text>
+                    <p>
+                        This will bring the balances to zero by creating transfers to or from user
+                        "{{ decommissionContraUserName?.name }}". Please note:
+                    </p>
+
+                    <ul>
+                        <li>Make sure that all lunches have been accounted for, point-wise and money-wise.</li>
+                        <li>It's best to do this no earlier than two months after the last participation.</li>
+                    </ul>
+                </v-card-text>
+                <v-card-actions>
+                    <v-btn text @click="decommissionConfirm = false" :disabled="isBusy">Cancel</v-btn>
+                    <v-spacer/>
+                    <v-btn @click="decommission" :disabled="isBusy" color="error">Yes, clear balances</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-main>
 </template>
 
@@ -39,6 +67,8 @@
     import NumberField from '@/components/NumberField.vue';
     import ShyProgress from '@/components/ShyProgress.vue';
     import TheAppBar from '@/components/TheAppBar.vue';
+    import {mapState} from 'pinia';
+    import {useStore} from '@/store';
 
     export default {
         name: 'UserEdit',
@@ -51,34 +81,41 @@
 
         data() {
             return {
-                userId:          null,
-                user:            null,
-                name:            null,
-                active:          false,
-                hidden:          false,
-                restrictEdit:    false,
-                maxPastDaysEdit: null,
-                isBusy:          true,
-                nameRules:       [
+                userId:              null,
+                user:                null,
+                name:                null,
+                active:              false,
+                hidden:              false,
+                restrictEdit:        false,
+                maxPastDaysEdit:     null,
+                isBusy:              true,
+                nameRules:           [
                     value => !!value || 'A display name is required',
                 ],
+                decommissionConfirm: false,
             };
         },
 
-        async created() {
+        created() {
             this.userId = parseInt(this.$route.params.id, 10);
-            let users = await this.$store().adminFetchUsers();
-            let user = users.find(u => u.id === this.userId);
-            this.user = user;
-            this.name = user.name;
-            this.active = user.active;
-            this.hidden = user.hidden;
-            this.restrictEdit = user.maxPastDaysEdit !== null;
-            this.maxPastDaysEdit = user.maxPastDaysEdit;
-            this.isBusy = false;
+            this.load();
         },
 
         methods: {
+            async load() {
+                this.isBusy = true;
+                let users = await this.$store().adminFetchUsers();
+                await this.$store().fetchDecommissionContraUser();
+                let user = users.find(u => u.id === this.userId);
+                this.user = user;
+                this.name = user.name;
+                this.active = user.active;
+                this.hidden = user.hidden;
+                this.restrictEdit = user.maxPastDaysEdit !== null;
+                this.maxPastDaysEdit = user.maxPastDaysEdit;
+                this.isBusy = false;
+            },
+
             async save() {
                 if (!this.$refs.form.validate()) {
                     return;
@@ -97,9 +134,73 @@
                     this.isBusy = false;
                 }
             },
+
+            openDecommissionConfirm() {
+                this.decommissionConfirm = true;
+            },
+
+            async decommission() {
+                let transfers = [];
+
+                if (this.user.points < -1e-6) {
+                    transfers.push({
+                        senderId:    this.decommissionContraUser,
+                        recipientId: this.userId,
+                        amount:      -this.user.points,
+                        currency:    'points',
+                    });
+                } else if (this.user.points > 1e-6) {
+                    transfers.push({
+                        senderId:    this.userId,
+                        recipientId: this.decommissionContraUser,
+                        amount:      this.user.points,
+                        currency:    'points',
+                    });
+                }
+                if (this.user.money < -1e-6) {
+                    transfers.push({
+                        senderId:    this.decommissionContraUser,
+                        recipientId: this.userId,
+                        amount:      -this.user.money,
+                        currency:    'money',
+                    });
+                } else if (this.user.money > 1e-6) {
+                    transfers.push({
+                        senderId:    this.userId,
+                        recipientId: this.decommissionContraUser,
+                        amount:      this.user.money,
+                        currency:    'money',
+                    });
+                }
+
+                try {
+                    this.isBusy = true;
+                    if (transfers.length) {
+                        await this.$store().saveEvent({
+                            name:      `Decommission ${this.user.name}`,
+                            date:      new Date(),
+                            type:      'transfer',
+                            immutable: true,
+                            transfers: transfers,
+                        });
+                    }
+                    await this.load();
+                    this.decommissionConfirm = false;
+                } finally {
+                    this.isBusy = false;
+                }
+            },
         },
 
         computed: {
+            ...mapState(useStore, [
+                'decommissionContraUser',
+            ]),
+
+            decommissionContraUserName() {
+                return this.$store().user(this.decommissionContraUser);
+            },
+
             balanceWarning() {
                 return this.hidden && (Math.abs(this.user.points) > 1e-6 || Math.abs(this.user.money) > 1e-6);
             },
