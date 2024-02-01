@@ -19,7 +19,7 @@
                 <v-checkbox v-model="hidden" label="Hidden" :hint="hidden ? 'User is not displayed in lists' : 'User appears normally in all lists'" persistent-hint/>
 
                 <v-banner elevation="2" :icon="$icons.alert" icon-color="red" class="my-4" v-if="balanceWarning">
-                    Do not hide users with a non-zero balances!
+                    Do not hide users with non-zero balances!
                 </v-banner>
 
                 <v-checkbox v-model="restrictEdit" label="Restrict editing past events" persistent-hint/>
