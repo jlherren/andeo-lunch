@@ -1,3 +1,4 @@
+import * as IcsUtils from '../icsUtils.js';
 import {Configuration} from '../db/models.js';
 import HttpErrors from 'http-errors';
 
@@ -102,6 +103,23 @@ async function getSnowfall(ctx) {
 }
 
 /**
+ * @param {Application.Context} ctx
+ * @return {Promise<void>}
+ */
+async function createIcsLink(ctx) {
+    let packed = IcsUtils.pack({
+        u: ctx.user.id,
+        a: ctx.request.body.all === true,
+        r: ctx.request.body.alarm === true,
+    });
+
+    let signature = await IcsUtils.sign(packed);
+    ctx.body = {
+        url: `/public/ics/${packed}-${signature}/lunch.ics`,
+    };
+}
+
+/**
  * @param {Router} router
  */
 export default function register(router) {
@@ -111,4 +129,5 @@ export default function register(router) {
     router.get('/options/decommission-contra-user', getDecommissionContraUser);
     router.get('/snowfall', getSnowfall);
     router.get('/migrate', migrate);
+    router.post('/ics/link', createIcsLink);
 }

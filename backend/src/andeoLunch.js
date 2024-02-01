@@ -9,6 +9,7 @@ import GroceryRoutes from './routes/grocery.js';
 import Koa from 'koa';
 import Logger from 'koa-logger';
 import MiscRoutes from './routes/misc.js';
+import PublicRoutes from './routes/public.js';
 import Router from '@koa/router';
 import SettingsRoutes from './routes/settings.js';
 import ToolsRoutes from './routes/tools.js';
@@ -20,6 +21,7 @@ const URLS_WITHOUT_AUTH = [
     '/api/account/login',
     '/api/migrate',
 ];
+const PUBLIC_API_URL_PREFIX = '/api/public/';
 
 /**
  * Main app class
@@ -102,7 +104,7 @@ export class AndeoLunch {
             let url = ctx.request.url;
             // remove the query part
             url = url.replace(/\?.*/u, '');
-            if (!URLS_WITHOUT_AUTH.includes(url)) {
+            if (!URLS_WITHOUT_AUTH.includes(url) && !url.startsWith(PUBLIC_API_URL_PREFIX)) {
                 await RouteUtils.requireUser(ctx);
             }
             return next();
@@ -166,6 +168,7 @@ export class AndeoLunch {
         GroceryRoutes(router);
         AdminRoutes(router);
         ToolsRoutes(router);
+        PublicRoutes(router);
 
         return router;
     }

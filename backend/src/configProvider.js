@@ -14,7 +14,10 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
  * @typedef {Object} Config
  * @property {Object<string, any>} database
  * @property {number} [port]
+ * @property {string} bind
  * @property {string} tokenExpiry
+ * @property {number} [lag]
+ * @property {string} [frontendUrl]
  */
 const configSchema = Joi.object({
     database:    Joi.object({
@@ -24,6 +27,7 @@ const configSchema = Joi.object({
     bind:        Joi.string().default('127.0.0.1'),
     tokenExpiry: Joi.string().min(1).default(DEFAULT_TOKEN_EXPIRY),
     lag:         Joi.number(),
+    frontendUrl: Joi.string(),
 }).unknown(true);
 
 /**
@@ -62,22 +66,23 @@ export async function getMainConfig() {
  * @return {Promise<Config>}
  */
 export async function getTestConfig() {
-    let config = null;
+    /** @type {Config} */
+    let config = {
+        frontendUrl: 'https://app.example.com',
+        port:        null,
+    };
 
     if (process.env.TEST_DB === 'mariadb') {
         if (!process.env.TEST_DB_NAME) {
             throw new Error('Running MariaDB tests requires TEST_DB_* environment variables to be set');
         }
-        config = /** @type {Config} */ {
-            database: {
-                dialect:  'mariadb',
-                host:     process.env.TEST_DB_HOST,
-                port:     process.env.TEST_DB_PORT,
-                database: process.env.TEST_DB_NAME,
-                username: process.env.TEST_DB_USERNAME,
-                password: process.env.TEST_DB_PASSWORD,
-            },
-            port:     null,
+        config.database = {
+            dialect:  'mariadb',
+            host:     process.env.TEST_DB_HOST,
+            port:     process.env.TEST_DB_PORT,
+            database: process.env.TEST_DB_NAME,
+            username: process.env.TEST_DB_USERNAME,
+            password: process.env.TEST_DB_PASSWORD,
         };
         config = validateConfig(config);
 
@@ -94,12 +99,9 @@ export async function getTestConfig() {
         await connection.end();
     } else {
         // Otherwise use an in-memory SQLite DB
-        config = /** @type {Config} */ {
-            database: {
-                dialect: 'sqlite',
-                storage: ':memory:',
-            },
-            port:     null,
+        config.database = {
+            dialect: 'sqlite',
+            storage: ':memory:',
         };
         config = validateConfig(config);
     }

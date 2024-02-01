@@ -2,9 +2,9 @@
 
 set -euo pipefail
 
-if [[ -z "${VUE_APP_BACKEND_URL:-}" || -z "${VUE_APP_BRANDING_TITLE:-}" ]]; then
+if [[ -z "${VUE_APP_BACKEND_URL:-}" || -z "${VUE_APP_BRANDING_TITLE:-}" || -z "${FRONTEND_URL:-}" ]]; then
     echo ''
-    echo 'ERROR: Necessary VUE_APP_* variables are not set, cannot build.'
+    echo 'ERROR: Necessary environment variables are not set, cannot build.'
     echo '       (app/.env will NOT be used for building!)'
     echo ''
     exit 1
@@ -30,5 +30,6 @@ docker build \
 docker build \
     --pull \
     -t andeo-lunch-backend${DOCKER_IMAGE_SUFFIX:-} \
+    --build-arg FRONTEND_URL="$FRONTEND_URL" \
     -f docker/Dockerfile.backend \
     .

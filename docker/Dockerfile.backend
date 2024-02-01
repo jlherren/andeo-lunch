@@ -16,5 +16,7 @@ COPY --from=backend-build /build/node_modules /srv/andeo-lunch/node_modules
 COPY --from=backend-build /build/backend /srv/andeo-lunch/backend
 RUN echo '{"database": {"dialect": "mariadb"}, "bind": "0.0.0.0"}' > config.json
 RUN echo '{"type": "module"}' > package.json
+ARG FRONTEND_URL
+ENV FRONTEND_URL=$FRONTEND_URL
 EXPOSE 3000
 CMD ["bin/andeoLunch"]
