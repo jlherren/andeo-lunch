@@ -9,7 +9,7 @@
         "cypress"
     ],
     "engines": {
-        "node": ">= 16.18.0"
+        "node": ">= 18.18.0"
     },
     "scripts": {
         "check": "yarn check:global && yarn check:app && yarn check:backend && yarn check:cypress",
@@ -18,5 +18,5 @@
         "check:backend": "yarn workspace andeo-lunch-backend run lint && yarn workspace andeo-lunch-backend run test",
         "check:cypress": "yarn workspace andeo-lunch-cypress run lint"
     },
-    "packageManager": "yarn@4.0.1"
+    "packageManager": "yarn@4.1.0"
 }
