@@ -71,4 +71,54 @@ describe('user admin', () => {
         expect(response.body.userId).toBe(userId);
         expect(response.body.username).toBe('joe');
     });
+
+    it('resets password', async () => {
+        let other = await Helper.createUser('otheruser');
+        let response = await client.post(`/api/admin/users/${other.id}/password`)
+            .send({
+                newPassword:          'qwe456',
+                ownPassword:          'abc123',
+            });
+        expect(response.status).toBe(200);
+        expect(response.body.success).toBe(true);
+
+        // Login with new password
+        response = await client.post('/api/account/login')
+            .send({username: other.username, password: 'qwe456'});
+        expect(response.status).toBe(200);
+    });
+
+    it('does not reset password with wrong own', async () => {
+        let other = await Helper.createUser('otheruser');
+        let response = await client.post(`/api/admin/users/${other.id}/password`)
+            .send({
+                newPassword:          'qwe456',
+                ownPassword:          'qwe456',
+            });
+        expect(response.status).toBe(200);
+        expect(response.body.success).toBe(false);
+        expect(response.body.reason).toBe('own-password-invalid');
+
+        // Login with old password
+        response = await client.post('/api/account/login')
+            .send({username: other.username, password: 'abc123'});
+        expect(response.status).toBe(200);
+    });
+
+    it('does not reset password with too short password', async () => {
+        let other = await Helper.createUser('otheruser');
+        let response = await client.post(`/api/admin/users/${other.id}/password`)
+            .send({
+                newPassword:          'a',
+                ownPassword:          'abc123',
+            });
+        expect(response.status).toBe(200);
+        expect(response.body.success).toBe(false);
+        expect(response.body.reason).toBe('new-password-too-short');
+
+        // Login with old password
+        response = await client.post('/api/account/login')
+            .send({username: other.username, password: 'abc123'});
+        expect(response.status).toBe(200);
+    });
 });

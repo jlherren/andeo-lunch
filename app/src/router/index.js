@@ -130,6 +130,10 @@ const routes = [
         component: () => import('@/views/admin/UserEdit'),
     },
     {
+        path:      '/admin/users/:id(\\d+)/password',
+        component: () => import('@/views/admin/UserResetPassword'),
+    },
+    {
         path:      '/tools',
         component: () => import('@/views/tools/Tools'),
     },

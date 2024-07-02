@@ -28,9 +28,19 @@
                 <number-field v-model="user.points" label="Exact points balance" readonly/>
                 <number-field v-model="user.money" label="Exact money balance" readonly/>
 
-                <v-btn type="button" :disabled="isBusy || !decommissionContraUser || userId === decommissionContraUser" @click="openDecommissionConfirm">
-                    Clear balances {{ decommissionContraUser ? null : '(not configured)' }}
-                </v-btn>
+                <v-row>
+                    <v-col cols="auto">
+                        <v-btn type="button" :disabled="isBusy" :to='`/admin/users/${userId}/password`'>
+                            Reset password
+                        </v-btn>
+                    </v-col>
+
+                    <v-col cols="auto">
+                        <v-btn type="button" :disabled="isBusy || !decommissionContraUser || userId === decommissionContraUser" @click="openDecommissionConfirm">
+                            Clear balances {{ decommissionContraUser ? null : '(not configured)' }}
+                        </v-btn>
+                    </v-col>
+                </v-row>
 
                 <!-- Button is to make it submittable by pressing enter -->
                 <v-btn type="submit" :disabled="isBusy" v-show="false">Save</v-btn>

@@ -536,6 +536,23 @@ export let useStore = defineStore('main', {
             return response.data.userId;
         },
 
+        /**
+         * @param {number} id
+         * @param {string} newPassword
+         * @param {string} ownPassword
+         * @returns {Promise<true|string>}
+         */
+        async adminResetPassword(id, newPassword, ownPassword) {
+            let response = await Backend.post(`/admin/users/${id}/password`, {
+                newPassword,
+                ownPassword,
+            });
+            if (response.data.success) {
+                return true;
+            }
+            return response.data.reason;
+        },
+
         fetchSnowfall() {
             return Cache.ifNotFresh('nSnowFlakes', 0, 60000, async () => {
                 let response = await Backend.get('/snowfall');

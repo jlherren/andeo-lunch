@@ -18,6 +18,11 @@ const createUserSchema = Joi.object({
     password: Joi.string().required().min(1),
 });
 
+const resetPasswordSchema = Joi.object({
+    newPassword: Joi.string().required().min(1),
+    ownPassword: Joi.string().required().min(1),
+});
+
 /**
  * @param {Application.Context} ctx
  * @returns {Promise<void>}
@@ -67,6 +72,56 @@ async function saveUser(ctx) {
  * @param {Application.Context} ctx
  * @returns {Promise<void>}
  */
+async function resetPassword(ctx) {
+    RouteUtils.requirePermission(ctx, 'admin.user');
+
+    let requestBody = RouteUtils.validateBody(ctx, resetPasswordSchema);
+
+    let user = await Models.User.findByPk(parseInt(ctx.params.user, 10));
+    if (!user) {
+        ctx.throw(404, 'No such user');
+    }
+
+    let ownUserPassword = await Models.UserPassword.findOne({
+        where: {
+            user: ctx.user.id,
+        },
+    });
+    let otherUserPassword = await Models.UserPassword.findOne({
+        where: {
+            user: user.id,
+        },
+    });
+
+    if (!await AuthUtils.comparePassword(requestBody.ownPassword, ownUserPassword.password)) {
+        ctx.body = {
+            success: false,
+            reason:  'own-password-invalid',
+        };
+        return;
+    }
+
+    if (requestBody.newPassword.length < 6) {
+        ctx.body = {
+            success: false,
+            reason:  'new-password-too-short',
+        };
+        return;
+    }
+
+    otherUserPassword.password = await AuthUtils.hashPassword(requestBody.newPassword);
+    otherUserPassword.lastChange = new Date();
+    await otherUserPassword.save();
+
+    ctx.body = {
+        success: true,
+    };
+}
+
+/**
+ * @param {Application.Context} ctx
+ * @returns {Promise<void>}
+ */
 async function createUser(ctx) {
     RouteUtils.requirePermission(ctx, 'admin.user');
 
@@ -92,5 +147,6 @@ async function createUser(ctx) {
 exports.register = function register(router) {
     router.get('/admin/users', getUsers);
     router.post('/admin/users/:user(\\d+)', saveUser);
+    router.post('/admin/users/:user(\\d+)/password', resetPassword);
     router.post('/admin/users', createUser);
 };
