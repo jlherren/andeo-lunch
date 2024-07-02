@@ -79,6 +79,7 @@
                 switch (this.participation.type) {
                     case 'omnivorous':
                     case 'vegetarian':
+                    case 'opt-in':
                         return 'primary';
                     default:
                         return 'gray';
