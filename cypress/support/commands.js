@@ -51,6 +51,28 @@ function login(username, password) {
 Cypress.Commands.add('login', login);
 
 /**
+ * Logout
+ *
+ * @memberof cy
+ */
+function logout() {
+    cy.visit('/');
+    cy.get('.v-app-bar button')
+        .click();
+    cy.contains('a', 'Account settings')
+        .click();
+    cy.contains('[role=listitem]', 'Logout')
+        .click();
+    cy.getDialog()
+        .within(() => {
+            cy.contains('button', 'Yes, logout')
+                .click();
+        });
+}
+
+Cypress.Commands.add('logout', logout);
+
+/**
  * Expect a dialog and wait for it to have finished fading in and yield the dialog, which can then be used with
  * within().  (Waiting for the fade in is important for running Cypress headless, otherwise it will be difficult to
  * see anything that happens inside the dialog)

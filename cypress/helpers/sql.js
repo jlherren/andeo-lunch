@@ -69,6 +69,27 @@ export const USERS = {
             `);
         },
     },
+
+    anna: {
+        id:       14,
+        username: 'anna.admin',
+        password: DEFAULT_PASSWORD,
+        name:     'Anna Admin',
+        insert() {
+            cy.task('db:sql', `
+                INSERT INTO user (id, username, name, active, createdAt, updatedAt)
+                    VALUES (14, 'anna.admin', 'Anna Admin', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+            `);
+            cy.task('db:sql', `
+                INSERT INTO userPassword (user, password, createdAt, updatedAt)
+                    VALUES (14, '${DEFAULT_PASSWORD_HASH}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+            `);
+            cy.task('db:sql', `
+                INSERT INTO userPermission (user, permission)
+                    VALUES (14, (SELECT id FROM permission WHERE name = 'admin.user'));
+            `);
+        },
+    },
 };
 
 export const EVENTS = {
