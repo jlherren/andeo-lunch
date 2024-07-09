@@ -14,6 +14,12 @@ async function up({context: sequelize}) {
         defaultValue: false,
         after:        'maxPastDaysEdit',
     });
+    await queryInterface.addColumn('user', 'hiddenFromEvents', {
+        type:         DataTypes.BOOLEAN,
+        allowNull:    false,
+        defaultValue: false,
+        after:        'pointExempted',
+    });
 }
 
 /**
@@ -22,6 +28,7 @@ async function up({context: sequelize}) {
  */
 async function down({context: sequelize}) {
     let queryInterface = sequelize.getQueryInterface();
+    await queryInterface.removeColumn('user', 'hiddenFromEvents');
     await queryInterface.removeColumn('user', 'pointExempted');
 }
 

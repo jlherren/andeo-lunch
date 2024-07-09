@@ -29,6 +29,7 @@ class Configuration extends Model {
  * @property {number} money
  * @property {number} maxPastDaysEdit
  * @property {number} pointExempted
+ * @property {number} hiddenFromEvents
  * @property {Object} settings
  * @property {Array<Permission>} Permissions
  */
@@ -62,14 +63,15 @@ class User extends Model {
      */
     toApi() {
         return {
-            id:            this.id,
-            name:          this.name,
-            balances:      {
+            id:               this.id,
+            name:             this.name,
+            balances:         {
                 points: this.points,
                 money:  this.money,
             },
-            hidden:        this.hidden,
-            pointExempted: this.pointExempted,
+            hidden:           this.hidden,
+            pointExempted:    this.pointExempted,
+            hiddenFromEvents: this.hiddenFromEvents,
         };
     }
 }
@@ -457,15 +459,16 @@ exports.initModels = function initModels(sequelize) {
     });
 
     User.init({
-        username:        {type: ch.ascii(64), allowNull: false, unique: 'user_username_idx'},
-        name:            {type: DataTypes.STRING(64), allowNull: false},
-        active:          {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
-        hidden:          {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
-        points:          {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
-        money:           {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
-        maxPastDaysEdit: {type: DataTypes.SMALLINT, allowNull: true, defaultValue: null},
-        pointExempted:   {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
-        settings:        {type: DataTypes.JSON, allowNull: true, defaultValue: null},
+        username:         {type: ch.ascii(64), allowNull: false, unique: 'user_username_idx'},
+        name:             {type: DataTypes.STRING(64), allowNull: false},
+        active:           {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
+        hidden:           {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
+        points:           {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
+        money:            {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
+        maxPastDaysEdit:  {type: DataTypes.SMALLINT, allowNull: true, defaultValue: null},
+        pointExempted:    {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
+        hiddenFromEvents: {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
+        settings:         {type: DataTypes.JSON, allowNull: true, defaultValue: null},
         // Note: Couldn't manage to set default on 'settings'
     }, {
         sequelize,

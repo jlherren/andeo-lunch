@@ -41,47 +41,52 @@ afterEach(async () => {
 describe('Users', () => {
     it('Lists all users', async () => {
         await user2.update({
-            pointExempted: true,
+            pointExempted:    true,
+            hiddenFromEvents: true,
         });
 
         let response = await request.get('/api/users');
         expect(response.status).toBe(200);
         expect(response.body.users).toHaveLength(4);
         expect(response.body.users[0]).toMatchObject({
-            name:          'Andeo',
-            balances:      {
+            name:             'Andeo',
+            balances:         {
                 money:  0,
                 points: 0,
             },
-            hidden:        false,
-            pointExempted: false,
+            hidden:           false,
+            pointExempted:    false,
+            hiddenFromEvents: false,
         });
         expect(response.body.users[1]).toMatchObject({
-            name:          'System user',
-            balances:      {
+            name:             'System user',
+            balances:         {
                 money:  0,
                 points: 0,
             },
-            hidden:        true,
-            pointExempted: false,
+            hidden:           true,
+            pointExempted:    false,
+            hiddenFromEvents: false,
         });
         expect(response.body.users[2]).toMatchObject({
-            name:          'User test-user-1',
-            balances:      {
+            name:             'User test-user-1',
+            balances:         {
                 money:  0,
                 points: 0,
             },
-            hidden:        false,
-            pointExempted: false,
+            hidden:           false,
+            pointExempted:    false,
+            hiddenFromEvents: false,
         });
         expect(response.body.users[3]).toMatchObject({
-            name:          'User test-user-2',
-            balances:      {
+            name:             'User test-user-2',
+            balances:         {
                 money:  0,
                 points: 0,
             },
-            hidden:        false,
-            pointExempted: true,
+            hidden:           false,
+            pointExempted:    true,
+            hiddenFromEvents: true,
         });
     });
 });

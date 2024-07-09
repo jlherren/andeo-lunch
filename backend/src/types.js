@@ -7,6 +7,7 @@
  * @property {{points: number, money: number}} balances
  * @property {boolean} hidden
  * @property {boolean} pointExempted
+ * @property {boolean} hiddenFromEvents
  */
 
 /**
