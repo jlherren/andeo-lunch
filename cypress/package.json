@@ -12,14 +12,14 @@
         "cypress:run": "cypress run"
     },
     "devDependencies": {
-        "axios": "~1.6.7",
-        "cypress": "~13.6.4",
+        "axios": "~1.7.2",
+        "cypress": "~13.13.0",
         "eslint": "~8.57.0",
-        "eslint-plugin-cypress": "~2.15.1",
+        "eslint-plugin-cypress": "~3.3.0",
         "eslint-plugin-import": "~2.29.1",
-        "eslint-plugin-jsdoc": "~48.2.1",
+        "eslint-plugin-jsdoc": "~48.5.2",
         "eslint-plugin-node": "~11.1.0",
-        "eslint-plugin-promise": "~6.1.1",
+        "eslint-plugin-promise": "~6.4.0",
         "eslint-plugin-standard": "~5.0.0",
         "mariadb": "~3.0.2"
     }
