@@ -16,10 +16,9 @@ cd $(dirname "$0")/..
 echo "Removing existing container"
 docker stop "$DB_CONTAINER_NAME" 2> /dev/null || true
 
-# MariaDB 10.5 is mostly used for development, 10.6 is used for production (it's an LTS version).
-# Versions 10.7, 10.8, 10.9 are already or soon to be end-of-life.  10.11 is an LTS version.
+# This only tests LTS versions of MariaDB.  Production currently uses 10.6.
 
-for MARIADB_VERSION in 10.5 10.6 10.10 10.11; do
+for MARIADB_VERSION in 10.6 10.11 11.4; do
     echo "Starting MariaDB $MARIADB_VERSION"
     docker run \
         --pull=always \
