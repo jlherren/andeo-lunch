@@ -44,9 +44,10 @@ describe('user admin', () => {
     it('modifies user', async () => {
         let response = await client.post(`/api/admin/users/${user.id}`)
             .send({
+                name:            'Awesome',
                 active:          true,
                 hidden:          true,
-                name:            'Awesome',
+                pointExempted:   true,
                 maxPastDaysEdit: 10,
             });
         expect(response.status).toBe(204);
@@ -57,6 +58,7 @@ describe('user admin', () => {
         expect(myself.hidden).toBe(true);
         expect(myself.name).toBe('Awesome');
         expect(myself.maxPastDaysEdit).toBe(10);
+        expect(myself.pointExempted).toBe(true);
     });
 
     it('creates user', async () => {

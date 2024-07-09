@@ -11,19 +11,21 @@ const Constants = require('./constants');
  *
  * @param {Event} event
  * @param {Participation} participation
+ * @param {Array<number>} pointExemptedUsers
  * @returns {{moneyWeight: number, pointsWeight: number}}
  */
-function getWeightsForParticipation(event, participation) {
+function getWeightsForParticipation(event, participation, pointExemptedUsers) {
+    let isPointExempted = pointExemptedUsers.includes(participation.user);
     if (event.type === Constants.EVENT_TYPES.LUNCH) {
         switch (participation.type) {
             case Constants.PARTICIPATION_TYPES.OMNIVOROUS:
                 return {
-                    pointsWeight: 1,
+                    pointsWeight: isPointExempted ? 0 : 1,
                     moneyWeight:  1,
                 };
             case Constants.PARTICIPATION_TYPES.VEGETARIAN:
                 return {
-                    pointsWeight: 1,
+                    pointsWeight: isPointExempted ? 0 : 1,
                     moneyWeight:  event.Lunch.vegetarianMoneyFactor,
                 };
             case Constants.PARTICIPATION_TYPES.OPT_OUT:
@@ -37,7 +39,7 @@ function getWeightsForParticipation(event, participation) {
         switch (participation.type) {
             case Constants.PARTICIPATION_TYPES.OPT_IN:
                 return {
-                    pointsWeight: 1,
+                    pointsWeight: isPointExempted ? 0 : 1,
                     moneyWeight:  participation.moneyFactor,
                 };
             case Constants.PARTICIPATION_TYPES.OPT_OUT:
@@ -106,6 +108,10 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
     if (andeoUser === null) {
         throw new Error('Andeo user not found');
     }
+    let [rows] = await dbTransaction.sequelize.query(
+        'SELECT u.id FROM user AS u WHERE u.pointExempted = 1',
+    );
+    let pointExemptedUsers = rows.map(row => row.id);
 
     // get all existing transactions for that event
     /** @type {Object<string, Array<Transaction>>} */
@@ -213,7 +219,7 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
         let totalMoneyCredited = 0;
 
         for (let participation of participations) {
-            let {pointsWeight, moneyWeight} = getWeightsForParticipation(event, participation);
+            let {pointsWeight, moneyWeight} = getWeightsForParticipation(event, participation, pointExemptedUsers);
             totalPointsWeight += pointsWeight;
             totalMoneyWeight += moneyWeight;
             totalPointsCredited += participation.pointsCredited;
@@ -241,7 +247,7 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
         let totalPointSum = 0.0;
 
         for (let participation of participations) {
-            let {pointsWeight, moneyWeight} = getWeightsForParticipation(event, participation);
+            let {pointsWeight, moneyWeight} = getWeightsForParticipation(event, participation, pointExemptedUsers);
 
             // credit points for organizing the event
             let pointsCredited = participation.pointsCredited * pointsCreditPerPointsCredited;

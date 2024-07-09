@@ -9,6 +9,7 @@ const editUserSchema = Joi.object({
     name:            Joi.string().required().min(1),
     active:          Joi.boolean(),
     hidden:          Joi.boolean(),
+    pointExempted:   Joi.boolean(),
     maxPastDaysEdit: Joi.number().min(0).allow(null),
 });
 
@@ -37,12 +38,12 @@ async function getUsers(ctx) {
     });
     ctx.body = {
         users: users.map(user => ({
-            id:              user.id,
+            ...user.toApi(),
             username:        user.username,
-            name:            user.name,
-            maxPastDaysEdit: user.maxPastDaysEdit,
-            hidden:          user.hidden,
             active:          user.active,
+            maxPastDaysEdit: user.maxPastDaysEdit,
+
+            // These will be removed, but the app first needs to be updated.
             points:          user.points,
             money:           user.money,
         })),

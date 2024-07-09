@@ -356,6 +356,52 @@ describe('Transactions for lunch', () => {
         expect(response.status).toBe(200);
         expect(response.body.user.balances).toEqual({points: 0, money: 0});
     });
+
+    it('Point exempted omnivorous user', async () => {
+        await user1.update({
+            pointExempted: true,
+        });
+
+        await request.post(`${eventUrl}/participations/${user1.id}`).send(participation1);
+        await request.post(`${eventUrl}/participations/${user2.id}`).send(participation2);
+
+        let response = await request.get(`/api/users/${user1.id}`);
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toEqual({
+            money:  -20,
+            points: 8,
+        });
+
+        response = await request.get(`/api/users/${user2.id}`);
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toEqual({
+            money:  20,
+            points: -8,
+        });
+    });
+
+    it('Point exempted vegetarian user', async () => {
+        await user2.update({
+            pointExempted: true,
+        });
+
+        await request.post(`${eventUrl}/participations/${user1.id}`).send(participation1);
+        await request.post(`${eventUrl}/participations/${user2.id}`).send(participation2);
+
+        let response = await request.get(`/api/users/${user1.id}`);
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toEqual({
+            money:  -20,
+            points: 0,
+        });
+
+        response = await request.get(`/api/users/${user2.id}`);
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toEqual({
+            money:  20,
+            points: 0,
+        });
+    });
 });
 
 describe('Recalculates transactions and balances after event date change', () => {
@@ -565,6 +611,50 @@ describe('Special events', () => {
         expect(response.body.user.balances).toEqual({points: -2, money: -4});
         response = await request.get(`/api/users/${user3.id}`);
         expect(response.body.user.balances).toEqual({points: 0, money: 2});
+    });
+
+    it('Point exempted user', async () => {
+        let eventId = await Helper.createEvent(request, {
+            name:  'Special event',
+            date:  EVENT_DATE_0,
+            type:  'special',
+            costs: {
+                points: 8,
+            },
+        });
+        await user2.update({
+            pointExempted: true,
+        });
+
+        let eventUrl = `/api/events/${eventId}`;
+        await request.post(`${eventUrl}/participations/${user1.id}`).send({
+            type:    'opt-in',
+            credits: {
+                points: 0,
+                money:  30,
+            },
+        });
+        await request.post(`${eventUrl}/participations/${user2.id}`).send({
+            type:    'opt-in',
+            credits: {
+                points: 8,
+                money:  0,
+            },
+        });
+
+        let response = await request.get(`/api/users/${user1.id}`);
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toEqual({
+            money:  15,
+            points: -8,
+        });
+
+        response = await request.get(`/api/users/${user2.id}`);
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toEqual({
+            money:  -15,
+            points: 8,
+        });
     });
 });
 

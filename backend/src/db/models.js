@@ -28,6 +28,7 @@ class Configuration extends Model {
  * @property {number} points
  * @property {number} money
  * @property {number} maxPastDaysEdit
+ * @property {number} pointExempted
  * @property {Object} settings
  * @property {Array<Permission>} Permissions
  */
@@ -61,13 +62,14 @@ class User extends Model {
      */
     toApi() {
         return {
-            id:       this.id,
-            name:     this.name,
-            balances: {
+            id:            this.id,
+            name:          this.name,
+            balances:      {
                 points: this.points,
                 money:  this.money,
             },
-            hidden:   this.hidden,
+            hidden:        this.hidden,
+            pointExempted: this.pointExempted,
         };
     }
 }
@@ -462,6 +464,7 @@ exports.initModels = function initModels(sequelize) {
         points:          {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
         money:           {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
         maxPastDaysEdit: {type: DataTypes.SMALLINT, allowNull: true, defaultValue: null},
+        pointExempted:   {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false},
         settings:        {type: DataTypes.JSON, allowNull: true, defaultValue: null},
         // Note: Couldn't manage to set default on 'settings'
     }, {
