@@ -18,6 +18,7 @@ services:
             MARIADB_DATABASE: andeolunch
             MARIADB_USER: andeolunch
             MARIADB_PASSWORD_FILE: /run/secrets/db-user-password
+            MARIADB_AUTO_UPGRADE: 'yes'
         secrets:
             - db-root-password
             - db-user-password
