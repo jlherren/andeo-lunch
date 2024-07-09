@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-if [[ -z "$VUE_APP_BACKEND_URL" || -z "$VUE_APP_BRANDING_TITLE" ]]; then
+if [[ -z "${VUE_APP_BACKEND_URL:-}" || -z "${VUE_APP_BRANDING_TITLE:-}" ]]; then
     echo ''
     echo 'ERROR: Necessary VUE_APP_* variables are not set, cannot build.'
     echo '       (app/.env will NOT be used for building!)'
