@@ -34,6 +34,8 @@
  * @property {Array<ApiTransfer>} [transfers]
  * @property {string} [comment]
  * @property {number|null} [participationFlatRate]
+ * @property {number} [participationFee]
+ * @property {number|null} [participationFeeRecipientId]
  * @property {boolean} [triggerDefaultOptIn]
  * @property {boolean} [immutable]
  */

@@ -115,24 +115,26 @@ export class Event extends Model {
      */
     toApi(user, systemUserId) {
         return {
-            id:                    this.id,
-            type:                  Constants.EVENT_TYPE_NAMES[this.type],
-            date:                  this.date,
-            name:                  this.name,
-            costs:                 this.Lunch && {
+            id:                          this.id,
+            type:                        Constants.EVENT_TYPE_NAMES[this.type],
+            date:                        this.date,
+            name:                        this.name,
+            costs:                       this.Lunch && {
                 points: this.Lunch.pointsCost,
                 money:  this.Lunch.moneyCost,
             },
-            factors:               this.Lunch && {
+            factors:                     this.Lunch && {
                 [Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.VEGETARIAN]]: {
                     [Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY]]: this.Lunch.vegetarianMoneyFactor,
                 },
             },
-            participationFlatRate: this.Lunch?.participationFlatRate,
-            transfers:             this.Transfers?.map(transfer => transfer.toApi(systemUserId)),
-            comment:               this.Lunch?.comment,
-            canEdit:               EventManager.userCanEditDate(user, this.date),
-            immutable:             this.type === Constants.EVENT_TYPES.TRANSFER ? this.immutable : undefined,
+            participationFlatRate:       this.Lunch?.participationFlatRate,
+            participationFee:            this.Lunch?.participationFee,
+            participationFeeRecipientId: this.Lunch?.participationFeeRecipient,
+            transfers:                   this.Transfers?.map(transfer => transfer.toApi(systemUserId)),
+            comment:                     this.Lunch?.comment,
+            canEdit:                     EventManager.userCanEditDate(user, this.date),
+            immutable:                   this.type === Constants.EVENT_TYPES.TRANSFER ? this.immutable : undefined,
         };
     }
 
@@ -154,6 +156,7 @@ export class Event extends Model {
                 },
             },
             participationFlatRate: this.Lunch?.participationFlatRate,
+            participationFee:      this.Lunch?.participationFee,
             comment:               comment,
         };
     }
@@ -164,6 +167,9 @@ export class Event extends Model {
  * @property {number} moneyCost
  * @property {number|null} vegetarianMoneyFactor
  * @property {number|null} participationFlatRate
+ * @property {number} participationFee
+ * @property {number|null} participationFeeRecipient
+ * @property {User} [ParticipationFeeRecipient]
  * @property {string|null} comment
  * @property {number} event
  * @property {Event} [Event]
@@ -520,15 +526,22 @@ export function initModels(sequelize) {
 
         // Note: moneyCost is purely informational and won't affect calculations!  The moneyCredited field
         // of participations is what will actually be used for calculations.
-        moneyCost:             {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
-        vegetarianMoneyFactor: {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 1},
-        participationFlatRate: {type: DataTypes.DOUBLE, allowNull: true, defaultValue: null},
-        comment:               {type: DataTypes.TEXT, allowNull: true, defaultValue: null},
+        moneyCost:                 {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
+        vegetarianMoneyFactor:     {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 1},
+        participationFlatRate:     {type: DataTypes.DOUBLE, allowNull: true, defaultValue: null},
+        participationFee:          {type: DataTypes.DOUBLE, allowNull: false, defaultValue: 0.0},
+        participationFeeRecipient: {type: DataTypes.INTEGER, allowNull: true, defaultValue: null},
+        comment:                   {type: DataTypes.TEXT, allowNull: true, defaultValue: null},
     }, {
         sequelize,
         modelName: 'lunch',
+        indexes:   [{
+            name:   'lunch_participationFeeRecipient_idx',
+            fields: ['participationFeeRecipient'],
+        }],
     });
     Lunch.belongsTo(Event, {foreignKey: {name: 'event'}, as: 'Event', ...cascade});
+    Lunch.belongsTo(User, {foreignKey: {name: 'participationFeeRecipient'}, as: 'ParticipationFeeRecipient', ...cascade});
     Event.hasOne(Lunch, {foreignKey: {name: 'event'}, as: 'Lunch', ...cascade});
 
     Transfer.init({

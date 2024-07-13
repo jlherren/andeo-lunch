@@ -89,6 +89,18 @@ describe('Create label events', () => {
         expect(response.text).toBe('Event type cannot have a vegetarian money factor');
     });
 
+    it('Rejects label event with participation fee', async () => {
+        let event = {
+            name:             'National holiday',
+            type:             'label',
+            date:             '2020-01-15T11:00:00.000Z',
+            participationFee: 0.5,
+        };
+        let response = await request.post('/api/events').send(event);
+        expect(response.status).toBe(400);
+        expect(response.text).toBe('Event type cannot have a participation fee');
+    });
+
     it('Rejects label transfers', async () => {
         let event = {
             ...sampleEvent,
@@ -162,5 +174,11 @@ describe('Updating label events', () => {
         let response = await request.post(eventUrl).send({participationFlatRate: 0.5});
         expect(response.status).toBe(400);
         expect(response.text).toBe('Event type cannot have a participation flat-rate');
+    });
+
+    it('Cannot update participation fee', async () => {
+        let response = await request.post(eventUrl).send({participationFee: 0.5});
+        expect(response.status).toBe(400);
+        expect(response.text).toBe('Event type cannot have a participation fee');
     });
 });

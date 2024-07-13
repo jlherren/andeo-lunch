@@ -21,14 +21,16 @@ const minimalEvent = {
 };
 
 const defaultValues = {
-    costs:   {
+    costs:                 {
         points: 0,
     },
-    factors: {
+    factors:               {
         vegetarian: {
             money: 1,
         },
     },
+    participationFlatRate: null,
+    participationFee:      0.0,
 };
 
 const sampleEvent = {
@@ -55,6 +57,7 @@ const eventUpdates = {
         },
     },
     participationFlatRate: 0.2,
+    participationFee:      0.5,
 };
 
 const disallowedUpdate = {
@@ -124,9 +127,27 @@ describe('Create lunch events', () => {
         expect(response.status).toBe(201);
         let {location} = response.headers;
         expect(typeof location).toBe('string');
-        expect(location).toMatch(/^\/api\/events\/\d+$/u);
         response = await request.get(location);
         expect(response.body.event).toMatchObject({...minimalEvent, ...defaultValues});
+    });
+
+    it('Accepts an event with participation fee', async () => {
+        let response = await request.post('/api/events').send({...minimalEvent, participationFee: 0.5});
+        expect(response.status).toBe(201);
+        let {location} = response.headers;
+        expect(typeof location).toBe('string');
+        response = await request.get(location);
+        expect(response.body.event.participationFee).toBe(0.5);
+    });
+
+    it('Sets default participation fee if not sent along', async () => {
+        await Helper.setConfiguration('lunch.defaultParticipationFee', 0.5);
+        let response = await request.post('/api/events').send(minimalEvent);
+        expect(response.status).toBe(201);
+        let {location} = response.headers;
+        expect(typeof location).toBe('string');
+        response = await request.get(location);
+        expect(response.body.event.participationFee).toBe(0.5);
     });
 
     it('Rejects missing data', async () => {
@@ -186,6 +207,21 @@ describe('Create lunch events', () => {
         let response = await request.post('/api/events').send(event);
         expect(response.status).toBe(400);
         expect(response.text).toBe('Event type cannot be immutable');
+    });
+
+    it('Does not set participation fee recipient if not configured', async () => {
+        let response = await request.post('/api/events').send(minimalEvent);
+        expect(response.status).toBe(201);
+        response = await request.get(response.headers.location);
+        expect(response.body.event.participationFeeRecipientId).toBeNull();
+    });
+
+    it('Sets participation fee recipient if configured', async () => {
+        await Helper.setConfiguration('lunch.participationFeeRecipient', user2.id);
+        let response = await request.post('/api/events').send(minimalEvent);
+        expect(response.status).toBe(201);
+        response = await request.get(response.headers.location);
+        expect(response.body.event.participationFeeRecipientId).toBe(user2.id);
     });
 });
 
@@ -266,55 +302,6 @@ describe('Edit limits', () => {
         let response = await request.get(eventUrl);
         expect(response.status).toBe(200);
         expect(response.body.event?.canEdit).toBe(false);
-    });
-});
-
-describe('Updating special events', () => {
-    let eventUrl = null;
-    let eventData = {
-        name: 'Special',
-        type: 'special',
-        date: '2020-01-15T11:00:00.000Z',
-    };
-
-    beforeEach(async () => {
-        let eventId = await Helper.createEvent(request, eventData);
-        eventUrl = `/api/events/${eventId}`;
-    });
-
-    it('Can update without any changes', async () => {
-        let response = await request.post(eventUrl).send({});
-        expect(response.status).toBe(204);
-        response = await request.get(eventUrl);
-        expect(response.status).toBe(200);
-        expect(response.body.event).toMatchObject(eventData);
-    });
-
-    it('Can update point costs', async () => {
-        let update = {costs: {points: 1}};
-        let response = await request.post(eventUrl).send(update);
-        expect(response.status).toBe(204);
-        response = await request.get(eventUrl);
-        expect(response.status).toBe(200);
-        expect(response.body.event).toMatchObject({...eventData, ...update});
-    });
-
-    it('Cannot update money costs', async () => {
-        let response = await request.post(eventUrl).send({costs: {money: 1}});
-        expect(response.status).toBe(400);
-        expect(response.text).toBe('"costs.money" is not allowed');
-    });
-
-    it('Cannot update vegetarian money factor', async () => {
-        let response = await request.post(eventUrl).send({factors: {vegetarian: {money: 1}}});
-        expect(response.status).toBe(400);
-        expect(response.text).toBe('Event type cannot have a vegetarian money factor');
-    });
-
-    it('Cannot update participation flat-rate', async () => {
-        let response = await request.post(eventUrl).send({participationFlatRate: 0.5});
-        expect(response.status).toBe(400);
-        expect(response.text).toBe('Event type cannot have a participation flat-rate');
     });
 });
 

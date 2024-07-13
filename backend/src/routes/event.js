@@ -4,7 +4,7 @@ import * as EventManager from '../eventManager.js';
 import * as RouteUtils from './route-utils.js';
 import * as TransactionRebuilder from '../transactionRebuilder.js';
 import * as Utils from '../utils.js';
-import {Absence, Event, Lunch, Participation, Transaction, Transfer, User} from '../db/models.js';
+import {Absence, Configuration, Event, Lunch, Participation, Transaction, Transfer, User} from '../db/models.js';
 import Joi from 'joi';
 import {Op} from 'sequelize';
 
@@ -39,6 +39,8 @@ const eventCreateSchema = Joi.object({
     }),
     factors:               discountFactorsSchema,
     participationFlatRate: Joi.number().allow(null),
+    // No required() to stay compatible with old clients
+    participationFee:      Joi.number(),
     comment:               Joi.string().allow(''),
     triggerDefaultOptIn:   Joi.boolean().default(true),
     transfers:             createTransfersSchema.optional(),
@@ -55,6 +57,7 @@ const eventUpdateSchema = Joi.object({
     }),
     factors:               discountFactorsSchema,
     participationFlatRate: Joi.number().allow(null),
+    participationFee:      Joi.number(),
     comment:               Joi.string().allow(''),
 });
 
@@ -119,6 +122,11 @@ function validateEvent(ctx, type, apiEvent) {
 
     if (apiEvent?.participationFlatRate !== undefined && type !== Constants.EVENT_TYPES.LUNCH) {
         ctx.throw(400, 'Event type cannot have a participation flat-rate');
+    }
+
+    let participationFee = apiEvent?.participationFee;
+    if (participationFee !== undefined && participationFee !== 0.0 && ![Constants.EVENT_TYPES.LUNCH, Constants.EVENT_TYPES.SPECIAL].includes(type)) {
+        ctx.throw(400, 'Event type cannot have a participation fee');
     }
 
     if (apiEvent?.transfers !== undefined && type !== Constants.EVENT_TYPES.TRANSFER) {
@@ -235,11 +243,26 @@ async function createEvent(ctx) {
             if (comment === '') {
                 comment = null;
             }
+
+            let participationFeeRecipient = null;
+            if (type === Constants.EVENT_TYPES.LUNCH) {
+                let configuration = await Configuration.findOne({where: {name: 'lunch.participationFeeRecipient'}});
+                participationFeeRecipient = configuration.value !== '' ? parseInt(configuration.value, 10) : null;
+            }
+
+            if (apiEvent.participationFee === undefined) {
+                // Old clients don't send this, set the default.
+                let configuration = await Configuration.findOne({where: {name: 'lunch.defaultParticipationFee'}});
+                apiEvent.participationFee = parseFloat(configuration.value);
+            }
+
             event.Lunch = await Lunch.create({
                 event:                 event.id,
                 pointsCost:            apiEvent?.costs?.points,
                 vegetarianMoneyFactor: type === Constants.EVENT_TYPES.LUNCH ? apiEvent?.factors?.vegetarian?.money : 1,
                 participationFlatRate: type === Constants.EVENT_TYPES.LUNCH ? apiEvent?.participationFlatRate : null,
+                participationFee:      [Constants.EVENT_TYPES.LUNCH, Constants.EVENT_TYPES.SPECIAL].includes(type) ? apiEvent.participationFee : 0.0,
+                participationFeeRecipient,
                 comment,
             }, {transaction});
         }
@@ -378,6 +401,7 @@ async function updateEvent(ctx) {
                     pointsCost:            apiEvent?.costs?.points,
                     vegetarianMoneyFactor: apiEvent?.factors?.vegetarian?.money,
                     participationFlatRate: apiEvent?.participationFlatRate,
+                    participationFee:      apiEvent?.participationFee,
                     comment,
                 },
                 {transaction},

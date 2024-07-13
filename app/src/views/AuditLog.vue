@@ -74,6 +74,7 @@
         'event.costs.money':            'Money',
         'event.factors.2.2':            'Vegi factor',
         'event.participationFlatRate':  'Flat-rate',
+        'event.participationFee':       'Fee',
         'absence.start':                'Start',
         'absence.end':                  'End',
         'grocery.label':                'Label',

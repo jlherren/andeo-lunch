@@ -1,4 +1,4 @@
-import {Permission, User, UserPassword, UserPermission} from '../src/db/models.js';
+import {Configuration, Permission, User, UserPassword, UserPermission} from '../src/db/models.js';
 
 /**
  * Create an event and return the event ID
@@ -95,4 +95,15 @@ export function daysAgo(days) {
     let date = new Date();
     date.setDate(date.getDate() - days);
     return date;
+}
+
+/**
+ * @param {string} name
+ * @param {string|number} value
+ * @return {Promise<void>}
+ */
+export async function setConfiguration(name, value) {
+    let configuration = await Configuration.findOne({where: {name}});
+    configuration.value = value;
+    await configuration.save();
 }

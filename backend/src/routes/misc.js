@@ -34,6 +34,21 @@ async function getDefaultFlatRate(ctx) {
  * @param {Application.Context} ctx
  * @return {Promise<void>}
  */
+async function getDefaultParticipationFee(ctx) {
+    let config = await Configuration.findOne({
+        where: {
+            name: 'lunch.defaultParticipationFee',
+        },
+    });
+    ctx.body = {
+        defaultParticipationFee: config && config.value !== '' ? parseFloat(config.value) : null,
+    };
+}
+
+/**
+ * @param {Application.Context} ctx
+ * @return {Promise<void>}
+ */
 async function getDecommissionContraUser(ctx) {
     let config = await Configuration.findOne({
         where: {
@@ -91,6 +106,7 @@ async function getSnowfall(ctx) {
 export default function register(router) {
     router.get('/pay-up/default-recipient', getPayUpDefaultRecipient);
     router.get('/options/default-flat-rate', getDefaultFlatRate);
+    router.get('/options/default-participation-fee', getDefaultParticipationFee);
     router.get('/options/decommission-contra-user', getDecommissionContraUser);
     router.get('/snowfall', getSnowfall);
     router.get('/migrate', migrate);

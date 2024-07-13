@@ -3,6 +3,12 @@ import * as Utils from './utils.js';
 import {Event, Lunch, Participation, Transaction, Transfer, User} from './db/models.js';
 import {Op, Sequelize} from 'sequelize';
 
+let OPT_IN_PARTICIPATION_TYPES = [
+    Constants.PARTICIPATION_TYPES.OMNIVOROUS,
+    Constants.PARTICIPATION_TYPES.VEGETARIAN,
+    Constants.PARTICIPATION_TYPES.OPT_IN,
+];
+
 /**
  * Get the weights for points and money for a certain participation to an event
  *
@@ -265,6 +271,14 @@ export async function rebuildEventTransactions(dbTransaction, event) {
             if (Math.abs(pointsDebited) > Constants.EPSILON) {
                 addSystemTransaction(participation.user, pointsDebited, Constants.CURRENCIES.POINTS);
                 totalPointSum += pointsDebited;
+            }
+
+            if (
+                OPT_IN_PARTICIPATION_TYPES.includes(participation.type)
+                && event.Lunch.participationFee > Constants.EPSILON
+                && event.Lunch.participationFeeRecipient !== null
+            ) {
+                addTransaction(event.Lunch.participationFeeRecipient, participation.user, event.Lunch.participationFee, Constants.CURRENCIES.MONEY);
             }
 
             if (enableMoneyCalculation) {

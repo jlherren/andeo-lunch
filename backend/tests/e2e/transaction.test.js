@@ -806,3 +806,155 @@ describe('Flat-rate lunches', () => {
         expect(user.balances).toEqual({points: -5.5, money: 0});
     });
 });
+
+describe('Lunch with participation fee', () => {
+    let eventId = null;
+    let eventUrl = null;
+
+    beforeEach(async () => {
+        await Helper.setConfiguration('lunch.participationFeeRecipient', user3.id);
+        await Helper.setConfiguration('lunch.defaultParticipationFee', '0.5');
+        eventId = await Helper.createEvent(request, {
+            name:             'Ravioli',
+            date:             EVENT_DATE_1,
+            type:             'lunch',
+            costs:            {
+                points: 6,
+            },
+            participationFee: 0.5,
+        });
+        eventUrl = `/api/events/${eventId}`;
+    });
+
+    it('Fee is paid by all participants', async () => {
+        await request.post(`${eventUrl}/participations/${user1.id}`).send(participation1);
+        await request.post(`${eventUrl}/participations/${user2.id}`).send(participation2);
+
+        // Check user 1
+        let response = await request.get(`/api/users/${user1.id}/transactions`);
+        expect(response.status).toBe(200);
+        expect(response.body.transactions).toHaveLength(4);
+        expect(response.body.transactions[0]).toMatchObject({
+            userId:       user1.id,
+            contraUserId: systemUser.id,
+            currency:     'points',
+            amount:       6,
+            balance:      6,
+        });
+        expect(response.body.transactions[1]).toMatchObject({
+            userId:       user1.id,
+            contraUserId: systemUser.id,
+            currency:     'points',
+            amount:       -3,
+            balance:      3,
+        });
+        expect(response.body.transactions[2]).toMatchObject({
+            userId:       user1.id,
+            contraUserId: user3.id,
+            currency:     'money',
+            amount:       -0.5,
+            balance:      -0.5,
+        });
+        expect(response.body.transactions[3]).toMatchObject({
+            userId:       user1.id,
+            contraUserId: systemUser.id,
+            currency:     'money',
+            amount:       -15,
+            balance:      -15.5,
+        });
+        response = await request.get(`/api/users/${user1.id}`);
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toEqual({points: 3, money: -15.5});
+
+        // Check user 2
+        response = await request.get(`/api/users/${user2.id}/transactions`);
+        expect(response.status).toBe(200);
+        expect(response.body.transactions).toHaveLength(4);
+        expect(response.body.transactions[0]).toMatchObject({
+            userId:       user2.id,
+            contraUserId: systemUser.id,
+            currency:     'points',
+            amount:       -3,
+            balance:      -3,
+        });
+        expect(response.body.transactions[1]).toMatchObject({
+            userId:       user2.id,
+            contraUserId: user3.id,
+            currency:     'money',
+            amount:       -0.5,
+            balance:      -0.5,
+        });
+        expect(response.body.transactions[2]).toMatchObject({
+            userId:       user2.id,
+            contraUserId: systemUser.id,
+            currency:     'money',
+            amount:       30,
+            balance:      29.5,
+        });
+        expect(response.body.transactions[3]).toMatchObject({
+            userId:       user2.id,
+            contraUserId: systemUser.id,
+            currency:     'money',
+            amount:       -15,
+            balance:      14.5,
+        });
+        response = await request.get(`/api/users/${user2.id}`);
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toEqual({points: -3, money: 14.5});
+
+        // Check user 3
+        response = await request.get(`/api/users/${user3.id}/transactions`);
+        expect(response.status).toBe(200);
+        expect(response.body.transactions).toHaveLength(2);
+        expect(response.body.transactions[0]).toMatchObject({
+            userId:       user3.id,
+            contraUserId: user1.id,
+            currency:     'money',
+            amount:       0.5,
+            balance:      0.5,
+        });
+        expect(response.body.transactions[1]).toMatchObject({
+            userId:       user3.id,
+            contraUserId: user2.id,
+            currency:     'money',
+            amount:       0.5,
+            balance:      1,
+        });
+        response = await request.get(`/api/users/${user3.id}`);
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toEqual({points: 0, money: 1.0});
+    });
+
+    it('Fee is not paid by non-participants', async () => {
+        await request.post(`${eventUrl}/participations/${user1.id}`).send({
+            type:    'opt-out',
+        });
+        await request.post(`${eventUrl}/participations/${user2.id}`).send({
+            type:    'undecided',
+        });
+
+        // Check user 1
+        let response = await request.get(`/api/users/${user1.id}/transactions`);
+        expect(response.status).toBe(200);
+        expect(response.body.transactions).toHaveLength(0);
+        response = await request.get(`/api/users/${user1.id}`);
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toEqual({points: 0, money: 0});
+
+        // Check user 2
+        response = await request.get(`/api/users/${user2.id}/transactions`);
+        expect(response.status).toBe(200);
+        expect(response.body.transactions).toHaveLength(0);
+        response = await request.get(`/api/users/${user2.id}`);
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toEqual({points: 0, money: 0});
+
+        // Check user 3
+        response = await request.get(`/api/users/${user3.id}/transactions`);
+        expect(response.status).toBe(200);
+        expect(response.body.transactions).toHaveLength(0);
+        response = await request.get(`/api/users/${user3.id}`);
+        expect(response.status).toBe(200);
+        expect(response.body.user.balances).toEqual({points: 0, money: 0});
+    });
+});
