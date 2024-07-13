@@ -163,10 +163,8 @@ describe('Transactions for lunch', () => {
         expect(response.status).toBe(200);
         expect(response.body.user.balances).toEqual({points: -4, money: 20});
 
-        // Check system user (balance only)
-        response = await request.get('/api/users/system');
-        expect(response.status).toBe(200);
-        expect(response.body.user.balances).toEqual({points: 0, money: 0});
+        let user = await Helper.getSystemUser(request);
+        expect(user.balances).toEqual({points: 0, money: 0});
     });
 
     it('No participants and no cook', async () => {
@@ -174,13 +172,10 @@ describe('Transactions for lunch', () => {
         expect(response.status).toBe(200);
         expect(response.body.user.balances).toEqual({points: 0, money: 0});
 
-        response = await request.get('/api/users/system');
-        expect(response.status).toBe(200);
-        expect(response.body.user.balances).toEqual({points: 0, money: 0});
-
-        response = await request.get('/api/users/andeo');
-        expect(response.status).toBe(200);
-        expect(response.body.user.balances).toEqual({points: 0, money: 0});
+        let user = await Helper.getSystemUser(request);
+        expect(user.balances).toEqual({points: 0, money: 0});
+        user = await Helper.getAndeoUser(request);
+        expect(user.balances).toEqual({points: 0, money: 0});
     });
 
     it('No participants but there is a cook', async () => {
@@ -199,13 +194,10 @@ describe('Transactions for lunch', () => {
         expect(response.status).toBe(200);
         expect(response.body.user.balances).toEqual({points: 0, money: 0});
 
-        response = await request.get('/api/users/system');
-        expect(response.status).toBe(200);
-        expect(response.body.user.balances).toEqual({points: 0, money: 0});
-
-        response = await request.get('/api/users/andeo');
-        expect(response.status).toBe(200);
-        expect(response.body.user.balances).toEqual({points: 0, money: 0});
+        let user = await Helper.getSystemUser(request);
+        expect(user.balances).toEqual({points: 0, money: 0});
+        user = await Helper.getAndeoUser(request);
+        expect(user.balances).toEqual({points: 0, money: 0});
     });
 
     it('No cook but there is a participant', async () => {
@@ -225,13 +217,10 @@ describe('Transactions for lunch', () => {
         expect(response.status).toBe(200);
         expect(response.body.user.balances).toEqual({points: 0, money: 0});
 
-        response = await request.get('/api/users/system');
-        expect(response.status).toBe(200);
-        expect(response.body.user.balances).toEqual({points: 0, money: 0});
-
-        response = await request.get('/api/users/andeo');
-        expect(response.status).toBe(200);
-        expect(response.body.user.balances).toEqual({points: 0, money: 0});
+        let user = await Helper.getSystemUser(request);
+        expect(user.balances).toEqual({points: 0, money: 0});
+        user = await Helper.getAndeoUser(request);
+        expect(user.balances).toEqual({points: 0, money: 0});
     });
 
     it('Recalculates transactions and balances after event costs change', async () => {
@@ -321,10 +310,8 @@ describe('Transactions for lunch', () => {
         expect(response.status).toBe(200);
         expect(response.body.user.balances).toEqual({points: -3, money: 18.75});
 
-        // Check system user (balance only)
-        response = await request.get('/api/users/system');
-        expect(response.status).toBe(200);
-        expect(response.body.user.balances).toEqual({points: 0, money: 0});
+        let user = await Helper.getSystemUser(request);
+        expect(user.balances).toEqual({points: 0, money: 0});
     });
 
     it('Recalculates transactions and balances after event is deleted', async () => {
@@ -351,10 +338,8 @@ describe('Transactions for lunch', () => {
         expect(response.status).toBe(200);
         expect(response.body.user.balances).toEqual({points: 0, money: 0});
 
-        // Check system user (balance only)
-        response = await request.get('/api/users/system');
-        expect(response.status).toBe(200);
-        expect(response.body.user.balances).toEqual({points: 0, money: 0});
+        let user = await Helper.getSystemUser(request);
+        expect(user.balances).toEqual({points: 0, money: 0});
     });
 
     it('Point exempted omnivorous user', async () => {
@@ -452,10 +437,8 @@ describe('Recalculates transactions and balances after event date change', () =>
         expect(response.status).toBe(200);
         expect(response.body.user.balances).toEqual(userBalances2);
 
-        // Check system user (balance only)
-        response = await request.get('/api/users/system');
-        expect(response.status).toBe(200);
-        expect(response.body.user.balances).toEqual({points: 0, money: 0});
+        let user = await Helper.getSystemUser(request);
+        expect(user.balances).toEqual({points: 0, money: 0});
     });
 
     it('Recalculates balances after event date moves to be later', async () => {
@@ -483,10 +466,8 @@ describe('Recalculates transactions and balances after event date change', () =>
         expect(response.status).toBe(200);
         expect(response.body.user.balances).toEqual(userBalances2);
 
-        // Check system user (balance only)
-        response = await request.get('/api/users/system');
-        expect(response.status).toBe(200);
-        expect(response.body.user.balances).toEqual({points: 0, money: 0});
+        let user = await Helper.getSystemUser(request);
+        expect(user.balances).toEqual({points: 0, money: 0});
     });
 });
 
@@ -766,15 +747,10 @@ describe('Flat-rate lunches', () => {
         expect(response.status).toBe(200);
         expect(response.body.user.balances).toEqual({points: -0.5, money: 20});
 
-        // Check system user (balance only)
-        response = await request.get('/api/users/system');
-        expect(response.status).toBe(200);
-        expect(response.body.user.balances).toEqual({points: 0, money: 0});
-
-        // Check Andeo user (balance only)
-        response = await request.get('/api/users/andeo');
-        expect(response.status).toBe(200);
-        expect(response.body.user.balances).toEqual({points: -5, money: 0});
+        let user = await Helper.getSystemUser(request);
+        expect(user.balances).toEqual({points: 0, money: 0});
+        user = await Helper.getAndeoUser(request);
+        expect(user.balances).toEqual({points: -5, money: 0});
     });
 
     it('Regression: Ignore opt-out participation', async () => {
@@ -827,14 +803,9 @@ describe('Flat-rate lunches', () => {
         expect(response.status).toBe(200);
         expect(response.body.user.balances).toEqual({points: 0, money: 0});
 
-        // Check system user (balance only)
-        response = await request.get('/api/users/system');
-        expect(response.status).toBe(200);
-        expect(response.body.user.balances).toEqual({points: 0, money: 0});
-
-        // Check Andeo user (balance only)
-        response = await request.get('/api/users/andeo');
-        expect(response.status).toBe(200);
-        expect(response.body.user.balances).toEqual({points: -5.5, money: 0});
+        let user = await Helper.getSystemUser(request);
+        expect(user.balances).toEqual({points: 0, money: 0});
+        user = await Helper.getAndeoUser(request);
+        expect(user.balances).toEqual({points: -5.5, money: 0});
     });
 });

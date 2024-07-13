@@ -2,7 +2,6 @@
 
 const Models = require('../db/models');
 const Factory = require('./factory');
-const Constants = require('../constants');
 const RouteUtils = require('./route-utils');
 const AuditManager = require('../auditManager');
 const Joi = require('joi');
@@ -31,36 +30,6 @@ async function getUserTransactionLists(ctx) {
     transactions.reverse();
     ctx.body = {
         transactions: transactions.map(transaction => transaction.toApi()),
-    };
-}
-
-/**
- * @param {Application.Context} ctx
- * @returns {Promise<void>}
- */
-async function getSystemUser(ctx) {
-    let user = await Models.User.findOne({
-        where: {
-            username: Constants.SYSTEM_USER_USERNAME,
-        },
-    });
-    ctx.body = {
-        user: user.toApi(),
-    };
-}
-
-/**
- * @param {Application.Context} ctx
- * @returns {Promise<void>}
- */
-async function getAndeoUser(ctx) {
-    let user = await Models.User.findOne({
-        where: {
-            username: Constants.ANDEO_USER_USERNAME,
-        },
-    });
-    ctx.body = {
-        user: user.toApi(),
     };
 }
 
@@ -163,6 +132,4 @@ exports.register = function register(router) {
     router.get('/users/:user(\\d+)/absences', getUserAbsences);
     router.post('/users/:user(\\d+)/absences', createUserAbsence);
     router.delete('/users/:user(\\d+)/absences/:absence(\\d+)', deleteUserAbsence);
-    router.get('/users/system', getSystemUser);
-    router.get('/users/andeo', getAndeoUser);
 };

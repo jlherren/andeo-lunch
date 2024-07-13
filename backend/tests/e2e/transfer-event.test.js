@@ -503,8 +503,8 @@ describe('Pot transfers', () => {
         expect(response.body.user.balances).toMatchObject({points: -10, money: 0});
         response = await request.get(`/api/users/${user2.id}`);
         expect(response.body.user.balances).toMatchObject({points: 10, money: 0});
-        response = await request.get('/api/users/system');
-        expect(response.body.user.balances).toMatchObject({points: 0, money: 0});
+        let user = await Helper.getSystemUser(request);
+        expect(user.balances).toEqual({points: 0, money: 0});
     });
 
     it('Pot transfer with two input users', async () => {
@@ -533,8 +533,8 @@ describe('Pot transfers', () => {
         expect(response.body.user.balances).toMatchObject({points: -7, money: 0});
         response = await request.get(`/api/users/${user3.id}`);
         expect(response.body.user.balances).toMatchObject({points: 10, money: 0});
-        response = await request.get('/api/users/system');
-        expect(response.body.user.balances).toMatchObject({points: 0, money: 0});
+        let user = await Helper.getSystemUser(request);
+        expect(user.balances).toEqual({points: 0, money: 0});
     });
 
     it('Pot transfer with two output users', async () => {
@@ -563,8 +563,8 @@ describe('Pot transfers', () => {
         expect(response.body.user.balances).toMatchObject({points: 10, money: 0});
         response = await request.get(`/api/users/${user3.id}`);
         expect(response.body.user.balances).toMatchObject({points: 20, money: 0});
-        response = await request.get('/api/users/system');
-        expect(response.body.user.balances).toMatchObject({points: 0, money: 0});
+        let user = await Helper.getSystemUser(request);
+        expect(user.balances).toEqual({points: 0, money: 0});
     });
 
     it('Complex pot transfer with both currencies', async () => {
@@ -649,8 +649,8 @@ describe('Pot transfers', () => {
         expect(response.body.user.balances).toMatchObject({points: -5, money: 2});
         response = await request.get(`/api/users/${user3.id}`);
         expect(response.body.user.balances).toMatchObject({points: 0, money: 11});
-        response = await request.get('/api/users/system');
-        expect(response.body.user.balances).toMatchObject({points: 0, money: 0});
+        let user = await Helper.getSystemUser(request);
+        expect(user.balances).toEqual({points: 0, money: 0});
     });
 
     it('Pot transfer with unused inputs', async () => {
@@ -677,8 +677,8 @@ describe('Pot transfers', () => {
         expect(response.body.user.balances).toMatchObject({points: -12, money: 0});
         response = await request.get(`/api/users/${user2.id}`);
         expect(response.body.user.balances).toMatchObject({points: 12, money: 0});
-        response = await request.get('/api/users/system');
-        expect(response.body.user.balances).toMatchObject({points: 0, money: 0});
+        let user = await Helper.getSystemUser(request);
+        expect(user.balances).toEqual({points: 0, money: 0});
     });
 
     it('Pot transfer with superfluous output', async () => {
@@ -705,8 +705,8 @@ describe('Pot transfers', () => {
         expect(response.body.user.balances).toMatchObject({points: -7, money: 0});
         response = await request.get(`/api/users/${user2.id}`);
         expect(response.body.user.balances).toMatchObject({points: 7, money: 0});
-        response = await request.get('/api/users/system');
-        expect(response.body.user.balances).toMatchObject({points: 0, money: 0});
+        let user = await Helper.getSystemUser(request);
+        expect(user.balances).toEqual({points: 0, money: 0});
     });
 });
 

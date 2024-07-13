@@ -16,6 +16,37 @@ exports.createEvent = async function createEvent(request, data) {
     return parseInt(response.headers.location.match(/(?<id>\d+)/u).groups.id, 10);
 };
 
+/**
+ * @param {SuperTest} request
+ * @param {string} name
+ * @returns {Promise<ApiUser>}
+ */
+exports.getUserByName = async function getUserByName(request, name) {
+    let response = await request.get('/api/users');
+    // eslint-disable-next-line jest/no-standalone-expect
+    expect(response.status).toBe(200);
+    let user = response.body.users.find(u => u.name === name);
+    // eslint-disable-next-line jest/no-standalone-expect
+    expect(user).not.toBe(null);
+    return user;
+};
+
+/**
+ * @param {SuperTest} request
+ * @returns {Promise<ApiUser>}
+ */
+exports.getSystemUser = function getSystemUser(request) {
+    return exports.getUserByName(request, 'System user');
+};
+
+/**
+ * @param {SuperTest} request
+ * @returns {Promise<ApiUser>}
+ */
+exports.getAndeoUser = function getAndeoUser(request) {
+    return exports.getUserByName(request, 'Andeo');
+};
+
 // Password used during unit tests
 exports.password = 'abc123';
 
