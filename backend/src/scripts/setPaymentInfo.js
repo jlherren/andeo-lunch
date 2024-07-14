@@ -1,18 +1,15 @@
-'use strict';
-
-const chalk = require('chalk');
-const {sprintf} = require('sprintf-js');
-
-const Models = require('../db/models');
-const Cli = require('../cli');
-const AndeoLunch = require('../andeoLunch');
-const ConfigProvider = require('../configProvider');
+import {Configuration, User} from '../db/models.js';
+import {AndeoLunch} from '../andeoLunch.js';
+import {Cli} from '../cli.js';
+import chalk from 'chalk';
+import {getMainConfig} from '../configProvider.js';
+import {sprintf} from 'sprintf-js';
 
 /**
  * @returns {Promise<number|null>}
  */
 async function fetchDefaultRecipient() {
-    let config = await Models.Configuration.findOne({where: {name: 'payUp.defaultRecipient'}});
+    let config = await Configuration.findOne({where: {name: 'payUp.defaultRecipient'}});
     return config ? parseInt(config.value, 10) : null;
 }
 
@@ -21,7 +18,7 @@ async function fetchDefaultRecipient() {
  * @returns {Promise<void>}
  */
 async function saveDefaultRecipient(userId) {
-    await Models.Configuration.upsert({name: 'payUp.defaultRecipient', value: `${userId}`});
+    await Configuration.upsert({name: 'payUp.defaultRecipient', value: `${userId}`});
 }
 
 /**
@@ -29,7 +26,7 @@ async function saveDefaultRecipient(userId) {
  * @returns {Promise<string|null>}
  */
 async function fetchPaymentInfo(userId) {
-    let config = await Models.Configuration.findOne({where: {name: `paymentInfo.${userId}`}});
+    let config = await Configuration.findOne({where: {name: `paymentInfo.${userId}`}});
     return config?.value ?? null;
 }
 
@@ -40,9 +37,9 @@ async function fetchPaymentInfo(userId) {
  */
 async function savePaymentInfo(userId, paymentInfo) {
     if (paymentInfo === '') {
-        await Models.Configuration.destroy({where: {name: `paymentInfo.${userId}`}});
+        await Configuration.destroy({where: {name: `paymentInfo.${userId}`}});
     } else {
-        await Models.Configuration.upsert({name: `paymentInfo.${userId}`, value: paymentInfo});
+        await Configuration.upsert({name: `paymentInfo.${userId}`, value: paymentInfo});
     }
 }
 
@@ -54,13 +51,13 @@ async function savePaymentInfo(userId, paymentInfo) {
 async function setPaymentInfo() {
     console.log(chalk.bold('Update payment information'));
 
-    let andeoLunch = new AndeoLunch({config: await ConfigProvider.getMainConfig()});
+    let andeoLunch = new AndeoLunch({config: await getMainConfig()});
     await andeoLunch.waitReady();
 
     let cli = new Cli();
     try {
         let defaultRecipient = await fetchDefaultRecipient();
-        let users = await Models.User.findAll({order: [['id', 'ASC']]});
+        let users = await User.findAll({order: [['id', 'ASC']]});
         console.log('\nID  R  Username          Display name');
         for (let user of users) {
             let line = sprintf(

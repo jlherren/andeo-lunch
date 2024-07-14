@@ -1,9 +1,7 @@
-'use strict';
-
-const Models = require('../db/models');
-const RouteUtils = require('./route-utils');
-const Joi = require('joi');
-const AuthUtils = require('../authUtils');
+import * as AuthUtils from '../authUtils.js';
+import * as RouteUtils from './route-utils.js';
+import {User, UserPassword} from '../db/models.js';
+import Joi from 'joi';
 
 const editUserSchema = Joi.object({
     name:            Joi.string().required().min(1),
@@ -31,7 +29,7 @@ const resetPasswordSchema = Joi.object({
 async function getUsers(ctx) {
     RouteUtils.requirePermission(ctx, 'admin.user');
 
-    let users = await Models.User.findAll({
+    let users = await User.findAll({
         order: [
             ['name', 'ASC'],
         ],
@@ -59,7 +57,7 @@ async function saveUser(ctx) {
 
     let data = RouteUtils.validateBody(ctx, editUserSchema);
 
-    let user = await Models.User.findByPk(parseInt(ctx.params.user, 10));
+    let user = await User.findByPk(parseInt(ctx.params.user, 10));
     if (!user) {
         ctx.throw(404, 'No such user');
     }
@@ -78,17 +76,17 @@ async function resetPassword(ctx) {
 
     let requestBody = RouteUtils.validateBody(ctx, resetPasswordSchema);
 
-    let user = await Models.User.findByPk(parseInt(ctx.params.user, 10));
+    let user = await User.findByPk(parseInt(ctx.params.user, 10));
     if (!user) {
         ctx.throw(404, 'No such user');
     }
 
-    let ownUserPassword = await Models.UserPassword.findOne({
+    let ownUserPassword = await UserPassword.findOne({
         where: {
             user: ctx.user.id,
         },
     });
-    let otherUserPassword = await Models.UserPassword.findOne({
+    let otherUserPassword = await UserPassword.findOne({
         where: {
             user: user.id,
         },
@@ -128,12 +126,12 @@ async function createUser(ctx) {
 
     let data = RouteUtils.validateBody(ctx, createUserSchema);
 
-    let user = await Models.User.create({
+    let user = await User.create({
         username: data.username,
         name:     data.name,
         active:   true,
     });
-    await Models.UserPassword.create({
+    await UserPassword.create({
         user:     user.id,
         password: await AuthUtils.hashPassword(data.password),
     });
@@ -145,9 +143,9 @@ async function createUser(ctx) {
 /**
  * @param {Router} router
  */
-exports.register = function register(router) {
+export default function register(router) {
     router.get('/admin/users', getUsers);
     router.post('/admin/users/:user(\\d+)', saveUser);
     router.post('/admin/users/:user(\\d+)/password', resetPassword);
     router.post('/admin/users', createUser);
-};
+}

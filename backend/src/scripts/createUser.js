@@ -1,12 +1,9 @@
-'use strict';
-
-const chalk = require('chalk');
-
-const Models = require('../db/models');
-const Cli = require('../cli');
-const AndeoLunch = require('../andeoLunch');
-const ConfigProvider = require('../configProvider');
-const AuthUtils = require('../authUtils');
+import * as AuthUtils from '../authUtils.js';
+import {User, UserPassword} from '../db/models.js';
+import {AndeoLunch} from '../andeoLunch.js';
+import {Cli} from '../cli.js';
+import chalk from 'chalk';
+import {getMainConfig} from '../configProvider.js';
 
 /**
  * Create user
@@ -16,7 +13,7 @@ const AuthUtils = require('../authUtils');
 async function createUser() {
     console.log(chalk.bold('Creating new user'));
 
-    let andeoLunch = new AndeoLunch({config: await ConfigProvider.getMainConfig()});
+    let andeoLunch = new AndeoLunch({config: await getMainConfig()});
     await andeoLunch.waitReady();
     let cli = new Cli();
 
@@ -25,7 +22,7 @@ async function createUser() {
         if (username === '') {
             throw new Error('Username cannot be empty');
         }
-        let user = await Models.User.findOne({where: {username}});
+        let user = await User.findOne({where: {username}});
         if (user) {
             throw new Error(`Username '${username}' exists already`);
         }
@@ -39,12 +36,12 @@ async function createUser() {
         }
         let name = await cli.question('Display name: ');
         let hashed = await AuthUtils.hashPassword(password1);
-        user = await Models.User.create({
+        user = await User.create({
             username,
             name,
             active: true,
         });
-        await Models.UserPassword.create({
+        await UserPassword.create({
             user:     user.id,
             password: hashed,
         });

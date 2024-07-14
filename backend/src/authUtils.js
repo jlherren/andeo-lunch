@@ -1,9 +1,6 @@
-'use strict';
-
-const crypto = require('crypto');
-const bcrypt = require('bcryptjs');
-
-const Models = require('./db/models');
+import {Configuration} from './db/models.js';
+import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 
 /**
  * Hash a password
@@ -11,10 +8,10 @@ const Models = require('./db/models');
  * @param {string} password
  * @returns {Promise<string>}
  */
-exports.hashPassword = async function (password) {
+export async function hashPassword(password) {
     let salt = await bcrypt.genSalt();
     return bcrypt.hash(password, salt);
-};
+}
 
 /**
  * Verify a password
@@ -23,9 +20,9 @@ exports.hashPassword = async function (password) {
  * @param {string} hash
  * @returns {Promise<boolean>}
  */
-exports.comparePassword = function (password, hash) {
+export function comparePassword(password, hash) {
     return bcrypt.compare(password, hash);
-};
+}
 
 /**
  * Do a fake password verification to mitigate time based attacks
@@ -33,17 +30,17 @@ exports.comparePassword = function (password, hash) {
  * @param {string} password
  * @returns {Promise}
  */
-exports.fakeCompare = async function (password) {
+export async function fakeCompare(password) {
     // This hash is from a randomly generated strong password, but the actual password won't matter
     // noinspection SpellCheckingInspection
     await bcrypt.compare(password, '$2a$10$aRybo6lPDU6dhIkEBbQOTekhh9bRHgWZV8/jl0pDHA0BgDZzui1/q');
     return false;
-};
+}
 
 /**
  * @returns {Promise<string>}
  */
-exports.generateSecret = function () {
+export function generateSecret() {
     return new Promise(resolve => {
         // We require at least 32 bytes (256 bits), but to make it work well with base64 we round
         // up to 33 (base64 works well with multiples of 3)
@@ -54,7 +51,7 @@ exports.generateSecret = function () {
             resolve(buf.toString('base64'));
         });
     });
-};
+}
 
 /**
  * @type {string|null}
@@ -64,10 +61,10 @@ let cachedSecret = null;
 /**
  * @returns {Promise<string>}
  */
-exports.getSecret = async function getSecret() {
+export async function getSecret() {
     if (cachedSecret === null) {
         /** @type {Configuration|null} */
-        let configuration = await Models.Configuration.findOne({
+        let configuration = await Configuration.findOne({
             where: {
                 name: 'secret',
             },
@@ -78,4 +75,4 @@ exports.getSecret = async function getSecret() {
         cachedSecret = configuration.value;
     }
     return cachedSecret;
-};
+}

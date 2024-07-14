@@ -1,10 +1,7 @@
-'use strict';
-
-const Joi = require('joi');
-
-const Models = require('../db/models');
-const RouteUtils = require('./route-utils');
-const AuthUtils = require('../authUtils');
+import * as AuthUtils from '../authUtils.js';
+import * as RouteUtils from './route-utils.js';
+import {DeviceVersion, User, UserPassword} from '../db/models.js';
+import Joi from 'joi';
 
 const loginSchema = Joi.object({
     username: Joi.string().required().min(1),
@@ -22,7 +19,7 @@ const changePasswordSchema = Joi.object({
  */
 async function login(ctx) {
     let requestBody = RouteUtils.validateBody(ctx, loginSchema);
-    let user = await Models.User.findOne(
+    let user = await User.findOne(
         {
             where:   {username: requestBody.username},
             include: ['Permissions', 'UserPassword'],
@@ -75,7 +72,7 @@ async function check(ctx) {
     }
 
     if (ctx.query.device && ctx.query.version) {
-        await Models.DeviceVersion.upsert({
+        await DeviceVersion.upsert({
             device:   ctx.query.device,
             version:  ctx.query.version,
             lastSeen: new Date(),
@@ -97,7 +94,7 @@ async function check(ctx) {
 async function password(ctx) {
     let requestBody = RouteUtils.validateBody(ctx, changePasswordSchema);
 
-    let userPassword = await Models.UserPassword.findOne({
+    let userPassword = await UserPassword.findOne({
         where: {
             user: ctx.user.id,
         },
@@ -140,9 +137,9 @@ async function password(ctx) {
 /**
  * @param {Router} router
  */
-exports.register = function register(router) {
+export default function register(router) {
     router.post('/account/login', login);
     router.post('/account/renew', renew);
     router.get('/account/check', check);
     router.post('/account/password', password);
-};
+}

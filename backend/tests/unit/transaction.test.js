@@ -1,18 +1,16 @@
-'use strict';
-
-const Models = require('../../src/db/models');
-const AndeoLunch = require('../../src/andeoLunch');
-const Constants = require('../../src/constants');
-const TransactionRebuilder = require('../../src/transactionRebuilder');
-const ConfigProvider = require('../../src/configProvider');
-const Helper = require('../e2e/helper');
+import * as Constants from '../../src/constants.js';
+import * as Helper from '../helper.js';
+import * as TransactionRebuilder from '../../src/transactionRebuilder.js';
+import {Event, Lunch, Participation, Transaction} from '../../src/db/models.js';
+import {AndeoLunch} from '../../src/andeoLunch.js';
+import {getTestConfig} from '../../src/configProvider.js';
 
 /** @type {AndeoLunch|null} */
 let andeoLunch = null;
 
 beforeEach(async () => {
     andeoLunch = new AndeoLunch({
-        config: await ConfigProvider.getTestConfig(),
+        config: await getTestConfig(),
         quiet:  true,
     });
     await andeoLunch.waitReady();
@@ -42,12 +40,12 @@ function createUsers(n) {
  * @returns {Promise<Event>}
  */
 async function createLunch() {
-    let event = await Models.Event.create({
+    let event = await Event.create({
         type: Constants.EVENT_TYPES.LUNCH,
         date: new Date('2020-01-10 12:00'),
         name: 'Test lunch',
     });
-    event.Lunch = await Models.Lunch.create({
+    event.Lunch = await Lunch.create({
         event:                 event.id,
         pointsCost:            12,
         moneyCost:             60,
@@ -68,7 +66,7 @@ async function createLunchWithParticipations(participants, cook, buyer) {
     let event = await createLunch();
 
     for (let participant of participants) {
-        await Models.Participation.create({
+        await Participation.create({
             user:           participant.id,
             event:          event.id,
             type:           Constants.PARTICIPATION_TYPES.OMNIVOROUS,
@@ -99,8 +97,8 @@ describe('transaction tests', () => {
         await user1.reload();
         await user2.reload();
 
-        let nPointTransactions = await Models.Transaction.count({where: {event: event.id, currency: Constants.CURRENCIES.POINTS}});
-        let nMoneyTransactions = await Models.Transaction.count({where: {event: event.id, currency: Constants.CURRENCIES.MONEY}});
+        let nPointTransactions = await Transaction.count({where: {event: event.id, currency: Constants.CURRENCIES.POINTS}});
+        let nMoneyTransactions = await Transaction.count({where: {event: event.id, currency: Constants.CURRENCIES.MONEY}});
 
         expect(user1.points).toBe(6);
         expect(user2.points).toBe(-6);
@@ -115,7 +113,7 @@ describe('transaction tests', () => {
         let event = await createLunchWithParticipations([user1, user2], user1, user1);
         await rebuildEvent(event);
 
-        let transactions = await Models.Transaction.findAll();
+        let transactions = await Transaction.findAll();
         expect(transactions.length).toBe(12);
         let originalTransactionIds = new Set(transactions.map(transaction => transaction.id));
 
@@ -123,7 +121,7 @@ describe('transaction tests', () => {
         await event.Lunch.update({pointsCost: 12, moneyCost: 40});
         await rebuildEvent(event);
 
-        transactions = await Models.Transaction.findAll();
+        transactions = await Transaction.findAll();
         expect(transactions.length).toBe(12);
         let newTransactionIds = new Set(transactions.map(transaction => transaction.id));
 
@@ -135,7 +133,7 @@ describe('transaction tests', () => {
         let event = await createLunchWithParticipations([user1, user2], user1, user1);
 
         // Create a bogus transaction that involves a third user (so the transaction can't possibly be reused)
-        await Models.Transaction.create({
+        await Transaction.create({
             event:      event.id,
             user:       user3.id,
             contraUser: user2.id,
@@ -148,7 +146,7 @@ describe('transaction tests', () => {
         await rebuildEvent(event);
         await user1.reload();
 
-        let transactions = await Models.Transaction.findAll();
+        let transactions = await Transaction.findAll();
         expect(transactions.length).toBe(12);
         expect(user1.points).toBe(6);
     });
@@ -157,7 +155,7 @@ describe('transaction tests', () => {
         let [user1, user2] = await createUsers(2);
         let event = await createLunch();
 
-        await Models.Participation.bulkCreate([
+        await Participation.bulkCreate([
             {
                 user:           user1.id,
                 event:          event.id,
@@ -187,7 +185,7 @@ describe('transaction tests', () => {
         let [user1, user2, user3] = await createUsers(3);
         let event = await createLunch();
 
-        await Models.Participation.bulkCreate([
+        await Participation.bulkCreate([
             {
                 user:           user1.id,
                 event:          event.id,
@@ -223,7 +221,7 @@ describe('transaction tests', () => {
         let [user1, user2, user3] = await createUsers(3);
         let event = await createLunch();
 
-        await Models.Participation.bulkCreate([
+        await Participation.bulkCreate([
             {
                 user:           user1.id,
                 event:          event.id,
@@ -269,7 +267,7 @@ describe('transaction tests', () => {
         let [user1, user2, user3] = await createUsers(3);
         let event = await createLunch();
 
-        await Models.Participation.bulkCreate([
+        await Participation.bulkCreate([
             {
                 user:           user1.id,
                 event:          event.id,
@@ -316,7 +314,7 @@ describe('transaction tests', () => {
     it('Correctly ignores money calculation if there is no paying participant', async () => {
         let [user] = await createUsers(1);
         let event = await createLunch();
-        await Models.Participation.create({
+        await Participation.create({
             user:           user.id,
             event:          event.id,
             type:           Constants.PARTICIPATION_TYPES.OPT_OUT,

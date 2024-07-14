@@ -1,18 +1,15 @@
-'use strict';
-
-const chalk = require('chalk');
-
-const AndeoLunch = require('../andeoLunch');
-const Transaction = require('../transactionRebuilder');
-const Models = require('../db/models');
-const ConfigProvider = require('../configProvider');
+import * as Transaction from '../transactionRebuilder.js';
+import {Event, User} from '../db/models.js';
+import {AndeoLunch} from '../andeoLunch.js';
+import chalk from 'chalk';
+import {getMainConfig} from '../configProvider.js';
 
 /**
  * @param {Transaction} transaction
  * @returns {Promise<Object<string, number>>}
  */
 async function getBalances(transaction) {
-    let users = await Models.User.findAll({transaction, order: [['username', 'ASC']]});
+    let users = await User.findAll({transaction, order: [['username', 'ASC']]});
     let balances = {};
     for (let user of users) {
         balances[`${user.username}/points`] = user.points;
@@ -30,13 +27,13 @@ async function getBalances(transaction) {
 async function rebuildTransactions(doFix) {
     console.log(chalk.bold('Rebuilding transactions and balances...'));
 
-    let andeoLunch = new AndeoLunch({config: await ConfigProvider.getMainConfig()});
+    let andeoLunch = new AndeoLunch({config: await getMainConfig()});
     await andeoLunch.waitReady();
     let sequelize = await andeoLunch.getSequelize();
     let transaction = await sequelize.transaction();
 
     try {
-        let events = await Models.Event.findAll({transaction, order: [['id', 'ASC']]});
+        let events = await Event.findAll({transaction, order: [['id', 'ASC']]});
         let nUpdatesTotal = 0;
 
         console.log(`Rebuilding ${events.length} events...`);

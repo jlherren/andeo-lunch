@@ -1,12 +1,14 @@
-'use strict';
-
-const path = require('path');
-const fs = require('fs').promises;
-const Joi = require('joi');
-const MariaDB = require('mariadb');
+import Joi from 'joi';
+import MariaDB from 'mariadb';
+import {promises as fs} from 'fs';
+import path from 'path';
+import url from 'url';
 
 // Any string understood by package 'ms'.
 const DEFAULT_TOKEN_EXPIRY = '60 days';
+
+// eslint-disable-next-line no-underscore-dangle
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 /**
  * @typedef {Object} Config
@@ -41,7 +43,7 @@ function validateConfig(config) {
  *
  * @returns {Promise<Config>}
  */
-exports.getMainConfig = async function getMainConfig() {
+export async function getMainConfig() {
     let fullPath = path.resolve(`${__dirname}/../config.json`);
 
     try {
@@ -51,7 +53,7 @@ exports.getMainConfig = async function getMainConfig() {
     } catch (err) {
         throw new Error(`No configuration file found at ${fullPath}!  Please read README.md first`);
     }
-};
+}
 
 /**
  * Return the testing configuration, either using a MariaDB database from the environment, or an
@@ -59,7 +61,7 @@ exports.getMainConfig = async function getMainConfig() {
  *
  * @returns {Promise<Config>}
  */
-exports.getTestConfig = async function getTestConfig() {
+export async function getTestConfig() {
     let config = null;
 
     if (process.env.TEST_DB === 'mariadb') {
@@ -103,4 +105,4 @@ exports.getTestConfig = async function getTestConfig() {
     }
 
     return config;
-};
+}

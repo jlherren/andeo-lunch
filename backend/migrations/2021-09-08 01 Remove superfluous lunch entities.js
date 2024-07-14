@@ -1,10 +1,8 @@
-'use strict';
-
 /**
  * @param {Sequelize} sequelize
  * @returns {Promise<void>}
  */
-async function up({context: sequelize}) {
+export async function up({context: sequelize}) {
     // Event types 3 and 4 should not have associated lunch entities.  Note that SQLite does not support DELETE
     // statements with JOIN
     await sequelize.query(`
@@ -17,8 +15,6 @@ async function up({context: sequelize}) {
 /**
  * Undo the migration
  */
-function down() {
+export function down() {
     // Can't be undone
 }
-
-module.exports = {up, down};

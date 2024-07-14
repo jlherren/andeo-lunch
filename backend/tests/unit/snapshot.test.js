@@ -1,6 +1,4 @@
-'use strict';
-
-const Utils = require('../../src/utils');
+import * as Utils from '../../src/utils.js';
 
 describe('Snapshot diffs', () => {
     it('null with null', () => {

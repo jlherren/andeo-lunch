@@ -1,12 +1,10 @@
-'use strict';
-
-const AndeoLunch = require('../../src/andeoLunch');
-const ConfigProvider = require('../../src/configProvider');
-const Validator = require('../../src/db/validator');
+import * as Validator from '../../src/db/validator.js';
+import {AndeoLunch} from '../../src/andeoLunch.js';
+import {getTestConfig} from '../../src/configProvider.js';
 
 describe('Migration test', () => {
     it('Can apply all migrations on SQLite', async () => {
-        let config = await ConfigProvider.getTestConfig();
+        let config = await getTestConfig();
 
         if (config.database.dialect !== 'sqlite') {
             return;
@@ -27,7 +25,7 @@ describe('Migration test', () => {
     });
 
     it('Syncing the model results in the reference SQL', async () => {
-        let config = await ConfigProvider.getTestConfig();
+        let config = await getTestConfig();
 
         if (config.database.dialect !== 'mariadb') {
             return;
@@ -56,7 +54,7 @@ describe('Migration test', () => {
     });
 
     it('Applying all migrations results in the reference SQL', async () => {
-        let config = await ConfigProvider.getTestConfig();
+        let config = await getTestConfig();
 
         if (config.database.dialect !== 'mariadb') {
             return;

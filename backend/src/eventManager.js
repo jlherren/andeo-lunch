@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * Check whether the given date is editable by the user.
  *
@@ -7,7 +5,7 @@
  * @param {Date} date
  * @returns {boolean}
  */
-exports.userCanEditDate = function userCanEditDate(user, date) {
+export function userCanEditDate(user, date) {
     let maxPastDaysEdit = user.maxPastDaysEdit;
     if (maxPastDaysEdit === null) {
         return true;
@@ -18,4 +16,4 @@ exports.userCanEditDate = function userCanEditDate(user, date) {
     cutoff.setDate(cutoff.getDate() - maxPastDaysEdit);
 
     return cutoff.getTime() <= date.getTime();
-};
+}

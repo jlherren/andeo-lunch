@@ -1,17 +1,15 @@
-'use strict';
-
-const AndeoLunch = require('../../src/andeoLunch');
-const Models = require('../../src/db/models');
-const Constants = require('../../src/constants');
-const ConfigProvider = require('../../src/configProvider');
-const TransactionRebuilder = require('../../src/transactionRebuilder');
+import * as Constants from '../../src/constants.js';
+import * as TransactionRebuilder from '../../src/transactionRebuilder.js';
+import {Absence, Event, Grocery, Lunch, Participation, Transaction, User} from '../../src/db/models.js';
+import {AndeoLunch} from '../../src/andeoLunch.js';
+import {getTestConfig} from '../../src/configProvider.js';
 
 /** @type {AndeoLunch|null} */
 let andeoLunch = null;
 
 beforeEach(async () => {
     andeoLunch = new AndeoLunch({
-        config: await ConfigProvider.getTestConfig(),
+        config: await getTestConfig(),
         quiet:  true,
     });
     await andeoLunch.waitReady();
@@ -22,21 +20,21 @@ afterEach(async () => {
 });
 
 it('Creates a sane empty DB', async () => {
-    let systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
-    expect(systemUser).toBeInstanceOf(Models.User);
+    let systemUser = await User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
+    expect(systemUser).toBeInstanceOf(User);
     expect(systemUser).toMatchObject({hidden: true, active: false, points: 0, money: 0});
 
-    let andeoUser = await Models.User.findOne({where: {username: Constants.ANDEO_USER_USERNAME}});
-    expect(andeoUser).toBeInstanceOf(Models.User);
+    let andeoUser = await User.findOne({where: {username: Constants.ANDEO_USER_USERNAME}});
+    expect(andeoUser).toBeInstanceOf(User);
     expect(andeoUser).toMatchObject({hidden: false, active: false, points: 0, money: 0});
 
-    expect(await Models.User.count()).toBe(2);
-    expect(await Models.Event.count()).toBe(0);
-    expect(await Models.Lunch.count()).toBe(0);
-    expect(await Models.Absence.count()).toBe(0);
-    expect(await Models.Grocery.count()).toBe(0);
-    expect(await Models.Participation.count()).toBe(0);
-    expect(await Models.Transaction.count()).toBe(0);
+    expect(await User.count()).toBe(2);
+    expect(await Event.count()).toBe(0);
+    expect(await Lunch.count()).toBe(0);
+    expect(await Absence.count()).toBe(0);
+    expect(await Grocery.count()).toBe(0);
+    expect(await Participation.count()).toBe(0);
+    expect(await Transaction.count()).toBe(0);
 });
 
 it('Correctly rebuilds user balances on an empty DB', async () => {
@@ -44,7 +42,7 @@ it('Correctly rebuilds user balances on an empty DB', async () => {
     await sequelize.transaction(async dbTransaction => {
         await TransactionRebuilder.rebuildUserBalances(dbTransaction);
     });
-    let systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
+    let systemUser = await User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
     expect(systemUser.points).toBe(0);
     expect(systemUser.money).toBe(0);
 });

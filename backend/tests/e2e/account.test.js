@@ -1,13 +1,10 @@
-'use strict';
-
-const supertest = require('supertest');
-const JsonWebToken = require('jsonwebtoken');
-
-const AndeoLunch = require('../../src/andeoLunch');
-const ConfigProvider = require('../../src/configProvider');
-const Models = require('../../src/db/models');
-const AuthUtils = require('../../src/authUtils');
-const Helper = require('./helper');
+import * as AuthUtils from '../../src/authUtils.js';
+import * as Helper from '../helper.js';
+import {DeviceVersion, Permission, UserPermission} from '../../src/db/models.js';
+import {AndeoLunch} from '../../src/andeoLunch.js';
+import JsonWebToken from 'jsonwebtoken';
+import {getTestConfig} from '../../src/configProvider.js';
+import supertest from 'supertest';
 
 /** @type {AndeoLunch|null} */
 let andeoLunch = null;
@@ -20,7 +17,7 @@ let inactiveUser = null;
 
 beforeEach(async () => {
     andeoLunch = new AndeoLunch({
-        config: await ConfigProvider.getTestConfig(),
+        config: await getTestConfig(),
         quiet:  true,
     });
     await andeoLunch.waitReady();
@@ -52,8 +49,8 @@ describe('account login route', () => {
     });
 
     it('returns correct permission', async () => {
-        let permission = await Models.Permission.create({name: 'admin'});
-        await Models.UserPermission.create({user: user.id, permission: permission.id});
+        let permission = await Permission.create({name: 'admin'});
+        await UserPermission.create({user: user.id, permission: permission.id});
         let response = await request.post('/api/account/login')
             .send({username: 'testuser', password: 'abc123'});
         expect(response.status).toBe(200);
@@ -177,8 +174,8 @@ describe('account check route', () => {
     });
 
     it('returns permissions on valid token', async () => {
-        let permission = await Models.Permission.create({name: 'admin'});
-        await Models.UserPermission.create({user: user.id, permission: permission.id});
+        let permission = await Permission.create({name: 'admin'});
+        await UserPermission.create({user: user.id, permission: permission.id});
         let secret = await AuthUtils.getSecret();
         let token = await user.generateToken(secret);
         let response = await request.get('/api/account/check').set('Authorization', `Bearer ${token}`);
@@ -190,7 +187,7 @@ describe('account check route', () => {
         let device = 'abcd-efgh';
         let response = await request.get(`/api/account/check?device=${device}&version=1.2.3`);
         expect(response.status).toBe(200);
-        let dv = await Models.DeviceVersion.findOne({
+        let dv = await DeviceVersion.findOne({
             where: {
                 device,
             },

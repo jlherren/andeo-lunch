@@ -1,10 +1,8 @@
-'use strict';
-
 /**
  * @param {Sequelize} sequelize
  * @returns {Promise<void>}
  */
-async function up({context: sequelize}) {
+export async function up({context: sequelize}) {
     let queryInterface = sequelize.getQueryInterface();
     let now = new Date();
     await queryInterface.insert(null, 'configuration', {
@@ -19,11 +17,9 @@ async function up({context: sequelize}) {
  * @param {Sequelize} sequelize
  * @returns {Promise<void>}
  */
-async function down({context: sequelize}) {
+export async function down({context: sequelize}) {
     let queryInterface = sequelize.getQueryInterface();
     await queryInterface.bulkDelete('configuration', {
         name: 'lunch.defaultFlatRate',
     });
 }
-
-module.exports = {up, down};

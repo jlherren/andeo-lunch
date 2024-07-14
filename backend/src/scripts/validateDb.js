@@ -1,11 +1,8 @@
-'use strict';
-
-const chalk = require('chalk');
-
-const AndeoLunch = require('../andeoLunch');
-const ConfigProvider = require('../configProvider');
-const Validator = require('../../src/db/validator');
-const {diff} = require('jest-diff');
+import * as Validator from '../../src/db/validator.js';
+import {AndeoLunch} from '../andeoLunch.js';
+import chalk from 'chalk';
+import {diff} from 'jest-diff';
+import {getMainConfig} from '../configProvider.js';
 
 /**
  * Create user
@@ -15,7 +12,7 @@ const {diff} = require('jest-diff');
 async function validateDb() {
     console.log(chalk.bold('DB structure validator'));
 
-    let andeoLunch = new AndeoLunch({config: await ConfigProvider.getMainConfig()});
+    let andeoLunch = new AndeoLunch({config: await getMainConfig()});
     await andeoLunch.waitReady();
     let sequelize = await andeoLunch.getSequelize();
     let hasError = false;

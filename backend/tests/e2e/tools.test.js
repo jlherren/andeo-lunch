@@ -1,11 +1,8 @@
-'use strict';
-
-const supertest = require('supertest');
-
-const AndeoLunch = require('../../src/andeoLunch');
-const ConfigProvider = require('../../src/configProvider');
-const Models = require('../../src/db/models');
-const Helper = require('./helper');
+import * as Helper from '../helper.js';
+import {AndeoLunch} from '../../src/andeoLunch.js';
+import {DeviceVersion} from '../../src/db/models.js';
+import {getTestConfig} from '../../src/configProvider.js';
+import supertest from 'supertest';
 
 /** @type {AndeoLunch|null} */
 let andeoLunch = null;
@@ -16,7 +13,7 @@ let user = null;
 
 beforeEach(async () => {
     andeoLunch = new AndeoLunch({
-        config: await ConfigProvider.getTestConfig(),
+        config: await getTestConfig(),
         quiet:  true,
     });
     await andeoLunch.waitReady();
@@ -47,7 +44,7 @@ describe('version list', () => {
         let whileAgo = new Date();
         whileAgo.setDate(whileAgo.getDate() - 90);
 
-        await Models.DeviceVersion.bulkCreate([{
+        await DeviceVersion.bulkCreate([{
             version:  '1.2.3',
             device:   'B',
             lastSeen: recent,

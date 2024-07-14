@@ -1,11 +1,9 @@
-'use strict';
-
-const fs = require('fs').promises;
-const path = require('path');
-const {Sequelize, ConnectionRefusedError} = require('sequelize');
-const {Umzug, SequelizeStorage} = require('umzug');
-
-const Models = require('./models');
+import * as Models from './models.js';
+import {ConnectionRefusedError, Sequelize} from 'sequelize';
+import {SequelizeStorage, Umzug} from 'umzug';
+import {promises as fs} from 'fs';
+import path from 'path';
+import url from 'url';
 
 const MAX_CONNECTION_ATTEMPTS = 20;
 
@@ -17,6 +15,9 @@ const ENV_FALLBACKS = {
     password: 'MARIADB_PASSWORD',
 };
 
+// eslint-disable-next-line no-underscore-dangle
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+
 /**
  * @param {object} options
  * @param {boolean} [options.migrate]
@@ -24,7 +25,7 @@ const ENV_FALLBACKS = {
  * @param {Object<string, any>} sequelizeOptions
  * @returns {Promise<Sequelize>}
  */
-exports.connect = async function connect(options, sequelizeOptions) {
+export async function connect(options, sequelizeOptions) {
     sequelizeOptions = {
         logging: sequelizeOptions.logSql ? console.log : false,
         define:  {
@@ -80,7 +81,7 @@ exports.connect = async function connect(options, sequelizeOptions) {
     }
 
     return sequelize;
-};
+}
 
 /**
  * Apply migrations to the DB
@@ -89,12 +90,22 @@ exports.connect = async function connect(options, sequelizeOptions) {
  * @param {boolean} quiet
  * @returns {Promise<void>}
  */
-async function applyMigrations(sequelize, quiet) {
+export async function applyMigrations(sequelize, quiet) {
     // Apply migrations
     const umzug = new Umzug({
         migrations: {
             // glob requires forward slashes even on windows.
-            glob: path.join(__dirname, '../../migrations/????-??-?? ?? *.js').replaceAll('\\', '/'),
+            glob:    path.join(__dirname, '../../migrations/????-??-?? ?? *.js').replaceAll('\\', '/'),
+            // Custom resolver necessary at the moment, because Jest confuses Umzug https://github.com/jestjs/jest/issues/15185
+            resolve: params => {
+                const getModule = () => import(`file:///${params.path}`);
+                return {
+                    name: params.name,
+                    path: params.path,
+                    up:   async upParams => (await getModule()).up(upParams),
+                    down: async downParams => (await getModule()).down(downParams),
+                };
+            },
         },
         context:    sequelize,
         storage:    new SequelizeStorage({sequelize}),
@@ -102,5 +113,3 @@ async function applyMigrations(sequelize, quiet) {
     });
     await umzug.up();
 }
-
-exports.applyMigrations = applyMigrations;

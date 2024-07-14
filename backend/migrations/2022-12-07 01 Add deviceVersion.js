@@ -1,14 +1,11 @@
-'use strict';
-
-const {DataTypes} = require('sequelize');
-
-const {ColumnHelper} = require('../src/db/columnHelper');
+import {ColumnHelper} from '../src/db/columnHelper.js';
+import {DataTypes} from 'sequelize';
 
 /**
  * @param {Sequelize} sequelize
  * @returns {Promise<void>}
  */
-async function up({context: sequelize}) {
+export async function up({context: sequelize}) {
     let queryInterface = sequelize.getQueryInterface();
     let ch = new ColumnHelper(sequelize);
     let tableDefaultOptions = {
@@ -54,9 +51,7 @@ async function up({context: sequelize}) {
  * @param {Sequelize} sequelize
  * @returns {Promise<void>}
  */
-async function down({context: sequelize}) {
+export async function down({context: sequelize}) {
     let queryInterface = sequelize.getQueryInterface();
     await queryInterface.dropTable('deviceVersion');
 }
-
-module.exports = {up, down};

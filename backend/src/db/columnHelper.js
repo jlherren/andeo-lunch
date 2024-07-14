@@ -1,11 +1,9 @@
-'use strict';
-
-const {DataTypes} = require('sequelize');
+import {DataTypes} from 'sequelize';
 
 /**
  * Helper class to create columns
  */
-class ColumnHelper {
+export class ColumnHelper {
     /**
      * @param {Sequelize} sequelize
      */
@@ -28,5 +26,3 @@ class ColumnHelper {
         }
     }
 }
-
-exports.ColumnHelper = ColumnHelper;

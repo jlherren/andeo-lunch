@@ -1,4 +1,4 @@
-const {USERS, EVENTS} = require('../helpers/sql');
+import {EVENTS, USERS} from '../helpers/sql';
 
 describe('Lunch event', () => {
     beforeEach(() => {

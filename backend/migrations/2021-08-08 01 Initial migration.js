@@ -1,16 +1,13 @@
-'use strict';
-
-const {DataTypes} = require('sequelize');
-
-const {ColumnHelper} = require('../src/db/columnHelper');
-const Constants = require('../src/constants');
-const AuthUtils = require('../src/authUtils');
+import * as AuthUtils from '../src/authUtils.js';
+import * as Constants from '../src/constants.js';
+import {ColumnHelper} from '../src/db/columnHelper.js';
+import {DataTypes} from 'sequelize';
 
 /**
  * @param {Sequelize} sequelize
  * @returns {Promise<void>}
  */
-async function up({context: sequelize}) {
+export async function up({context: sequelize}) {
     let queryInterface = sequelize.getQueryInterface();
     let ch = new ColumnHelper(sequelize);
     let cascade = {
@@ -617,8 +614,6 @@ async function up({context: sequelize}) {
 /**
  * Undoing this migration is not supported
  */
-function down() {
+export function down() {
     throw new Error('Migrating down from initial migration is not supported');
 }
-
-module.exports = {up, down};

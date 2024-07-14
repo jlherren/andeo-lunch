@@ -1,15 +1,12 @@
-'use strict';
-
-const Joi = require('joi');
-const {Op} = require('sequelize');
-
-const Models = require('../db/models');
-const RouteUtils = require('./route-utils');
-const Constants = require('../constants');
-const Utils = require('../utils');
-const TransactionRebuilder = require('../transactionRebuilder');
-const AuditManager = require('../auditManager');
-const EventManager = require('../eventManager');
+import * as AuditManager from '../auditManager.js';
+import * as Constants from '../constants.js';
+import * as EventManager from '../eventManager.js';
+import * as RouteUtils from './route-utils.js';
+import * as TransactionRebuilder from '../transactionRebuilder.js';
+import * as Utils from '../utils.js';
+import {Absence, Event, Lunch, Participation, Transaction, Transfer, User} from '../db/models.js';
+import Joi from 'joi';
+import {Op} from 'sequelize';
 
 const eventNameSchema = Joi.string().normalize().min(1).regex(/\S/u);
 const eventTypeSchema = Joi.string().valid(...Object.values(Constants.EVENT_TYPE_NAMES));
@@ -77,7 +74,7 @@ const participationSchema = Joi.object({
  * @returns {Promise<void>}
  */
 async function getParticipationList(ctx) {
-    let participations = await Models.Participation.findAll({
+    let participations = await Participation.findAll({
         where: {
             event: ctx.params.event,
         },
@@ -92,7 +89,7 @@ async function getParticipationList(ctx) {
  * @returns {Promise<void>}
  */
 async function getSingleParticipation(ctx) {
-    let participation = await Models.Participation.findOne({
+    let participation = await Participation.findOne({
         where: {
             event: ctx.params.event,
             user:  ctx.params.user,
@@ -175,7 +172,7 @@ async function computeDefaultParticipationType(user, date, transaction) {
             ],
         }],
     };
-    if (await Models.Absence.count({where, transaction})) {
+    if (await Absence.count({where, transaction})) {
         return Constants.PARTICIPATION_TYPES.OPT_OUT;
     }
     let weekday = date.getDay();
@@ -196,11 +193,11 @@ async function setDefaultOptIns(event, transaction) {
     }
 
     if (event.type === Constants.EVENT_TYPES.LUNCH) {
-        for (let user of await Models.User.findAll()) {
+        for (let user of await User.findAll()) {
             let shouldBeType = await computeDefaultParticipationType(user, date, transaction);
 
             if (shouldBeType !== Constants.PARTICIPATION_TYPES.UNDECIDED) {
-                await Models.Participation.create({
+                await Participation.create({
                     user:  user.id,
                     event: event.id,
                     type:  shouldBeType,
@@ -226,7 +223,7 @@ async function createEvent(ctx) {
         validateEvent(ctx, type, apiEvent);
         assertCanEditDate(ctx, apiEvent.date);
 
-        let event = await Models.Event.create({
+        let event = await Event.create({
             name:      apiEvent.name,
             date:      apiEvent.date,
             type,
@@ -238,7 +235,7 @@ async function createEvent(ctx) {
             if (comment === '') {
                 comment = null;
             }
-            event.Lunch = await Models.Lunch.create({
+            event.Lunch = await Lunch.create({
                 event:                 event.id,
                 pointsCost:            apiEvent?.costs?.points,
                 vegetarianMoneyFactor: type === Constants.EVENT_TYPES.LUNCH ? apiEvent?.factors?.vegetarian?.money : 1,
@@ -277,7 +274,7 @@ async function loadEvent(ctx, eventId, transaction) {
         transaction,
         lock:    transaction ? transaction.LOCK.UPDATE : undefined,
     };
-    let event = await Models.Event.findByPk(eventId, options);
+    let event = await Event.findByPk(eventId, options);
     if (!event) {
         ctx.throw(404, 'No such event');
     }
@@ -304,7 +301,7 @@ async function loadTransfer(ctx, transferId, transaction) {
         transaction,
         lock: transaction ? transaction.LOCK.UPDATE : undefined,
     };
-    let transfer = await Models.Transfer.findByPk(transferId, options);
+    let transfer = await Transfer.findByPk(transferId, options);
     if (!transfer) {
         ctx.throw(404, 'No such transfer');
     }
@@ -329,13 +326,13 @@ function loadTransferFromParam(ctx, transaction) {
  */
 async function loadUser(ctx, userId, transaction, allowSystemUser = false) {
     if (allowSystemUser && userId === -1) {
-        return Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}, transaction});
+        return User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}, transaction});
     }
     let options = {
         transaction,
         lock: transaction.LOCK.UPDATE,
     };
-    let user = await Models.User.findByPk(userId, options);
+    let user = await User.findByPk(userId, options);
     if (!user) {
         ctx.throw(404, 'No such user');
     }
@@ -423,7 +420,7 @@ async function saveParticipation(ctx) {
         assertCanEditDate(ctx, event.date);
 
         let user = await loadUserFromParam(ctx, transaction);
-        let participation = await Models.Participation.findOne({
+        let participation = await Participation.findOne({
             where: {
                 event: event.id,
                 user:  user.id,
@@ -434,7 +431,7 @@ async function saveParticipation(ctx) {
 
         let before = null;
         if (participation === null) {
-            participation = Models.Participation.build({
+            participation = Participation.build({
                 event: event.id,
                 user:  user.id,
                 type:  typeId ?? validParticipationTypes[0],
@@ -487,7 +484,7 @@ async function deleteParticipation(ctx) {
     await ctx.sequelize.transaction(async transaction => {
         let event = await loadEventFromParam(ctx, transaction);
         let user = await loadUserFromParam(ctx, transaction);
-        let participation = await Models.Participation.findOne({
+        let participation = await Participation.findOne({
             where: {
                 event: event.id,
                 user:  user.id,
@@ -520,7 +517,7 @@ async function getEvent(ctx) {
     if (!event) {
         ctx.throw(404, 'No such event');
     }
-    let systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
+    let systemUser = await User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
     ctx.body = {
         event: event.toApi(ctx.user, systemUser.id),
     };
@@ -569,7 +566,7 @@ async function listEvents(ctx) {
 
         if (ownParticipations) {
             include.push({
-                model:    Models.Participation,
+                model:    Participation,
                 as:       'Participations',
                 where:    {
                     user: ctx.user.id,
@@ -586,13 +583,13 @@ async function listEvents(ctx) {
     }
 
     /** @type {Array<Event>} */
-    let events = await Models.Event.findAll({
+    let events = await Event.findAll({
         include,
         where,
         order: [['date', 'ASC']],
         limit: 100,
     });
-    let systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
+    let systemUser = await User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
     ctx.body = {
         events: events.map(event => event.toApi(ctx.user, systemUser.id)),
     };
@@ -613,25 +610,25 @@ async function deleteEvent(ctx) {
         assertCanEditDate(ctx, event.date);
 
         let before = event.toSnapshot();
-        await Models.Transaction.destroy({
+        await Transaction.destroy({
             transaction,
             where: {
                 event: event.id,
             },
         });
-        await Models.Lunch.destroy({
+        await Lunch.destroy({
             transaction,
             where: {
                 event: event.id,
             },
         });
-        await Models.Participation.destroy({
+        await Participation.destroy({
             transaction,
             where: {
                 event: event.id,
             },
         });
-        await Models.Transfer.destroy({
+        await Transfer.destroy({
             transaction,
             where: {
                 event: event.id,
@@ -654,12 +651,12 @@ async function deleteEvent(ctx) {
  * @returns {Promise<void>}
  */
 async function getTransferList(ctx) {
-    let transfers = await Models.Transfer.findAll({
+    let transfers = await Transfer.findAll({
         where: {
             event: ctx.params.event,
         },
     });
-    let systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
+    let systemUser = await User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
     ctx.body = {
         transfers: transfers.map(transfer => transfer.toApi(systemUser.id)),
     };
@@ -731,7 +728,7 @@ async function createTransfersImpl(ctx, event, apiTransfers, transaction) {
         });
     }
 
-    await Models.Transfer.bulkCreate(transactionInserts, {transaction});
+    await Transfer.bulkCreate(transactionInserts, {transaction});
     await AuditManager.logMultiple(transaction, ctx.user, logEntries);
 }
 
@@ -740,7 +737,7 @@ async function createTransfersImpl(ctx, event, apiTransfers, transaction) {
  * @returns {Promise<void>}
  */
 async function saveTransfer(ctx) {
-    let systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
+    let systemUser = await User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
 
     /** @type {ApiTransfer} */
     let apiTransfer = RouteUtils.validateBody(ctx, createTransferSchema);
@@ -790,7 +787,7 @@ async function saveTransfer(ctx) {
  * @returns {Promise<void>}
  */
 async function deleteTransfer(ctx) {
-    let systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
+    let systemUser = await User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
 
     await ctx.sequelize.transaction(async transaction => {
         let event = await loadEventFromParam(ctx, transaction);
@@ -820,7 +817,7 @@ async function deleteTransfer(ctx) {
 /**
  * @param {Router} router
  */
-exports.register = function register(router) {
+export default function register(router) {
     router.get('/events', listEvents);
     router.post('/events', createEvent);
 
@@ -837,4 +834,4 @@ exports.register = function register(router) {
     router.post('/events/:event(\\d+)/transfers', createTransfers);
     router.post('/events/:event(\\d+)/transfers/:transfer(\\d+)', saveTransfer);
     router.delete('/events/:event(\\d+)/transfers/:transfer(\\d+)', deleteTransfer);
-};
+}

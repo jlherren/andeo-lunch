@@ -1,8 +1,6 @@
-'use strict';
-
-const Joi = require('joi');
-const RouteUtils = require('./route-utils');
-const Constants = require('../constants');
+import * as Constants from '../constants.js';
+import * as RouteUtils from './route-utils.js';
+import Joi from 'joi';
 
 let participationTypeSchema = Joi.string().valid(...Object.values(Constants.PARTICIPATION_TYPE_NAMES));
 
@@ -44,9 +42,7 @@ async function saveSettings(ctx) {
 /**
  * @param {Router} router
  */
-function register(router) {
+export default function register(router) {
     router.get('/settings', getSettings);
     router.post('/settings', saveSettings);
 }
-
-exports.register = register;

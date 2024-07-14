@@ -1,4 +1,4 @@
-const {USERS} = require('../helpers/sql');
+import {USERS} from '../helpers/sql';
 
 describe('Misc not logged in', () => {
     before(() => {

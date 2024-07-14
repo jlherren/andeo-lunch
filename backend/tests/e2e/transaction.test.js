@@ -1,12 +1,9 @@
-'use strict';
-
-const supertest = require('supertest');
-
-const AndeoLunch = require('../../src/andeoLunch');
-const ConfigProvider = require('../../src/configProvider');
-const Constants = require('../../src/constants');
-const Models = require('../../src/db/models');
-const Helper = require('./helper');
+import * as Constants from '../../src/constants.js';
+import * as Helper from '../helper.js';
+import {AndeoLunch} from '../../src/andeoLunch.js';
+import {User} from '../../src/db/models.js';
+import {getTestConfig} from '../../src/configProvider.js';
+import supertest from 'supertest';
 
 // These must be in chronological order!
 const EVENT_DATE_0 = '2020-01-01T12:30:00.000Z';
@@ -47,11 +44,11 @@ let participation2 = {
 
 beforeEach(async () => {
     andeoLunch = new AndeoLunch({
-        config: await ConfigProvider.getTestConfig(),
+        config: await getTestConfig(),
         quiet:  true,
     });
     await andeoLunch.waitReady();
-    systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
+    systemUser = await User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
     user1 = await Helper.createUser('test-user-1');
     user2 = await Helper.createUser('test-user-2');
     user3 = await Helper.createUser('test-user-3');

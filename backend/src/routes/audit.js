@@ -1,6 +1,4 @@
-'use strict';
-
-const Models = require('../db/models');
+import {Audit} from '../db/models.js';
 
 /**
  * @param {Application.Context} ctx
@@ -9,7 +7,7 @@ const Models = require('../db/models');
 async function listAudits(ctx) {
     let include = ctx.query.with === 'names' ? ['Event', 'Grocery', 'ActingUser', 'AffectedUser'] : [];
 
-    let audits = await Models.Audit.findAll({
+    let audits = await Audit.findAll({
         include,
         order:   [
             ['date', 'DESC'],
@@ -26,6 +24,6 @@ async function listAudits(ctx) {
 /**
  * @param {Router} router
  */
-exports.register = function register(router) {
+export default function register(router) {
     router.get('/audits', listAudits);
-};
+}

@@ -1,7 +1,5 @@
-'use strict';
-
-const readline = require('readline');
-const {Writable} = require('stream');
+import {Writable} from 'stream';
+import readline from 'readline';
 
 let mutableStdout = new Writable({
     write: function (chunk, encoding, callback) {
@@ -15,7 +13,7 @@ let mutableStdout = new Writable({
 /**
  * Simple CLI interface for prompting
  */
-class Cli {
+export class Cli {
     constructor() {
         this.rl = readline.createInterface({
             input:    process.stdin,
@@ -58,5 +56,3 @@ class Cli {
         this.rl.close();
     }
 }
-
-module.exports = Cli;

@@ -1,16 +1,13 @@
-'use strict';
-
-const JsonWebToken = require('jsonwebtoken');
-
-const AuthUtils = require('../authUtils');
-const Models = require('../db/models');
+import * as AuthUtils from '../authUtils.js';
+import JsonWebToken from 'jsonwebtoken';
+import {User} from '../db/models.js';
 
 /**
  * @param {Application.Context} ctx
  * @param {AnySchema} schema
  * @returns {object}
  */
-exports.validateBody = function validateBody(ctx, schema) {
+export function validateBody(ctx, schema) {
     let contentType = ctx.request.headers['content-type'];
     if (contentType === undefined || contentType.split(';')[0].trim() !== 'application/json') {
         ctx.throw(400, 'Content type should be application/json');
@@ -21,13 +18,13 @@ exports.validateBody = function validateBody(ctx, schema) {
         ctx.throw(400, error.message);
     }
     return value;
-};
+}
 
 /**
  * @param {Request} request
  * @returns {string|null}
  */
-exports.getAuthorizationToken = function (request) {
+export function getAuthorizationToken(request) {
     let auth = request.headers.authorization;
     if (auth === undefined) {
         return null;
@@ -38,16 +35,16 @@ exports.getAuthorizationToken = function (request) {
     }
 
     return null;
-};
+}
 
 /**
  * Populate ctx.user with the user if the user authenticates in a valid way; or with null otherwise.
  *
  * @param {Application.Context} ctx
  */
-exports.populateUser = async function (ctx) {
+export async function populateUser(ctx) {
     ctx.user = null;
-    let token = exports.getAuthorizationToken(ctx.request);
+    let token = getAuthorizationToken(ctx.request);
     if (token === null) {
         return;
     }
@@ -61,7 +58,7 @@ exports.populateUser = async function (ctx) {
         // Happens on malformed tokens
         return;
     }
-    let user = await Models.User.findByPk(userId, {
+    let user = await User.findByPk(userId, {
         include: 'Permissions',
     });
     if (user !== null && user.active) {
@@ -69,7 +66,7 @@ exports.populateUser = async function (ctx) {
         ctx.permissions = user.Permissions.map(permission => permission.name);
         ctx.tokenData = tokenData;
     }
-};
+}
 
 /**
  * Makes sure the request is authenticated and authorized.  Sets ctx.user and ctx.permissions.
@@ -77,22 +74,22 @@ exports.populateUser = async function (ctx) {
  * @param {Application.Context} ctx
  * @returns {Promise<void>}
  */
-exports.requireUser = async function requireUser(ctx) {
-    await exports.populateUser(ctx);
+export async function requireUser(ctx) {
+    await populateUser(ctx);
     if (ctx.user === null) {
         ctx.throw(401, 'No authentication token provided');
     }
-};
+}
 
 /**
  *
  * @param {Application.Context} ctx
  * @param {string} permission
  */
-exports.requirePermission = function requirePermission(ctx, permission) {
+export function requirePermission(ctx, permission) {
     if (ctx.permissions.includes(permission)) {
         return;
     }
 
     ctx.throw(401, 'No permission');
-};
+}

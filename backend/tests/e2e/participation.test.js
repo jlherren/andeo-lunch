@@ -1,12 +1,9 @@
-'use strict';
-
-const supertest = require('supertest');
-
-const AndeoLunch = require('../../src/andeoLunch');
-const ConfigProvider = require('../../src/configProvider');
-const Constants = require('../../src/constants');
-const Models = require('../../src/db/models');
-const Helper = require('./helper');
+import * as Constants from '../../src/constants.js';
+import * as Helper from '../helper.js';
+import {Absence} from '../../src/db/models.js';
+import {AndeoLunch} from '../../src/andeoLunch.js';
+import {getTestConfig} from '../../src/configProvider.js';
+import supertest from 'supertest';
 
 /** @type {AndeoLunch|null} */
 let andeoLunch = null;
@@ -51,7 +48,7 @@ let sampleParticipation3 = {
 
 beforeEach(async () => {
     andeoLunch = new AndeoLunch({
-        config: await ConfigProvider.getTestConfig(),
+        config: await getTestConfig(),
         quiet:  true,
     });
     await andeoLunch.waitReady();
@@ -482,7 +479,7 @@ describe('Default opt-in', () => {
     });
 
     it('Opt-outs a user during an absence, even if usually auto-opt-in for the day', async () => {
-        await Models.Absence.create({
+        await Absence.create({
             user:  user1.id,
             start: '2036-01-07',
             end:   '2036-01-07',
@@ -499,7 +496,7 @@ describe('Default opt-in', () => {
     });
 
     it('Does set default opt-in after user absence', async () => {
-        await Models.Absence.create({
+        await Absence.create({
             user:  user1.id,
             start: '2036-01-04',
             end:   '2036-01-06',
@@ -516,7 +513,7 @@ describe('Default opt-in', () => {
     });
 
     it('Does set default opt-in before user absence', async () => {
-        await Models.Absence.create({
+        await Absence.create({
             user:  user1.id,
             start: '2036-01-08',
             end:   '2036-01-09',

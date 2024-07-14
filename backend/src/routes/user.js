@@ -1,10 +1,8 @@
-'use strict';
-
-const Models = require('../db/models');
-const Factory = require('./factory');
-const RouteUtils = require('./route-utils');
-const AuditManager = require('../auditManager');
-const Joi = require('joi');
+import * as AuditManager from '../auditManager.js';
+import * as Factory from './factory.js';
+import * as RouteUtils from './route-utils.js';
+import {Absence, Configuration, Transaction, User} from '../db/models.js';
+import Joi from 'joi';
 
 const absenceCreateSchema = Joi.object({
     start: Joi.date().required(),
@@ -16,7 +14,7 @@ const absenceCreateSchema = Joi.object({
  * @returns {Promise<void>}
  */
 async function getUserTransactionLists(ctx) {
-    let transactions = await Models.Transaction.findAll({
+    let transactions = await Transaction.findAll({
         include: ctx.query.with === 'eventName' ? ['Event'] : [],
         where:   {
             user: ctx.params.user,
@@ -38,7 +36,7 @@ async function getUserTransactionLists(ctx) {
  * @returns {Promise<void>}
  */
 async function getUserPaymentInfo(ctx) {
-    let config = await Models.Configuration.findOne({
+    let config = await Configuration.findOne({
         where: {
             name: `paymentInfo.${ctx.params.user}`,
         },
@@ -53,7 +51,7 @@ async function getUserPaymentInfo(ctx) {
  * @returns {Promise<void>}
  */
 async function getUserAbsences(ctx) {
-    let absences = await Models.Absence.findAll({
+    let absences = await Absence.findAll({
         where: {
             user: ctx.params.user,
         },
@@ -75,7 +73,7 @@ async function createUserAbsence(ctx) {
     let apiAbsence = RouteUtils.validateBody(ctx, absenceCreateSchema);
     let userId = ctx.params.user;
     let absenceId = await ctx.sequelize.transaction(async transaction => {
-        let absence = await Models.Absence.create({
+        let absence = await Absence.create({
             user: userId,
             ...apiAbsence,
         }, {transaction});
@@ -98,7 +96,7 @@ async function createUserAbsence(ctx) {
  */
 async function deleteUserAbsence(ctx) {
     await ctx.sequelize.transaction(async transaction => {
-        let absence = await Models.Absence.findByPk(parseInt(ctx.params.absence, 10), {transaction});
+        let absence = await Absence.findByPk(parseInt(ctx.params.absence, 10), {transaction});
         let user = parseInt(ctx.params.user, 10);
         if (!absence || absence.user !== user) {
             ctx.throw(404, 'No such absence');
@@ -117,9 +115,9 @@ async function deleteUserAbsence(ctx) {
 /**
  * @param {Router} router
  */
-exports.register = function register(router) {
+export default function register(router) {
     let opts = {
-        model:  Models.User,
+        model:  User,
         mapper: user => user.toApi(),
         order:  [
             ['name', 'ASC'],
@@ -132,4 +130,4 @@ exports.register = function register(router) {
     router.get('/users/:user(\\d+)/absences', getUserAbsences);
     router.post('/users/:user(\\d+)/absences', createUserAbsence);
     router.delete('/users/:user(\\d+)/absences/:absence(\\d+)', deleteUserAbsence);
-};
+}

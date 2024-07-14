@@ -2,6 +2,7 @@
     "name": "andeo-lunch-cypress",
     "license": "GPL-3.0-or-later",
     "private": true,
+    "type": "module",
     "engines": {
         "node": ">= 18.18.0"
     },

@@ -1,13 +1,10 @@
-'use strict';
-
-const chalk = require('chalk');
-const {sprintf} = require('sprintf-js');
-
-const Models = require('../db/models');
-const Cli = require('../cli');
-const AndeoLunch = require('../andeoLunch');
-const ConfigProvider = require('../configProvider');
-const AuthUtils = require('../authUtils');
+import * as AuthUtils from '../authUtils.js';
+import {User, UserPassword} from '../db/models.js';
+import {AndeoLunch} from '../andeoLunch.js';
+import {Cli} from '../cli.js';
+import chalk from 'chalk';
+import {getMainConfig} from '../configProvider.js';
+import {sprintf} from 'sprintf-js';
 
 /**
  * @param {Cli} cli
@@ -38,7 +35,7 @@ async function editUser(cli, user) {
                 console.log('Display name updated');
             }
         } else if (option === '2') {
-            let userPassword = await Models.UserPassword.findOne({where: {user: user.id}});
+            let userPassword = await UserPassword.findOne({where: {user: user.id}});
             if (userPassword === null) {
                 console.log('User does not have a password entity');
                 continue;
@@ -76,7 +73,7 @@ async function editUser(cli, user) {
  */
 async function mainMenu(cli) {
     while (true) {
-        let users = await Models.User.findAll({order: [['id', 'ASC']]});
+        let users = await User.findAll({order: [['id', 'ASC']]});
         console.log('');
         console.log('ID   Active  Username          Display name');
         for (let user of users) {
@@ -116,7 +113,7 @@ async function mainMenu(cli) {
 async function main() {
     console.log(chalk.bold('Edit user'));
 
-    let andeoLunch = new AndeoLunch({config: await ConfigProvider.getMainConfig()});
+    let andeoLunch = new AndeoLunch({config: await getMainConfig()});
     await andeoLunch.waitReady();
     let cli = new Cli();
 

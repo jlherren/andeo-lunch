@@ -1,6 +1,4 @@
-'use strict';
-
-const Models = require('../../src/db/models');
+import {Permission, User, UserPassword, UserPermission} from '../src/db/models.js';
 
 /**
  * Create an event and return the event ID
@@ -9,19 +7,19 @@ const Models = require('../../src/db/models');
  * @param {object} data
  * @returns {Promise<number>}
  */
-exports.createEvent = async function createEvent(request, data) {
+export async function createEvent(request, data) {
     let response = await request.post('/api/events').send(data);
     // eslint-disable-next-line jest/no-standalone-expect
     expect(response.status).toBe(201);
     return parseInt(response.headers.location.match(/(?<id>\d+)/u).groups.id, 10);
-};
+}
 
 /**
  * @param {SuperTest} request
  * @param {string} name
  * @returns {Promise<ApiUser>}
  */
-exports.getUserByName = async function getUserByName(request, name) {
+export async function getUserByName(request, name) {
     let response = await request.get('/api/users');
     // eslint-disable-next-line jest/no-standalone-expect
     expect(response.status).toBe(200);
@@ -29,72 +27,72 @@ exports.getUserByName = async function getUserByName(request, name) {
     // eslint-disable-next-line jest/no-standalone-expect
     expect(user).not.toBe(null);
     return user;
-};
+}
 
 /**
  * @param {SuperTest} request
  * @returns {Promise<ApiUser>}
  */
-exports.getSystemUser = function getSystemUser(request) {
-    return exports.getUserByName(request, 'System user');
-};
+export function getSystemUser(request) {
+    return getUserByName(request, 'System user');
+}
 
 /**
  * @param {SuperTest} request
  * @returns {Promise<ApiUser>}
  */
-exports.getAndeoUser = function getAndeoUser(request) {
-    return exports.getUserByName(request, 'Andeo');
-};
+export function getAndeoUser(request) {
+    return getUserByName(request, 'Andeo');
+}
 
 // Password used during unit tests
-exports.password = 'abc123';
+export const password = 'abc123';
 
 // The above password, but hashed very weakly to speed up tests.  Only use this in tests that are not
 // testing any security related things.
-exports.passwordHash = '$2a$04$coj9eKcxliBzr47q1nyOV.TiH0dI2v.fbQeLoMUAhJURm6yKFe8Ge';
+export const passwordHash = '$2a$04$coj9eKcxliBzr47q1nyOV.TiH0dI2v.fbQeLoMUAhJURm6yKFe8Ge';
 
 /**
  * @param {string} username
  * @param {object} attributes
  * @returns {Promise<User>}
  */
-exports.createUser = async function (username, attributes = {}) {
-    let user = await Models.User.create({
+export async function createUser(username, attributes = {}) {
+    let user = await User.create({
         username,
         active: true,
         name:   `User ${username}`,
         ...attributes,
     });
-    await Models.UserPassword.create({
+    await UserPassword.create({
         user:     user.id,
-        password: exports.passwordHash,
+        password: passwordHash,
         ...attributes,
     });
     return user;
-};
+}
 
 /**
  * @param {number} userId
  * @param {string} name
  * @returns {Promise<void>}
  */
-exports.insertPermission = async function insertPermission(userId, name) {
-    let permission = await Models.Permission.findOne({
+export async function insertPermission(userId, name) {
+    let permission = await Permission.findOne({
         where: {name},
     });
-    await Models.UserPermission.create({
+    await UserPermission.create({
         user:       userId,
         permission: permission.id,
     });
-};
+}
 
 /**
  * @param {number} days
  * @returns {Date}
  */
-exports.daysAgo = function daysAgo(days) {
+export function daysAgo(days) {
     let date = new Date();
     date.setDate(date.getDate() - days);
     return date;
-};
+}

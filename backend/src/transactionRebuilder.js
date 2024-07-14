@@ -1,10 +1,7 @@
-'use strict';
-
-const {Sequelize, Op} = require('sequelize');
-
-const Models = require('./db/models');
-const Utils = require('./utils');
-const Constants = require('./constants');
+import * as Constants from './constants.js';
+import * as Utils from './utils.js';
+import {Event, Lunch, Participation, Transaction, Transfer, User} from './db/models.js';
+import {Op, Sequelize} from 'sequelize';
 
 /**
  * Get the weights for points and money for a certain participation to an event
@@ -60,12 +57,12 @@ function getWeightsForParticipation(event, participation, pointExemptedUsers) {
  * @param {Event|number} event
  * @returns {Promise<void>}
  */
-exports.rebuildLunchDetails = async function rebuildLunchDetails(dbTransaction, event) {
+export async function rebuildLunchDetails(dbTransaction, event) {
     if (![Constants.EVENT_TYPES.LUNCH, Constants.EVENT_TYPES.SPECIAL].includes(event.type)) {
         return;
     }
 
-    let eventId = event instanceof Models.Event ? event.id : event;
+    let eventId = event instanceof Event ? event.id : event;
 
     // Careful: This query must work with MariaDB and also SQLite
     let sql = `
@@ -84,7 +81,7 @@ exports.rebuildLunchDetails = async function rebuildLunchDetails(dbTransaction, 
         },
         transaction:  dbTransaction,
     });
-};
+}
 
 /**
  * Re-inserts the transactions related to a specific event.  This does not recalculate the balances, so you
@@ -95,16 +92,16 @@ exports.rebuildLunchDetails = async function rebuildLunchDetails(dbTransaction, 
  * @returns {Promise<{earliestDate: Date|null, nUpdates: number}>} Earliest date that was affected, useful for
  *                                                                 recalculateBalances() and number of update
  */
-exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTransaction, event) {
-    if (!(event instanceof Models.Event)) {
-        event = await Models.Event.findByPk(event, {transaction: dbTransaction});
+export async function rebuildEventTransactions(dbTransaction, event) {
+    if (!(event instanceof Event)) {
+        event = await Event.findByPk(event, {transaction: dbTransaction});
     }
 
-    let systemUser = await Models.User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}, transaction: dbTransaction});
+    let systemUser = await User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}, transaction: dbTransaction});
     if (systemUser === null) {
         throw new Error('System user not found');
     }
-    let andeoUser = await Models.User.findOne({where: {username: Constants.ANDEO_USER_USERNAME}, transaction: dbTransaction});
+    let andeoUser = await User.findOne({where: {username: Constants.ANDEO_USER_USERNAME}, transaction: dbTransaction});
     if (andeoUser === null) {
         throw new Error('Andeo user not found');
     }
@@ -116,7 +113,7 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
     // get all existing transactions for that event
     /** @type {Object<string, Array<Transaction>>} */
     let existingTransactions = Utils.groupBy(
-        await Models.Transaction.findAll({
+        await Transaction.findAll({
             where:       {
                 event: event.id,
             },
@@ -200,14 +197,14 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
                 transaction: dbTransaction,
             };
             /** @type {Lunch} */
-            event.Lunch = await Models.Lunch.findOne(opts);
+            event.Lunch = await Lunch.findOne(opts);
             if (!event.Lunch) {
                 throw new Error(`Event ${event.id} has no associated lunch`);
             }
         }
 
         /** @type {Array<Participation>} */
-        let participations = await Models.Participation.findAll({
+        let participations = await Participation.findAll({
             where:       {event: event.id},
             order:       [['id', 'ASC']],
             transaction: dbTransaction,
@@ -310,7 +307,7 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
                 transaction: dbTransaction,
             };
             /** @type {Array<Transfer>} */
-            event.Transfers = await Models.Transfer.findAll(opts);
+            event.Transfers = await Transfer.findAll(opts);
         }
 
         let potInputs = [];
@@ -403,7 +400,7 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
     for (let transaction of transactionInserts) {
         dateIsAffected(transaction.date);
     }
-    await Models.Transaction.bulkCreate(transactionInserts, {transaction: dbTransaction});
+    await Transaction.bulkCreate(transactionInserts, {transaction: dbTransaction});
 
     // Update existing transactions
     for (let transaction of transactionUpdates) {
@@ -421,14 +418,14 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
     }
 
     if (deleteIds.length !== 0) {
-        await Models.Transaction.destroy({where: {id: deleteIds}, transaction: dbTransaction});
+        await Transaction.destroy({where: {id: deleteIds}, transaction: dbTransaction});
     }
 
     return {
         earliestDate: earliestTimestamp !== null ? new Date(earliestTimestamp) : null,
         nUpdates:     transactionInserts.length + transactionUpdates.length,
     };
-};
+}
 
 /**
  * Update transaction balances starting at the given date, assuming that transaction amounts have changed since then
@@ -437,7 +434,7 @@ exports.rebuildEventTransactions = async function rebuildEventTransactions(dbTra
  * @param {Date|null} startDate
  * @returns {Promise<number>} Number of updates performed
  */
-exports.rebuildTransactionBalances = async function rebuildTransactionBalances(dbTransaction, startDate) {
+export async function rebuildTransactionBalances(dbTransaction, startDate) {
     // date and ID of last handled transaction
     let date = startDate ?? new Date(0);
     let id = -1;
@@ -450,7 +447,7 @@ exports.rebuildTransactionBalances = async function rebuildTransactionBalances(d
         //     date > :date OR (date = :date AND id > :id)
         // rather than:
         //     date >= :date AND (date > :date OR id > :id)
-        let transactions = await Models.Transaction.findAll({
+        let transactions = await Transaction.findAll({
             where:       {
                 [Op.or]: [
                     {
@@ -483,7 +480,7 @@ exports.rebuildTransactionBalances = async function rebuildTransactionBalances(d
 
             if (!(user in balancesByCurrencyAndUser[currency])) {
                 // fetch current balance for that user
-                let row = await Models.Transaction.findOne({
+                let row = await Transaction.findOne({
                     attributes:  [Sequelize.col('balance')],
                     where:       {
                         currency: currency,
@@ -514,7 +511,7 @@ exports.rebuildTransactionBalances = async function rebuildTransactionBalances(d
     }
 
     return nUpdates;
-};
+}
 
 /**
  * Update the user table with the balances taken from the transaction table
@@ -522,7 +519,7 @@ exports.rebuildTransactionBalances = async function rebuildTransactionBalances(d
  * @param {Transaction} dbTransaction
  * @returns {Promise<void>}
  */
-exports.rebuildUserBalances = async function rebuildUserBalances(dbTransaction) {
+export async function rebuildUserBalances(dbTransaction) {
     // Careful: This query must work with MariaDB and also SQLite
     let sql = `
         UPDATE user AS u
@@ -547,7 +544,7 @@ exports.rebuildUserBalances = async function rebuildUserBalances(dbTransaction) 
         },
         transaction:  dbTransaction,
     });
-};
+}
 
 /**
  * Rebuild everything regarding one event that has changed
@@ -555,12 +552,12 @@ exports.rebuildUserBalances = async function rebuildUserBalances(dbTransaction) 
  * @param {Transaction} dbTransaction
  * @param {Event|number} event
  */
-exports.rebuildEvent = async function rebuildEvent(dbTransaction, event) {
-    await exports.rebuildLunchDetails(dbTransaction, event);
+export async function rebuildEvent(dbTransaction, event) {
+    await rebuildLunchDetails(dbTransaction, event);
 
-    let {earliestDate} = await exports.rebuildEventTransactions(dbTransaction, event);
+    let {earliestDate} = await rebuildEventTransactions(dbTransaction, event);
     if (earliestDate !== null) {
-        await exports.rebuildTransactionBalances(dbTransaction, earliestDate);
-        await exports.rebuildUserBalances(dbTransaction);
+        await rebuildTransactionBalances(dbTransaction, earliestDate);
+        await rebuildUserBalances(dbTransaction);
     }
-};
+}

@@ -1,10 +1,7 @@
-'use strict';
-
-const supertest = require('supertest');
-
-const AndeoLunch = require('../../src/andeoLunch');
-const ConfigProvider = require('../../src/configProvider');
-const Helper = require('./helper');
+import * as Helper from '../helper.js';
+import {AndeoLunch} from '../../src/andeoLunch.js';
+import {getTestConfig} from '../../src/configProvider.js';
+import supertest from 'supertest';
 
 /** @type {AndeoLunch|null} */
 let andeoLunch = null;
@@ -41,7 +38,7 @@ function makeSampleTransfer() {
 
 beforeEach(async () => {
     andeoLunch = new AndeoLunch({
-        config: await ConfigProvider.getTestConfig(),
+        config: await getTestConfig(),
         quiet:  true,
     });
     await andeoLunch.waitReady();

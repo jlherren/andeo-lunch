@@ -1,13 +1,11 @@
-'use strict';
-
-const Models = require('../db/models');
+import {Configuration} from '../db/models.js';
 
 /**
  * @param {Application.Context} ctx
  * @returns {Promise<void>}
  */
 async function getPayUpDefaultRecipient(ctx) {
-    let config = await Models.Configuration.findOne({
+    let config = await Configuration.findOne({
         where: {
             name: 'payUp.defaultRecipient',
         },
@@ -22,7 +20,7 @@ async function getPayUpDefaultRecipient(ctx) {
  * @returns {Promise<void>}
  */
 async function getDefaultFlatRate(ctx) {
-    let config = await Models.Configuration.findOne({
+    let config = await Configuration.findOne({
         where: {
             name: 'lunch.defaultFlatRate',
         },
@@ -37,7 +35,7 @@ async function getDefaultFlatRate(ctx) {
  * @returns {Promise<void>}
  */
 async function getDecommissionContraUser(ctx) {
-    let config = await Models.Configuration.findOne({
+    let config = await Configuration.findOne({
         where: {
             name: 'userAdmin.decommissionContraUser',
         },
@@ -90,12 +88,10 @@ async function getSnowfall(ctx) {
 /**
  * @param {Router} router
  */
-function register(router) {
+export default function register(router) {
     router.get('/pay-up/default-recipient', getPayUpDefaultRecipient);
     router.get('/options/default-flat-rate', getDefaultFlatRate);
     router.get('/options/decommission-contra-user', getDecommissionContraUser);
     router.get('/snowfall', getSnowfall);
     router.get('/migrate', migrate);
 }
-
-exports.register = register;

@@ -1,6 +1,4 @@
-'use strict';
-
-const Models = require('./db/models');
+import {Audit} from './db/models.js';
 
 /**
  * @param {Transaction} transaction
@@ -9,14 +7,14 @@ const Models = require('./db/models');
  * @param {Object} rest
  * @returns {Promise<void>}
  */
-exports.log = async function log(transaction, actingUser, type, rest) {
-    await Models.Audit.create({
+export async function log(transaction, actingUser, type, rest) {
+    await Audit.create({
         date:       new Date(),
         type,
         actingUser: actingUser.id,
         ...rest,
     }, {transaction});
-};
+}
 
 /**
  * @param {Transaction} transaction
@@ -24,7 +22,7 @@ exports.log = async function log(transaction, actingUser, type, rest) {
  * @param {Array<{type: string, rest: Array}>} entries
  * @returns {Promise<void>}
  */
-exports.logMultiple = async function logMultiple(transaction, actingUser, entries) {
+export async function logMultiple(transaction, actingUser, entries) {
     let inserts = [];
     let date = Date.now();
 
@@ -36,5 +34,5 @@ exports.logMultiple = async function logMultiple(transaction, actingUser, entrie
         });
     }
 
-    await Models.Audit.bulkCreate(inserts, {transaction});
-};
+    await Audit.bulkCreate(inserts, {transaction});
+}

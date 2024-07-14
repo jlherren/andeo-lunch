@@ -1,12 +1,10 @@
-'use strict';
-
-const {DataTypes} = require('sequelize');
+import {DataTypes} from 'sequelize';
 
 /**
  * @param {Sequelize} sequelize
  * @returns {Promise<void>}
  */
-async function up({context: sequelize}) {
+export async function up({context: sequelize}) {
     let queryInterface = sequelize.getQueryInterface();
     let cascade = {
         onDelete: 'restrict',
@@ -59,11 +57,9 @@ async function up({context: sequelize}) {
  * @param {Sequelize} sequelize
  * @returns {Promise<void>}
  */
-async function down({context: sequelize}) {
+export async function down({context: sequelize}) {
     let queryInterface = sequelize.getQueryInterface();
     await queryInterface.removeConstraint('event', 'event_ibfk_1');
     await queryInterface.removeIndex('event', 'event_type_idx');
     await queryInterface.dropTable('eventType');
 }
-
-module.exports = {up, down};

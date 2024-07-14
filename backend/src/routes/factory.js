@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * Create a controller that returns a single object by its ID
  *
@@ -9,7 +7,7 @@
  * @param {object} [options.where] Additional WHERE string
  * @returns {Function}
  */
-exports.makeSingleObjectController = function makeSingleObjectController(options) {
+export function makeSingleObjectController(options) {
     let singular = options.model.name.toLowerCase();
 
     return async function (ctx) {
@@ -27,7 +25,7 @@ exports.makeSingleObjectController = function makeSingleObjectController(options
             ctx.throw(404, `No such ${singular}`);
         }
     };
-};
+}
 
 /**
  * Create a controller that returns a list of objects
@@ -39,7 +37,7 @@ exports.makeSingleObjectController = function makeSingleObjectController(options
  * @param {Array<Array<string>>} [options.order] Additional ORDER BY
  * @returns {Function}
  */
-exports.makeObjectListController = function makeObjectListController(options) {
+export function makeObjectListController(options) {
     let plural = `${options.model.name.toLowerCase()}s`;
 
     return async function (ctx) {
@@ -51,4 +49,4 @@ exports.makeObjectListController = function makeObjectListController(options) {
             [plural]: objects.map(object => options.mapper(object)),
         };
     };
-};
+}

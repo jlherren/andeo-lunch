@@ -1,11 +1,9 @@
-'use strict';
-
-const Joi = require('joi');
-const {Sequelize, Op} = require('sequelize');
-const naturalCompare = require('natural-compare');
-const ms = require('ms');
-const Models = require('../db/models');
-const RouteUtils = require('./route-utils');
+import * as RouteUtils from './route-utils.js';
+import {Configuration, DeviceVersion} from '../db/models.js';
+import {Op, Sequelize} from 'sequelize';
+import Joi from 'joi';
+import ms from 'ms';
+import naturalCompare from 'natural-compare';
 
 const CONFIGURATION_WHITELIST_REGEX = /^(?:lunch\.defaultFlatRate|payUp\.defaultRecipient|paymentInfo\.[0-9]+)$/u;
 
@@ -27,7 +25,7 @@ async function versions(ctx) {
     let period = ms(config.tokenExpiry);
     let cutoff = new Date(Date.now() - period);
 
-    let rows = await Models.DeviceVersion.findAll({
+    let rows = await DeviceVersion.findAll({
         raw:        true,
         attributes: [
             'version',
@@ -55,7 +53,7 @@ async function getConfigurations(ctx) {
     RouteUtils.requirePermission(ctx, 'tools.configurations');
 
     // We could use Op.regexp, but Sequelize does not allow it for SQLite.
-    let all = await Models.Configuration.findAll({
+    let all = await Configuration.findAll({
         raw:        true,
         attributes: ['name', 'value'],
     });
@@ -80,7 +78,7 @@ async function saveConfigurations(ctx) {
             if (!configuration.name.match(CONFIGURATION_WHITELIST_REGEX)) {
                 ctx.throw(400, `Configuration not whitelisted: ${configuration.name}`);
             }
-            await Models.Configuration.update({
+            await Configuration.update({
                 value: configuration.value,
             }, {
                 where: {
@@ -98,10 +96,8 @@ async function saveConfigurations(ctx) {
 /**
  * @param {Router} router
  */
-function register(router) {
+export default function register(router) {
     router.get('/tools/device-versions', versions);
     router.get('/tools/configurations', getConfigurations);
     router.post('/tools/configurations', saveConfigurations);
 }
-
-exports.register = register;

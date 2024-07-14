@@ -1,5 +1,5 @@
-const axios = require('axios');
-const MariaDB = require('mariadb');
+import MariaDB from 'mariadb';
+import axios from 'axios';
 
 /** @type {MariaDB.Connection|null} */
 let dbConnection = null;
@@ -47,7 +47,7 @@ async function getDb() {
  * @param {object} config
  * @returns {Promise<null>}
  */
-module.exports.dbPurge = async function dbPurge(config) {
+export async function dbPurge(config) {
     let connection = await getDb();
     await connection.query('DROP DATABASE andeolunchtest');
     await connection.query('CREATE DATABASE andeolunchtest');
@@ -55,7 +55,7 @@ module.exports.dbPurge = async function dbPurge(config) {
     await connection.query('USE andeolunchtest');
     await axios.get(`${config.baseUrl}/api/migrate`);
     return null;
-};
+}
 
 /**
  * Run an SQL statement on the DB
@@ -63,8 +63,8 @@ module.exports.dbPurge = async function dbPurge(config) {
  * @param {string} sql
  * @returns {Promise<null>}
  */
-module.exports.dbSql = async function dbSql(sql) {
+export async function dbSql(sql) {
     let connection = await getDb();
     await connection.query(sql);
     return null;
-};
+}

@@ -1,3 +1,5 @@
+// Having this file with .js extension as ES module does not seem to work.
+
 module.exports = {
     root:          true,
     env:           {
@@ -410,5 +412,4 @@ module.exports = {
             },
         },
     ],
-
 };

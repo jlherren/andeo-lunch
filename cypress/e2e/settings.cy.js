@@ -1,4 +1,4 @@
-const {USERS} = require('../helpers/sql');
+import {USERS} from '../helpers/sql';
 
 describe('Profile', () => {
     beforeEach(() => {

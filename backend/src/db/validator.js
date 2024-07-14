@@ -1,7 +1,9 @@
-'use strict';
+import {promises as fs} from 'fs';
+import path from 'path';
+import url from 'url';
 
-const path = require('path');
-const fs = require('fs').promises;
+// eslint-disable-next-line no-underscore-dangle
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 /**
  * @param {Sequelize} sequelize
@@ -15,7 +17,7 @@ async function getAllTables(sequelize) {
 /**
  * @returns {Promise<Object<string, string>>}
  */
-exports.getReferenceCreateTableStatements = async function getReferenceCreateTableStatements() {
+export async function getReferenceCreateTableStatements() {
     let createTableStatements = {};
     let directory = path.resolve(path.join(__dirname, '..', '..', 'resources', 'tableSqls'));
     for (let entry of await fs.readdir(directory)) {
@@ -27,7 +29,7 @@ exports.getReferenceCreateTableStatements = async function getReferenceCreateTab
         createTableStatements[table] = await fs.readFile(filename, 'utf-8');
     }
     return createTableStatements;
-};
+}
 
 /**
  * @param {string} sql
@@ -43,7 +45,7 @@ function fixCreateTableSql(sql) {
  * @param {Sequelize} sequelize
  * @returns {Promise<Object<string, string>>}
  */
-exports.getCreateTableStatementsFromDb = async function getCreateTableStatementsFromDb(sequelize) {
+export async function getCreateTableStatementsFromDb(sequelize) {
     if (sequelize.getDialect() !== 'mariadb') {
         throw new Error('Only supported for MariaDB');
     }
@@ -59,4 +61,4 @@ exports.getCreateTableStatementsFromDb = async function getCreateTableStatements
         createTableStatements[table] = desc;
     }
     return createTableStatements;
-};
+}

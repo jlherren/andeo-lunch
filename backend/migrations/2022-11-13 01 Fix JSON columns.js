@@ -1,12 +1,10 @@
-'use strict';
-
-const {DataTypes} = require('sequelize');
+import {DataTypes} from 'sequelize';
 
 /**
  * @param {Sequelize} sequelize
  * @returns {Promise<void>}
  */
-async function up({context: sequelize}) {
+export async function up({context: sequelize}) {
     // These two columns were manually overridden in production to remove the CHECK() clause, due to bugs in sequelize.
     // The issues have now been fixed, so we can add them again.
     let queryInterface = sequelize.getQueryInterface();
@@ -22,6 +20,4 @@ async function up({context: sequelize}) {
     });
 }
 
-let down = up;
-
-module.exports = {up, down};
+export const down = up;

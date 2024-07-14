@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * @template T
  * @template K
@@ -7,7 +5,7 @@
  * @param {string|function(item: T): K} key
  * @returns {Object<K, T>}
  */
-function indexBy(array, key) {
+export function indexBy(array, key) {
     let ret = {};
     for (let item of array) {
         let keyValue = typeof key === 'string' ? item[key] : item[key(item)];
@@ -26,7 +24,7 @@ function indexBy(array, key) {
  * @param {string|function(item: T): K} key
  * @returns {Object<K, Array<T>>}
  */
-function groupBy(array, key) {
+export function groupBy(array, key) {
     let ret = {};
     for (let item of array) {
         let keyValue = typeof key === 'string' ? item[key] : key(item);
@@ -44,7 +42,7 @@ function groupBy(array, key) {
  * @param {boolean} numericKey
  * @returns {object}
  */
-function objectFlip(object, numericKey) {
+export function objectFlip(object, numericKey) {
     let ret = {};
     for (let key in object) {
         let value = object[key];
@@ -69,7 +67,7 @@ function objectFlip(object, numericKey) {
  * @param {string} str
  * @returns {Date|null}
  */
-function parseDate(str) {
+export function parseDate(str) {
     let date = new Date(str);
     return isNaN(date.getTime()) ? null : date;
 }
@@ -79,7 +77,7 @@ function parseDate(str) {
  * @param {any} after
  * @returns {any}
  */
-function snapshotDiff(before, after) {
+export function snapshotDiff(before, after) {
     if (before instanceof Date && after instanceof Date) {
         if (before.getTime() === after.getTime()) {
             return undefined;
@@ -112,9 +110,3 @@ function snapshotDiff(before, after) {
 
     return [before, after];
 }
-
-exports.indexBy = indexBy;
-exports.groupBy = groupBy;
-exports.objectFlip = objectFlip;
-exports.parseDate = parseDate;
-exports.snapshotDiff = snapshotDiff;

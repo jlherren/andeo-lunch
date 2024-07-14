@@ -50,7 +50,7 @@ for MARIADB_VERSION in 10.6 10.11 11.4; do
     echo 'MariaDB is up'
 
     # Run tests, in-band is necessary, since with only one DB we can't run them in parallel
-    yarn jest --runInBand
+    NODE_OPTIONS=--experimental-vm-modules yarn jest --runInBand
 
     # Stop and remove container
     echo "Stopping MariaDB"

@@ -1,11 +1,8 @@
-'use strict';
-
-const Joi = require('joi');
-
-const Models = require('../db/models');
-const RouteUtils = require('./route-utils');
-const Utils = require('../utils');
-const AuditManager = require('../auditManager');
+import * as AuditManager from '../auditManager.js';
+import * as RouteUtils from './route-utils.js';
+import * as Utils from '../utils.js';
+import {Grocery} from '../db/models.js';
+import Joi from 'joi';
 
 const groceryLabelSchema = Joi.string().normalize().min(1).regex(/\S/u);
 
@@ -27,7 +24,7 @@ async function createGrocery(ctx) {
     /** @type {ApiGrocery} */
     let apiGrocery = RouteUtils.validateBody(ctx, groceryCreateSchema);
     let groceryId = await ctx.sequelize.transaction(async transaction => {
-        let grocery = await Models.Grocery.create({
+        let grocery = await Grocery.create({
             label:   apiGrocery.label,
             checked: apiGrocery.checked,
             order:   Date.now() / 1000 | 0,
@@ -54,7 +51,7 @@ async function loadGrocery(ctx, groceryId, transaction) {
         transaction,
         lock: transaction ? transaction.LOCK.UPDATE : undefined,
     };
-    let grocery = await Models.Grocery.findByPk(groceryId, options);
+    let grocery = await Grocery.findByPk(groceryId, options);
     if (!grocery) {
         ctx.throw(404, 'No such grocery');
     }
@@ -105,7 +102,7 @@ async function updateGrocery(ctx) {
  */
 async function listGroceries(ctx) {
     /** @type {Array<Grocery>} */
-    let groceries = await Models.Grocery.findAll({
+    let groceries = await Grocery.findAll({
         order: [
             ['checked', 'ASC'],
             ['order', 'DESC'],
@@ -147,10 +144,10 @@ async function deleteGrocery(ctx) {
 /**
  * @param {Router} router
  */
-exports.register = function register(router) {
+export default function register(router) {
     router.get('/groceries', listGroceries);
     router.get('/groceries/:grocery(\\d+)', getGroceries);
     router.post('/groceries', createGrocery);
     router.post('/groceries/:grocery(\\d+)', updateGrocery);
     router.delete('/groceries/:grocery(\\d+)', deleteGrocery);
-};
+}

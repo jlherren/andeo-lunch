@@ -1,7 +1,7 @@
-const {defineConfig} = require('cypress');
-const {dbPurge, dbSql} = require('./plugins');
+import {defineConfig} from 'cypress';
+import {dbPurge, dbSql} from './plugins/index.js';
 
-module.exports = defineConfig({
+export default defineConfig({
     chromeWebSecurity: false,
     downloadsFolder:   'downloads',
     fixturesFolder:    'fixtures',

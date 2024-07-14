@@ -1,10 +1,9 @@
-const crypto = require('crypto');
-
-const {LUNCH_BLUE} = require('./src/constants');
+import {LUNCH_BLUE} from './src/constants.js';
+import crypto from 'crypto';
 
 const randomVersion = crypto.randomBytes(3).toString('hex');
 
-module.exports = {
+export default {
     transpileDependencies: [
         'vuetify',
     ],

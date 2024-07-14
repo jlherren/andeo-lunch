@@ -1,10 +1,8 @@
-'use strict';
-
-const jsonWebToken = require('jsonwebtoken');
-const {Model, DataTypes} = require('sequelize');
-const Constants = require('../constants');
-const {ColumnHelper} = require('./columnHelper');
-const EventManager = require('../eventManager');
+import * as Constants from '../constants.js';
+import * as EventManager from '../eventManager.js';
+import {DataTypes, Model} from 'sequelize';
+import {ColumnHelper} from './columnHelper.js';
+import jsonWebToken from 'jsonwebtoken';
 
 /**
  * @class Model
@@ -17,7 +15,7 @@ const EventManager = require('../eventManager');
  * @property {string} name
  * @property {string} value
  */
-class Configuration extends Model {
+export class Configuration extends Model {
 }
 
 /**
@@ -33,7 +31,7 @@ class Configuration extends Model {
  * @property {Object} settings
  * @property {Array<Permission>} Permissions
  */
-class User extends Model {
+export class User extends Model {
     /**
      * @param {string} secret
      * @param {object} [options]
@@ -80,23 +78,23 @@ class User extends Model {
  * @property {string} password
  * @property {Date|null} lastPasswordChange
  */
-class UserPassword extends Model {
+export class UserPassword extends Model {
 }
 
 /**
  * @property {string} name
  */
-class Permission extends Model {
+export class Permission extends Model {
 }
 
 /**
  * @property {number} user
  * @property {number} permission
  */
-class UserPermission extends Model {
+export class UserPermission extends Model {
 }
 
-class EventType extends Model {
+export class EventType extends Model {
 }
 
 /**
@@ -107,7 +105,7 @@ class EventType extends Model {
  * @property {Array<Transfer>} [Transfers]
  * @property {boolean} immutable
  */
-class Event extends Model {
+export class Event extends Model {
     /**
      * Map a user to an object suitable to return over the API
      *
@@ -170,7 +168,7 @@ class Event extends Model {
  * @property {number} event
  * @property {Event} [Event]
  */
-class Lunch extends Model {
+export class Lunch extends Model {
 }
 
 /**
@@ -183,7 +181,7 @@ class Lunch extends Model {
  * @property {number} currency
  * @property {number} amount
  */
-class Transfer extends Model {
+export class Transfer extends Model {
     /**
      * Map to an object suitable to return over the API
      *
@@ -215,7 +213,7 @@ class Transfer extends Model {
 /**
  * @property {string} label
  */
-class ParticipationType extends Model {
+export class ParticipationType extends Model {
 }
 
 /**
@@ -228,7 +226,7 @@ class ParticipationType extends Model {
  * @property {number} moneyCredited
  * @property {number} moneyFactor
  */
-class Participation extends Model {
+export class Participation extends Model {
     /**
      * Map an event participation to an object suitable to return over the API
      *
@@ -275,7 +273,7 @@ class Participation extends Model {
  * @property {number} event
  * @property {Event} [Event]
  */
-class Transaction extends Model {
+export class Transaction extends Model {
     /**
      * Map a transaction to an object suitable to return over the API
      *
@@ -302,7 +300,7 @@ class Transaction extends Model {
  * @property {Date|null} start
  * @property {Date|null} end
  */
-class Absence extends Model {
+export class Absence extends Model {
     /**
      * @returns {ApiAbsence}
      */
@@ -337,7 +335,7 @@ class Absence extends Model {
  * @property {User|null} AffectedUser
  * @property {object|null} values
  */
-class Audit extends Model {
+export class Audit extends Model {
     /**
      * Map an audit to an object suitable to return over the API
      *
@@ -398,7 +396,7 @@ class Audit extends Model {
     }
 }
 
-class Grocery extends Model {
+export class Grocery extends Model {
     /**
      * @returns {ApiGrocery}
      */
@@ -418,30 +416,13 @@ class Grocery extends Model {
     }
 }
 
-class DeviceVersion extends Model {
+export class DeviceVersion extends Model {
 }
-
-exports.Configuration = Configuration;
-exports.User = User;
-exports.UserPassword = UserPassword;
-exports.UserPermission = UserPermission;
-exports.Permission = Permission;
-exports.EventType = EventType;
-exports.Event = Event;
-exports.Lunch = Lunch;
-exports.ParticipationType = ParticipationType;
-exports.Participation = Participation;
-exports.Transaction = Transaction;
-exports.Transfer = Transfer;
-exports.Absence = Absence;
-exports.Audit = Audit;
-exports.Grocery = Grocery;
-exports.DeviceVersion = DeviceVersion;
 
 /**
  * @param {Sequelize} sequelize
  */
-exports.initModels = function initModels(sequelize) {
+export function initModels(sequelize) {
     let ch = new ColumnHelper(sequelize);
 
     // Default cascading options
@@ -701,4 +682,4 @@ exports.initModels = function initModels(sequelize) {
         sequelize,
         modelName: 'deviceVersion',
     });
-};
+}

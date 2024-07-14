@@ -1,24 +1,19 @@
-'use strict';
-
-const chalk = require('chalk');
-const Koa = require('koa');
-const Router = require('@koa/router');
-const Logger = require('koa-logger');
-const cors = require('@koa/cors');
-const BodyParser = require('koa-bodyparser');
-
-const AccountRoutes = require('./routes/account');
-const UserRoutes = require('./routes/user');
-const EventRoutes = require('./routes/event');
-const MiscRoutes = require('./routes/misc');
-const AuditRoutes = require('./routes/audit');
-const SettingsRoutes = require('./routes/settings');
-const GroceryRoutes = require('./routes/grocery');
-const AdminRoutes = require('./routes/admin');
-const ToolsRoutes = require('./routes/tools');
-const RouteUtils = require('./routes/route-utils');
-const Db = require('./db');
-const ConfigProvider = require('./configProvider');
+import * as Db from './db/index.js';
+import * as RouteUtils from './routes/route-utils.js';
+import AccountRoutes from './routes/account.js';
+import AdminRoutes from './routes/admin.js';
+import AuditRoutes from './routes/audit.js';
+import BodyParser from 'koa-bodyparser';
+import EventRoutes from './routes/event.js';
+import GroceryRoutes from './routes/grocery.js';
+import Koa from 'koa';
+import Logger from 'koa-logger';
+import MiscRoutes from './routes/misc.js';
+import Router from '@koa/router';
+import SettingsRoutes from './routes/settings.js';
+import ToolsRoutes from './routes/tools.js';
+import UserRoutes from './routes/user.js';
+import cors from '@koa/cors';
 
 const URLS_WITHOUT_AUTH = [
     '/api/account/check',
@@ -29,7 +24,7 @@ const URLS_WITHOUT_AUTH = [
 /**
  * Main app class
  */
-class AndeoLunch {
+export class AndeoLunch {
     /**
      * @param {Object<string, any>} [options]
      * @param {Config} options.config
@@ -161,15 +156,15 @@ class AndeoLunch {
     createRouter() {
         let router = new Router({prefix: '/api'});
 
-        AccountRoutes.register(router);
-        UserRoutes.register(router);
-        EventRoutes.register(router);
-        MiscRoutes.register(router);
-        AuditRoutes.register(router);
-        SettingsRoutes.register(router);
-        GroceryRoutes.register(router);
-        AdminRoutes.register(router);
-        ToolsRoutes.register(router);
+        AccountRoutes(router);
+        UserRoutes(router);
+        EventRoutes(router);
+        MiscRoutes(router);
+        AuditRoutes(router);
+        SettingsRoutes(router);
+        GroceryRoutes(router);
+        AdminRoutes(router);
+        ToolsRoutes(router);
 
         return router;
     }
@@ -199,36 +194,3 @@ class AndeoLunch {
         await sequelize.close();
     }
 }
-
-/**
- * Main entry point
- */
-async function main() {
-    console.log(chalk.bold('Starting Andeo Lunch backend...'));
-
-    let mainConfig = await ConfigProvider.getMainConfig();
-    let lm = new AndeoLunch({
-        config:  mainConfig,
-        logging: true,
-    });
-
-    process.on('SIGTERM', () => {
-        console.log('Received SIGTERM, shutting down');
-        lm.close();
-    });
-
-    try {
-        lm.listen();
-        await lm.waitReady();
-        console.log(chalk.bold('Server is ready'));
-    } catch (err) {
-        await lm.close();
-        console.error(err);
-    }
-}
-
-if (!module.parent) {
-    main();
-}
-
-module.exports = AndeoLunch;

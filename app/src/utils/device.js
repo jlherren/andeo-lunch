@@ -1,4 +1,5 @@
-const randomBytes = require('randombytes');
+import randomBytes from 'randombytes';
+
 const DEVICE_ID_KEY = 'device-id';
 
 /**
