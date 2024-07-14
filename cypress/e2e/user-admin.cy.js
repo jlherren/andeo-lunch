@@ -1,6 +1,6 @@
 const {USERS} = require('../helpers/sql');
 
-describe('Create events', () => {
+describe('User admin', () => {
     beforeEach(() => {
         cy.task('db:purge');
         USERS.john.insert();
