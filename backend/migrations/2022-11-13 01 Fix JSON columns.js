@@ -2,7 +2,7 @@ import {DataTypes} from 'sequelize';
 
 /**
  * @param {Sequelize} sequelize
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 export async function up({context: sequelize}) {
     // These two columns were manually overridden in production to remove the CHECK() clause, due to bugs in sequelize.

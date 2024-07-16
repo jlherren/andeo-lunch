@@ -3,7 +3,7 @@
  * @template K
  * @param {Array<T>} array
  * @param {string|function(item: T): K} key
- * @returns {Object<K, T>}
+ * @return {Object<K, T>}
  */
 export function indexBy(array, key) {
     let ret = {};
@@ -22,7 +22,7 @@ export function indexBy(array, key) {
  * @template K
  * @param {Array<T>} array
  * @param {string|function(item: T): K} key
- * @returns {Object<K, Array<T>>}
+ * @return {Object<K, Array<T>>}
  */
 export function groupBy(array, key) {
     let ret = {};
@@ -40,7 +40,7 @@ export function groupBy(array, key) {
 /**
  * @param {object} object
  * @param {boolean} numericKey
- * @returns {object}
+ * @return {object}
  */
 export function objectFlip(object, numericKey) {
     let ret = {};
@@ -65,7 +65,7 @@ export function objectFlip(object, numericKey) {
  * Parse a string to a Date, returning null if it is invalid
  *
  * @param {string} str
- * @returns {Date|null}
+ * @return {Date|null}
  */
 export function parseDate(str) {
     let date = new Date(str);
@@ -75,7 +75,7 @@ export function parseDate(str) {
 /**
  * @param {any} before
  * @param {any} after
- * @returns {any}
+ * @return {any}
  */
 export function snapshotDiff(before, after) {
     if (before instanceof Date && after instanceof Date) {

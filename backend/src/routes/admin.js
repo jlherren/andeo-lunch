@@ -24,7 +24,7 @@ const resetPasswordSchema = Joi.object({
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function getUsers(ctx) {
     RouteUtils.requirePermission(ctx, 'admin.user');
@@ -50,7 +50,7 @@ async function getUsers(ctx) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function saveUser(ctx) {
     RouteUtils.requirePermission(ctx, 'admin.user');
@@ -69,7 +69,7 @@ async function saveUser(ctx) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function resetPassword(ctx) {
     RouteUtils.requirePermission(ctx, 'admin.user');
@@ -119,7 +119,7 @@ async function resetPassword(ctx) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function createUser(ctx) {
     RouteUtils.requirePermission(ctx, 'admin.user');

@@ -2,7 +2,7 @@ import {Audit} from '../db/models.js';
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function listAudits(ctx) {
     let include = ctx.query.with === 'names' ? ['Event', 'Grocery', 'ActingUser', 'AffectedUser'] : [];

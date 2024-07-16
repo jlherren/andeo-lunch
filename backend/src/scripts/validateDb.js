@@ -7,7 +7,7 @@ import {getMainConfig} from '../configProvider.js';
 /**
  * Create user
  *
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function validateDb() {
     console.log(chalk.bold('DB structure validator'));

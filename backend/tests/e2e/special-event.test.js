@@ -23,7 +23,7 @@ const sampleEvent = {
 /**
  * Create a sample transfer
  *
- * @returns {object}
+ * @return {object}
  */
 function makeSampleTransfer() {
     return {

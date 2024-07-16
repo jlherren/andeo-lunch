@@ -7,7 +7,7 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 /**
  * @param {Sequelize} sequelize
- * @returns {Promise<Array<string>>}
+ * @return {Promise<Array<string>>}
  */
 async function getAllTables(sequelize) {
     let rows = await sequelize.getQueryInterface().showAllTables();
@@ -15,7 +15,7 @@ async function getAllTables(sequelize) {
 }
 
 /**
- * @returns {Promise<Object<string, string>>}
+ * @return {Promise<Object<string, string>>}
  */
 export async function getReferenceCreateTableStatements() {
     let createTableStatements = {};
@@ -33,7 +33,7 @@ export async function getReferenceCreateTableStatements() {
 
 /**
  * @param {string} sql
- * @returns {string}
+ * @return {string}
  */
 function fixCreateTableSql(sql) {
     sql = sql.replace(/ENGINE=InnoDB AUTO_INCREMENT=\d+/gu, 'ENGINE=InnoDB');
@@ -43,7 +43,7 @@ function fixCreateTableSql(sql) {
 
 /**
  * @param {Sequelize} sequelize
- * @returns {Promise<Object<string, string>>}
+ * @return {Promise<Object<string, string>>}
  */
 export async function getCreateTableStatementsFromDb(sequelize) {
     if (sequelize.getDialect() !== 'mariadb') {

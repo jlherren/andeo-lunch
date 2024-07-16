@@ -6,7 +6,7 @@ import crypto from 'crypto';
  * Hash a password
  *
  * @param {string} password
- * @returns {Promise<string>}
+ * @return {Promise<string>}
  */
 export async function hashPassword(password) {
     let salt = await bcrypt.genSalt();
@@ -18,7 +18,7 @@ export async function hashPassword(password) {
  *
  * @param {string} password
  * @param {string} hash
- * @returns {Promise<boolean>}
+ * @return {Promise<boolean>}
  */
 export function comparePassword(password, hash) {
     return bcrypt.compare(password, hash);
@@ -28,7 +28,7 @@ export function comparePassword(password, hash) {
  * Do a fake password verification to mitigate time based attacks
  *
  * @param {string} password
- * @returns {Promise}
+ * @return {Promise}
  */
 export async function fakeCompare(password) {
     // This hash is from a randomly generated strong password, but the actual password won't matter
@@ -38,7 +38,7 @@ export async function fakeCompare(password) {
 }
 
 /**
- * @returns {Promise<string>}
+ * @return {Promise<string>}
  */
 export function generateSecret() {
     return new Promise(resolve => {
@@ -59,7 +59,7 @@ export function generateSecret() {
 let cachedSecret = null;
 
 /**
- * @returns {Promise<string>}
+ * @return {Promise<string>}
  */
 export async function getSecret() {
     if (cachedSecret === null) {

@@ -24,7 +24,7 @@ export class Cli {
 
     /**
      * @param {string} question
-     * @returns {Promise<string>}
+     * @return {Promise<string>}
      */
     question(question) {
         return new Promise(resolve => {
@@ -36,7 +36,7 @@ export class Cli {
 
     /**
      * @param {string} question
-     * @returns {Promise<string>}
+     * @return {Promise<string>}
      */
     password(question) {
         return new Promise(resolve => {

@@ -5,7 +5,7 @@ import {Permission, User, UserPassword, UserPermission} from '../src/db/models.j
  *
  * @param {SuperTest} request
  * @param {object} data
- * @returns {Promise<number>}
+ * @return {Promise<number>}
  */
 export async function createEvent(request, data) {
     let response = await request.post('/api/events').send(data);
@@ -17,7 +17,7 @@ export async function createEvent(request, data) {
 /**
  * @param {SuperTest} request
  * @param {string} name
- * @returns {Promise<ApiUser>}
+ * @return {Promise<ApiUser>}
  */
 export async function getUserByName(request, name) {
     let response = await request.get('/api/users');
@@ -31,7 +31,7 @@ export async function getUserByName(request, name) {
 
 /**
  * @param {SuperTest} request
- * @returns {Promise<ApiUser>}
+ * @return {Promise<ApiUser>}
  */
 export function getSystemUser(request) {
     return getUserByName(request, 'System user');
@@ -39,7 +39,7 @@ export function getSystemUser(request) {
 
 /**
  * @param {SuperTest} request
- * @returns {Promise<ApiUser>}
+ * @return {Promise<ApiUser>}
  */
 export function getAndeoUser(request) {
     return getUserByName(request, 'Andeo');
@@ -55,7 +55,7 @@ export const passwordHash = '$2a$04$coj9eKcxliBzr47q1nyOV.TiH0dI2v.fbQeLoMUAhJUR
 /**
  * @param {string} username
  * @param {object} attributes
- * @returns {Promise<User>}
+ * @return {Promise<User>}
  */
 export async function createUser(username, attributes = {}) {
     let user = await User.create({
@@ -75,7 +75,7 @@ export async function createUser(username, attributes = {}) {
 /**
  * @param {number} userId
  * @param {string} name
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 export async function insertPermission(userId, name) {
     let permission = await Permission.findOne({
@@ -89,7 +89,7 @@ export async function insertPermission(userId, name) {
 
 /**
  * @param {number} days
- * @returns {Date}
+ * @return {Date}
  */
 export function daysAgo(days) {
     let date = new Date();

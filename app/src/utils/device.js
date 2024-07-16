@@ -3,7 +3,7 @@ import randomBytes from 'randombytes';
 const DEVICE_ID_KEY = 'device-id';
 
 /**
- * @returns {string}
+ * @return {string}
  */
 export function getDeviceId() {
     let deviceId = localStorage.getItem(DEVICE_ID_KEY);
@@ -15,7 +15,7 @@ export function getDeviceId() {
 }
 
 /**
- * @returns {string}
+ * @return {string}
  */
 function generateDeviceId() {
     return randomBytes(16).toString('hex');

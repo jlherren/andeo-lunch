@@ -28,7 +28,7 @@ const configSchema = Joi.object({
 
 /**
  * @param {Config} config
- * @returns {Config}
+ * @return {Config}
  */
 function validateConfig(config) {
     let {error, value} = configSchema.validate(config);
@@ -41,7 +41,7 @@ function validateConfig(config) {
 /**
  * Return the main configuration file (config.json)
  *
- * @returns {Promise<Config>}
+ * @return {Promise<Config>}
  */
 export async function getMainConfig() {
     let fullPath = path.resolve(`${__dirname}/../config.json`);
@@ -59,7 +59,7 @@ export async function getMainConfig() {
  * Return the testing configuration, either using a MariaDB database from the environment, or an
  * in-memory sqlite database.
  *
- * @returns {Promise<Config>}
+ * @return {Promise<Config>}
  */
 export async function getTestConfig() {
     let config = null;

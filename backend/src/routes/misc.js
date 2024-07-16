@@ -2,7 +2,7 @@ import {Configuration} from '../db/models.js';
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function getPayUpDefaultRecipient(ctx) {
     let config = await Configuration.findOne({
@@ -17,7 +17,7 @@ async function getPayUpDefaultRecipient(ctx) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function getDefaultFlatRate(ctx) {
     let config = await Configuration.findOne({
@@ -32,7 +32,7 @@ async function getDefaultFlatRate(ctx) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function getDecommissionContraUser(ctx) {
     let config = await Configuration.findOne({
@@ -47,7 +47,7 @@ async function getDecommissionContraUser(ctx) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function migrate(ctx) {
     if (!process.env.ANDEO_LUNCH_CYPRESS) {
@@ -65,7 +65,7 @@ const WEATHER_TTL = 300 * 1000;
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function getSnowfall(ctx) {
     if (weatherCache === null || weatherCache.timestamp + WEATHER_TTL < Date.now()) {

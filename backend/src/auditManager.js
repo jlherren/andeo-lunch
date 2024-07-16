@@ -5,7 +5,7 @@ import {Audit} from './db/models.js';
  * @param {User} actingUser
  * @param {string} type
  * @param {Object} rest
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 export async function log(transaction, actingUser, type, rest) {
     await Audit.create({
@@ -20,7 +20,7 @@ export async function log(transaction, actingUser, type, rest) {
  * @param {Transaction} transaction
  * @param {User} actingUser
  * @param {Array<{type: string, rest: Array}>} entries
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 export async function logMultiple(transaction, actingUser, entries) {
     let inserts = [];

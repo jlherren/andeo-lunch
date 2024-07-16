@@ -164,7 +164,7 @@ export let useStore = defineStore('main', {
          * Change the password
          *
          * @param {object} data
-         * @returns {Promise<boolean|string>} True if successful, or a reason if not
+         * @return {Promise<boolean|string>} True if successful, or a reason if not
          */
         async changePassword(data) {
             let response = await Backend.post('/account/password', data);
@@ -478,7 +478,7 @@ export let useStore = defineStore('main', {
         },
 
         /**
-         * @returns {Promise<{
+         * @return {Promise<{
          *     versions: Array<{version: string, count: number}>,
          *     period: string,
          * }>}
@@ -489,7 +489,7 @@ export let useStore = defineStore('main', {
         },
 
         /**
-         * @returns {Promise<Array<{name: string, value: any}>>}
+         * @return {Promise<Array<{name: string, value: any}>>}
          */
         async fetchConfigurations() {
             let response = await Backend.get('/tools/configurations');
@@ -499,7 +499,7 @@ export let useStore = defineStore('main', {
         /**
          * @param {string} name
          * @param {string} value
-         * @returns {Promise<void>}
+         * @return {Promise<void>}
          */
         async saveConfiguration(name, value) {
             await Backend.post('/tools/configurations', {
@@ -510,7 +510,7 @@ export let useStore = defineStore('main', {
         },
 
         /**
-         * @returns {Promise<Array<{username: string, name: string}>>}
+         * @return {Promise<Array<{username: string, name: string}>>}
          */
         async adminFetchUsers() {
             let response = await Backend.get('/admin/users');
@@ -521,7 +521,7 @@ export let useStore = defineStore('main', {
          * @param {Object} options
          * @param {number} options.id
          * @param {Object} options.user
-         * @returns {Promise<void>}
+         * @return {Promise<void>}
          */
         async adminSaveUser({id, ...user}) {
             await Backend.post(`/admin/users/${id}`, user);
@@ -529,7 +529,7 @@ export let useStore = defineStore('main', {
 
         /**
          * @param {Object} user
-         * @returns {Promise<number>}
+         * @return {Promise<number>}
          */
         async adminCreateUser(user) {
             let response = await Backend.post('/admin/users', user);
@@ -540,7 +540,7 @@ export let useStore = defineStore('main', {
          * @param {number} id
          * @param {string} newPassword
          * @param {string} ownPassword
-         * @returns {Promise<true|string>}
+         * @return {Promise<true|string>}
          */
         async adminResetPassword(id, newPassword, ownPassword) {
             let response = await Backend.post(`/admin/users/${id}/password`, {

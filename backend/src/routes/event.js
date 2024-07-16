@@ -71,7 +71,7 @@ const participationSchema = Joi.object({
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function getParticipationList(ctx) {
     let participations = await Participation.findAll({
@@ -86,7 +86,7 @@ async function getParticipationList(ctx) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function getSingleParticipation(ctx) {
     let participation = await Participation.findOne({
@@ -148,7 +148,7 @@ function assertCanEditDate(ctx, date) {
  * @param {User} user
  * @param {Date} date
  * @param {Transaction} transaction
- * @returns {Promise<number>}
+ * @return {Promise<number>}
  */
 async function computeDefaultParticipationType(user, date, transaction) {
     if (!user.active) {
@@ -209,7 +209,7 @@ async function setDefaultOptIns(event, transaction) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function createEvent(ctx) {
     /** @type {ApiEvent} */
@@ -266,7 +266,7 @@ async function createEvent(ctx) {
  * @param {Application.Context} ctx
  * @param {number} eventId
  * @param {Transaction} [transaction]
- * @returns {Promise<Event>}
+ * @return {Promise<Event>}
  */
 async function loadEvent(ctx, eventId, transaction) {
     let options = {
@@ -284,7 +284,7 @@ async function loadEvent(ctx, eventId, transaction) {
 /**
  * @param {Application.Context} ctx
  * @param {Transaction} [transaction]
- * @returns {Promise<Event>}
+ * @return {Promise<Event>}
  */
 function loadEventFromParam(ctx, transaction) {
     return loadEvent(ctx, parseInt(ctx.params.event, 10), transaction);
@@ -294,7 +294,7 @@ function loadEventFromParam(ctx, transaction) {
  * @param {Application.Context} ctx
  * @param {number} transferId
  * @param {Transaction} [transaction]
- * @returns {Promise<Transfer>}
+ * @return {Promise<Transfer>}
  */
 async function loadTransfer(ctx, transferId, transaction) {
     let options = {
@@ -311,7 +311,7 @@ async function loadTransfer(ctx, transferId, transaction) {
 /**
  * @param {Application.Context} ctx
  * @param {Transaction} [transaction]
- * @returns {Promise<Transfer>}
+ * @return {Promise<Transfer>}
  */
 function loadTransferFromParam(ctx, transaction) {
     return loadTransfer(ctx, parseInt(ctx.params.transfer, 10), transaction);
@@ -322,7 +322,7 @@ function loadTransferFromParam(ctx, transaction) {
  * @param {number} userId
  * @param {Transaction} transaction
  * @param {boolean} allowSystemUser
- * @returns {Promise<User>}
+ * @return {Promise<User>}
  */
 async function loadUser(ctx, userId, transaction, allowSystemUser = false) {
     if (allowSystemUser && userId === -1) {
@@ -343,7 +343,7 @@ async function loadUser(ctx, userId, transaction, allowSystemUser = false) {
  * @param {Application.Context} ctx
  * @param {Transaction} transaction
  * @param {boolean} allowSystemUser
- * @returns {Promise<User>}
+ * @return {Promise<User>}
  */
 function loadUserFromParam(ctx, transaction, allowSystemUser = false) {
     return loadUser(ctx, parseInt(ctx.params.user, 10), transaction, allowSystemUser);
@@ -351,7 +351,7 @@ function loadUserFromParam(ctx, transaction, allowSystemUser = false) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function updateEvent(ctx) {
     /** @type {ApiEvent} */
@@ -396,7 +396,7 @@ async function updateEvent(ctx) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function saveParticipation(ctx) {
     /** @type {ApiParticipation} */
@@ -478,7 +478,7 @@ async function saveParticipation(ctx) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function deleteParticipation(ctx) {
     await ctx.sequelize.transaction(async transaction => {
@@ -510,7 +510,7 @@ async function deleteParticipation(ctx) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function getEvent(ctx) {
     let event = await loadEventFromParam(ctx);
@@ -525,7 +525,7 @@ async function getEvent(ctx) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function listEvents(ctx) {
     let from = Utils.parseDate(ctx.query.from);
@@ -602,7 +602,7 @@ async function listEvents(ctx) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function deleteEvent(ctx) {
     await ctx.sequelize.transaction(async transaction => {
@@ -648,7 +648,7 @@ async function deleteEvent(ctx) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function getTransferList(ctx) {
     let transfers = await Transfer.findAll({
@@ -664,7 +664,7 @@ async function getTransferList(ctx) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function createTransfers(ctx) {
     /** @type {Array<ApiTransfer>} */
@@ -693,7 +693,7 @@ async function createTransfers(ctx) {
  * @param {Event} event
  * @param {Array<ApiTransfer>} apiTransfers
  * @param {Transaction} transaction
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function createTransfersImpl(ctx, event, apiTransfers, transaction) {
     let transactionInserts = [];
@@ -734,7 +734,7 @@ async function createTransfersImpl(ctx, event, apiTransfers, transaction) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function saveTransfer(ctx) {
     let systemUser = await User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
@@ -784,7 +784,7 @@ async function saveTransfer(ctx) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function deleteTransfer(ctx) {
     let systemUser = await User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});

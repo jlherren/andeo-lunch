@@ -5,7 +5,7 @@ import {DataTypes} from 'sequelize';
 
 /**
  * @param {Sequelize} sequelize
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 export async function up({context: sequelize}) {
     let queryInterface = sequelize.getQueryInterface();

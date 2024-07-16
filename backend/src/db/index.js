@@ -23,7 +23,7 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
  * @param {boolean} [options.migrate]
  * @param {boolean} [options.quiet]
  * @param {Object<string, any>} sequelizeOptions
- * @returns {Promise<Sequelize>}
+ * @return {Promise<Sequelize>}
  */
 export async function connect(options, sequelizeOptions) {
     sequelizeOptions = {
@@ -88,7 +88,7 @@ export async function connect(options, sequelizeOptions) {
  *
  * @param {Sequelize} sequelize
  * @param {boolean} quiet
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 export async function applyMigrations(sequelize, quiet) {
     // Apply migrations

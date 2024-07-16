@@ -2,7 +2,7 @@ import {USERS} from '../helpers/sql';
 
 /**
  * @param {string} name
- * @returns {Cypress.Chainable<HTMLInputElement>}
+ * @return {Cypress.Chainable<HTMLInputElement>}
  */
 function getItem(name) {
     // Not sure how to select by value, since input[value=...] does checks attributes, not properties.

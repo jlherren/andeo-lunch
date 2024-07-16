@@ -1,6 +1,6 @@
 /**
  * @param {Sequelize} sequelize
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 export async function up({context: sequelize}) {
     // Event types 3 and 4 should not have associated lunch entities.  Note that SQLite does not support DELETE

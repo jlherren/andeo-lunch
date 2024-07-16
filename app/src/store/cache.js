@@ -38,7 +38,7 @@ function invalidate(group, key = null) {
  * @param {string|number} group
  * @param {string|number} key
  * @param {number} maxAge
- * @returns {boolean}
+ * @return {boolean}
  */
 function isFresh(group, key, maxAge) {
     let timestamp = cache?.[group]?.[key];
@@ -54,7 +54,7 @@ function isFresh(group, key, maxAge) {
  * @param {string|number} key
  * @param {number} maxAge
  * @param {function(): T} func
- * @returns {Promise<void>|void}
+ * @return {Promise<void>|void}
  */
 async function ifNotFresh(group, key, maxAge, func) {
     if (isFresh(group, key, maxAge)) {

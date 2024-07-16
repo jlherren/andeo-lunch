@@ -9,7 +9,7 @@ import {sprintf} from 'sprintf-js';
 /**
  * @param {Cli} cli
  * @param {User} user
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function editUser(cli, user) {
     while (true) {
@@ -69,7 +69,7 @@ async function editUser(cli, user) {
 
 /**
  * @param {Cli} cli
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function mainMenu(cli) {
     while (true) {
@@ -108,7 +108,7 @@ async function mainMenu(cli) {
 /**
  * Edit user
  *
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function main() {
     console.log(chalk.bold('Edit user'));

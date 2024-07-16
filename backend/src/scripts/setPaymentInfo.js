@@ -6,7 +6,7 @@ import {getMainConfig} from '../configProvider.js';
 import {sprintf} from 'sprintf-js';
 
 /**
- * @returns {Promise<number|null>}
+ * @return {Promise<number|null>}
  */
 async function fetchDefaultRecipient() {
     let config = await Configuration.findOne({where: {name: 'payUp.defaultRecipient'}});
@@ -15,7 +15,7 @@ async function fetchDefaultRecipient() {
 
 /**
  * @param {number} userId
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function saveDefaultRecipient(userId) {
     await Configuration.upsert({name: 'payUp.defaultRecipient', value: `${userId}`});
@@ -23,7 +23,7 @@ async function saveDefaultRecipient(userId) {
 
 /**
  * @param {number} userId
- * @returns {Promise<string|null>}
+ * @return {Promise<string|null>}
  */
 async function fetchPaymentInfo(userId) {
     let config = await Configuration.findOne({where: {name: `paymentInfo.${userId}`}});
@@ -33,7 +33,7 @@ async function fetchPaymentInfo(userId) {
 /**
  * @param {number} userId
  * @param {string} paymentInfo
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function savePaymentInfo(userId, paymentInfo) {
     if (paymentInfo === '') {
@@ -46,7 +46,7 @@ async function savePaymentInfo(userId, paymentInfo) {
 /**
  * Set payment information
  *
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function setPaymentInfo() {
     console.log(chalk.bold('Update payment information'));

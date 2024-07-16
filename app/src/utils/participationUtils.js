@@ -4,7 +4,7 @@ import {icons} from '@/plugins/icons';
  * Get the icon for a participation type
  *
  * @param {string} participationType
- * @returns {string|null}
+ * @return {string|null}
  */
 export function icon(participationType) {
     switch (participationType) {

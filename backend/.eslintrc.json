@@ -23,7 +23,10 @@
     ],
     "settings": {
         "jsdoc": {
-            "mode": "typescript"
+            "mode": "typescript",
+            "tagNamePreference": {
+                "returns": "return"
+            }
         }
     },
     "rules": {

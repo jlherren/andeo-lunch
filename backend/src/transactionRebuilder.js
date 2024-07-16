@@ -9,7 +9,7 @@ import {Op, Sequelize} from 'sequelize';
  * @param {Event} event
  * @param {Participation} participation
  * @param {Array<number>} pointExemptedUsers
- * @returns {{moneyWeight: number, pointsWeight: number}}
+ * @return {{moneyWeight: number, pointsWeight: number}}
  */
 function getWeightsForParticipation(event, participation, pointExemptedUsers) {
     let isPointExempted = pointExemptedUsers.includes(participation.user);
@@ -55,7 +55,7 @@ function getWeightsForParticipation(event, participation, pointExemptedUsers) {
  *
  * @param {Transaction} dbTransaction
  * @param {Event|number} event
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 export async function rebuildLunchDetails(dbTransaction, event) {
     if (![Constants.EVENT_TYPES.LUNCH, Constants.EVENT_TYPES.SPECIAL].includes(event.type)) {
@@ -89,7 +89,7 @@ export async function rebuildLunchDetails(dbTransaction, event) {
  *
  * @param {Transaction} dbTransaction
  * @param {Event|number} event
- * @returns {Promise<{earliestDate: Date|null, nUpdates: number}>} Earliest date that was affected, useful for
+ * @return {Promise<{earliestDate: Date|null, nUpdates: number}>} Earliest date that was affected, useful for
  *                                                                 recalculateBalances() and number of update
  */
 export async function rebuildEventTransactions(dbTransaction, event) {
@@ -188,7 +188,7 @@ export async function rebuildEventTransactions(dbTransaction, event) {
     /**
      * Insert transactions for a lunch of special event
      *
-     * @returns {Promise<void>}
+     * @return {Promise<void>}
      */
     async function handleLunchOrSpecial() {
         if (!event.Lunch) {
@@ -297,7 +297,7 @@ export async function rebuildEventTransactions(dbTransaction, event) {
     /**
      * Handle a transfer event
      *
-     * @returns {Promise<void>}
+     * @return {Promise<void>}
      */
     async function handleTransfer() {
         if (!event.Transfers) {
@@ -432,7 +432,7 @@ export async function rebuildEventTransactions(dbTransaction, event) {
  *
  * @param {Transaction} dbTransaction
  * @param {Date|null} startDate
- * @returns {Promise<number>} Number of updates performed
+ * @return {Promise<number>} Number of updates performed
  */
 export async function rebuildTransactionBalances(dbTransaction, startDate) {
     // date and ID of last handled transaction
@@ -517,7 +517,7 @@ export async function rebuildTransactionBalances(dbTransaction, startDate) {
  * Update the user table with the balances taken from the transaction table
  *
  * @param {Transaction} dbTransaction
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 export async function rebuildUserBalances(dbTransaction) {
     // Careful: This query must work with MariaDB and also SQLite

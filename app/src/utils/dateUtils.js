@@ -33,7 +33,7 @@ export const WEEKDAYS = {
  * Get the midnight preceding (or on) the given date
  *
  * @param {Date} date
- * @returns {Date}
+ * @return {Date}
  */
 export function previousMidnight(date) {
     date = new Date(date.getTime());
@@ -45,7 +45,7 @@ export function previousMidnight(date) {
  * Get the monday preceding (or on) the given date
  *
  * @param {Date} date
- * @returns {Date}
+ * @return {Date}
  */
 export function previousMonday(date) {
     date = previousMidnight(date);
@@ -59,7 +59,7 @@ export function previousMonday(date) {
  * Get the first of the month relative to a given date
  *
  * @param {Date} date
- * @returns {Date}
+ * @return {Date}
  */
 export function previousFirstOfMonth(date) {
     date = previousMidnight(date);
@@ -74,7 +74,7 @@ export function previousFirstOfMonth(date) {
  *
  * @param {Date} date
  * @param {number} days
- * @returns {Date}
+ * @return {Date}
  */
 export function addDays(date, days) {
     // Note: It doesn't work to simply add 7 * 24 * 60 * 60 to the timestamp, since that wouldn't be correct during
@@ -91,7 +91,7 @@ export function addDays(date, days) {
  * Format a date in a sensible displayFormat for displaying
  *
  * @param {Date} date
- * @returns {string}
+ * @return {string}
  */
 export function displayFormat(date) {
     let weekday = date.toLocaleDateString(undefined, {weekday: 'short'});
@@ -103,7 +103,7 @@ export function displayFormat(date) {
  * Format a date in a sensible displayFormat for displaying
  *
  * @param {Date} date
- * @returns {string}
+ * @return {string}
  */
 export function displayFormatNoWeekday(date) {
     return date.toLocaleDateString(undefined, {dateStyle: 'medium'});
@@ -113,7 +113,7 @@ export function displayFormatNoWeekday(date) {
  * Format as ISO date string in local time zone
  *
  * @param {Date} date
- * @returns {string}
+ * @return {string}
  */
 export function isoDate(date) {
     let year = date.getFullYear();
@@ -126,7 +126,7 @@ export function isoDate(date) {
  * Format as ISO date string in local time zone
  *
  * @param {Date} date
- * @returns {string}
+ * @return {string}
  */
 export function isoDateTime(date) {
     let year = date.getFullYear();
@@ -140,7 +140,7 @@ export function isoDateTime(date) {
  *
  * @param {Date} date
  * @param {boolean} useSeconds
- * @returns {string}
+ * @return {string}
  */
 export function isoTime(date, useSeconds = true) {
     let hour = String(date.getHours()).padStart(2, '0');
@@ -157,7 +157,7 @@ export function isoTime(date, useSeconds = true) {
  *
  * @param {Date} date1
  * @param {Date} date2
- * @returns {boolean}
+ * @return {boolean}
  */
 export function isSuccessiveDays(date1, date2) {
     return addDays(date1, 1).getTime() === previousMidnight(date2).getTime();
@@ -168,7 +168,7 @@ export function isSuccessiveDays(date1, date2) {
  *
  * @param {Date} date1
  * @param {Date} date2
- * @returns {boolean}
+ * @return {boolean}
  */
 export function isSameDay(date1, date2) {
     return previousMidnight(date1).getTime() === previousMidnight(date2).getTime();
@@ -176,7 +176,7 @@ export function isSameDay(date1, date2) {
 
 /**
  * @param {Date} date
- * @returns {boolean}
+ * @return {boolean}
  */
 export function isToday(date) {
     return previousMidnight(date).getTime() === previousMidnight(new Date()).getTime();

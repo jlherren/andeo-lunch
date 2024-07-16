@@ -12,7 +12,7 @@ let axios = Axios.create();
 /**
  * Check whether an authorization token exists at all
  *
- * @returns {boolean}
+ * @return {boolean}
  */
 function hasToken() {
     // TODO: Validate the token here?
@@ -22,7 +22,7 @@ function hasToken() {
 /**
  * Get the authorization token
  *
- * @returns {string|null}
+ * @return {string|null}
  */
 function getToken() {
     return localStorage.getItem('token');
@@ -58,7 +58,7 @@ function processError(error) {
  *
  * @param {string} url
  * @param {object} config
- * @returns {Promise<AxiosResponse<any>>}
+ * @return {Promise<AxiosResponse<any>>}
  */
 async function get(url, config = {}) {
     addAuthorizationHeader(config);
@@ -77,7 +77,7 @@ async function get(url, config = {}) {
  * @param {string} url
  * @param {object} data
  * @param {object} config
- * @returns {Promise<AxiosResponse<any>>}
+ * @return {Promise<AxiosResponse<any>>}
  */
 async function post(url, data, config = {}) {
     addAuthorizationHeader(config);
@@ -95,7 +95,7 @@ async function post(url, data, config = {}) {
  *
  * @param {string} url
  * @param {object} config
- * @returns {Promise<AxiosResponse<any>>}
+ * @return {Promise<AxiosResponse<any>>}
  */
 async function delete0(url, config = {}) {
     addAuthorizationHeader(config);

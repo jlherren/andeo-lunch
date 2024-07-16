@@ -16,7 +16,7 @@ const saveConfigurationSchema = Joi.object({
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function versions(ctx) {
     RouteUtils.requirePermission(ctx, 'tools.deviceVersions');
@@ -47,7 +47,7 @@ async function versions(ctx) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function getConfigurations(ctx) {
     RouteUtils.requirePermission(ctx, 'tools.configurations');
@@ -66,7 +66,7 @@ async function getConfigurations(ctx) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function saveConfigurations(ctx) {
     RouteUtils.requirePermission(ctx, 'tools.configurations');

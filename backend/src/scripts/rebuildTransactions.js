@@ -6,7 +6,7 @@ import {getMainConfig} from '../configProvider.js';
 
 /**
  * @param {Transaction} transaction
- * @returns {Promise<Object<string, number>>}
+ * @return {Promise<Object<string, number>>}
  */
 async function getBalances(transaction) {
     let users = await User.findAll({transaction, order: [['username', 'ASC']]});
@@ -22,7 +22,7 @@ async function getBalances(transaction) {
  * Rebuild all transactions
  *
  * @param {boolean} doFix
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function rebuildTransactions(doFix) {
     console.log(chalk.bold('Rebuilding transactions and balances...'));

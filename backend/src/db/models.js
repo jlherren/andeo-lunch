@@ -36,7 +36,7 @@ export class User extends Model {
      * @param {string} secret
      * @param {object} [options]
      * @param {object} [extraPayload] Only for testing.
-     * @returns {Promise<string>}
+     * @return {Promise<string>}
      */
     generateToken(secret, options, extraPayload = {}) {
         // sign() is supposed to return a promise, but it doesn't
@@ -45,7 +45,7 @@ export class User extends Model {
 
     /**
      * @param {string} name
-     * @returns {boolean}
+     * @return {boolean}
      */
     hasPermission(name) {
         if (!this.Permissions) {
@@ -57,7 +57,7 @@ export class User extends Model {
     /**
      * Map a user to an object suitable to return over the API
      *
-     * @returns {ApiUser}
+     * @return {ApiUser}
      */
     toApi() {
         return {
@@ -111,7 +111,7 @@ export class Event extends Model {
      *
      * @param {User} user
      * @param {number} systemUserId
-     * @returns {ApiEvent}
+     * @return {ApiEvent}
      */
     toApi(user, systemUserId) {
         return {
@@ -186,7 +186,7 @@ export class Transfer extends Model {
      * Map to an object suitable to return over the API
      *
      * @param {number} systemUserId
-     * @returns {ApiTransfer}
+     * @return {ApiTransfer}
      */
     toApi(systemUserId) {
         return {
@@ -230,7 +230,7 @@ export class Participation extends Model {
     /**
      * Map an event participation to an object suitable to return over the API
      *
-     * @returns {ApiParticipation}
+     * @return {ApiParticipation}
      */
     toApi() {
         return {
@@ -277,7 +277,7 @@ export class Transaction extends Model {
     /**
      * Map a transaction to an object suitable to return over the API
      *
-     * @returns {ApiTransaction}
+     * @return {ApiTransaction}
      */
     toApi() {
         return {
@@ -302,7 +302,7 @@ export class Transaction extends Model {
  */
 export class Absence extends Model {
     /**
-     * @returns {ApiAbsence}
+     * @return {ApiAbsence}
      */
     toApi() {
         return {
@@ -339,7 +339,7 @@ export class Audit extends Model {
     /**
      * Map an audit to an object suitable to return over the API
      *
-     * @returns {ApiAudit}
+     * @return {ApiAudit}
      */
     toApi() {
         return {
@@ -398,7 +398,7 @@ export class Audit extends Model {
 
 export class Grocery extends Model {
     /**
-     * @returns {ApiGrocery}
+     * @return {ApiGrocery}
      */
     toApi() {
         return {

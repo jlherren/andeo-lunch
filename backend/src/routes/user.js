@@ -11,7 +11,7 @@ const absenceCreateSchema = Joi.object({
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function getUserTransactionLists(ctx) {
     let transactions = await Transaction.findAll({
@@ -33,7 +33,7 @@ async function getUserTransactionLists(ctx) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function getUserPaymentInfo(ctx) {
     let config = await Configuration.findOne({
@@ -48,7 +48,7 @@ async function getUserPaymentInfo(ctx) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function getUserAbsences(ctx) {
     let absences = await Absence.findAll({
@@ -66,7 +66,7 @@ async function getUserAbsences(ctx) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function createUserAbsence(ctx) {
     /** @type {ApiAbsence} */
@@ -92,7 +92,7 @@ async function createUserAbsence(ctx) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function deleteUserAbsence(ctx) {
     await ctx.sequelize.transaction(async transaction => {

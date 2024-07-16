@@ -13,7 +13,7 @@ export class ColumnHelper {
 
     /**
      * @param {number} len
-     * @returns {any}
+     * @return {any}
      */
     ascii(len) {
         switch (this.sequelize.getDialect()) {

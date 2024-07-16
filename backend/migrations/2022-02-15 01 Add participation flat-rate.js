@@ -3,7 +3,7 @@ import {DataTypes} from 'sequelize';
 
 /**
  * @param {Sequelize} sequelize
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 export async function up({context: sequelize}) {
     let queryInterface = sequelize.getQueryInterface();
@@ -29,7 +29,7 @@ export async function up({context: sequelize}) {
 
 /**
  * @param {Sequelize} sequelize
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 export async function down({context: sequelize}) {
     let queryInterface = sequelize.getQueryInterface();

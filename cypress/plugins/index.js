@@ -7,7 +7,7 @@ let dbConnection = null;
 /**
  * Get a DB connection
  *
- * @returns {Promise<MariaDB.Connection>}
+ * @return {Promise<MariaDB.Connection>}
  */
 async function getDb() {
     if (dbConnection === null) {
@@ -45,7 +45,7 @@ async function getDb() {
  * Purge the DB and re-run the migrations
  *
  * @param {object} config
- * @returns {Promise<null>}
+ * @return {Promise<null>}
  */
 export async function dbPurge(config) {
     let connection = await getDb();
@@ -61,7 +61,7 @@ export async function dbPurge(config) {
  * Run an SQL statement on the DB
  *
  * @param {string} sql
- * @returns {Promise<null>}
+ * @return {Promise<null>}
  */
 export async function dbSql(sql) {
     let connection = await getDb();

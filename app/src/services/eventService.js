@@ -20,7 +20,7 @@ export class EventService {
      * Register an event handler.  Returns a function to unregister the handler again.
      *
      * @param {function(payload: any)} handler
-     * @returns {function(): void}
+     * @return {function(): void}
      */
     register(handler) {
         let id = this.nextId++;

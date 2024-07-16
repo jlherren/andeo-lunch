@@ -5,7 +5,7 @@ import {User} from '../db/models.js';
 /**
  * @param {Application.Context} ctx
  * @param {AnySchema} schema
- * @returns {object}
+ * @return {object}
  */
 export function validateBody(ctx, schema) {
     let contentType = ctx.request.headers['content-type'];
@@ -22,7 +22,7 @@ export function validateBody(ctx, schema) {
 
 /**
  * @param {Request} request
- * @returns {string|null}
+ * @return {string|null}
  */
 export function getAuthorizationToken(request) {
     let auth = request.headers.authorization;
@@ -72,7 +72,7 @@ export async function populateUser(ctx) {
  * Makes sure the request is authenticated and authorized.  Sets ctx.user and ctx.permissions.
  *
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 export async function requireUser(ctx) {
     await populateUser(ctx);

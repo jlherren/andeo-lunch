@@ -4,7 +4,7 @@
  * Find a label with the given text and follow it to the input element
  *
  * @param {string} label
- * @returns {Cypress.Chainable<HTMLElement>}
+ * @return {Cypress.Chainable<HTMLElement>}
  * @memberof cy
  */
 function followLabel(label) {
@@ -77,7 +77,7 @@ Cypress.Commands.add('logout', logout);
  * within().  (Waiting for the fade in is important for running Cypress headless, otherwise it will be difficult to
  * see anything that happens inside the dialog)
  *
- * @returns {Cypress.Chainable<HTMLElement>}
+ * @return {Cypress.Chainable<HTMLElement>}
  * @memberof cy
  */
 function getDialog() {

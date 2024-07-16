@@ -3,7 +3,7 @@
  *
  * @param {User} user
  * @param {Date} date
- * @returns {boolean}
+ * @return {boolean}
  */
 export function userCanEditDate(user, date) {
     let maxPastDaysEdit = user.maxPastDaysEdit;

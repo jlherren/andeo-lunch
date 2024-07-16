@@ -24,7 +24,7 @@ function getSettings(ctx) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function saveSettings(ctx) {
     let settings = RouteUtils.validateBody(ctx, saveSettingsSchema);

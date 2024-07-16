@@ -21,6 +21,9 @@ module.exports = {
     settings:      {
         jsdoc: {
             mode: 'typescript',
+            "tagNamePreference": {
+                "returns": "return"
+            }
         },
     },
     rules:         {

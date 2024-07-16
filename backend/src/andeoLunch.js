@@ -115,14 +115,14 @@ export class AndeoLunch {
     /**
      * Returns a promise that is resolved as soon as the app is ready
      *
-     * @returns {Promise<void>}
+     * @return {Promise<void>}
      */
     async waitReady() {
         await this.sequelizePromise;
     }
 
     /**
-     * @returns {Promise<Sequelize>}
+     * @return {Promise<Sequelize>}
      */
     getSequelize() {
         return this.sequelizePromise;
@@ -136,21 +136,21 @@ export class AndeoLunch {
     }
 
     /**
-     * @returns {Application}
+     * @return {Application}
      */
     getApp() {
         return this.app;
     }
 
     /**
-     * @returns {Config}
+     * @return {Config}
      */
     getConfig() {
         return this.options.config;
     }
 
     /**
-     * @returns {Router}
+     * @return {Router}
      * @private
      */
     createRouter() {
@@ -172,7 +172,7 @@ export class AndeoLunch {
     /**
      * Start listening on the configured port
      *
-     * @returns {Server}
+     * @return {Server}
      */
     listen() {
         let {port, bind} = this.options.config;
@@ -184,7 +184,7 @@ export class AndeoLunch {
     /**
      * Close the app
      *
-     * @returns {Promise<void>}
+     * @return {Promise<void>}
      */
     async close() {
         if (this.server) {

@@ -15,7 +15,7 @@ const changePasswordSchema = Joi.object({
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function login(ctx) {
     let requestBody = RouteUtils.validateBody(ctx, loginSchema);
@@ -47,7 +47,7 @@ async function login(ctx) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function renew(ctx) {
     let config = ctx.andeoLunch.getConfig();
@@ -58,7 +58,7 @@ async function renew(ctx) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function check(ctx) {
     await RouteUtils.populateUser(ctx);
@@ -89,7 +89,7 @@ async function check(ctx) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function password(ctx) {
     let requestBody = RouteUtils.validateBody(ctx, changePasswordSchema);

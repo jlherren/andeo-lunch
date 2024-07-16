@@ -24,7 +24,7 @@ afterEach(async () => {
  * Create the given number of users
  *
  * @param {number} n
- * @returns {Promise<Array<User>>}
+ * @return {Promise<Array<User>>}
  */
 function createUsers(n) {
     let promises = [];
@@ -37,7 +37,7 @@ function createUsers(n) {
 /**
  * Create a sample lunch
  *
- * @returns {Promise<Event>}
+ * @return {Promise<Event>}
  */
 async function createLunch() {
     let event = await Event.create({
@@ -60,7 +60,7 @@ async function createLunch() {
  * @param {Array<User>} participants
  * @param {User|null} cook
  * @param {User|null} buyer
- * @returns {Promise<Event>}
+ * @return {Promise<Event>}
  */
 async function createLunchWithParticipations(participants, cook, buyer) {
     let event = await createLunch();
@@ -80,7 +80,7 @@ async function createLunchWithParticipations(participants, cook, buyer) {
 
 /**
  * @param {Event} event
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function rebuildEvent(event) {
     let sequelize = await andeoLunch.getSequelize();

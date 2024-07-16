@@ -5,7 +5,7 @@
  * @param {typeof Model} options.model Model class of the object
  * @param {Function} options.mapper Mapper function for the DB row to returned object
  * @param {object} [options.where] Additional WHERE string
- * @returns {Function}
+ * @return {Function}
  */
 export function makeSingleObjectController(options) {
     let singular = options.model.name.toLowerCase();
@@ -35,7 +35,7 @@ export function makeSingleObjectController(options) {
  * @param {Function} options.mapper Mapper function for the DB row to returned object
  * @param {object} [options.where] Additional WHERE condition
  * @param {Array<Array<string>>} [options.order] Additional ORDER BY
- * @returns {Function}
+ * @return {Function}
  */
 export function makeObjectListController(options) {
     let plural = `${options.model.name.toLowerCase()}s`;

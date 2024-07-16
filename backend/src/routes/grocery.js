@@ -18,7 +18,7 @@ const groceryUpdateSchema = Joi.object({
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function createGrocery(ctx) {
     /** @type {ApiGrocery} */
@@ -44,7 +44,7 @@ async function createGrocery(ctx) {
  * @param {Application.Context} ctx
  * @param {number} groceryId
  * @param {Transaction} [transaction]
- * @returns {Promise<Grocery>}
+ * @return {Promise<Grocery>}
  */
 async function loadGrocery(ctx, groceryId, transaction) {
     let options = {
@@ -61,7 +61,7 @@ async function loadGrocery(ctx, groceryId, transaction) {
 /**
  * @param {Application.Context} ctx
  * @param {Transaction} [transaction]
- * @returns {Promise<Grocery>}
+ * @return {Promise<Grocery>}
  */
 function loadGroceryFromParam(ctx, transaction) {
     return loadGrocery(ctx, parseInt(ctx.params.grocery, 10), transaction);
@@ -69,7 +69,7 @@ function loadGroceryFromParam(ctx, transaction) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function updateGrocery(ctx) {
     /** @type {ApiGrocery} */
@@ -98,7 +98,7 @@ async function updateGrocery(ctx) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function listGroceries(ctx) {
     /** @type {Array<Grocery>} */
@@ -116,7 +116,7 @@ async function listGroceries(ctx) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function getGroceries(ctx) {
     ctx.body = {
@@ -126,7 +126,7 @@ async function getGroceries(ctx) {
 
 /**
  * @param {Application.Context} ctx
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function deleteGrocery(ctx) {
     await ctx.sequelize.transaction(async transaction => {

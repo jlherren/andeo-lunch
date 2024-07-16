@@ -1,6 +1,6 @@
 /**
  * @param {string} string
- * @returns {string}
+ * @return {string}
  */
 export function encode(string) {
     return string

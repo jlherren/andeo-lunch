@@ -8,7 +8,7 @@ import {getMainConfig} from '../configProvider.js';
 /**
  * Create user
  *
- * @returns {Promise<void>}
+ * @return {Promise<void>}
  */
 async function createUser() {
     console.log(chalk.bold('Creating new user'));
