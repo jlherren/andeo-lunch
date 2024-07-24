@@ -4,11 +4,12 @@ import {User, UserPassword} from '../db/models.js';
 import Joi from 'joi';
 
 const editUserSchema = Joi.object({
-    name:            Joi.string().required().min(1),
-    active:          Joi.boolean(),
-    hidden:          Joi.boolean(),
-    pointExempted:   Joi.boolean(),
-    maxPastDaysEdit: Joi.number().min(0).allow(null),
+    name:             Joi.string().required().min(1),
+    active:           Joi.boolean(),
+    hidden:           Joi.boolean(),
+    pointExempted:    Joi.boolean(),
+    hiddenFromEvents: Joi.boolean(),
+    maxPastDaysEdit:  Joi.number().min(0).allow(null),
 });
 
 const createUserSchema = Joi.object({
