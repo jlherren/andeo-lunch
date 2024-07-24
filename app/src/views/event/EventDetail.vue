@@ -215,19 +215,20 @@
 
                 let fakeParticipationType = this.event.type === 'special' ? 'opt-out' : 'undecided';
                 let fakeOrdering = PARTICIPATION_TYPE_TO_ORDER[fakeParticipationType] ?? 9;
-                let fakeParticipations = this.visibleUsers.filter(user => !participations.some(participation => participation.userId === user.id))
-                    .map(user => {
-                        return {
-                            userId:  user.id,
-                            eventId: this.eventId,
-                            type:    fakeParticipationType,
-                            credits: {
-                                points: 0,
-                                money:  0,
-                            },
-                            order:   user.id === this.ownUserId ? 0 : fakeOrdering,
-                        };
-                    });
+                let fakeParticipations = this.visibleUsers.filter(
+                    user => !user.hiddenFromEvents && !participations.some(participation => participation.userId === user.id),
+                ).map(
+                    user => ({
+                        userId:  user.id,
+                        eventId: this.eventId,
+                        type:    fakeParticipationType,
+                        credits: {
+                            points: 0,
+                            money:  0,
+                        },
+                        order:   user.id === this.ownUserId ? 0 : fakeOrdering,
+                    }),
+                );
 
                 participations = participations.concat(fakeParticipations)
                     .sort((first, second) => {
