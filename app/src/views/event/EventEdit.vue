@@ -16,22 +16,18 @@
                               :append-icon="$icons.label"/>
                 <al-date-picker v-model="date" required :disabled="!!eventId"/>
 
-                <number-field v-model="points" label="Points" :min="0" :icon="$icons.points" v-if="type !== 'label'"/>
-                <number-field v-model="vegetarianFactor" label="Vegetarian money factor" suffix="%"
-                              :min="0" :step="5" v-if="type === 'lunch'"/>
+                <v-row>
+                    <v-col cols="6">
+                        <number-field v-model="points" label="Points" :min="0" :icon="$icons.points" v-if="type !== 'label'"/>
+                    </v-col>
+                    <v-col cols="6">
+                        <number-field v-model="vegetarianFactor" label="Vegetarian money factor" suffix="%"
+                                      :min="0" :step="5" v-if="type === 'lunch'"/>
+                    </v-col>
+                </v-row>
 
                 <v-textarea v-model="comment" label="Comments" placeholder="Ingredients, instructions, etc."
                             v-if="type !== 'label'"/>
-
-                <v-row v-if="type === 'lunch'">
-                    <v-col cols="6">
-                        <v-checkbox v-model="useParticipationFlatRate" label="Participation flat-rate"/>
-                    </v-col>
-                    <v-col cols="6">
-                        <v-text-field type="number" v-model="participationFlatRate" label="Participation costs"
-                                      :append-icon="$icons.points" :disabled="!useParticipationFlatRate"/>
-                    </v-col>
-                </v-row>
 
                 <div v-if="type === 'lunch' && !eventId">
                     <v-checkbox label="Trigger default opt-ins" v-model="triggerDefaultOptIn" :disabled="dateIsInThePast"
@@ -48,6 +44,22 @@
                         {{ user.name }}
                     </v-btn>
                 </div>
+
+                <v-row v-if="type === 'lunch'">
+                    <v-col cols="6">
+                        <v-checkbox v-model="useParticipationFlatRate" label="Participation flat-rate"/>
+                    </v-col>
+                    <v-col cols="6">
+                        <v-text-field type="number" v-model="participationFlatRate" label="Participation costs" class="no-spinner"
+                                      :append-icon="$icons.points" :disabled="!useParticipationFlatRate"/>
+                    </v-col>
+                </v-row>
+
+                <v-text-field v-model="participationFee" label="Participation fee"
+                              hint="Each participant will this fixed amount of money"
+                              :min="0" v-if="type !== 'label'"
+                              :append-icon="$icons.money"
+                />
 
                 <!-- Button is to make it submittable by pressing enter -->
                 <v-btn type="submit" :disabled="isBusy" v-show="false">Save</v-btn>
@@ -90,6 +102,7 @@
                 comment:                  '',
                 useParticipationFlatRate: true,
                 participationFlatRate:    null,
+                participationFee:         0,
                 triggerDefaultOptIn:      true,
 
                 nameRules: [
@@ -106,8 +119,12 @@
             if (!this.eventId) {
                 // noinspection ES6MissingAwait
                 this.$store().fetchUsers();
-                await this.$store().fetchDefaultFlatRate();
+                await Promise.all([
+                    this.$store().fetchDefaultFlatRate(),
+                    this.$store().fetchDefaultParticipationFee(),
+                ]);
                 let defaultFlatRate = this.$store().defaultFlatRate;
+                let defaultParticipationFee = this.$store().defaultParticipationFee;
 
                 let query = this.$route.query;
                 this.type = query?.type ?? 'lunch';
@@ -116,6 +133,7 @@
                 this.comment = query?.comment ?? '';
                 this.useParticipationFlatRate = defaultFlatRate !== null;
                 this.participationFlatRate = defaultFlatRate;
+                this.participationFee = this.type === 'lunch' ? defaultParticipationFee : 0.0;
                 this.isBusy = false;
                 return;
             }
@@ -139,6 +157,7 @@
                 await this.$store().fetchDefaultFlatRate();
                 this.participationFlatRate = this.$store().defaultFlatRate;
             }
+            this.participationFee = event.participationFee;
             this.isBusy = false;
         },
 
@@ -227,6 +246,7 @@
                         data.costs = {
                             points: this.points,
                         };
+                        data.participationFee = this.participationFee;
                     }
                     if (this.type === 'lunch') {
                         data.factors = {

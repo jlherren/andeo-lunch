@@ -14,9 +14,10 @@ export let useStore = defineStore('main', {
         buildDate:   process.env.VUE_APP_BUILD_TIMESTAMP ? new Date(+process.env.VUE_APP_BUILD_TIMESTAMP * 1000) : null,
         buildCommit: process.env.VUE_APP_BUILD_COMMIT ?? 'Unknown',
 
-        payUpDefaultRecipient:  null,
-        defaultFlatRate:        null,
-        decommissionContraUser: null,
+        payUpDefaultRecipient:    null,
+        defaultFlatRate:          null,
+        defaultParticipationRate: null,
+        decommissionContraUser:   null,
 
         account: {
             initialCheckCompleted: false,
@@ -410,6 +411,13 @@ export let useStore = defineStore('main', {
             return Cache.ifNotFresh('lunch.defaultFlatRate', 0, 60000, async () => {
                 let response = await Backend.get('/options/default-flat-rate');
                 this.defaultFlatRate = response.data.defaultFlatRate;
+            });
+        },
+
+        fetchDefaultParticipationFee() {
+            return Cache.ifNotFresh('lunch.defaultParticipationFee', 0, 60000, async () => {
+                let response = await Backend.get('/options/default-participation-fee');
+                this.defaultParticipationFee = response.data.defaultParticipationFee;
             });
         },
 
