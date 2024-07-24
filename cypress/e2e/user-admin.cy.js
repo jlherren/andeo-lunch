@@ -43,8 +43,8 @@ describe('User admin', () => {
             .click();
         cy.contains('tr', 'John Miller')
             .within(() => {
-                cy.contains('Inactive');
-                cy.contains('Hidden');
+                cy.contains('inactive');
+                cy.contains('hidden');
             });
     });
 

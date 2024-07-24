@@ -22,6 +22,8 @@
                     Do not hide users with non-zero balances!
                 </v-banner>
 
+                <v-checkbox v-model="pointExempted" label="User pays no points for events" persistent-hint/>
+                <v-checkbox v-model="hiddenFromEvents" label="Hide from event participation list" persistent-hint/>
                 <v-checkbox v-model="restrictEdit" label="Restrict editing past events" persistent-hint/>
                 <number-field v-model="maxPastDaysEdit" label="Number of days into the past to allow editing events" :disabled="!restrictEdit"/>
 
@@ -30,7 +32,7 @@
 
                 <v-row>
                     <v-col cols="auto">
-                        <v-btn type="button" :disabled="isBusy" :to='`/admin/users/${userId}/password`'>
+                        <v-btn type="button" :disabled="isBusy" :to="`/admin/users/${userId}/password`">
                             Reset password
                         </v-btn>
                     </v-col>
@@ -96,6 +98,8 @@
                 name:                null,
                 active:              false,
                 hidden:              false,
+                pointExempted:       false,
+                hiddenFromEvents:    false,
                 restrictEdit:        false,
                 maxPastDaysEdit:     null,
                 isBusy:              true,
@@ -121,6 +125,8 @@
                 this.name = user.name;
                 this.active = user.active;
                 this.hidden = user.hidden;
+                this.pointExempted = user.pointExempted;
+                this.hiddenFromEvents = user.hiddenFromEvents;
                 this.restrictEdit = user.maxPastDaysEdit !== null;
                 this.maxPastDaysEdit = user.maxPastDaysEdit;
                 this.isBusy = false;
@@ -133,11 +139,13 @@
                 this.isBusy = true;
                 try {
                     await this.$store().adminSaveUser({
-                        id:              this.userId,
-                        name:            this.name,
-                        active:          this.active,
-                        hidden:          this.hidden,
-                        maxPastDaysEdit: this.restrictEdit ? this.maxPastDaysEdit : null,
+                        id:               this.userId,
+                        name:             this.name,
+                        active:           this.active,
+                        hidden:           this.hidden,
+                        pointExempted:    this.pointExempted,
+                        hiddenFromEvents: this.hiddenFromEvents,
+                        maxPastDaysEdit:  this.restrictEdit ? this.maxPastDaysEdit : null,
                     });
                     await this.$router.back();
                 } finally {

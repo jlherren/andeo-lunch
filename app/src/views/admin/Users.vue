@@ -76,10 +76,16 @@
             getFlags(user) {
                 let flags = [];
                 if (!user.active) {
-                    flags.push('Inactive');
+                    flags.push('inactive');
                 }
                 if (user.hidden) {
-                    flags.push('Hidden');
+                    flags.push('hidden');
+                }
+                if (user.pointExempted) {
+                    flags.push('point exempted');
+                }
+                if (user.hiddenFromEvents) {
+                    flags.push('no participation');
                 }
                 return flags.join(', ');
             },
