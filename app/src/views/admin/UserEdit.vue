@@ -27,8 +27,8 @@
                 <v-checkbox v-model="restrictEdit" label="Restrict editing past events" persistent-hint/>
                 <number-field v-model="maxPastDaysEdit" label="Number of days into the past to allow editing events" :disabled="!restrictEdit"/>
 
-                <number-field v-model="user.points" label="Exact points balance" readonly/>
-                <number-field v-model="user.money" label="Exact money balance" readonly/>
+                <number-field v-model="user.balances.points" label="Exact points balance" readonly/>
+                <number-field v-model="user.balances.money" label="Exact money balance" readonly/>
 
                 <v-row>
                     <v-col cols="auto">
@@ -160,33 +160,33 @@
             async decommission() {
                 let transfers = [];
 
-                if (this.user.points < -1e-6) {
+                if (this.user.balances.points < -1e-6) {
                     transfers.push({
                         senderId:    this.decommissionContraUser,
                         recipientId: this.userId,
-                        amount:      -this.user.points,
+                        amount:      -this.user.balances.points,
                         currency:    'points',
                     });
-                } else if (this.user.points > 1e-6) {
+                } else if (this.user.balances.points > 1e-6) {
                     transfers.push({
                         senderId:    this.userId,
                         recipientId: this.decommissionContraUser,
-                        amount:      this.user.points,
+                        amount:      this.user.balances.points,
                         currency:    'points',
                     });
                 }
-                if (this.user.money < -1e-6) {
+                if (this.user.balances.money < -1e-6) {
                     transfers.push({
                         senderId:    this.decommissionContraUser,
                         recipientId: this.userId,
-                        amount:      -this.user.money,
+                        amount:      -this.user.balances.money,
                         currency:    'money',
                     });
-                } else if (this.user.money > 1e-6) {
+                } else if (this.user.balances.money > 1e-6) {
                     transfers.push({
                         senderId:    this.userId,
                         recipientId: this.decommissionContraUser,
-                        amount:      this.user.money,
+                        amount:      this.user.balances.money,
                         currency:    'money',
                     });
                 }
@@ -220,7 +220,7 @@
             },
 
             balanceWarning() {
-                return this.hidden && (Math.abs(this.user.points) > 1e-6 || Math.abs(this.user.money) > 1e-6);
+                return this.hidden && (Math.abs(this.user.balances.points) > 1e-6 || Math.abs(this.user.balances.money) > 1e-6);
             },
         },
     };
