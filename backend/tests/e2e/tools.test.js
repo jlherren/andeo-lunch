@@ -99,6 +99,8 @@ describe('configurations', () => {
         expect(response.status).toBe(200);
         expect(response.body.configurations).toEqual([
             {name: 'lunch.defaultFlatRate', value: '0.75'},
+            {name: 'lunch.defaultParticipationFee', value: '0'},
+            {name: 'lunch.participationFeeRecipient', value: ''},
         ]);
     });
 
@@ -113,6 +115,8 @@ describe('configurations', () => {
         expect(response.status).toBe(200);
         expect(response.body.configurations).toEqual([
             {name: 'lunch.defaultFlatRate', value: '0.65'},
+            {name: 'lunch.defaultParticipationFee', value: '0'},
+            {name: 'lunch.participationFeeRecipient', value: ''},
         ]);
     });
 

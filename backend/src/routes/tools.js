@@ -5,7 +5,7 @@ import Joi from 'joi';
 import ms from 'ms';
 import naturalCompare from 'natural-compare';
 
-const CONFIGURATION_WHITELIST_REGEX = /^(?:lunch\.defaultFlatRate|payUp\.defaultRecipient|paymentInfo\.[0-9]+)$/u;
+const CONFIGURATION_WHITELIST_REGEX = /^(?:lunch\.(?:defaultFlatRate|participationFeeRecipient|defaultParticipationFee)|payUp\.defaultRecipient|paymentInfo\.[0-9]+)$/u;
 
 const saveConfigurationSchema = Joi.object({
     configurations: Joi.array().items(Joi.object({
@@ -56,6 +56,7 @@ async function getConfigurations(ctx) {
     let all = await Configuration.findAll({
         raw:        true,
         attributes: ['name', 'value'],
+        order:      [['name', 'ASC']],
     });
     let configurations = all.filter(configuration => configuration.name.match(CONFIGURATION_WHITELIST_REGEX));
 
