@@ -1,23 +1,23 @@
-/.git
-/.idea
-/.vscode
-/node_modules
+# Ignore everything by default, because we sometimes have stuff laying around.  Then include everything we need.
+*
 
-/.yarn/install-state.gz
+!/.yarn
+!/.yarnrc.yml
+!/package.json
+!/yarn.lock
 
-/app/.env
-/app/dist
-/app/node_modules
+!/backend/bin
+!/backend/migrations
+!/backend/package.json
+!/backend/resources
+!/backend/src
 
-/backend/.eslintrc.json
-/backend/config.json
-/backend/node_modules
-/backend/tests
+!/app/.browserslistrc
+!/app/.eslintrc.cjs
+!/app/babel.config.cjs
+!/app/package.json
+!/app/public
+!/app/src
+!/app/vue.config.js
 
-/cypress
-
-# These are mainly to improve the docker cache behavior
-/docker/Dockerfile.*
-/docker/*.secret
-/docker/*.sh
-/docker/data
+!/docker/nginx.conf
