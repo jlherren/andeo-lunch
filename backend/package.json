@@ -7,19 +7,13 @@
         "node": ">= 18.18.0"
     },
     "scripts": {
-        "serve": "node bin/andeoLunch.js",
-        "serve:watch": "nodemon bin/andeoLunch.js",
+        "serve": "node bin/andeoLunch",
+        "serve:watch": "nodemon bin/andeoLunch",
         "test": "NODE_OPTIONS=--experimental-vm-modules jest",
         "test:mariadb": "TEST_DB=mariadb jest --runInBand",
         "test:watch": "jest --watchAll",
         "lint": "eslint src tests migrations",
-        "lint:fix": "eslint --fix src tests migrations",
-        "db:createUser": "node src/scripts/createUser.js",
-        "db:editUser": "node src/scripts/editUser.js",
-        "db:rebuild-dry-run": "node src/scripts/rebuildTransactions.js --dry-run",
-        "db:rebuild": "node src/scripts/rebuildTransactions.js",
-        "db:setPaymentInfo": "node src/scripts/setPaymentInfo.js",
-        "db:validate": "node src/scripts/validateDb.js"
+        "lint:fix": "eslint --fix src tests migrations"
     },
     "dependencies": {
         "@koa/cors": "~5.0.0",

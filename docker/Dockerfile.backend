@@ -15,4 +15,4 @@ COPY --from=backend-build /build/package.json /srv/andeo-lunch/package.json
 COPY backend /srv/andeo-lunch/backend
 RUN echo '{"database": {"dialect": "mariadb"}, "bind": "0.0.0.0"}' > config.json
 EXPOSE 3000
-CMD ["node", "bin/andeoLunch.js"]
+CMD ["bin/andeoLunch"]

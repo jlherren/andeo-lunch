@@ -1,8 +1,10 @@
-import {Configuration, User} from '../db/models.js';
-import {AndeoLunch} from '../andeoLunch.js';
-import {Cli} from '../cli.js';
+#!/usr/bin/env node
+
+import {Configuration, User} from '../src/db/models.js';
+import {AndeoLunch} from '../src/andeoLunch.js';
+import {Cli} from '../src/cli.js';
 import chalk from 'chalk';
-import {getMainConfig} from '../configProvider.js';
+import {getMainConfig} from '../src/configProvider.js';
 import {sprintf} from 'sprintf-js';
 
 /**

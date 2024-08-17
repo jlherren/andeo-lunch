@@ -20,11 +20,11 @@
 
 4. Install all dependencies:
 
-       yarn
+       yarn install
 
 5. In the directory `backend/`, run:
 
-       yarn db:createUser  # This will prompt for a username & password
+       bin/createUser      # This will prompt for a username & password
        yarn serve:watch    # Leave this running
 
 6. In the directory `app/`, run:
@@ -90,12 +90,15 @@ Run these from the `backend/` directory.
 - `yarn test:watch` Run test suite and re-run on every file change
 - `yarn lint` Run linter
 - `yarn lint:fix` Run linter and fix automatically
-- `yarn db:createUser` Create a new user
-- `yarn db:editUser` Edit a user
-- `yarn db:rebuild` Rebuild all transactions and all balances
-- `yarn db:setPaymentInfo` Set up payment information for a user
-- `yarn db:validate` Validate the DB structure
 - `tests/run-tests-with-mariadb.sh` Run test suite using MariaDB
+
+These are also available in production:
+
+- `bin/createUser` Create a new user
+- `bin/editUser` Edit a user
+- `bin/rebuild` Rebuild all transactions and all balances
+- `bin/setPaymentInfo` Set up payment information for a user
+- `bin/validate` Validate the DB structure
 
 ## App scripts
 

@@ -1,8 +1,10 @@
-import * as Validator from '../../src/db/validator.js';
-import {AndeoLunch} from '../andeoLunch.js';
+#!/usr/bin/env node
+
+import * as Validator from '../src/db/validator.js';
+import {AndeoLunch} from '../src/andeoLunch.js';
 import chalk from 'chalk';
 import {diff} from 'jest-diff';
-import {getMainConfig} from '../configProvider.js';
+import {getMainConfig} from '../src/configProvider.js';
 
 /**
  * Create user
