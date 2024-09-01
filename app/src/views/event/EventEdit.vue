@@ -34,7 +34,7 @@
                                 :hint="defaultOptInHint" persistent-hint/>
                 </div>
 
-                <div v-if="type !== 'label' && isNew" class="helpers v-text-field">
+                <div v-if="type !== 'label' && noHelpersYet" class="helpers v-text-field">
                     <p class="text-body-2">
                         Select helpers to automatically distribute the available points evenly.
                     </p>
@@ -94,6 +94,7 @@
 
             return {
                 isNew:                    eventId === null,
+                noHelpersYet:             false,
                 eventId,
                 type:                     null,
                 name:                     '',
@@ -135,6 +136,7 @@
                 this.useParticipationFlatRate = defaultFlatRate !== null;
                 this.participationFlatRate = defaultFlatRate;
                 this.participationFee = this.type === 'lunch' ? defaultParticipationFee : 0.0;
+                this.noHelpersYet = true;
                 this.isBusy = false;
                 return;
             }
@@ -159,6 +161,11 @@
                 this.participationFlatRate = this.$store().defaultFlatRate;
             }
             this.participationFee = event.participationFee;
+
+            await this.$store().fetchParticipations(this.eventId);
+            this.noHelpersYet = this.$store().participations(this.eventId)
+                .every(participation => participation.credits.points === 0);
+
             this.isBusy = false;
         },
 
@@ -259,14 +266,14 @@
 
                     let eventId = await this.$store().saveEvent(data);
 
-                    if (this.isNew) {
-                        let userIds = Object.keys(this.helpers).map(id => parseInt(id, 10));
-                        let datasets = userIds.map(userId => {
+                    if (this.noHelpersYet) {
+                        let helpers = Object.keys(this.helpers);
+                        let datasets = helpers.map(userId => {
                             return {
                                 eventId,
-                                userId,
+                                userId:  parseInt(userId, 10),
                                 credits: {
-                                    points: this.points / userIds.length,
+                                    points: this.points / helpers.length,
                                 },
                             };
                         });
