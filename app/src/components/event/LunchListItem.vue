@@ -113,7 +113,7 @@
 
         methods: {
             async reload() {
-                await this.$store().fetchParticipations({eventId: this.event.id});
+                await this.$store().fetchParticipations(this.event.id);
             },
         },
     };

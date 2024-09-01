@@ -176,7 +176,7 @@ export let useStore = defineStore('main', {
         },
 
         // Users
-        async fetchUser({userId}) {
+        async fetchUser(userId) {
             if (userId === -1) {
                 return;
             }
@@ -221,7 +221,7 @@ export let useStore = defineStore('main', {
             });
         },
 
-        fetchEvent({eventId}) {
+        fetchEvent(eventId) {
             return Cache.ifNotFresh('event', eventId, 10000, async () => {
                 let response = await Backend.get(`/events/${eventId}`);
                 let event = response.data.event;
@@ -230,7 +230,7 @@ export let useStore = defineStore('main', {
             });
         },
 
-        async fetchParticipations({eventId}) {
+        async fetchParticipations(eventId) {
             await Cache.ifNotFresh('participations', eventId, 10000, async () => {
                 let response = await Backend.get(`/events/${eventId}/participations`);
                 let participations = response.data.participations;
@@ -270,7 +270,7 @@ export let useStore = defineStore('main', {
 
             let eventIds = [...new Set(datasets.map(dataset => dataset.eventId))];
             await Promise.all(
-                eventIds.map(eventId => this.fetchParticipations({eventId})),
+                eventIds.map(eventId => this.fetchParticipations(eventId)),
             );
 
             // Also refetch user balances, but do not wait until it completes.
@@ -278,7 +278,7 @@ export let useStore = defineStore('main', {
             this.fetchUsers();
         },
 
-        async fetchTransfers({eventId}) {
+        async fetchTransfers(eventId) {
             await Cache.ifNotFresh('transfers', eventId, 10000, async () => {
                 let response = await Backend.get(`/events/${eventId}/transfers`);
                 let transfers = response.data.transfers;
@@ -296,8 +296,8 @@ export let useStore = defineStore('main', {
             Cache.invalidate('transfers', eventId);
             Cache.invalidate('user');
             Cache.invalidate('users');
-            await this.fetchEvent({eventId});
-            await this.fetchTransfers({eventId});
+            await this.fetchEvent(eventId);
+            await this.fetchTransfers(eventId);
         },
 
         async deleteTransfer({eventId, transferId}) {
@@ -306,8 +306,8 @@ export let useStore = defineStore('main', {
             Cache.invalidate('transfers', eventId);
             Cache.invalidate('user');
             Cache.invalidate('users');
-            await this.fetchEvent({eventId});
-            await this.fetchTransfers({eventId});
+            await this.fetchEvent(eventId);
+            await this.fetchTransfers(eventId);
         },
 
         async saveEvent(data) {
@@ -334,15 +334,15 @@ export let useStore = defineStore('main', {
 
             if (eventId) {
                 await Promise.all([
-                    this.fetchEvent({eventId}),
-                    this.fetchParticipations({eventId}),
+                    this.fetchEvent(eventId),
+                    this.fetchParticipations(eventId),
                 ]);
             }
 
             return eventId;
         },
 
-        async deleteEvent({eventId}) {
+        async deleteEvent(eventId) {
             let response = await Backend.delete(`/events/${eventId}`);
             if (response.status === 204) {
                 Vue.delete(this._events, eventId);
@@ -353,7 +353,7 @@ export let useStore = defineStore('main', {
             }
         },
 
-        fetchTransactions({userId}) {
+        fetchTransactions(userId) {
             return Cache.ifNotFresh('transactions', userId, 10000, async () => {
                 let response = await Backend.get(`/users/${userId}/transactions?with=eventName`);
                 let transactions = response.data.transactions;
@@ -428,14 +428,14 @@ export let useStore = defineStore('main', {
             });
         },
 
-        fetchUserPaymentInfo({userId}) {
+        fetchUserPaymentInfo(userId) {
             return Cache.ifNotFresh('paymentInfo', userId, 60000, async () => {
                 let response = await Backend.get(`/users/${userId}/payment-info`);
                 Vue.set(this.paymentInfosById, userId, response.data.paymentInfo);
             });
         },
 
-        fetchAbsences({userId}) {
+        fetchAbsences(userId) {
             return Cache.ifNotFresh('absences', userId, 60000, async () => {
                 let response = await Backend.get(`/users/${userId}/absences`);
                 Vue.set(this._absences, userId, response.data.absences);
@@ -445,7 +445,7 @@ export let useStore = defineStore('main', {
         async saveAbsence({userId, ...data}) {
             await Backend.post(`/users/${userId}/absences`, data);
             Cache.invalidate('absences', userId);
-            await this.fetchAbsences({userId});
+            await this.fetchAbsences(userId);
         },
 
         async deleteAbsence({userId, absenceId}) {
@@ -454,7 +454,7 @@ export let useStore = defineStore('main', {
                 Vue.delete(this._absences, absenceId);
                 Cache.invalidate('absences', userId);
             }
-            await this.fetchAbsences({userId});
+            await this.fetchAbsences(userId);
         },
 
         fetchGroceries() {

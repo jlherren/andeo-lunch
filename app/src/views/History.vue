@@ -66,8 +66,8 @@
 
         async created() {
             await Promise.all([
-                this.$store().fetchUser({userId: this.userId}),
-                this.$store().fetchTransactions({userId: this.userId}),
+                this.$store().fetchUser(this.userId),
+                this.$store().fetchTransactions(this.userId),
             ]);
             this.loading = false;
             Vue.nextTick(() => this.scrollToBottom());

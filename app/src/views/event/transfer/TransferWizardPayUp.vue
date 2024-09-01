@@ -135,7 +135,7 @@
 
         watch: {
             recipient(userId) {
-                this.$store().fetchUserPaymentInfo({userId});
+                this.$store().fetchUserPaymentInfo(userId);
             },
         },
     };

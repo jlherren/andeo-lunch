@@ -34,7 +34,7 @@
         },
 
         created() {
-            this.$store().fetchTransfers({eventId: this.event.id});
+            this.$store().fetchTransfers(this.event.id);
         },
 
         computed: {

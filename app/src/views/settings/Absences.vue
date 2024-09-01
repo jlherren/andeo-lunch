@@ -115,7 +115,7 @@
         },
 
         created() {
-            this.$store().fetchAbsences({userId: this.$store().ownUserId});
+            this.$store().fetchAbsences(this.$store().ownUserId);
         },
 
         computed: {

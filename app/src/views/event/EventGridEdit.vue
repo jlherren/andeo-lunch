@@ -88,8 +88,8 @@
 
         async created() {
             await Promise.all([
-                this.$store().fetchEvent({eventId: this.eventId}),
-                this.$store().fetchParticipations({eventId: this.eventId}),
+                this.$store().fetchEvent(this.eventId),
+                this.$store().fetchParticipations(this.eventId),
                 this.$store().fetchUsers(),
             ]);
             let event = this.$store().event(this.eventId);

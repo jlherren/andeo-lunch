@@ -155,7 +155,7 @@
                 await Promise.all([
                     this.$store().fetchUsers(),
                     this.$store().fetchSettings(),
-                    this.$store().fetchEvent({eventId: this.eventId}),
+                    this.$store().fetchEvent(this.eventId),
                 ]);
                 let event = this.$store().event(this.eventId);
                 if (event.type === 'transfer') {
@@ -164,7 +164,7 @@
                     return;
                 }
                 if (event.type !== 'label') {
-                    await this.$store().fetchParticipations({eventId: this.eventId});
+                    await this.$store().fetchParticipations(this.eventId);
                 }
             } finally {
                 this.isBusy = false;
@@ -322,7 +322,7 @@
             async deleteEvent() {
                 try {
                     this.isBusy = true;
-                    await this.$store().deleteEvent({eventId: this.eventId});
+                    await this.$store().deleteEvent(this.eventId);
                     this.confirmDelete = false;
                     this.$router.go(-1);
                 } catch (err) {
@@ -332,7 +332,7 @@
             },
 
             async refreshEvent() {
-                await this.$store().fetchEvent({eventId: this.eventId});
+                await this.$store().fetchEvent(this.eventId);
             },
         },
     };

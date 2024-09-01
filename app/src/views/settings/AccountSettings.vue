@@ -94,7 +94,7 @@
         },
 
         created() {
-            this.$store().fetchUser({userId: this.$store().ownUserId});
+            this.$store().fetchUser(this.$store().ownUserId);
         },
 
         computed: {

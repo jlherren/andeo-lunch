@@ -146,14 +146,14 @@
         async created() {
             try {
                 this.isBusy = true;
-                await this.$store().fetchEvent({eventId: this.eventId});
+                await this.$store().fetchEvent(this.eventId);
                 let event = this.$store().event(this.eventId);
                 if (event.type !== 'transfer') {
                     // Oops, you're in the wrong view, redirect.
                     await this.$router.replace(`/events/${this.eventId}`);
                     return;
                 }
-                await this.$store().fetchTransfers({eventId: this.eventId});
+                await this.$store().fetchTransfers(this.eventId);
             } finally {
                 this.isBusy = false;
             }
@@ -243,7 +243,7 @@
             async deleteEvent() {
                 try {
                     this.isBusy = true;
-                    await this.$store().deleteEvent({eventId: this.eventId});
+                    await this.$store().deleteEvent(this.eventId);
                     this.deleteEventDialog = false;
                     this.$router.go(-1);
                 } catch (err) {

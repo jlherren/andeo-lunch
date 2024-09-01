@@ -87,7 +87,7 @@
         },
 
         async created() {
-            await this.$store().fetchUser({userId: this.participation.userId});
+            await this.$store().fetchUser(this.participation.userId);
             this.isBusy = false;
         },
 
