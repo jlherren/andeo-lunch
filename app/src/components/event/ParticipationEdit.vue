@@ -2,15 +2,10 @@
     <v-card>
         <v-form :disabled="isBusy || readonly" @submit.prevent="save()" ref="form">
             <v-card-title>
-                {{ readonly ? 'View' : 'Edit' }} participation
+                {{ readonly ? 'View' : 'Edit' }} participation for {{ userName() }}
             </v-card-title>
 
             <v-card-text>
-                <v-select v-model="user" label="User" :disabled="!!this.participation"
-                          :items="eligibleUsers" item-text="name" item-value="id"
-                          :rules="userRules"
-                          :append-icon="$icons.account"/>
-
                 <v-row>
                     <v-col>
                         <participation-type-widget v-model="type" :disabled="isBusy || readonly" label :event-type="event.type"/>
@@ -74,15 +69,11 @@
         data() {
             let defaultType = this.event.type === 'special' ? 'opt-out' : 'undecided';
             return {
-                user:           this.participation.userId,
                 pointsCredited: this.participation.credits?.points ?? 0,
                 moneyCredited:  this.participation.credits?.money ?? 0,
                 moneyFactor:    (this.participation.factors?.money ?? 1) * 100,
                 type:           this.participation.type ?? defaultType,
                 isBusy:         true,
-                userRules:      [
-                    user => !!user,
-                ],
             };
         },
 
@@ -91,16 +82,9 @@
             this.isBusy = false;
         },
 
-        computed: {
-            eligibleUsers() {
-                // Don't bother listing all users, since the dropdown is disabled anyway
-                return [this.$store().user(this.participation.userId)];
-            },
-        },
-
         methods: {
-            reset() {
-                Object.assign(this.$data, this.$options.data.apply(this));
+            userName() {
+                return this.$store().user(this.participation.userId)?.name;
             },
 
             cancel() {
@@ -114,7 +98,7 @@
                 this.isBusy = true;
                 try {
                     await this.$store().saveParticipation({
-                        userId:  this.user,
+                        userId:  this.participation.userId,
                         eventId: this.event.id,
                         type:    this.type,
                         credits: {
