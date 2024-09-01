@@ -14,7 +14,7 @@
             <v-form :disabled="isBusy" @submit.prevent="save()" ref="form">
                 <v-text-field v-model="name" :rules="nameRules" label="Name" autofocus required
                               :append-icon="$icons.label"/>
-                <al-date-picker v-model="date" required :disabled="!!eventId"/>
+                <al-date-picker v-model="date" required :disabled="!isNew"/>
 
                 <v-row>
                     <v-col cols="6">
@@ -29,12 +29,12 @@
                 <v-textarea v-model="comment" label="Comments" placeholder="Ingredients, instructions, etc."
                             v-if="type !== 'label'"/>
 
-                <div v-if="type === 'lunch' && !eventId">
+                <div v-if="type === 'lunch' && isNew">
                     <v-checkbox label="Trigger default opt-ins" v-model="triggerDefaultOptIn" :disabled="dateIsInThePast"
                                 :hint="defaultOptInHint" persistent-hint/>
                 </div>
 
-                <div v-if="type !== 'label' && !eventId" class="helpers v-text-field">
+                <div v-if="type !== 'label' && isNew" class="helpers v-text-field">
                     <p class="text-body-2">
                         Select helpers to automatically distribute the available points evenly.
                     </p>
@@ -93,6 +93,7 @@
             eventId = eventId ? parseInt(eventId, 10) : null;
 
             return {
+                isNew:                    eventId === null,
                 eventId,
                 type:                     null,
                 name:                     '',
@@ -116,7 +117,7 @@
         },
 
         async created() {
-            if (!this.eventId) {
+            if (this.isNew) {
                 // noinspection ES6MissingAwait
                 this.$store().fetchUsers();
                 await Promise.all([
@@ -167,7 +168,7 @@
             ]),
 
             title() {
-                let prefix = this.eventId ? 'Edit' : 'New';
+                let prefix = this.isNew ? 'New' : 'Edit';
                 return `${prefix} ${this.eventTypeName}`;
             },
 
@@ -187,7 +188,7 @@
             },
 
             backLink() {
-                if (this.eventId) {
+                if (!this.isNew) {
                     return `/events/${this.eventId}`;
                 }
                 if (this.$route.query.date) {
@@ -233,8 +234,7 @@
                         name:    this.name,
                         comment: this.comment,
                     };
-                    let isNew = !this.eventId;
-                    if (isNew) {
+                    if (this.isNew) {
                         data.type = this.type;
                         // Use noon in local time zone
                         data.date = new Date(`${this.date}T12:00:00`);
@@ -259,7 +259,7 @@
 
                     let eventId = await this.$store().saveEvent(data);
 
-                    if (isNew) {
+                    if (this.isNew) {
                         let userIds = Object.keys(this.helpers).map(id => parseInt(id, 10));
                         let datasets = userIds.map(userId => {
                             return {
