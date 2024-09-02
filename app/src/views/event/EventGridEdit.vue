@@ -75,7 +75,6 @@
             eventId = eventId ? parseInt(eventId, 10) : null;
 
             return {
-                test:   'opt-in',
                 eventId,
                 name:   '',
                 isBusy: true,
