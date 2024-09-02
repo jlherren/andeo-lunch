@@ -28,7 +28,6 @@
                 :readonly="readonly"
                 @close="editDialog = false"
                 @saved="saved"
-                ref="editForm"
             />
         </v-dialog>
     </v-list-item>
@@ -38,7 +37,6 @@
     import * as ParticipationUtils from '@/utils/participationUtils';
     import Balance from '@/components/Balance';
     import ParticipationEdit from '@/components/event/ParticipationEdit';
-    import Vue from 'vue';
 
     export default {
         name: 'ParticipationListItem',
@@ -100,7 +98,6 @@
         methods: {
             openDialog() {
                 this.editDialog = true;
-                Vue.nextTick(() => this.$refs.editForm.reset());
             },
 
             saved() {
