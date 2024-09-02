@@ -50,3 +50,8 @@ export const SPECIAL_EVENT_PARTICIPATION_TYPES = [{
     name: 'Out',
     icon: icons.optOut,
 }];
+
+/**
+ * Participation types that are considered to be participating in the event.
+ */
+export const OPT_IN_PARTICIPATIONS = ['omnivorous', 'vegetarian', 'opt-in'];

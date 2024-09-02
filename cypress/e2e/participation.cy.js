@@ -31,6 +31,23 @@ describe('Lunch event', () => {
             .find('[data-type=opt-out]');
     });
 
+    it('Can edit own participation', () => {
+        cy.visit('/events/1');
+        cy.contains('[role=listitem]', USERS.john.name)
+            .click();
+        cy.getDialog().within(() => {
+            cy.get('button[value=omnivorous]')
+                .click();
+            cy.contains('label', 'I have discussed this')
+                .click();
+            cy.contains('button:visible', 'Save')
+                .click();
+        });
+        cy.noDialog();
+        cy.contains('[role=listitem]', USERS.john.name)
+            .find('[data-type=omnivorous]');
+    });
+
     it('Can opt-in someone else', () => {
         cy.visit('/events/1');
         cy.contains('[role=listitem]', USERS.robert.name)
@@ -52,6 +69,8 @@ describe('Lunch event', () => {
             .click();
         cy.getDialog().within(() => {
             cy.get('button[value=omnivorous]')
+                .click();
+            cy.contains('label', 'I have discussed this')
                 .click();
             cy.contains('button:visible', 'Save')
                 .click();

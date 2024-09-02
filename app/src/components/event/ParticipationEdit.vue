@@ -24,6 +24,15 @@
                     </v-col>
                 </v-row>
 
+                <v-radio-group v-if="isSus"
+                               label="This event is either in the past or the groceries for it have already been bought. Please Specify the reason for this late participation change:"
+                               :rules="susRules"
+                >
+                    <v-radio label="I have discussed this with the cooks and they're okay with it" value="okay"/>
+                    <v-radio label="Higher power prevents me from participating" value="notMyFault"/>
+                    <v-radio label="I'm a dishonorable bastard" value="bastard"/>
+                </v-radio-group>
+
                 <!-- Button is to make it submittable by pressing enter -->
                 <v-btn type="submit" :disabled="isBusy" v-show="false">Save</v-btn>
             </v-card-text>
@@ -43,7 +52,9 @@
 </template>
 
 <script>
+    import * as DateUtils from '../../utils/dateUtils.js';
     import NumberField from '@/components/NumberField';
+    import {OPT_IN_PARTICIPATIONS} from '@/utils/participationUtils';
     import ParticipationTypeWidget from '@/components/event/ParticipationTypeWidget';
 
     export default {
@@ -68,18 +79,37 @@
 
         data() {
             let defaultType = this.event.type === 'special' ? 'opt-out' : 'undecided';
+
+            // Check if groceries are likely already done for this event
+            let cutoff = DateUtils.previousMonday(this.event.date);
+            cutoff.setHours(10, 0, 0);
+            let groceriesDone = this.event.type === 'lunch' && cutoff.getTime() < Date.now();
+
             return {
                 pointsCredited: this.participation.credits?.points ?? 0,
                 moneyCredited:  this.participation.credits?.money ?? 0,
                 moneyFactor:    (this.participation.factors?.money ?? 1) * 100,
                 type:           this.participation.type ?? defaultType,
+                previousType:   this.participation.type ?? defaultType,
                 isBusy:         true,
+                groceriesDone,
+                susRules:       [
+                    value => !!value,
+                ],
             };
         },
 
         async created() {
             await this.$store().fetchUser(this.participation.userId);
             this.isBusy = false;
+        },
+
+        computed: {
+            isSus() {
+                return this.groceriesDone
+                    && this.$store().ownUserId === this.participation.userId
+                    && OPT_IN_PARTICIPATIONS.includes(this.previousType) !== OPT_IN_PARTICIPATIONS.includes(this.type);
+            },
         },
 
         methods: {

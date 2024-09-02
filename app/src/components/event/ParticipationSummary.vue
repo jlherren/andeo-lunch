@@ -19,7 +19,7 @@
 </template>
 
 <script>
-    const OPT_IN_PARTICIPATIONS = ['omnivorous', 'vegetarian', 'opt-in'];
+    import {OPT_IN_PARTICIPATIONS} from '@/utils/participationUtils';
 
     export default {
         name: 'ParticipationSummary',
