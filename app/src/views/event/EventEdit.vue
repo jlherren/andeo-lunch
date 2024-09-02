@@ -29,11 +29,6 @@
                 <v-textarea v-model="comment" label="Comments" placeholder="Ingredients, instructions, etc."
                             v-if="type !== 'label'"/>
 
-                <div v-if="type === 'lunch' && isNew">
-                    <v-checkbox label="Trigger default opt-ins" v-model="triggerDefaultOptIn" :disabled="dateIsInThePast"
-                                :hint="defaultOptInHint" persistent-hint/>
-                </div>
-
                 <div v-if="type !== 'label' && noHelpersYet" class="helpers v-text-field">
                     <p class="text-body-2">
                         Select helpers to automatically distribute the available points evenly.
@@ -43,6 +38,11 @@
                         <v-icon left :disabled="!isHelper(user)">{{ $icons.points }}</v-icon>
                         {{ user.name }}
                     </v-btn>
+                </div>
+
+                <div v-if="type === 'lunch' && isNew">
+                    <v-checkbox label="Trigger default opt-ins" v-model="triggerDefaultOptIn" :disabled="dateIsInThePast"
+                                :hint="defaultOptInHint" persistent-hint/>
                 </div>
 
                 <v-row v-if="type === 'lunch'">
