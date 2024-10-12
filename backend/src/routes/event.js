@@ -73,6 +73,13 @@ const participationSchema = Joi.object({
     }),
 });
 
+const participationWithUserSchema = participationSchema.keys({
+    userId: Joi.number().required(),
+});
+const participationsSchema = Joi.object({
+    participations: Joi.array().items(participationWithUserSchema).required(),
+});
+
 /**
  * @param {Application.Context} ctx
  * @return {Promise<void>}
@@ -416,6 +423,80 @@ async function updateEvent(ctx) {
 }
 
 /**
+ * @param {Event} event
+ * @param {User} user
+ * @param {ApiParticipation} apiParticipation
+ * @param {number[]} validParticipationTypes
+ * @param {User} actingUser
+ * @param {Transaction} transaction
+ * @return {Promise<void>}
+ */
+async function saveParticipationLowLevel(event, user, apiParticipation, validParticipationTypes, actingUser, transaction) {
+    let typeId = undefined;
+    if (apiParticipation.type) {
+        typeId = Constants.PARTICIPATION_TYPE_IDS[apiParticipation.type];
+        if (!validParticipationTypes.includes(typeId)) {
+            throw new HttpErrors.BadRequest('This type of participation is not allowed for this type of event');
+        }
+    }
+
+    let participation = await Participation.findOne({
+        where: {
+            event: event.id,
+            user:  user.id,
+        },
+        transaction,
+        lock:  transaction.LOCK.UPDATE,
+    });
+
+    let before = null;
+    if (participation === null) {
+        participation = Participation.build({
+            event: event.id,
+            user:  user.id,
+            type:  typeId ?? validParticipationTypes[0],
+        });
+    } else {
+        before = participation.toSnapshot();
+    }
+
+    if (typeId !== undefined) {
+        participation.type = typeId;
+    }
+    if (apiParticipation.credits?.points !== undefined) {
+        participation.pointsCredited = apiParticipation.credits?.points;
+    }
+    if (apiParticipation.credits?.money !== undefined) {
+        participation.moneyCredited = apiParticipation.credits?.money;
+    }
+    if (apiParticipation.factors?.money !== undefined) {
+        if (event.type !== Constants.EVENT_TYPES.SPECIAL) {
+            throw new HttpErrors.BadRequest('Event type cannot have money factors');
+        }
+        participation.moneyFactor = participation.type !== Constants.PARTICIPATION_TYPES.OPT_OUT
+            ? apiParticipation.factors?.money
+            : 1.0;
+    }
+
+    await participation.save({transaction});
+    let after = participation.toSnapshot();
+
+    if (before === null) {
+        await AuditManager.log(transaction, actingUser, 'participation.create', {
+            event:        event.id,
+            affectedUser: user.id,
+            values:       after,
+        });
+    } else {
+        await AuditManager.log(transaction, actingUser, 'participation.update', {
+            event:        event.id,
+            affectedUser: user.id,
+            values:       Utils.snapshotDiff(before, after),
+        });
+    }
+}
+
+/**
  * @param {Application.Context} ctx
  * @return {Promise<void>}
  */
@@ -430,68 +511,38 @@ async function saveParticipation(ctx) {
             throw new HttpErrors.BadRequest('This type of event cannot have participations');
         }
 
-        let typeId = undefined;
-        if (apiParticipation.type) {
-            typeId = Constants.PARTICIPATION_TYPE_IDS[apiParticipation.type];
-            if (!validParticipationTypes.includes(typeId)) {
-                throw new HttpErrors.BadRequest('This type of participation is not allowed for this type of event');
-            }
+        assertCanEditDate(ctx.user, event.date);
+
+        let user = await loadUserFromParam(ctx.params, transaction);
+        await saveParticipationLowLevel(event, user, apiParticipation, validParticipationTypes, ctx.user, transaction);
+
+        await TransactionRebuilder.rebuildEvent(transaction, event);
+    });
+    ctx.status = 204;
+}
+
+/**
+ * @param {Application.Context} ctx
+ * @return {Promise<void>}
+ */
+async function saveParticipations(ctx) {
+    /** @type {Array<ApiParticipation>} */
+    let apiParticipations = RouteUtils.validateBody(ctx.request, participationsSchema).participations;
+    await ctx.sequelize.transaction(async transaction => {
+        let event = await loadEventFromParam(ctx.params, transaction);
+
+        let validParticipationTypes = Constants.EVENT_TYPE_VALID_PARTICIPATIONS[event.type];
+        if (validParticipationTypes === undefined) {
+            throw new HttpErrors.BadRequest('This type of event cannot have participations');
         }
 
         assertCanEditDate(ctx.user, event.date);
 
-        let user = await loadUserFromParam(ctx.params, transaction);
-        let participation = await Participation.findOne({
-            where: {
-                event: event.id,
-                user:  user.id,
-            },
-            transaction,
-            lock:  transaction.LOCK.UPDATE,
-        });
-
-        let before = null;
-        if (participation === null) {
-            participation = Participation.build({
-                event: event.id,
-                user:  user.id,
-                type:  typeId ?? validParticipationTypes[0],
-            });
-        } else {
-            before = participation.toSnapshot();
+        for (let apiParticipation of apiParticipations) {
+            let user = await loadUser(apiParticipation.userId, transaction);
+            await saveParticipationLowLevel(event, user, apiParticipation, validParticipationTypes, ctx.user, transaction);
         }
 
-        if (typeId !== undefined) {
-            participation.type = typeId;
-        }
-        if (apiParticipation.credits?.points !== undefined) {
-            participation.pointsCredited = apiParticipation.credits?.points;
-        }
-        if (apiParticipation.credits?.money !== undefined) {
-            participation.moneyCredited = apiParticipation.credits?.money;
-        }
-        if (apiParticipation.factors?.money !== undefined && event.type === Constants.EVENT_TYPES.SPECIAL) {
-            participation.moneyFactor = participation.type !== Constants.PARTICIPATION_TYPES.OPT_OUT
-                ? apiParticipation.factors?.money
-                : 1.0;
-        }
-
-        await participation.save({transaction});
-        let after = participation.toSnapshot();
-
-        if (before === null) {
-            await AuditManager.log(transaction, ctx.user, 'participation.create', {
-                event:        event.id,
-                affectedUser: user.id,
-                values:       after,
-            });
-        } else {
-            await AuditManager.log(transaction, ctx.user, 'participation.update', {
-                event:        event.id,
-                affectedUser: user.id,
-                values:       Utils.snapshotDiff(before, after),
-            });
-        }
         await TransactionRebuilder.rebuildEvent(transaction, event);
     });
     ctx.status = 204;
@@ -849,6 +900,7 @@ export default function register(router) {
     router.get('/events/:event(\\d+)/participations', getParticipationList);
     router.get('/events/:event(\\d+)/participations/:user(\\d+)', getSingleParticipation);
     router.post('/events/:event(\\d+)/participations/:user(\\d+)', saveParticipation);
+    router.post('/events/:event(\\d+)/participations', saveParticipations);
     router.delete('/events/:event(\\d+)/participations/:user(\\d+)', deleteParticipation);
 
     router.get('/events/:event(\\d+)/transfers', getTransferList);

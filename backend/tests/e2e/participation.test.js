@@ -13,6 +13,8 @@ let request = null;
 let user1 = null;
 /** @type {User|null} */
 let user2 = null;
+/** @type {User|null} */
+let user3 = null;
 /** @type {string|null} */
 let jwt = null;
 
@@ -54,6 +56,7 @@ beforeEach(async () => {
     await andeoLunch.waitReady();
     user1 = await Helper.createUser('test-user-1');
     user2 = await Helper.createUser('test-user-2');
+    user3 = await Helper.createUser('test-user-3');
     request = supertest.agent(andeoLunch.listen());
     let response = await request.post('/api/account/login')
         .send({username: user1.username, password: Helper.password});
@@ -223,7 +226,7 @@ describe('A simple event', () => {
         expect(response.text).toBe('This type of participation is not allowed for this type of event');
     });
 
-    it('Does not save money factor', async () => {
+    it('Refuses to save invalid money factor', async () => {
         let url = `${eventUrl}/participations/${user1.id}`;
         let response = await request.post(url)
             .send({
@@ -232,11 +235,103 @@ describe('A simple event', () => {
                     money: 0.5,
                 },
             });
-        expect(response.status).toBe(204);
+        expect(response.status).toBe(400);
 
         // Check event again
         response = await request.get(url);
-        expect(response.body?.participation?.factors?.money).toBe(1);
+        expect(response.status).toBe(404);
+    });
+});
+
+describe('Bulk participation', () => {
+    let eventId = null;
+    let eventUrl = null;
+
+    beforeEach(async () => {
+        eventId = await Helper.createEvent(request, {
+            name:  'Test event',
+            date:  '2020-01-01',
+            type:  Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.LUNCH],
+            costs: {
+                points: 8,
+            },
+        });
+        eventUrl = `/api/events/${eventId}`;
+    });
+
+    it('Bulk-save several participations', async () => {
+        let url = `${eventUrl}/participations`;
+        let response = await request.post(url).send({
+            participations: [
+                {
+                    userId:  user1.id,
+                    type:    'omnivorous',
+                    credits: {
+                        money:  1,
+                        points: 1,
+                    },
+                },
+                {
+                    userId: user2.id,
+                    type:   'vegetarian',
+                },
+                {
+                    userId: user3.id,
+                    // Type missing
+                },
+            ],
+        });
+        expect(response.status).toBe(204);
+
+        // retrieve again
+        response = await request.get(url);
+        expect(response.status).toBe(200);
+        expect(response.body.participations).toHaveLength(3);
+
+        response = await request.get(`${url}/${user1.id}`);
+        expect(response.status).toBe(200);
+        expect(response.body.participation).toMatchObject({
+            userId:  user1.id,
+            eventId,
+            type:    'omnivorous',
+            credits: {
+                points: 1,
+                money:  1,
+            },
+            factors: {
+                money: 1,
+            },
+        });
+
+        response = await request.get(`${url}/${user2.id}`);
+        expect(response.status).toBe(200);
+        expect(response.body.participation).toMatchObject({
+            userId:  user2.id,
+            eventId,
+            type:    'vegetarian',
+            credits: {
+                points: 0,
+                money:  0,
+            },
+            factors: {
+                money: 1,
+            },
+        });
+
+        response = await request.get(`${url}/${user3.id}`);
+        expect(response.status).toBe(200);
+        expect(response.body.participation).toMatchObject({
+            userId:  user3.id,
+            eventId,
+            type:    'undecided',
+            credits: {
+                points: 0,
+                money:  0,
+            },
+            factors: {
+                money: 1,
+            },
+        });
     });
 });
 
