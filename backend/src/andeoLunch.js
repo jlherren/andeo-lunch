@@ -48,12 +48,6 @@ export class AndeoLunch {
         this.server = null;
 
         this.app = new Koa();
-        this.app.use(cors({
-            origin:        '*',
-            exposeHeaders: '*',
-            allowHeaders:  '*',
-            maxAge:        600,
-        }));
 
         if (this.options.logging) {
             this.app.use(Logger());
@@ -66,6 +60,13 @@ export class AndeoLunch {
                 return next();
             });
         }
+
+        this.app.use(cors({
+            origin:        '*',
+            exposeHeaders: '*',
+            allowHeaders:  '*',
+            maxAge:        600,
+        }));
 
         this.app.use(BodyParser({
             enableTypes: ['json'],
