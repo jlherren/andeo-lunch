@@ -1,4 +1,5 @@
 import {Configuration} from '../db/models.js';
+import HttpErrors from 'http-errors';
 
 /**
  * @param {Application.Context} ctx
@@ -66,7 +67,7 @@ async function getDecommissionContraUser(ctx) {
  */
 async function migrate(ctx) {
     if (!process.env.ANDEO_LUNCH_CYPRESS) {
-        ctx.throw(410, 'This endpoint only exists in testing environments');
+        throw new HttpErrors.Gone('This endpoint only exists in testing environments');
     }
 
     await ctx.andeoLunch.reapplyMigrations();

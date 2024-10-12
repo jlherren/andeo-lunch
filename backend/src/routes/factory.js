@@ -1,3 +1,5 @@
+import HttpErrors from 'http-errors';
+
 /**
  * Create a controller that returns a single object by its ID
  *
@@ -22,7 +24,7 @@ export function makeSingleObjectController(options) {
                 [singular]: options.mapper(object),
             };
         } else {
-            ctx.throw(404, `No such ${singular}`);
+            throw new HttpErrors.NotFound(`No such ${singular}`);
         }
     };
 }

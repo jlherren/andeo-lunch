@@ -2,6 +2,7 @@ import * as AuditManager from '../auditManager.js';
 import * as RouteUtils from './route-utils.js';
 import * as Utils from '../utils.js';
 import {Grocery} from '../db/models.js';
+import HttpErrors from 'http-errors';
 import Joi from 'joi';
 
 const groceryLabelSchema = Joi.string().normalize().min(1).regex(/\S/u);
@@ -22,7 +23,7 @@ const groceryUpdateSchema = Joi.object({
  */
 async function createGrocery(ctx) {
     /** @type {ApiGrocery} */
-    let apiGrocery = RouteUtils.validateBody(ctx, groceryCreateSchema);
+    let apiGrocery = RouteUtils.validateBody(ctx.request, groceryCreateSchema);
     let groceryId = await ctx.sequelize.transaction(async transaction => {
         let grocery = await Grocery.create({
             label:   apiGrocery.label,
@@ -41,30 +42,29 @@ async function createGrocery(ctx) {
 }
 
 /**
- * @param {Application.Context} ctx
  * @param {number} groceryId
  * @param {Transaction} [transaction]
  * @return {Promise<Grocery>}
  */
-async function loadGrocery(ctx, groceryId, transaction) {
+async function loadGrocery(groceryId, transaction) {
     let options = {
         transaction,
         lock: transaction ? transaction.LOCK.UPDATE : undefined,
     };
     let grocery = await Grocery.findByPk(groceryId, options);
     if (!grocery) {
-        ctx.throw(404, 'No such grocery');
+        throw new HttpErrors.NotFound('No such grocery');
     }
     return grocery;
 }
 
 /**
- * @param {Application.Context} ctx
+ * @param {Object} params
  * @param {Transaction} [transaction]
  * @return {Promise<Grocery>}
  */
-function loadGroceryFromParam(ctx, transaction) {
-    return loadGrocery(ctx, parseInt(ctx.params.grocery, 10), transaction);
+function loadGroceryFromParam(params, transaction) {
+    return loadGrocery(parseInt(params.grocery, 10), transaction);
 }
 
 /**
@@ -73,9 +73,9 @@ function loadGroceryFromParam(ctx, transaction) {
  */
 async function updateGrocery(ctx) {
     /** @type {ApiGrocery} */
-    let apiGrocery = RouteUtils.validateBody(ctx, groceryUpdateSchema);
+    let apiGrocery = RouteUtils.validateBody(ctx.request, groceryUpdateSchema);
     await ctx.sequelize.transaction(async transaction => {
-        let grocery = await loadGroceryFromParam(ctx, transaction);
+        let grocery = await loadGroceryFromParam(ctx.params, transaction);
         let before = grocery.toSnapshot();
         await grocery.update(
             {
@@ -120,7 +120,7 @@ async function listGroceries(ctx) {
  */
 async function getGroceries(ctx) {
     ctx.body = {
-        grocery: await loadGroceryFromParam(ctx),
+        grocery: await loadGroceryFromParam(ctx.params),
     };
 }
 
@@ -130,7 +130,7 @@ async function getGroceries(ctx) {
  */
 async function deleteGrocery(ctx) {
     await ctx.sequelize.transaction(async transaction => {
-        let grocery = await loadGroceryFromParam(ctx, transaction);
+        let grocery = await loadGroceryFromParam(ctx.params, transaction);
         let before = grocery.toSnapshot();
         await grocery.destroy({transaction});
         await AuditManager.log(transaction, ctx.user, 'grocery.delete', {

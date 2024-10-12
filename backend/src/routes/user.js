@@ -2,6 +2,7 @@ import * as AuditManager from '../auditManager.js';
 import * as Factory from './factory.js';
 import * as RouteUtils from './route-utils.js';
 import {Absence, Configuration, Transaction, User} from '../db/models.js';
+import HttpErrors from 'http-errors';
 import Joi from 'joi';
 
 const absenceCreateSchema = Joi.object({
@@ -70,7 +71,7 @@ async function getUserAbsences(ctx) {
  */
 async function createUserAbsence(ctx) {
     /** @type {ApiAbsence} */
-    let apiAbsence = RouteUtils.validateBody(ctx, absenceCreateSchema);
+    let apiAbsence = RouteUtils.validateBody(ctx.request, absenceCreateSchema);
     let userId = ctx.params.user;
     let absenceId = await ctx.sequelize.transaction(async transaction => {
         let absence = await Absence.create({
@@ -99,7 +100,7 @@ async function deleteUserAbsence(ctx) {
         let absence = await Absence.findByPk(parseInt(ctx.params.absence, 10), {transaction});
         let user = parseInt(ctx.params.user, 10);
         if (!absence || absence.user !== user) {
-            ctx.throw(404, 'No such absence');
+            throw new HttpErrors.NotFound('No such absence');
         }
         let values = absence.toSnapshot();
         values.user = undefined;

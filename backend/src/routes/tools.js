@@ -1,6 +1,7 @@
 import * as RouteUtils from './route-utils.js';
 import {Configuration, DeviceVersion} from '../db/models.js';
 import {Op, Sequelize} from 'sequelize';
+import HttpErrors from 'http-errors';
 import Joi from 'joi';
 import ms from 'ms';
 import naturalCompare from 'natural-compare';
@@ -72,12 +73,12 @@ async function getConfigurations(ctx) {
 async function saveConfigurations(ctx) {
     RouteUtils.requirePermission(ctx, 'tools.configurations');
 
-    let body = RouteUtils.validateBody(ctx, saveConfigurationSchema);
+    let body = RouteUtils.validateBody(ctx.request, saveConfigurationSchema);
 
     await ctx.sequelize.transaction(async transaction => {
         for (let configuration of body.configurations) {
             if (!configuration.name.match(CONFIGURATION_WHITELIST_REGEX)) {
-                ctx.throw(400, `Configuration not whitelisted: ${configuration.name}`);
+                throw new HttpErrors.BadRequest(`Configuration not whitelisted: ${configuration.name}`);
             }
             await Configuration.update({
                 value: configuration.value,

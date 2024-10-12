@@ -5,6 +5,7 @@ import * as RouteUtils from './route-utils.js';
 import * as TransactionRebuilder from '../transactionRebuilder.js';
 import * as Utils from '../utils.js';
 import {Absence, Configuration, Event, Lunch, Participation, Transaction, Transfer, User} from '../db/models.js';
+import HttpErrors from 'http-errors';
 import Joi from 'joi';
 import {Op} from 'sequelize';
 
@@ -99,7 +100,7 @@ async function getSingleParticipation(ctx) {
         },
     });
     if (!participation) {
-        ctx.throw(404, 'No such participation');
+        throw new HttpErrors.NotFound('No such participation');
     }
     ctx.body = {
         participation: participation.toApi(),
@@ -107,46 +108,45 @@ async function getSingleParticipation(ctx) {
 }
 
 /**
- * @param {Application.Context} ctx
  * @param {number} type
  * @param {ApiEvent} apiEvent
  */
-function validateEvent(ctx, type, apiEvent) {
+function validateEvent(type, apiEvent) {
     if (apiEvent?.costs?.points !== undefined && ![Constants.EVENT_TYPES.LUNCH, Constants.EVENT_TYPES.SPECIAL].includes(type)) {
-        ctx.throw(400, 'Event type cannot have point costs');
+        throw new HttpErrors.BadRequest('Event type cannot have point costs');
     }
 
     if (apiEvent?.factors?.vegetarian?.money !== undefined && type !== Constants.EVENT_TYPES.LUNCH) {
-        ctx.throw(400, 'Event type cannot have a vegetarian money factor');
+        throw new HttpErrors.BadRequest('Event type cannot have a vegetarian money factor');
     }
 
     if (apiEvent?.participationFlatRate !== undefined && type !== Constants.EVENT_TYPES.LUNCH) {
-        ctx.throw(400, 'Event type cannot have a participation flat-rate');
+        throw new HttpErrors.BadRequest('Event type cannot have a participation flat-rate');
     }
 
     let participationFee = apiEvent?.participationFee;
     if (participationFee !== undefined && participationFee !== 0.0 && ![Constants.EVENT_TYPES.LUNCH, Constants.EVENT_TYPES.SPECIAL].includes(type)) {
-        ctx.throw(400, 'Event type cannot have a participation fee');
+        throw new HttpErrors.BadRequest('Event type cannot have a participation fee');
     }
 
     if (apiEvent?.transfers !== undefined && type !== Constants.EVENT_TYPES.TRANSFER) {
-        ctx.throw(400, 'Event type cannot have transfers');
+        throw new HttpErrors.BadRequest('Event type cannot have transfers');
     }
 
     if (apiEvent?.immutable !== undefined && type !== Constants.EVENT_TYPES.TRANSFER) {
-        ctx.throw(400, 'Event type cannot be immutable');
+        throw new HttpErrors.BadRequest('Event type cannot be immutable');
     }
 }
 
 /**
  * Assert that the given date is editable by the current user.
  *
- * @param {Application.Context} ctx
+ * @param {User} actingUser
  * @param {Date} date
  */
-function assertCanEditDate(ctx, date) {
-    if (!EventManager.userCanEditDate(ctx.user, date)) {
-        ctx.throw(403, 'Event is too old for you to edit');
+function assertCanEditDate(actingUser, date) {
+    if (!EventManager.userCanEditDate(actingUser, date)) {
+        throw new HttpErrors.Forbidden('Event is too old for you to edit');
     }
 }
 
@@ -221,15 +221,15 @@ async function setDefaultOptIns(event, transaction) {
  */
 async function createEvent(ctx) {
     /** @type {ApiEvent} */
-    let apiEvent = RouteUtils.validateBody(ctx, eventCreateSchema);
+    let apiEvent = RouteUtils.validateBody(ctx.request, eventCreateSchema);
 
     // The DB only stores seconds.  We need to remove milliseconds, to avoid off-by-one errors in the transaction rebuilder.
     apiEvent.date.setUTCMilliseconds(0);
 
     let eventId = await ctx.sequelize.transaction(async transaction => {
         let type = Constants.EVENT_TYPE_IDS[apiEvent.type];
-        validateEvent(ctx, type, apiEvent);
-        assertCanEditDate(ctx, apiEvent.date);
+        validateEvent(type, apiEvent);
+        assertCanEditDate(ctx.user, apiEvent.date);
 
         let event = await Event.create({
             name:      apiEvent.name,
@@ -267,7 +267,7 @@ async function createEvent(ctx) {
             }, {transaction});
         }
 
-        await createTransfersImpl(ctx, event, apiEvent.transfers ?? [], transaction);
+        await createTransfersImpl(ctx.user, event, apiEvent.transfers ?? [], transaction);
 
         if (apiEvent.triggerDefaultOptIn) {
             await setDefaultOptIns(event, transaction);
@@ -286,12 +286,11 @@ async function createEvent(ctx) {
 }
 
 /**
- * @param {Application.Context} ctx
  * @param {number} eventId
  * @param {Transaction} [transaction]
  * @return {Promise<Event>}
  */
-async function loadEvent(ctx, eventId, transaction) {
+async function loadEvent(eventId, transaction) {
     let options = {
         include: ['Lunch'],
         transaction,
@@ -299,55 +298,53 @@ async function loadEvent(ctx, eventId, transaction) {
     };
     let event = await Event.findByPk(eventId, options);
     if (!event) {
-        ctx.throw(404, 'No such event');
+        throw new HttpErrors.NotFound('No such event');
     }
     return event;
 }
 
 /**
- * @param {Application.Context} ctx
+ * @param {Object} params
  * @param {Transaction} [transaction]
  * @return {Promise<Event>}
  */
-function loadEventFromParam(ctx, transaction) {
-    return loadEvent(ctx, parseInt(ctx.params.event, 10), transaction);
+function loadEventFromParam(params, transaction) {
+    return loadEvent(parseInt(params.event, 10), transaction);
 }
 
 /**
- * @param {Application.Context} ctx
  * @param {number} transferId
  * @param {Transaction} [transaction]
  * @return {Promise<Transfer>}
  */
-async function loadTransfer(ctx, transferId, transaction) {
+async function loadTransfer(transferId, transaction) {
     let options = {
         transaction,
         lock: transaction ? transaction.LOCK.UPDATE : undefined,
     };
     let transfer = await Transfer.findByPk(transferId, options);
     if (!transfer) {
-        ctx.throw(404, 'No such transfer');
+        throw new HttpErrors.NotFound('No such transfer');
     }
     return transfer;
 }
 
 /**
- * @param {Application.Context} ctx
+ * @param {Object} params
  * @param {Transaction} [transaction]
  * @return {Promise<Transfer>}
  */
-function loadTransferFromParam(ctx, transaction) {
-    return loadTransfer(ctx, parseInt(ctx.params.transfer, 10), transaction);
+function loadTransferFromParam(params, transaction) {
+    return loadTransfer(parseInt(params.transfer, 10), transaction);
 }
 
 /**
- * @param {Application.Context} ctx
  * @param {number} userId
  * @param {Transaction} transaction
  * @param {boolean} allowSystemUser
  * @return {Promise<User>}
  */
-async function loadUser(ctx, userId, transaction, allowSystemUser = false) {
+async function loadUser(userId, transaction, allowSystemUser = false) {
     if (allowSystemUser && userId === -1) {
         return User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}, transaction});
     }
@@ -357,19 +354,19 @@ async function loadUser(ctx, userId, transaction, allowSystemUser = false) {
     };
     let user = await User.findByPk(userId, options);
     if (!user) {
-        ctx.throw(404, 'No such user');
+        throw new HttpErrors.NotFound('No such user');
     }
     return user;
 }
 
 /**
- * @param {Application.Context} ctx
+ * @param {Object} params
  * @param {Transaction} transaction
  * @param {boolean} allowSystemUser
  * @return {Promise<User>}
  */
-function loadUserFromParam(ctx, transaction, allowSystemUser = false) {
-    return loadUser(ctx, parseInt(ctx.params.user, 10), transaction, allowSystemUser);
+function loadUserFromParam(params, transaction, allowSystemUser = false) {
+    return loadUser(parseInt(params.user, 10), transaction, allowSystemUser);
 }
 
 /**
@@ -378,11 +375,11 @@ function loadUserFromParam(ctx, transaction, allowSystemUser = false) {
  */
 async function updateEvent(ctx) {
     /** @type {ApiEvent} */
-    let apiEvent = RouteUtils.validateBody(ctx, eventUpdateSchema);
+    let apiEvent = RouteUtils.validateBody(ctx.request, eventUpdateSchema);
     await ctx.sequelize.transaction(async transaction => {
-        let event = await loadEventFromParam(ctx, transaction);
-        validateEvent(ctx, event.type, apiEvent);
-        assertCanEditDate(ctx, event.date);
+        let event = await loadEventFromParam(ctx.params, transaction);
+        validateEvent(event.type, apiEvent);
+        assertCanEditDate(ctx.user, event.date);
         let before = event.toSnapshot();
         await event.update(
             {
@@ -424,26 +421,26 @@ async function updateEvent(ctx) {
  */
 async function saveParticipation(ctx) {
     /** @type {ApiParticipation} */
-    let apiParticipation = RouteUtils.validateBody(ctx, participationSchema);
+    let apiParticipation = RouteUtils.validateBody(ctx.request, participationSchema);
     await ctx.sequelize.transaction(async transaction => {
-        let event = await loadEventFromParam(ctx, transaction);
+        let event = await loadEventFromParam(ctx.params, transaction);
 
         let validParticipationTypes = Constants.EVENT_TYPE_VALID_PARTICIPATIONS[event.type];
         if (validParticipationTypes === undefined) {
-            ctx.throw(400, 'This type of event cannot have participations');
+            throw new HttpErrors.BadRequest('This type of event cannot have participations');
         }
 
         let typeId = undefined;
         if (apiParticipation.type) {
             typeId = Constants.PARTICIPATION_TYPE_IDS[apiParticipation.type];
             if (!validParticipationTypes.includes(typeId)) {
-                ctx.throw(400, 'This type of participation is not allowed for this type of event');
+                throw new HttpErrors.BadRequest('This type of participation is not allowed for this type of event');
             }
         }
 
-        assertCanEditDate(ctx, event.date);
+        assertCanEditDate(ctx.user, event.date);
 
-        let user = await loadUserFromParam(ctx, transaction);
+        let user = await loadUserFromParam(ctx.params, transaction);
         let participation = await Participation.findOne({
             where: {
                 event: event.id,
@@ -506,8 +503,8 @@ async function saveParticipation(ctx) {
  */
 async function deleteParticipation(ctx) {
     await ctx.sequelize.transaction(async transaction => {
-        let event = await loadEventFromParam(ctx, transaction);
-        let user = await loadUserFromParam(ctx, transaction);
+        let event = await loadEventFromParam(ctx.params, transaction);
+        let user = await loadUserFromParam(ctx.params, transaction);
         let participation = await Participation.findOne({
             where: {
                 event: event.id,
@@ -517,9 +514,9 @@ async function deleteParticipation(ctx) {
             lock:  transaction.LOCK.UPDATE,
         });
         if (!participation) {
-            ctx.throw(404, 'No such participation');
+            throw new HttpErrors.NotFound('No such participation');
         }
-        assertCanEditDate(ctx, event.date);
+        assertCanEditDate(ctx.user, event.date);
         let before = participation.toSnapshot();
         await participation.destroy({transaction});
         await TransactionRebuilder.rebuildEvent(transaction, event);
@@ -537,9 +534,9 @@ async function deleteParticipation(ctx) {
  * @return {Promise<void>}
  */
 async function getEvent(ctx) {
-    let event = await loadEventFromParam(ctx);
+    let event = await loadEventFromParam(ctx.params);
     if (!event) {
-        ctx.throw(404, 'No such event');
+        throw new HttpErrors.NotFound('No such event');
     }
     let systemUser = await User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
     ctx.body = {
@@ -561,7 +558,7 @@ async function listEvents(ctx) {
         types = types.split(',').map(typeName => {
             let typeId = Constants.EVENT_TYPE_IDS[typeName];
             if (!typeId) {
-                ctx.throw(400, 'Invalid type');
+                throw new HttpErrors.BadRequest('Invalid type');
             }
             return typeId;
         });
@@ -599,7 +596,7 @@ async function listEvents(ctx) {
             });
         }
     } else if (ownParticipations) {
-        ctx.throw(400, 'with=ownParticipations does not make sense when excluding lunches');
+        throw new HttpErrors.BadRequest('with=ownParticipations does not make sense when excluding lunches');
     }
 
     if (!types || types.includes(Constants.EVENT_TYPES.TRANSFER)) {
@@ -630,8 +627,8 @@ async function listEvents(ctx) {
  */
 async function deleteEvent(ctx) {
     await ctx.sequelize.transaction(async transaction => {
-        let event = await loadEventFromParam(ctx, transaction);
-        assertCanEditDate(ctx, event.date);
+        let event = await loadEventFromParam(ctx.params, transaction);
+        assertCanEditDate(ctx.user, event.date);
 
         let before = event.toSnapshot();
         await Transaction.destroy({
@@ -692,44 +689,44 @@ async function getTransferList(ctx) {
  */
 async function createTransfers(ctx) {
     /** @type {Array<ApiTransfer>} */
-    let apiTransfers = RouteUtils.validateBody(ctx, createTransfersSchema);
+    let apiTransfers = RouteUtils.validateBody(ctx.request, createTransfersSchema);
     await ctx.sequelize.transaction(async transaction => {
-        let event = await loadEventFromParam(ctx, transaction);
+        let event = await loadEventFromParam(ctx.params, transaction);
 
         if (event.type !== Constants.EVENT_TYPES.TRANSFER) {
-            ctx.throw(400, 'Event type cannot have transfers');
+            throw new HttpErrors.BadRequest('Event type cannot have transfers');
         }
 
         if (event.immutable) {
-            ctx.throw(403, 'Event is immutable');
+            throw new HttpErrors.Forbidden('Event is immutable');
         }
 
-        assertCanEditDate(ctx, event.date);
+        assertCanEditDate(ctx.user, event.date);
 
-        await createTransfersImpl(ctx, event, apiTransfers, transaction);
+        await createTransfersImpl(ctx.user, event, apiTransfers, transaction);
         await TransactionRebuilder.rebuildEvent(transaction, event);
     });
     ctx.status = 204;
 }
 
 /**
- * @param {Application.Context} ctx
+ * @param {User} actingUser
  * @param {Event} event
  * @param {Array<ApiTransfer>} apiTransfers
  * @param {Transaction} transaction
  * @return {Promise<void>}
  */
-async function createTransfersImpl(ctx, event, apiTransfers, transaction) {
+async function createTransfersImpl(actingUser, event, apiTransfers, transaction) {
     let transactionInserts = [];
     let logEntries = [];
 
     for (let apiTransfer of apiTransfers) {
-        let sender = await loadUser(ctx, apiTransfer.senderId, transaction, true);
-        let recipient = await loadUser(ctx, apiTransfer.recipientId, transaction, true);
+        let sender = await loadUser(apiTransfer.senderId, transaction, true);
+        let recipient = await loadUser(apiTransfer.recipientId, transaction, true);
 
         // Need to check this after loading the user, since there are two ways to specify the system user
         if (sender.id === recipient.id) {
-            ctx.throw(400, 'Cannot transfer back to sender');
+            throw new HttpErrors.BadRequest('Cannot transfer back to sender');
         }
 
         transactionInserts.push({
@@ -753,7 +750,7 @@ async function createTransfersImpl(ctx, event, apiTransfers, transaction) {
     }
 
     await Transfer.bulkCreate(transactionInserts, {transaction});
-    await AuditManager.logMultiple(transaction, ctx.user, logEntries);
+    await AuditManager.logMultiple(transaction, actingUser, logEntries);
 }
 
 /**
@@ -764,28 +761,28 @@ async function saveTransfer(ctx) {
     let systemUser = await User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
 
     /** @type {ApiTransfer} */
-    let apiTransfer = RouteUtils.validateBody(ctx, createTransferSchema);
+    let apiTransfer = RouteUtils.validateBody(ctx.request, createTransferSchema);
     await ctx.sequelize.transaction(async transaction => {
-        let event = await loadEventFromParam(ctx, transaction);
-        let transfer = await loadTransferFromParam(ctx, transaction);
+        let event = await loadEventFromParam(ctx.params, transaction);
+        let transfer = await loadTransferFromParam(ctx.params, transaction);
 
         if (transfer.event !== event.id) {
-            ctx.throw(400, 'Transfer does not belong to specified event');
+            throw new HttpErrors.BadRequest('Transfer does not belong to specified event');
         }
 
-        let sender = await loadUser(ctx, apiTransfer.senderId, transaction, true);
-        let recipient = await loadUser(ctx, apiTransfer.recipientId, transaction, true);
+        let sender = await loadUser(apiTransfer.senderId, transaction, true);
+        let recipient = await loadUser(apiTransfer.recipientId, transaction, true);
 
         // Need to check this after loading the user, since there are two ways to specify the system user
         if (sender.id === recipient.id) {
-            ctx.throw(400, 'Cannot transfer back to sender');
+            throw new HttpErrors.BadRequest('Cannot transfer back to sender');
         }
 
         if (event.immutable) {
-            ctx.throw(403, 'Event is immutable');
+            throw new HttpErrors.Forbidden('Event is immutable');
         }
 
-        assertCanEditDate(ctx, event.date);
+        assertCanEditDate(ctx.user, event.date);
 
         let before = transfer.toSnapshot(systemUser);
         await transfer.update({
@@ -814,18 +811,18 @@ async function deleteTransfer(ctx) {
     let systemUser = await User.findOne({where: {username: Constants.SYSTEM_USER_USERNAME}});
 
     await ctx.sequelize.transaction(async transaction => {
-        let event = await loadEventFromParam(ctx, transaction);
-        let transfer = await loadTransferFromParam(ctx, transaction);
+        let event = await loadEventFromParam(ctx.params, transaction);
+        let transfer = await loadTransferFromParam(ctx.params, transaction);
 
         if (transfer.event !== event.id) {
-            ctx.throw(400, 'Transfer does not belong to specified event');
+            throw new HttpErrors.BadRequest('Transfer does not belong to specified event');
         }
 
         if (event.immutable) {
-            ctx.throw(403, 'Event is immutable');
+            throw new HttpErrors.Forbidden('Event is immutable');
         }
 
-        assertCanEditDate(ctx, event.date);
+        assertCanEditDate(ctx.user, event.date);
 
         let before = transfer.toSnapshot(systemUser);
         await transfer.destroy({transaction});

@@ -27,7 +27,7 @@ function getSettings(ctx) {
  * @return {Promise<void>}
  */
 async function saveSettings(ctx) {
-    let settings = RouteUtils.validateBody(ctx, saveSettingsSchema);
+    let settings = RouteUtils.validateBody(ctx.request, saveSettingsSchema);
 
     ctx.user.settings = {
         ...ctx.user.settings,

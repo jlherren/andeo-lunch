@@ -1,6 +1,7 @@
 import * as AuthUtils from '../authUtils.js';
 import * as RouteUtils from './route-utils.js';
 import {DeviceVersion, User, UserPassword} from '../db/models.js';
+import HttpErrors from 'http-errors';
 import Joi from 'joi';
 
 const loginSchema = Joi.object({
@@ -18,7 +19,7 @@ const changePasswordSchema = Joi.object({
  * @return {Promise<void>}
  */
 async function login(ctx) {
-    let requestBody = RouteUtils.validateBody(ctx, loginSchema);
+    let requestBody = RouteUtils.validateBody(ctx.request, loginSchema);
     let user = await User.findOne(
         {
             where:   {username: requestBody.username},
@@ -42,7 +43,7 @@ async function login(ctx) {
         await AuthUtils.fakeCompare(requestBody.password);
     }
 
-    ctx.throw(401, 'Invalid username or password');
+    throw new HttpErrors.Unauthorized('Invalid username or password');
 }
 
 /**
@@ -92,7 +93,7 @@ async function check(ctx) {
  * @return {Promise<void>}
  */
 async function password(ctx) {
-    let requestBody = RouteUtils.validateBody(ctx, changePasswordSchema);
+    let requestBody = RouteUtils.validateBody(ctx.request, changePasswordSchema);
 
     let userPassword = await UserPassword.findOne({
         where: {

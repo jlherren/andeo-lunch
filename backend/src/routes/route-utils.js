@@ -1,21 +1,22 @@
 import * as AuthUtils from '../authUtils.js';
+import HttpErrors from 'http-errors';
 import JsonWebToken from 'jsonwebtoken';
 import {User} from '../db/models.js';
 
 /**
- * @param {Application.Context} ctx
+ * @param {Request} request
  * @param {AnySchema} schema
  * @return {object}
  */
-export function validateBody(ctx, schema) {
-    let contentType = ctx.request.headers['content-type'];
+export function validateBody(request, schema) {
+    let contentType = request.headers['content-type'];
     if (contentType === undefined || contentType.split(';')[0].trim() !== 'application/json') {
-        ctx.throw(400, 'Content type should be application/json');
+        throw new HttpErrors.BadRequest('Content type should be application/json');
     }
 
-    let {value, error} = schema.validate(ctx.request.body);
+    let {value, error} = schema.validate(request.body);
     if (error) {
-        ctx.throw(400, error.message);
+        throw new HttpErrors.BadRequest(error.message);
     }
     return value;
 }
@@ -77,7 +78,7 @@ export async function populateUser(ctx) {
 export async function requireUser(ctx) {
     await populateUser(ctx);
     if (ctx.user === null) {
-        ctx.throw(401, 'No authentication token provided');
+        throw new HttpErrors.Unauthorized('No authentication token provided');
     }
 }
 
@@ -91,5 +92,5 @@ export function requirePermission(ctx, permission) {
         return;
     }
 
-    ctx.throw(401, 'No permission');
+    throw new HttpErrors.Unauthorized('No permission');
 }

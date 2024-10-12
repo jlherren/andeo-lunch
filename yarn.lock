@@ -3879,6 +3879,7 @@ __metadata:
     eslint: "npm:~8.57.1"
     eslint-plugin-jest: "npm:~28.8.3"
     eslint-plugin-jsdoc: "npm:~50.3.2"
+    http-errors: "npm:^2.0.0"
     jest: "npm:~29.7.0"
     jest-diff: "npm:~29.7.0"
     joi: "npm:~17.13.3"

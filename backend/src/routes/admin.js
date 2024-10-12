@@ -1,6 +1,7 @@
 import * as AuthUtils from '../authUtils.js';
 import * as RouteUtils from './route-utils.js';
 import {User, UserPassword} from '../db/models.js';
+import HttpErrors from 'http-errors';
 import Joi from 'joi';
 
 const editUserSchema = Joi.object({
@@ -56,11 +57,11 @@ async function getUsers(ctx) {
 async function saveUser(ctx) {
     RouteUtils.requirePermission(ctx, 'admin.user');
 
-    let data = RouteUtils.validateBody(ctx, editUserSchema);
+    let data = RouteUtils.validateBody(ctx.request, editUserSchema);
 
     let user = await User.findByPk(parseInt(ctx.params.user, 10));
     if (!user) {
-        ctx.throw(404, 'No such user');
+        throw new HttpErrors.NotFound('No such user');
     }
 
     await user.update(data);
@@ -75,11 +76,11 @@ async function saveUser(ctx) {
 async function resetPassword(ctx) {
     RouteUtils.requirePermission(ctx, 'admin.user');
 
-    let requestBody = RouteUtils.validateBody(ctx, resetPasswordSchema);
+    let requestBody = RouteUtils.validateBody(ctx.request, resetPasswordSchema);
 
     let user = await User.findByPk(parseInt(ctx.params.user, 10));
     if (!user) {
-        ctx.throw(404, 'No such user');
+        throw new HttpErrors.NotFound('No such user');
     }
 
     let ownUserPassword = await UserPassword.findOne({
@@ -125,7 +126,7 @@ async function resetPassword(ctx) {
 async function createUser(ctx) {
     RouteUtils.requirePermission(ctx, 'admin.user');
 
-    let data = RouteUtils.validateBody(ctx, createUserSchema);
+    let data = RouteUtils.validateBody(ctx.request, createUserSchema);
 
     let user = await User.create({
         username: data.username,
