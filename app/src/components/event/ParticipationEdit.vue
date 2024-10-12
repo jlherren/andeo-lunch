@@ -136,7 +136,7 @@
                             money:  this.moneyCredited,
                         },
                         factors: {
-                            money: this.moneyFactor / 100,
+                            money: this.event.type === 'special' ? this.moneyFactor / 100 : undefined,
                         },
                     });
                     this.$emit('saved');

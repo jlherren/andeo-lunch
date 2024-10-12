@@ -249,29 +249,21 @@ export let useStore = defineStore('main', {
         },
 
         saveParticipation({eventId, userId, ...data}) {
-            return this.saveParticipations([{eventId, userId, ...data}]);
+            return this.saveParticipations(eventId, [{userId, ...data}]);
         },
 
-        async saveParticipations(datasets) {
-            await Promise.all(
-                datasets.map(({eventId, userId, ...data}) => {
-                    let url = `/events/${eventId}/participations/${userId}`;
-                    return Backend.post(url, data);
-                }),
-            );
+        async saveParticipations(eventId, participations) {
+            await Backend.post(`/events/${eventId}/participations`, {participations});
 
-            for (let dataset of datasets) {
-                Cache.invalidate('event', dataset.eventId);
-                Cache.invalidate('participations', dataset.eventId);
-                Cache.invalidate('participation', `${dataset.eventId}/${dataset.userId}`);
+            Cache.invalidate('event', eventId);
+            Cache.invalidate('participations', eventId);
+            for (let participation of participations) {
+                Cache.invalidate('participation', `${eventId}/${participation.userId}`);
             }
             Cache.invalidate('user');
             Cache.invalidate('users');
 
-            let eventIds = [...new Set(datasets.map(dataset => dataset.eventId))];
-            await Promise.all(
-                eventIds.map(eventId => this.fetchParticipations(eventId)),
-            );
+            await this.fetchParticipations(eventId);
 
             // Also refetch user balances, but do not wait until it completes.
             // noinspection ES6MissingAwait

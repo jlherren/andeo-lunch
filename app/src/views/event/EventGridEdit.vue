@@ -76,7 +76,7 @@
 
             return {
                 eventId,
-                name:   '',
+                event:  null,
                 isBusy: true,
                 rows:   [],
                 rules:  [
@@ -100,23 +100,13 @@
                 await this.$router.replace(`/events/${this.eventId}`);
                 return;
             }
-            // this.type = event.type;
-            this.name = event.name;
-            this.rows = this.createRows();
+            this.event = event;
+            this.rows = this.createRows(this.$store().participations(this.eventId));
             this.isBusy = false;
         },
 
-        computed: {
-            event() {
-                let event = this.$store().event(this.eventId);
-                return event?.type !== 'transfer' ? event : null;
-            },
-        },
-
         methods: {
-            createRows() {
-                let participations = this.$store().participations(this.eventId);
-
+            createRows(participations) {
                 if (!participations || !this.event) {
                     return [];
                 }
@@ -173,7 +163,7 @@
                 try {
                     let saveData = this.rows.filter(row => row.modified)
                         .map(row => this.createSaveData(row));
-                    await this.$store().saveParticipations(saveData);
+                    await this.$store().saveParticipations(this.eventId, saveData);
                     await this.$router.back();
                 } catch (err) {
                     this.isBusy = false;
@@ -184,14 +174,13 @@
             createSaveData(row) {
                 return {
                     userId:  row.userId,
-                    eventId: this.eventId,
                     type:    row.type,
                     credits: {
                         points: row.pointsCredit,
                         money:  row.moneyCredit,
                     },
                     factors: {
-                        money: row.moneyFactor / 100,
+                        money: this.event.type === 'special' ? row.moneyFactor / 100 : undefined,
                     },
                 };
             },

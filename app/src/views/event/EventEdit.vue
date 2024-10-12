@@ -267,17 +267,7 @@
                     let eventId = await this.$store().saveEvent(data);
 
                     if (this.noHelpersYet) {
-                        let helpers = Object.keys(this.helpers);
-                        let datasets = helpers.map(userId => {
-                            return {
-                                eventId,
-                                userId:  parseInt(userId, 10),
-                                credits: {
-                                    points: this.points / helpers.length,
-                                },
-                            };
-                        });
-                        await this.$store().saveParticipations(datasets);
+                        await this.saveInitialHelpers(eventId);
                     }
 
                     await this.$router.back();
@@ -287,6 +277,22 @@
                     this.isBusy = false;
                     throw err;
                 }
+            },
+
+            async saveInitialHelpers(eventId) {
+                let helpers = Object.keys(this.helpers);
+                if (helpers.length === 0) {
+                    return;
+                }
+                let datasets = helpers.map(userId => {
+                    return {
+                        userId:  parseInt(userId, 10),
+                        credits: {
+                            points: this.points / helpers.length,
+                        },
+                    };
+                });
+                await this.$store().saveParticipations(eventId, datasets);
             },
         },
     };
