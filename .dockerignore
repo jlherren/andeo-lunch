@@ -20,4 +20,4 @@
 !/app/src
 !/app/vue.config.js
 
-!/docker/nginx.conf
+!/docker/andeolunch.conf

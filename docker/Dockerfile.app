@@ -16,4 +16,5 @@ RUN VUE_APP_BUILD_TIMESTAMP=$(date +%s) yarn workspace andeo-lunch-app build
 FROM nginx:1.26
 WORKDIR /srv/andeo-lunch/app
 COPY --from=app-build /build/app/dist /srv/andeo-lunch/app
-COPY docker/nginx.conf /etc/nginx/nginx.conf
+RUN rm /etc/nginx/conf.d/default.conf
+COPY docker/andeolunch.conf /etc/nginx/conf.d/andeolunch.conf
