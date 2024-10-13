@@ -4,13 +4,14 @@ version: '3.6'
 
 services:
     db:
-        image: mariadb:10.6
+        image: mariadb:10.11
         environment:
             MARIADB_RANDOM_ROOT_PASSWORD: 1
             MARIADB_ROOT_HOST: localhost
             MARIADB_DATABASE: andeolunchtest
             MARIADB_USER: andeolunchtest
             MARIADB_PASSWORD: andeolunchtest
+            MARIADB_AUTO_UPGRADE: 'yes'
         ports:
             # Expose DB so Cypress can directly mess with it
             - '52476:3306'
