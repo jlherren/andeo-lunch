@@ -37,8 +37,6 @@ services:
             MARIADB_PASSWORD_FILE: /run/secrets/db-user-password
         secrets:
             - db-user-password
-        ports:
-            - 3000:3000
         depends_on:
             - db
 
