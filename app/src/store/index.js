@@ -559,5 +559,14 @@ export let useStore = defineStore('main', {
                 this.nSnowFlakes = response.data.nFlakes;
             });
         },
+
+        /**
+         * @param {Object<string, any>} options
+         * @return {Promise<string>}
+         */
+        async icsLink(options) {
+            let response = await Backend.post('/ics/link', options);
+            return response.data.url;
+        },
     },
 });

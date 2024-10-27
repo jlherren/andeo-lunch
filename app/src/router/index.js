@@ -138,6 +138,10 @@ const routes = [
         component: () => import('@/views/tools/Tools'),
     },
     {
+        path:      '/tools/ics',
+        component: () => import('@/views/tools/IcsCreator'),
+    },
+    {
         path:      '/tools/device-versions',
         component: () => import('@/views/tools/DeviceVersions'),
     },

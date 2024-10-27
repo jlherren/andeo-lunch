@@ -74,7 +74,7 @@
             </v-list-item-content>
         </v-list-item>
 
-        <v-list-item to="/tools" v-if="hasPermissionPrefix('tools.')">
+        <v-list-item to="/tools">
             <v-list-item-icon>
                 <v-icon>{{ $icons.tools }}</v-icon>
             </v-list-item-icon>

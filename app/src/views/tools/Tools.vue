@@ -5,6 +5,17 @@
         </the-app-bar>
 
         <v-list>
+            <v-list-item to="/tools/ics">
+                <v-list-item-icon>
+                    <v-icon>{{ $icons.calendar }}</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                    <v-list-item-title>
+                        Create ICS link
+                    </v-list-item-title>
+                </v-list-item-content>
+            </v-list-item>
+
             <v-list-item to="/tools/device-versions" v-if="hasPermission('tools.deviceVersions')">
                 <v-list-item-icon>
                     <v-icon>{{ $icons.tools }}</v-icon>
