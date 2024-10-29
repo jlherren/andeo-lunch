@@ -22,7 +22,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="user of users" :key="user.name" @click="edit(user)">
+                        <tr v-for="user of users" :key="user.id" @click="edit(user)">
                             <td>{{ user.username }}</td>
                             <td>{{ user.name }}</td>
                             <td>{{ getFlags(user) }}</td>
