@@ -11,7 +11,9 @@
                         label="Also include events I don't participate in"
             />
             <v-checkbox v-model="alarm" @change="update"
-                        label="Enable reminder for when I cook"
+                        label="Set a reminder when I cook"
+                        hint="Note: Outlook does not support reminders in ICS subscriptions"
+                        persistent-hint
             />
 
             <v-text-field :value="link" readonly ref="link"/>
