@@ -149,7 +149,8 @@ describe('ICS links', () => {
         let response = await request.get(`${link}?format=json`);
         expect(response.body.events).toHaveLength(1);
         expect(response.body.events[0]).toMatchObject({
-            transp: 'OPAQUE',
+            busyStatus: 'BUSY',
+            transp:     'OPAQUE',
         });
     });
 
@@ -159,7 +160,8 @@ describe('ICS links', () => {
         let response = await request.get(`${link}?format=json`);
         expect(response.body.events).toHaveLength(1);
         expect(response.body.events[0]).toMatchObject({
-            transp: 'OPAQUE',
+            busyStatus: 'BUSY',
+            transp:     'OPAQUE',
         });
     });
 
@@ -251,8 +253,9 @@ describe('ICS links', () => {
         let response = await request.get(`${link}?format=json`);
         expect(response.body.events).toHaveLength(1);
         expect(response.body.events[0]).toMatchObject({
-            title:  'Red curry',
-            transp: 'TRANSPARENT',
+            title:      'Red curry',
+            busyStatus: 'FREE',
+            transp:     'TRANSPARENT',
         });
     });
 });

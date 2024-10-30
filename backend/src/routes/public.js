@@ -95,7 +95,7 @@ async function getIcs(ctx) {
             title:          `${titlePrefix}${event.name}`,
             url:            `${frontendUrl}/events/${event.id}`,
             status:         'CONFIRMED',
-            busyStatus:     'BUSY',
+            busyStatus:     isParticipating ? 'BUSY' : 'FREE',
             transp:         isParticipating ? 'OPAQUE' : 'TRANSPARENT',
             created:        event.createdAt.getTime(),
             lastModified:   event.updatedAt.getTime(),
