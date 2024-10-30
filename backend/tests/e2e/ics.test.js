@@ -83,6 +83,7 @@ describe('ICS links', () => {
 
         let anonymousRequest = supertest.agent(andeoLunch.listen());
         let response = await anonymousRequest.get(link);
+        expect(response.status).toBe(200);
         expect(response.headers['content-type']).toBe('text/calendar');
         expect(response.text).toBe(
             'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nCALSCALE:GREGORIAN\r\nPRODID:adamgibbons/ics\r\nMETHOD:PUBLISH\r\nX-PUBLISHED-TTL:PT1H\r\nEND:VCALENDAR\r\n',
@@ -95,6 +96,7 @@ describe('ICS links', () => {
         let link = await createLink();
         let anonymousRequest = supertest.agent(andeoLunch.listen());
         let response = await anonymousRequest.get(`${link}?format=json`);
+        expect(response.status).toBe(200);
         expect(response.body.events).toHaveLength(1);
         let event = response.body.events[0];
         Reflect.deleteProperty(event, 'created');
@@ -121,6 +123,13 @@ describe('ICS links', () => {
     });
 
     // Only the tests above will use an anonymous client, don't bother for the rest of the tests.
+
+    it('Rejects invalid signatures', async () => {
+        let link = await createLink();
+        link = link.replace(/\/(?<params>\w+)-\w+\/(?<filename>\w+\.ics)$/u, '/$1-abcdef/$2');
+        let response = await request.get(`${link}?format=json`);
+        expect(response.status).toBe(400);
+    });
 
     it('Old lunch is not listed', async () => {
         await createEvent('Pizza', makeDate(-70), {type: 'omnivorous'});
