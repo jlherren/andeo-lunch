@@ -49,13 +49,15 @@ function validateConfig(config) {
  */
 export async function getMainConfig() {
     let fullPath = path.resolve(`${__dirname}/../config.json`);
-
     try {
         let fileContent = await fs.readFile(fullPath);
         let config = JSON.parse(fileContent.toString('utf-8'));
         return validateConfig(config);
     } catch (err) {
-        throw new Error(`No configuration file found at ${fullPath}!  Please read README.md first`);
+        if (err.code === 'ENOENT') {
+            throw new Error(`No configuration file found at ${fullPath}!  Please read README.md first`);
+        }
+        throw err;
     }
 }
 
