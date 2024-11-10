@@ -14,11 +14,11 @@
     },
     "devDependencies": {
         "axios": "~1.7.7",
-        "cypress": "~13.15.0",
+        "cypress": "~13.15.2",
         "eslint": "~8.57.1",
         "eslint-plugin-cypress": "~3.5.0",
         "eslint-plugin-import": "~2.31.0",
-        "eslint-plugin-jsdoc": "~50.3.2",
+        "eslint-plugin-jsdoc": "~50.4.3",
         "eslint-plugin-node": "~11.1.0",
         "eslint-plugin-promise": "~7.1.0",
         "eslint-plugin-standard": "~5.0.0",
