@@ -39,8 +39,8 @@ async function editUser(cli, user) {
         } else if (option === '2') {
             let userPassword = await UserPassword.findOne({where: {user: user.id}});
             if (userPassword === null) {
-                console.log('User does not have a password entity');
-                continue;
+                console.log('Note: This user does not have a password entity yet');
+                userPassword = await UserPassword.build({user: user.id});
             }
             let password = await cli.password('Enter new password (leave blank to not change): ');
             if (password !== '') {
