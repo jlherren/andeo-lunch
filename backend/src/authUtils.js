@@ -1,3 +1,4 @@
+import * as AuthUtils from './authUtils.js';
 import {Configuration} from './db/models.js';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
@@ -69,8 +70,11 @@ export async function getSecret() {
                 name: 'secret',
             },
         });
-        if (!configuration) {
-            throw new Error('Authentication secret is missing');
+        if (configuration === null) {
+            configuration = await Configuration.create({
+                name:  'secret',
+                value: await AuthUtils.generateSecret(),
+            });
         }
         cachedSecret = configuration.value;
     }
