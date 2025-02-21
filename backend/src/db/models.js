@@ -623,6 +623,9 @@ export function initModels(sequelize) {
         }, {
             name:   'transaction_dateId_idx',
             fields: ['date', 'id'],
+        }, {
+            name:   'transaction_userCurrencyDateId',
+            fields: ['user', 'currency', 'date', 'id'],
         }],
     });
     Transaction.belongsTo(Event, {foreignKey: {name: 'event'}, as: 'Event', ...cascade});
