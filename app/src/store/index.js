@@ -339,6 +339,7 @@ export let useStore = defineStore('main', {
             if (response.status === 204) {
                 Vue.delete(this._events, eventId);
                 Cache.invalidate('event', eventId);
+                Cache.invalidate('transfers', eventId);
                 Cache.invalidate('events');
                 Cache.invalidate('user');
                 Cache.invalidate('users');
