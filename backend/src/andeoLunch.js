@@ -7,7 +7,7 @@ import BodyParser from 'koa-bodyparser';
 import EventRoutes from './routes/event.js';
 import GroceryRoutes from './routes/grocery.js';
 import Koa from 'koa';
-import Logger from 'koa-logger';
+import KoaLogger from './koa-logger.js';
 import MiscRoutes from './routes/misc.js';
 import PublicRoutes from './routes/public.js';
 import Router from '@koa/router';
@@ -52,7 +52,7 @@ export class AndeoLunch {
         this.app = new Koa();
 
         if (this.options.logging) {
-            this.app.use(Logger());
+            this.app.use(KoaLogger());
         }
 
         if (this.options.config.lag) {

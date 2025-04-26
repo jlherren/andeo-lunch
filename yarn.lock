@@ -3825,6 +3825,7 @@ __metadata:
     "@types/koa-router": "npm:~7.4.8"
     "@types/supertest": "npm:~6.0.3"
     bcryptjs: "npm:~3.0.2"
+    bytes: "npm:~3.1.2"
     chalk: "npm:~4.1.2"
     eslint: "npm:~8.57.1"
     eslint-plugin-jest: "npm:~28.11.0"
@@ -3837,7 +3838,6 @@ __metadata:
     jsonwebtoken: "npm:~9.0.2"
     koa: "npm:~2.16.1"
     koa-bodyparser: "npm:~4.4.1"
-    koa-logger: "npm:~3.2.1"
     mariadb: "npm:~3.0.2"
     ms: "npm:~2.1.3"
     natural-compare: "npm:~1.4.0"
@@ -4585,7 +4585,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bytes@npm:3.1.2, bytes@npm:^3.1.0":
+"bytes@npm:3.1.2, bytes@npm:~3.1.2":
   version: 3.1.2
   resolution: "bytes@npm:3.1.2"
   checksum: 10c0/76d1c43cbd602794ad8ad2ae94095cddeb1de78c5dddaa7005c51af10b0176c69971a6d88e805a90c2b6550d76636e43c40d8427a808b8645ede885de4a0358e
@@ -4758,7 +4758,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:^2.1.0, chalk@npm:^2.4.2":
+"chalk@npm:^2.1.0":
   version: 2.4.2
   resolution: "chalk@npm:2.4.2"
   dependencies:
@@ -8099,13 +8099,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"humanize-number@npm:0.0.2":
-  version: 0.0.2
-  resolution: "humanize-number@npm:0.0.2"
-  checksum: 10c0/cf21bc2049d6fb54a5052d3fd9bea55aa5a933a14263ccd7149e4d68a6f2404ea68c13ca5c07f8b9fc539b8fd57460513527a19c4375f9bb3b3bfdec115260e6
-  languageName: node
-  linkType: hard
-
 "iconv-lite@npm:0.4.24":
   version: 0.4.24
   resolution: "iconv-lite@npm:0.4.24"
@@ -9635,18 +9628,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"koa-logger@npm:~3.2.1":
-  version: 3.2.1
-  resolution: "koa-logger@npm:3.2.1"
-  dependencies:
-    bytes: "npm:^3.1.0"
-    chalk: "npm:^2.4.2"
-    humanize-number: "npm:0.0.2"
-    passthrough-counter: "npm:^1.0.0"
-  checksum: 10c0/7ad37a81ea1e1017caa886c909eeda8d9278ec87c1460818bb83c9326f55be8f35a1909f485b6d9e94b1566e4a955da53cc1bc1428520521d02ba6aaddeb1f7d
-  languageName: node
-  linkType: hard
-
 "koa@npm:~2.16.1":
   version: 2.16.1
   resolution: "koa@npm:2.16.1"
@@ -11159,13 +11140,6 @@ __metadata:
     no-case: "npm:^3.0.4"
     tslib: "npm:^2.0.3"
   checksum: 10c0/05ff7c344809fd272fc5030ae0ee3da8e4e63f36d47a1e0a4855ca59736254192c5a27b5822ed4bae96e54048eec5f6907713cfcfff7cdf7a464eaf7490786d8
-  languageName: node
-  linkType: hard
-
-"passthrough-counter@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "passthrough-counter@npm:1.0.0"
-  checksum: 10c0/fd2675d6029c9a664ce72db3998b017fd83264ffbb2c273fbe2e106ec2156c668b50ce3015bf6ae438711723c49ee00a5740b1c23f43cb438d1fed2ba6032f77
   languageName: node
   linkType: hard
 
