@@ -7,6 +7,8 @@
             </template>
         </the-app-bar>
 
+        <shy-progress v-if="loading"/>
+
         <v-container>
             <v-alert v-if="Math.abs(pointsSum) > 1e-6" type="warning" :icon="$icons.alert">
                 The sum of all points is {{ pointsSum.toFixed(4) }}
@@ -48,17 +50,26 @@
 <script>
     import Balance from '@/components/Balance';
     import DynamicButton from '../components/DynamicButton.vue';
+    import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
 
     export default {
         components: {
             Balance,
             DynamicButton,
+            ShyProgress,
             TheAppBar,
         },
 
-        created() {
-            this.$store().fetchUsers();
+        data() {
+            return {
+                loading: true,
+            };
+        },
+
+        async created() {
+            await this.$store().fetchUsers();
+            this.loading = false;
         },
 
         computed: {
@@ -109,8 +120,13 @@
                 this.$router.push(`/history/${item.id}`);
             },
 
-            refresh() {
-                this.$store().fetchUsers(true);
+            async refresh() {
+                try {
+                    this.loading = true;
+                    await this.$store().fetchUsers(true);
+                } finally {
+                    this.loading = false;
+                }
             },
         },
     };
