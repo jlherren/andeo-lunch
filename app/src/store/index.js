@@ -187,7 +187,10 @@ export let useStore = defineStore('main', {
             });
         },
 
-        fetchUsers() {
+        fetchUsers(force = false) {
+            if (force) {
+                Cache.invalidate('users');
+            }
             return Cache.ifNotFresh('users', 0, 10000, async () => {
                 let response = await Backend.get('/users');
                 let users = {};

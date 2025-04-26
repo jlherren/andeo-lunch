@@ -1,6 +1,11 @@
 <template>
     <v-main>
-        <the-app-bar>Statistics</the-app-bar>
+        <the-app-bar>
+            Statistics
+            <template #buttons>
+                <dynamic-button label="Refresh" :icon="$icons.refresh" @click="refresh"/>
+            </template>
+        </the-app-bar>
 
         <v-container>
             <v-alert v-if="Math.abs(pointsSum) > 1e-6" type="warning" :icon="$icons.alert">
@@ -42,11 +47,13 @@
 
 <script>
     import Balance from '@/components/Balance';
+    import DynamicButton from '../components/DynamicButton.vue';
     import TheAppBar from '@/components/TheAppBar';
 
     export default {
         components: {
             Balance,
+            DynamicButton,
             TheAppBar,
         },
 
@@ -100,6 +107,10 @@
         methods: {
             click(item) {
                 this.$router.push(`/history/${item.id}`);
+            },
+
+            refresh() {
+                this.$store().fetchUsers(true);
             },
         },
     };
