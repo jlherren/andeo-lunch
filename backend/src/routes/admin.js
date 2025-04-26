@@ -42,10 +42,6 @@ async function getUsers(ctx) {
             username:        user.username,
             active:          user.active,
             maxPastDaysEdit: user.maxPastDaysEdit,
-
-            // These will be removed, but the app first needs to be updated.
-            points:          user.points,
-            money:           user.money,
         })),
     };
 }
