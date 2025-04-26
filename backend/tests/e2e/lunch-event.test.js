@@ -431,3 +431,58 @@ describe('Event lists with edit limit', () => {
         expect(response.body.events[0]?.canEdit).toBe(false);
     });
 });
+
+describe('Event suggestions', () => {
+    let today = new Date().toISOString().substring(0, 10);
+
+    it('Rejects when date is missing', async () => {
+        let response = await request.get('/api/events/suggest');
+        expect(response.status).toBe(400);
+    });
+
+    it('Suggests nothing if there is no event', async () => {
+        let response = await request.get('/api/events/suggest?date=2020-01-01');
+        expect(response.status).toBe(200);
+        expect(response.body.suggestion).toBe(null);
+    });
+
+    it('Suggests events', async () => {
+        await Helper.createEvent(request, {
+            name:    'Burgers',
+            type:    'lunch',
+            date:    Helper.daysAgo(180),
+            costs:   {points: 8},
+            factors: {
+                vegetarian: {money: 1},
+            },
+            comment: 'Medium rare please',
+        });
+        await Helper.createEvent(request, {
+            name:    'Red curry',
+            type:    'lunch',
+            date:    Helper.daysAgo(90),
+            costs:   {points: 6},
+            factors: {
+                vegetarian: {money: 0.5},
+            },
+            comment: 'Buy coconut milk',
+        });
+        await Helper.createEvent(request, {
+            name:    'Pizza',
+            type:    'lunch',
+            date:    Helper.daysAgo(30),
+            costs:   {points: 6},
+            factors: {
+                vegetarian: {money: 0.75},
+            },
+            comment: 'With mushrooms!',
+        });
+        let response = await request.get(`/api/events/suggest?date=${today}`);
+        expect(response.status).toBe(200);
+        expect(response.body.suggestion).not.toBe(null);
+        expect(['Burgers', 'Red curry', 'Pizza']).toContain(response.body.suggestion?.name);
+        expect([6, 8]).toContain(response.body.suggestion?.costs?.points);
+        expect([0.5, 0.75, 1]).toContain(response.body.suggestion?.factors?.vegetarian?.money);
+        expect(['Medium rare please', 'Buy coconut milk', 'With mushrooms!']).toContain(response.body.suggestion?.comment);
+    });
+});

@@ -10,8 +10,8 @@
         "serve": "node bin/andeoLunch",
         "serve:watch": "nodemon bin/andeoLunch",
         "test": "NODE_OPTIONS=--experimental-vm-modules jest",
-        "test:mariadb": "TEST_DB=mariadb jest --runInBand",
-        "test:watch": "jest --watchAll",
+        "test:mariadb": "NODE_OPTIONS=--experimental-vm-modules TEST_DB=mariadb jest --runInBand",
+        "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watchAll",
         "lint": "eslint src tests migrations",
         "lint:fix": "eslint --fix src tests migrations"
     },

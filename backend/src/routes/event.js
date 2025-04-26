@@ -5,9 +5,9 @@ import * as RouteUtils from './route-utils.js';
 import * as TransactionRebuilder from '../transactionRebuilder.js';
 import * as Utils from '../utils.js';
 import {Absence, Configuration, Event, Lunch, Participation, Transaction, Transfer, User} from '../db/models.js';
+import {Op, Sequelize} from 'sequelize';
 import HttpErrors from 'http-errors';
 import Joi from 'joi';
-import {Op} from 'sequelize';
 
 const eventNameSchema = Joi.string().normalize().min(1).regex(/\S/u);
 const eventTypeSchema = Joi.string().valid(...Object.values(Constants.EVENT_TYPE_NAMES));
@@ -676,6 +676,73 @@ async function listEvents(ctx) {
  * @param {Application.Context} ctx
  * @return {Promise<void>}
  */
+async function suggestEvent(ctx) {
+    // The date is provided by the app, but not currently used.
+    let date = Utils.parseDate(ctx.query.date);
+    if (date === null) {
+        throw new HttpErrors.BadRequest('Missing date parameter');
+    }
+
+    let {minId, maxId} = await Event.findOne({
+        attributes: [
+            [Sequelize.fn('MIN', Sequelize.col('id')), 'minId'],
+            [Sequelize.fn('MAX', Sequelize.col('id')), 'maxId'],
+        ],
+        raw:        true,
+    });
+
+    if (minId === null) {
+        ctx.body = {suggestion: null};
+        return;
+    }
+
+    let options = {
+        include: ['Lunch'],
+        where:   {
+            type: Constants.EVENT_TYPES.LUNCH,
+        },
+        order:   [['id', 'ASC']],
+    };
+
+    let randomId = Math.floor(Math.random() * (maxId - minId + 1)) + minId;
+    let event = await Event.findOne({
+        ...options,
+        where: {
+            ...options.where,
+            id: {[Op.gte]: randomId},
+        },
+    });
+
+    if (event === null) {
+        // Didn't find any, wrap around the search
+        event = await Event.findOne(options);
+    }
+
+    if (event === null) {
+        ctx.body = {suggestion: null};
+        return;
+    }
+
+    ctx.body = {
+        suggestion: {
+            name:    event.name,
+            costs:   {
+                points: event.Lunch.pointsCost,
+            },
+            factors: {
+                vegetarian: {
+                    money: event.Lunch.vegetarianMoneyFactor,
+                },
+            },
+            comment: event.Lunch.comment,
+        },
+    };
+}
+
+/**
+ * @param {Application.Context} ctx
+ * @return {Promise<void>}
+ */
 async function deleteEvent(ctx) {
     await ctx.sequelize.transaction(async transaction => {
         let event = await loadEventFromParam(ctx.params, transaction);
@@ -892,6 +959,7 @@ async function deleteTransfer(ctx) {
 export default function register(router) {
     router.get('/events', listEvents);
     router.post('/events', createEvent);
+    router.get('/events/suggest', suggestEvent);
 
     router.delete('/events/:event(\\d+)', deleteEvent);
     router.get('/events/:event(\\d+)', getEvent);

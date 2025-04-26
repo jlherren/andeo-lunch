@@ -26,6 +26,7 @@ export const icons = {
     minus:                  mdi.mdiMinus,
     plus:                   mdi.mdiPlus,
     refresh:                mdi.mdiRefresh,
+    suggest:                mdi.mdiMagicStaff,
 
     // Add semantic aliases here (this is encouraged).  Keep this list sorted!
     absence:        mdi.mdiBeach,

@@ -349,6 +349,15 @@ export let useStore = defineStore('main', {
             }
         },
 
+        /**
+         * @param {string} date
+         * @return {Object}
+         */
+        async suggestEvent(date) {
+            let response = await Backend.get(`/events/suggest?date=${date}`);
+            return response.data.suggestion;
+        },
+
         fetchTransactions(userId) {
             return Cache.ifNotFresh('transactions', userId, 10000, async () => {
                 let response = await Backend.get(`/users/${userId}/transactions?with=eventName`);

@@ -4,6 +4,7 @@
             {{ title }}
 
             <template #buttons>
+                <dynamic-button v-if="isNew && type === 'lunch'" label="I feel lucky" :icon="$icons.suggest" @click="suggest"/>
                 <v-btn :disabled="isBusy" color="primary" @click="save">Save</v-btn>
             </template>
         </the-app-bar>
@@ -71,6 +72,7 @@
 <script>
     import * as DateUtils from '@/utils/dateUtils';
     import AlDatePicker from '@/components/AlDatePicker';
+    import DynamicButton from '../../components/DynamicButton.vue';
     import NumberField from '@/components/NumberField';
     import ShyProgress from '../../components/ShyProgress';
     import TheAppBar from '../../components/TheAppBar';
@@ -83,6 +85,7 @@
 
         components: {
             AlDatePicker,
+            DynamicButton,
             NumberField,
             ShyProgress,
             TheAppBar,
@@ -227,6 +230,17 @@
                 } else {
                     Vue.set(this.helpers, user.id, null);
                 }
+            },
+
+            async suggest() {
+                let suggestion = await this.$store().suggestEvent(this.date ?? DateUtils.isoDate(new Date()));
+                if (!suggestion) {
+                    return;
+                }
+                this.name = suggestion.name;
+                this.points = suggestion.costs.points;
+                this.vegetarianFactor = suggestion.factors.vegetarian.money;
+                this.comment = suggestion.comment;
             },
 
             async save() {
