@@ -240,7 +240,7 @@
                 this.name = suggestion.name;
                 this.points = suggestion.costs.points;
                 this.vegetarianFactor = suggestion.factors.vegetarian.money;
-                this.comment = suggestion.comment;
+                this.comment = suggestion.comment ?? '';
             },
 
             async save() {
