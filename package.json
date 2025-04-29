@@ -1,6 +1,6 @@
 {
     "name": "andeo-lunch",
-    "version": "1.10.0",
+    "version": "1.10.1",
     "license": "GPL-3.0-or-later",
     "private": true,
     "type": "module",
