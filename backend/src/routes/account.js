@@ -29,7 +29,7 @@ async function login(ctx) {
     if (user !== null && user.active && user.UserPassword !== null) {
         if (await AuthUtils.comparePassword(requestBody.password, user.UserPassword.password)) {
             let config = ctx.andeoLunch.getConfig();
-            let secret = await AuthUtils.getSecret();
+            let secret = await AuthUtils.getAuthSecret();
             let token = await user.generateToken(secret, {expiresIn: config.tokenExpiry});
             ctx.body = {
                 token,
@@ -52,7 +52,7 @@ async function login(ctx) {
  */
 async function renew(ctx) {
     let config = ctx.andeoLunch.getConfig();
-    let secret = await AuthUtils.getSecret();
+    let secret = await AuthUtils.getAuthSecret();
     let token = await ctx.user.generateToken(secret, {expiresIn: config.tokenExpiry});
     ctx.body = {token};
 }

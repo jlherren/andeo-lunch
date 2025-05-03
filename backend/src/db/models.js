@@ -19,6 +19,13 @@ export class Configuration extends Model {
 }
 
 /**
+ * @property {string} name
+ * @property {string} value
+ */
+export class Secret extends Model {
+}
+
+/**
  * @property {string} username
  * @property {boolean} active Whether this user can log in, and can be added or removed from events
  * @property {boolean} hidden Whether the user should be displayed in a normal user listing
@@ -443,6 +450,14 @@ export function initModels(sequelize) {
     }, {
         sequelize,
         modelName: 'configuration',
+    });
+
+    Secret.init({
+        name:  {type: ch.ascii(32), allowNull: false, unique: 'secret_name_idx'},
+        value: {type: DataTypes.STRING(255), allowNull: false},
+    }, {
+        sequelize,
+        modelName: 'secret',
     });
 
     User.init({

@@ -7,7 +7,7 @@ import {createHmac} from 'node:crypto';
  * @return {Promise<string>} givenSignature
  */
 export async function sign(data) {
-    let secret = await AuthUtils.getSecret();
+    let secret = await AuthUtils.getAuthSecret();
     let hmac = createHmac('sha256', secret);
     hmac.update(data);
     return hmac.digest('hex').substring(0, 8);
@@ -19,7 +19,7 @@ export async function sign(data) {
  * @return {Promise<void>}
  */
 export async function validateSignature(data, givenSignature) {
-    let secret = await AuthUtils.getSecret();
+    let secret = await AuthUtils.getAuthSecret();
 
     let hmac = createHmac('sha256', secret);
     hmac.update(data);

@@ -40,7 +40,7 @@ describe('account login route', () => {
         let response = await request.post('/api/account/login')
             .send({username: 'testuser', password: 'abc123'});
         expect(response.status).toBe(200);
-        let secret = await AuthUtils.getSecret();
+        let secret = await AuthUtils.getAuthSecret();
         expect(response.body.userId).toBe(user.id);
         expect(response.body.username).toBe('testuser');
         expect(response.body.permissions).toEqual([]);
@@ -92,7 +92,7 @@ describe('account login route', () => {
 describe('account renew route', () => {
     it('returns a new token after renewing', async () => {
         // Create a valid token
-        let secret = await AuthUtils.getSecret();
+        let secret = await AuthUtils.getAuthSecret();
         let token = await user.generateToken(secret);
         let response = await request.post('/api/account/renew').set('Authorization', `Bearer ${token}`);
         expect(response.status).toBe(200);
@@ -107,7 +107,7 @@ describe('account renew route', () => {
 
     it('returns an error when renewing an expired token', async () => {
         // Create an expired token
-        let secret = await AuthUtils.getSecret();
+        let secret = await AuthUtils.getAuthSecret();
         let token = await user.generateToken(secret, {expiresIn: '-1 day'});
         let response = await request.post('/api/account/renew').set('Authorization', `Bearer ${token}`);
         expect(response.status).toBe(401);
@@ -115,7 +115,7 @@ describe('account renew route', () => {
 
     it('returns an error when renewing a newly inactive user', async () => {
         // Create a valid token
-        let secret = await AuthUtils.getSecret();
+        let secret = await AuthUtils.getAuthSecret();
         let token = await inactiveUser.generateToken(secret);
         let response = await request.post('/api/account/renew').set('Authorization', `Bearer ${token}`);
         expect(response.status).toBe(401);
@@ -141,7 +141,7 @@ describe('account check route', () => {
 
     it('works when providing an expired token', async () => {
         // Create an expired token
-        let secret = await AuthUtils.getSecret();
+        let secret = await AuthUtils.getAuthSecret();
         let token = await user.generateToken(secret, {expiresIn: '-1 day'});
         let response = await request.get('/api/account/check').set('Authorization', `Bearer ${token}`);
         expect(response.status).toBe(200);
@@ -152,7 +152,7 @@ describe('account check route', () => {
 
     it('works when providing a valid token', async () => {
         // Create a valid token
-        let secret = await AuthUtils.getSecret();
+        let secret = await AuthUtils.getAuthSecret();
         let token = await user.generateToken(secret);
         let response = await request.get('/api/account/check').set('Authorization', `Bearer ${token}`);
         expect(response.status).toBe(200);
@@ -163,7 +163,7 @@ describe('account check route', () => {
 
     it('works when providing a valid token close to expiry', async () => {
         // Create a valid token that expires soon
-        let secret = await AuthUtils.getSecret();
+        let secret = await AuthUtils.getAuthSecret();
         let thirtyDaysAgo = Math.floor(Date.now() / 1000) - 30 * 24 * 60 * 60;
         let token = await user.generateToken(secret, {expiresIn: '31 days'}, {iat: thirtyDaysAgo});
         let response = await request.get('/api/account/check').set('Authorization', `Bearer ${token}`);
@@ -176,7 +176,7 @@ describe('account check route', () => {
     it('returns permissions on valid token', async () => {
         let permission = await Permission.create({name: 'admin'});
         await UserPermission.create({user: user.id, permission: permission.id});
-        let secret = await AuthUtils.getSecret();
+        let secret = await AuthUtils.getAuthSecret();
         let token = await user.generateToken(secret);
         let response = await request.get('/api/account/check').set('Authorization', `Bearer ${token}`);
         expect(response.status).toBe(200);
@@ -201,7 +201,7 @@ describe('Change password', () => {
     let token = null;
 
     beforeEach(async () => {
-        let secret = await AuthUtils.getSecret();
+        let secret = await AuthUtils.getAuthSecret();
         token = await user.generateToken(secret);
     });
 

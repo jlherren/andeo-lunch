@@ -1,5 +1,5 @@
 import * as AuthUtils from './authUtils.js';
-import {Configuration} from './db/models.js';
+import {Secret} from './db/models.js';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 
@@ -62,21 +62,21 @@ let cachedSecret = null;
 /**
  * @return {Promise<string>}
  */
-export async function getSecret() {
+export async function getAuthSecret() {
     if (cachedSecret === null) {
-        /** @type {Configuration|null} */
-        let configuration = await Configuration.findOne({
+        /** @type {Secret|null} */
+        let secret = await Secret.findOne({
             where: {
-                name: 'secret',
+                name: 'authSecret',
             },
         });
-        if (configuration === null) {
-            configuration = await Configuration.create({
-                name:  'secret',
+        if (secret === null) {
+            secret = await Secret.create({
+                name:  'authSecret',
                 value: await AuthUtils.generateSecret(),
             });
         }
-        cachedSecret = configuration.value;
+        cachedSecret = secret.value;
     }
     return cachedSecret;
 }

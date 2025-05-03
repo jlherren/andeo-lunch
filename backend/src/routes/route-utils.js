@@ -49,7 +49,7 @@ export async function populateUser(ctx) {
     if (token === null) {
         return;
     }
-    let secret = await AuthUtils.getSecret();
+    let secret = await AuthUtils.getAuthSecret();
     let userId = null;
     let tokenData = null;
     try {
