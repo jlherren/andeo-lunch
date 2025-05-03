@@ -52,7 +52,7 @@
 
                     <v-card-text>
                         <al-date-picker v-model="start" required label="From"/>
-                        <al-date-picker v-model="end" required label="To"/>
+                        <al-date-picker v-model="end" label="To"/>
 
                         <!-- Button is to make it submittable by pressing enter -->
                         <v-btn type="submit" :disabled="isBusy" v-show="false">Save</v-btn>
@@ -157,7 +157,7 @@
                     await this.$store().saveAbsence({
                         userId: this.$store().ownUserId,
                         start:  this.start,
-                        end:    this.end,
+                        end:    this.end ?? this.start,
                     });
                     this.start = null;
                     this.end = null;
