@@ -446,7 +446,7 @@ export function initModels(sequelize) {
 
     Configuration.init({
         name:  {type: ch.ascii(32), allowNull: false, unique: 'configuration_name_idx'},
-        value: {type: DataTypes.STRING(255), allowNull: false},
+        value: {type: DataTypes.TEXT, allowNull: false},
     }, {
         sequelize,
         modelName: 'configuration',

@@ -18,7 +18,7 @@
                     <tbody>
                         <tr v-for="row of configurations" :key="row.name" @click="edit(row.name, row.value)">
                             <td>{{ row.name }}</td>
-                            <td>{{ row.value }}</td>
+                            <td>{{ row.value.length <= 100 ? row.value : row.value.substring(0, 100) + '\u{2026}' }}</td>
                         </tr>
                     </tbody>
                 </template>
