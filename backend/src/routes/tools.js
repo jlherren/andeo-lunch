@@ -11,7 +11,7 @@ const CONFIGURATION_WHITELIST_REGEX = /^(?:lunch\.(?:defaultFlatRate|participati
 const saveConfigurationSchema = Joi.object({
     configurations: Joi.array().items(Joi.object({
         name:  Joi.string().min(1).required(),
-        value: Joi.string().required(),
+        value: Joi.string().required().min(0),
     })).required(),
 }).required();
 
