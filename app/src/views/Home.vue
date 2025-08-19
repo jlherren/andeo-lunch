@@ -15,7 +15,7 @@
             </v-list-item>
         </v-list>
 
-        <v-container v-if="ownUser.balances.money < -200">
+        <v-container v-if="ownUser.balances.money < -20">
             <v-banner elevation="2" :icon="$icons.alert" icon-color="red">
                 Your money balance is very low!  Please send money to a user with a high balance to even it out.
 
