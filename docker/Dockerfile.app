@@ -1,4 +1,4 @@
-FROM node:22.15-bookworm-slim AS app-build
+FROM node:24.6-bookworm-slim AS app-build
 ARG VUE_APP_BACKEND_URL
 ARG VUE_APP_BRANDING_TITLE
 ARG VUE_APP_BUILD_COMMIT
@@ -13,7 +13,7 @@ COPY app app
 # rebuilds when only the timestamp has changed.
 RUN VUE_APP_BUILD_TIMESTAMP=$(date +%s) yarn workspace andeo-lunch-app build
 
-FROM nginx:1.26
+FROM nginx:1.28
 WORKDIR /srv/andeo-lunch/app
 COPY --from=app-build /build/app/dist /srv/andeo-lunch/app
 RUN rm /etc/nginx/conf.d/default.conf
