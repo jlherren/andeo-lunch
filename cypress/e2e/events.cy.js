@@ -179,4 +179,25 @@ describe('Create events', () => {
             .find('.v-chip')
             .should('not.exist');
     });
+
+    it('Auto-fix vegetarian factor', () => {
+        cy.contains('a', 'Add new lunch')
+            .first()
+            .click();
+        cy.followLabel('Name')
+            .type('Stew');
+        cy.followLabel('Points')
+            .type('6');
+        cy.followLabel('Vegetarian money factor')
+            .type('{selectall}0.8');
+        cy.contains('button', 'Save')
+            .click();
+
+        cy.contains('.v-list-item', 'Stew')
+            .click();
+        cy.contains('.v-btn', 'Edit')
+            .click();
+        cy.followLabel('Vegetarian money factor')
+            .should('have.value', 80);
+    });
 });

@@ -7,6 +7,8 @@
         :label="label"
         :value="value"
         @input="input"
+        @blur="$emit('blur', $event)"
+        @change="$emit('change', $event)"
         class="no-spinner"
         :disabled="isDisabled"
         :readonly="readonly"

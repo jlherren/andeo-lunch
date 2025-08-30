@@ -23,7 +23,9 @@
                     </v-col>
                     <v-col cols="6">
                         <number-field v-model="vegetarianFactor" label="Vegetarian money factor" suffix="%"
-                                      :min="0" :step="5" v-if="type === 'lunch'"/>
+                                      :min="0" :step="5" v-if="type === 'lunch'"
+                                      @change="fixVegetarianFactor"
+                        />
                     </v-col>
                 </v-row>
 
@@ -220,6 +222,12 @@
         },
 
         methods: {
+            fixVegetarianFactor() {
+                if (this.vegetarianFactor > 0 && this.vegetarianFactor < 1) {
+                    this.vegetarianFactor *= 100;
+                }
+            },
+
             isHelper(user) {
                 return user.id in this.helpers;
             },
@@ -244,6 +252,9 @@
             },
 
             async save() {
+                // The change event doesn't happen soon enough to fix this.
+                this.fixVegetarianFactor();
+
                 // For reasons I don't understand using <v-form v-model="valid"> will not work correctly.  The form
                 // will randomly be considered invalid when it's not.
                 if (!this.$refs.form.validate()) {
