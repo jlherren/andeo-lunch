@@ -15,10 +15,10 @@
         "ui": "vue ui"
     },
     "dependencies": {
-        "@babel/core": "~7.28.3",
-        "@fontsource/roboto": "~5.2.6",
+        "@babel/core": "~7.28.4",
+        "@fontsource/roboto": "~5.2.8",
         "@mdi/js": "~7.4.47",
-        "axios": "~1.11.0",
+        "axios": "~1.12.2",
         "core-js": "~3.45.1",
         "pinia": "~2.2.8",
         "randombytes": "~2.1.0",
@@ -29,7 +29,7 @@
         "webpack": "~5.101.3"
     },
     "devDependencies": {
-        "@babel/eslint-parser": "~7.28.0",
+        "@babel/eslint-parser": "~7.28.4",
         "@vue/cli-plugin-babel": "~5.0.9",
         "@vue/cli-plugin-eslint": "~5.0.9",
         "@vue/cli-plugin-pwa": "~5.0.9",
