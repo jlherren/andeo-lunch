@@ -17,7 +17,7 @@
 
         <v-container v-if="ownUser.balances.money < -20">
             <v-banner elevation="2" :icon="$icons.alert" icon-color="red">
-                Your money balance is very low!  Please send money to a user with a high balance to even it out.
+                Your money balance is low!  Please send money to a user with a high balance to even it out.
 
                 <template #actions>
                     <v-btn to="/transfers/new/pay-up" color="primary" text>
