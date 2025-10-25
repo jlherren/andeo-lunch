@@ -1,0 +1,25 @@
+/**
+ * @param {Sequelize} sequelize
+ * @return {Promise<void>}
+ */
+export async function up({context: sequelize}) {
+    let queryInterface = sequelize.getQueryInterface();
+    let now = new Date();
+    await queryInterface.insert(null, 'configuration', {
+        name:      'payUp.warningThreshold',
+        value:     '-20',
+        createdAt: now,
+        updatedAt: now,
+    });
+}
+
+/**
+ * @param {Sequelize} sequelize
+ * @return {Promise<void>}
+ */
+export async function down({context: sequelize}) {
+    let queryInterface = sequelize.getQueryInterface();
+    await queryInterface.bulkDelete('configuration', {
+        name: 'payUp.warningThreshold',
+    });
+}
