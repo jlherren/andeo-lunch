@@ -54,7 +54,7 @@ function isFresh(group, key, maxAge) {
  * @param {string|number} key
  * @param {number} maxAge
  * @param {function(): T} func
- * @return {Promise<void>|void}
+ * @return {Promise<void>}
  */
 async function ifNotFresh(group, key, maxAge, func) {
     if (isFresh(group, key, maxAge)) {

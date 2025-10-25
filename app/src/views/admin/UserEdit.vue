@@ -79,8 +79,6 @@
     import NumberField from '@/components/NumberField.vue';
     import ShyProgress from '@/components/ShyProgress.vue';
     import TheAppBar from '@/components/TheAppBar.vue';
-    import {mapState} from 'pinia';
-    import {useStore} from '@/store';
 
     export default {
         name: 'UserEdit',
@@ -119,7 +117,7 @@
             async load() {
                 this.isBusy = true;
                 let users = await this.$store().adminFetchUsers();
-                await this.$store().fetchDecommissionContraUser();
+                await this.$store().fetchConfiguration('userAdmin.decommissionContraUser');
                 let user = users.find(u => u.id === this.userId);
                 this.user = user;
                 this.name = user.name;
@@ -211,9 +209,9 @@
         },
 
         computed: {
-            ...mapState(useStore, [
-                'decommissionContraUser',
-            ]),
+            decommissionContraUser() {
+                return this.$store().configuration('userAdmin.decommissionContraUser');
+            },
 
             decommissionContraUserName() {
                 return this.$store().user(this.decommissionContraUser);

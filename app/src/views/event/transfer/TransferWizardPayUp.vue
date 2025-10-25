@@ -72,9 +72,9 @@
             // noinspection ES6MissingAwait
             this.$store().fetchUsers();
 
-            await this.$store().fetchPayUpDefaultRecipient();
+            await this.$store().fetchConfiguration('payUp.defaultRecipient');
             if (this.recipient === null) {
-                let defaultRecipient = this.$store().payUpDefaultRecipient;
+                let defaultRecipient = this.$store().configuration('payUp.defaultRecipient');
                 // Do not set if it is null/undefined, otherwise it triggers validation
                 if (defaultRecipient && defaultRecipient !== this.$store().ownUserId) {
                     this.recipient = defaultRecipient;

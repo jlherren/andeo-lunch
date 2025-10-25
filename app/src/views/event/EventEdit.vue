@@ -127,18 +127,18 @@
                 // noinspection ES6MissingAwait
                 this.$store().fetchUsers();
                 await Promise.all([
-                    this.$store().fetchDefaultFlatRate(),
-                    this.$store().fetchDefaultParticipationFee(),
+                    this.$store().fetchConfiguration('lunch.defaultFlatRate'),
+                    this.$store().fetchConfiguration('lunch.defaultParticipationFee'),
                 ]);
-                let defaultFlatRate = this.$store().defaultFlatRate;
-                let defaultParticipationFee = this.$store().defaultParticipationFee;
+                let defaultFlatRate = this.$store().configuration('lunch.defaultFlatRate');
+                let defaultParticipationFee = this.$store().configuration('lunch.defaultParticipationFee');
 
                 let query = this.$route.query;
                 this.type = query?.type ?? 'lunch';
                 this.name = query?.name ?? '';
                 this.date = query?.date ?? null;
                 this.comment = query?.comment ?? '';
-                this.useParticipationFlatRate = defaultFlatRate !== null;
+                this.useParticipationFlatRate = defaultFlatRate != null;
                 this.participationFlatRate = defaultFlatRate;
                 this.participationFee = this.type === 'lunch' ? defaultParticipationFee : 0.0;
                 this.noHelpersYet = true;
@@ -162,8 +162,8 @@
             this.useParticipationFlatRate = event.participationFlatRate !== null;
             this.participationFlatRate = event.participationFlatRate;
             if (this.participationFlatRate === null) {
-                await this.$store().fetchDefaultFlatRate();
-                this.participationFlatRate = this.$store().defaultFlatRate;
+                await this.$store().fetchConfiguration('lunch.defaultFlatRate');
+                this.participationFlatRate = this.$store().configuration('lunch.defaultFlatRate');
             }
             this.participationFee = event.participationFee;
 
