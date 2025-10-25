@@ -66,6 +66,25 @@ async function getDecommissionContraUser(ctx) {
  * @param {Application.Context} ctx
  * @return {Promise<void>}
  */
+async function getConfiguration(ctx) {
+    if (!ctx.query.key) {
+        throw new HttpErrors.BadRequest('Query parameter "key" is required');
+    }
+    let config = await Configuration.findOne({
+        where: {
+            name: ctx.query.key,
+        },
+    });
+    ctx.body = {
+        key:   ctx.query.key,
+        value: config ? config.value : null,
+    };
+}
+
+/**
+ * @param {Application.Context} ctx
+ * @return {Promise<void>}
+ */
 async function migrate(ctx) {
     if (!process.env.ANDEO_LUNCH_CYPRESS) {
         throw new HttpErrors.Gone('This endpoint only exists in testing environments');
@@ -127,6 +146,7 @@ export default function register(router) {
     router.get('/options/default-flat-rate', getDefaultFlatRate);
     router.get('/options/default-participation-fee', getDefaultParticipationFee);
     router.get('/options/decommission-contra-user', getDecommissionContraUser);
+    router.get('/configuration', getConfiguration);
     router.get('/snowfall', getSnowfall);
     router.get('/migrate', migrate);
     router.post('/ics/link', createIcsLink);
