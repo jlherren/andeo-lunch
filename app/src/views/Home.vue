@@ -15,7 +15,7 @@
             </v-list-item>
         </v-list>
 
-        <v-container v-if="ownUser.balances.money < -20">
+        <v-container v-if="moneyThreshold != null && ownUser.balances.money < moneyThreshold">
             <v-banner elevation="2" :icon="$icons.alert" icon-color="red">
                 Your money balance is low!  Please send money to a user with a high balance to even it out.
 
@@ -77,6 +77,7 @@
         },
 
         created() {
+            this.$store().fetchConfiguration('payUp.warningThreshold');
             this.reload();
         },
 
@@ -111,6 +112,10 @@
                 });
 
                 return events;
+            },
+
+            moneyThreshold() {
+                return this.$store().configuration('payUp.warningThreshold');
             },
         },
 
