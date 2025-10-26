@@ -11,7 +11,7 @@
         <shy-progress v-if="isBusy"/>
 
         <v-form ref="form" :disabled="isBusy" @submit.prevent="save()">
-            <v-simple-table class="grid-edit-table">
+            <v-simple-table class="grid-edit-table" dense>
                 <template #default>
                     <thead>
                         <tr>
@@ -32,17 +32,22 @@
                             </td>
                             <td>
                                 <v-text-field type="number" v-model="row.pointsCredit" min="0" class="no-spinner" :disabled="isBusy" dense hide-details
-                                              @input="modified(row)" :rules="rules"/>
+                                              @input="modified(row)" :rules="rules"
+                                              :class="{'default-value': row.pointsCredit === 0 || row.pointsCredit === '0'}"
+                                />
                             </td>
                             <td>
                                 <v-text-field type="number" v-model="row.moneyCredit" min="0" class="no-spinner" :disabled="isBusy" dense hide-details
-                                              @input="modified(row)" :rules="rules"/>
+                                              @input="modified(row)" :rules="rules"
+                                              :class="{'default-value': row.moneyCredit === 0 || row.moneyCredit === '0'}"
+                                />
                             </td>
                             <td>
                                 <v-text-field type="number" v-model="row.moneyFactor" min="0" step="5" class="no-spinner"
                                               dense hide-details
                                               :disabled="isBusy || event.type !== 'special' || row.type === 'opt-out'"
                                               @input="modified(row)" :rules="rules"
+                                              :class="{'default-value': row.moneyFactor === '100' || row.moneyFactor === 100}"
                                 />
                             </td>
                         </tr>
@@ -195,6 +200,16 @@
 </style>
 
 <style lang="scss">
+    // Somehow it doesn't work to have this scoped.
+
+    .grid-edit-table td {
+        border-bottom: none !important;
+    }
+
+    .grid-edit-table .default-value input {
+        color: #a0a0a0 !important;
+    }
+
     .grid-edit-table.theme--light .error--text input {
         background: #ffc0c0;
     }
