@@ -101,6 +101,7 @@ describe('configurations', () => {
             {name: 'lunch.defaultFlatRate', value: '0.75'},
             {name: 'lunch.defaultParticipationFee', value: '0'},
             {name: 'lunch.participationFeeRecipient', value: ''},
+            {name: 'payUp.warningThreshold', value: '-20'},
         ]);
     });
 
@@ -117,6 +118,7 @@ describe('configurations', () => {
             {name: 'lunch.defaultFlatRate', value: '0.65'},
             {name: 'lunch.defaultParticipationFee', value: '0'},
             {name: 'lunch.participationFeeRecipient', value: ''},
+            {name: 'payUp.warningThreshold', value: '-20'},
         ]);
     });
 
@@ -125,7 +127,18 @@ describe('configurations', () => {
 
         let response = await request.post('/api/tools/configurations')
             .send({configurations: [{name: 'fake', value: 'fake'}]});
-        expect(response.status).toBe(400);
+        // It does not complain that the request was invalid.
+        expect(response.status).toBe(204);
+
+        // But the new value was not saved
+        response = await request.get('/api/tools/configurations');
+        expect(response.status).toBe(200);
+        expect(response.body.configurations).toEqual([
+            {name: 'lunch.defaultFlatRate', value: '0.75'},
+            {name: 'lunch.defaultParticipationFee', value: '0'},
+            {name: 'lunch.participationFeeRecipient', value: ''},
+            {name: 'payUp.warningThreshold', value: '-20'},
+        ]);
     });
 
     it('does not save without permission', async () => {

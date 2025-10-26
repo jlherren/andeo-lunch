@@ -1,12 +1,9 @@
 import * as RouteUtils from './route-utils.js';
 import {Configuration, DeviceVersion} from '../db/models.js';
 import {Op, Sequelize} from 'sequelize';
-import HttpErrors from 'http-errors';
 import Joi from 'joi';
 import ms from 'ms';
 import naturalCompare from 'natural-compare';
-
-const CONFIGURATION_WHITELIST_REGEX = /^(?:lunch\.(?:defaultFlatRate|participationFeeRecipient|defaultParticipationFee)|payUp\.defaultRecipient|paymentInfo\.[0-9]+)$/u;
 
 const saveConfigurationSchema = Joi.object({
     configurations: Joi.array().items(Joi.object({
@@ -54,12 +51,11 @@ async function getConfigurations(ctx) {
     RouteUtils.requirePermission(ctx, 'tools.configurations');
 
     // We could use Op.regexp, but Sequelize does not allow it for SQLite.
-    let all = await Configuration.findAll({
+    let configurations = await Configuration.findAll({
         raw:        true,
         attributes: ['name', 'value'],
         order:      [['name', 'ASC']],
     });
-    let configurations = all.filter(configuration => configuration.name.match(CONFIGURATION_WHITELIST_REGEX));
 
     ctx.body = {
         configurations,
@@ -77,9 +73,6 @@ async function saveConfigurations(ctx) {
 
     await ctx.sequelize.transaction(async transaction => {
         for (let configuration of body.configurations) {
-            if (!configuration.name.match(CONFIGURATION_WHITELIST_REGEX)) {
-                throw new HttpErrors.BadRequest(`Configuration not whitelisted: ${configuration.name}`);
-            }
             await Configuration.update({
                 value: configuration.value,
             }, {
