@@ -60,11 +60,31 @@ describe('user admin', () => {
         expect(myself.hiddenFromEvents).toBe(true);
     });
 
-    it('creates user', async () => {
+    it('creates user correctly', async () => {
         let response = await client.post('/api/admin/users')
             .send({username: 'joe', name: 'John', password: 'abc123'});
         expect(response.status).toBe(200);
         expect(typeof response.body.userId).toBe('number');
+        let userId = response.body.userId;
+
+        response = await client.get('/api/admin/users');
+        let newUser = response.body.users.find(u => u.username === 'joe');
+        expect(newUser.id).toBe(userId);
+        expect(newUser.username).toBe('joe');
+        expect(newUser.maxPastDaysEdit).toBe(60);
+        expect(newUser.active).toBe(true);
+        expect(newUser.hidden).toBe(false);
+        expect(newUser.name).toBe('John');
+        expect(newUser.balances?.points).toBe(0);
+        expect(newUser.balances?.money).toBe(0);
+        expect(newUser.pointExempted).toBe(false);
+        expect(newUser.hiddenFromEvents).toBe(false);
+    });
+
+    it('created user can log in', async () => {
+        let response = await client.post('/api/admin/users')
+            .send({username: 'joe', name: 'John', password: 'abc123'});
+        expect(response.status).toBe(200);
         let userId = response.body.userId;
         response = await client.post('/api/account/login')
             .send({username: 'joe', password: 'abc123'});

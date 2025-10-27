@@ -32,7 +32,7 @@ export class Secret extends Model {
  * @property {string} name
  * @property {number} points
  * @property {number} money
- * @property {number} maxPastDaysEdit
+ * @property {number|null} maxPastDaysEdit
  * @property {number} pointExempted
  * @property {number} hiddenFromEvents
  * @property {Object} settings

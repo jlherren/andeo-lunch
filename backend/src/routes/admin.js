@@ -1,6 +1,6 @@
 import * as AuthUtils from '../authUtils.js';
 import * as RouteUtils from './route-utils.js';
-import {User, UserPassword} from '../db/models.js';
+import {Configuration, User, UserPassword} from '../db/models.js';
 import HttpErrors from 'http-errors';
 import Joi from 'joi';
 
@@ -124,10 +124,14 @@ async function createUser(ctx) {
 
     let data = RouteUtils.validateBody(ctx.request, createUserSchema);
 
+    let configuration = await Configuration.findOne({where: {name: 'userAdmin.defaultEditLimit'}});
+    let editLimit = configuration ? parseInt(configuration.value, 10) : null;
+
     let user = await User.create({
-        username: data.username,
-        name:     data.name,
-        active:   true,
+        username:        data.username,
+        name:            data.name,
+        active:          true,
+        maxPastDaysEdit: editLimit,
     });
     await UserPassword.create({
         user:     user.id,

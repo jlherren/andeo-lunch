@@ -102,6 +102,7 @@ describe('configurations', () => {
             {name: 'lunch.defaultParticipationFee', value: '0'},
             {name: 'lunch.participationFeeRecipient', value: ''},
             {name: 'payUp.warningThreshold', value: '-20'},
+            {name: 'userAdmin.defaultEditLimit', value: '60'},
         ]);
     });
 
@@ -119,6 +120,7 @@ describe('configurations', () => {
             {name: 'lunch.defaultParticipationFee', value: '0'},
             {name: 'lunch.participationFeeRecipient', value: ''},
             {name: 'payUp.warningThreshold', value: '-20'},
+            {name: 'userAdmin.defaultEditLimit', value: '60'},
         ]);
     });
 
@@ -138,6 +140,7 @@ describe('configurations', () => {
             {name: 'lunch.defaultParticipationFee', value: '0'},
             {name: 'lunch.participationFeeRecipient', value: ''},
             {name: 'payUp.warningThreshold', value: '-20'},
+            {name: 'userAdmin.defaultEditLimit', value: '60'},
         ]);
     });
 
