@@ -16,17 +16,17 @@
     },
     "dependencies": {
         "@babel/core": "~7.28.5",
-        "@fontsource/roboto": "~5.2.8",
+        "@fontsource/roboto": "~5.2.9",
         "@mdi/js": "~7.4.47",
-        "axios": "~1.13.0",
-        "core-js": "~3.46.0",
+        "axios": "~1.13.2",
+        "core-js": "~3.47.0",
         "pinia": "~2.2.8",
         "randombytes": "~2.1.0",
         "register-service-worker": "~1.7.2",
         "vue": "~2.7.16",
         "vue-router": "~3.6.5",
         "vuetify": "~2.7.2",
-        "webpack": "~5.102.1"
+        "webpack": "~5.104.1"
     },
     "devDependencies": {
         "@babel/eslint-parser": "~7.28.5",

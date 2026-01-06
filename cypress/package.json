@@ -13,8 +13,8 @@
         "cypress:run": "cypress run"
     },
     "devDependencies": {
-        "axios": "~1.13.0",
-        "cypress": "~15.5.0",
+        "axios": "~1.13.2",
+        "cypress": "~15.8.2",
         "eslint": "~8.57.1",
         "eslint-plugin-cypress": "~3.5.0",
         "eslint-plugin-import": "~2.32.0",

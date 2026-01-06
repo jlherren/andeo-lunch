@@ -1,4 +1,4 @@
-FROM node:24.8-bookworm-slim AS backend-build
+FROM node:24.12-bookworm-slim AS backend-build
 WORKDIR /build
 # Copy only what is necessary for installing Yarn packages, to improve caching.
 COPY package.json yarn.lock .yarnrc.yml ./
@@ -10,7 +10,7 @@ RUN test ! -e backend/node_modules
 COPY backend backend
 RUN rm backend/package.json
 
-FROM node:24.8-bookworm-slim
+FROM node:24.12-bookworm-slim
 WORKDIR /srv/andeo-lunch/backend
 COPY --from=backend-build /build/node_modules /srv/andeo-lunch/node_modules
 COPY --from=backend-build /build/backend /srv/andeo-lunch/backend
