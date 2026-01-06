@@ -110,6 +110,18 @@ describe('user admin', () => {
         expect(newUser.hiddenFromEvents).toBe(false);
     });
 
+    it('creates inactive and hidden user', async () => {
+        let response = await client.post('/api/admin/users')
+            .send({username: 'joe', name: 'John', password: 'abc123', active: false, hidden: true});
+        expect(response.status).toBe(200);
+        expect(typeof response.body.userId).toBe('number');
+
+        response = await client.get('/api/admin/users');
+        let newUser = response.body.users.find(u => u.username === 'joe');
+        expect(newUser.active).toBe(false);
+        expect(newUser.hidden).toBe(true);
+    });
+
     it('created user can log in', async () => {
         let response = await client.post('/api/admin/users')
             .send({username: 'joe', name: 'John', password: 'abc123'});

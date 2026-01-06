@@ -17,6 +17,8 @@ const createUserSchema = Joi.object({
     username: Joi.string().required().min(1),
     name:     Joi.string().required().min(1),
     password: Joi.string().required().min(1),
+    active:   Joi.boolean().default(true),
+    hidden:   Joi.boolean().default(false),
 });
 
 const resetPasswordSchema = Joi.object({
@@ -130,7 +132,8 @@ async function createUser(ctx) {
     let user = await User.create({
         username:        data.username,
         name:            data.name,
-        active:          true,
+        active:          data.active,
+        hidden:          data.hidden,
         maxPastDaysEdit: editLimit,
     });
     await UserPassword.create({
