@@ -5,7 +5,7 @@ import HttpErrors from 'http-errors';
 import Joi from 'joi';
 
 const editUserSchema = Joi.object({
-    name:             Joi.string().required().min(1),
+    name:             Joi.string().min(1),
     active:           Joi.boolean(),
     hidden:           Joi.boolean(),
     pointExempted:    Joi.boolean(),

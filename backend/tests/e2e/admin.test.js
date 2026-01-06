@@ -60,6 +60,35 @@ describe('user admin', () => {
         expect(myself.hiddenFromEvents).toBe(true);
     });
 
+    it('modifies user partially', async () => {
+        let response = await client.post(`/api/admin/users/${user.id}`)
+            .send({
+                hidden: false,
+            });
+        expect(response.status).toBe(204);
+        response = await client.get('/api/admin/users');
+        expect(response.status).toBe(200);
+        let myself = response.body.users.find(u => u.username === 'testuser');
+        expect(myself.active).toBe(true);
+        expect(myself.hidden).toBe(false);
+        expect(myself.name).toBe('User testuser');
+        expect(myself.maxPastDaysEdit).toBe(null);
+        expect(myself.pointExempted).toBe(false);
+        expect(myself.hiddenFromEvents).toBe(false);
+    });
+
+    it('does not modify user with empty name', async () => {
+        let response = await client.post(`/api/admin/users/${user.id}`)
+            .send({
+                name: '',
+            });
+        expect(response.status).toBe(400);
+        response = await client.get('/api/admin/users');
+        expect(response.status).toBe(200);
+        let myself = response.body.users.find(u => u.username === 'testuser');
+        expect(myself.name).toBe('User testuser');
+    });
+
     it('creates user correctly', async () => {
         let response = await client.post('/api/admin/users')
             .send({username: 'joe', name: 'John', password: 'abc123'});
