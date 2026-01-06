@@ -59,7 +59,7 @@
                 </v-row>
 
                 <v-text-field v-model="participationFee" label="Participation fee"
-                              hint="Each participant will this fixed amount of money"
+                              hint="Each participant will be charged this fixed amount of money"
                               :min="0" v-if="type !== 'label'"
                               :append-icon="$icons.money"
                 />
