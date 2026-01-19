@@ -4,7 +4,7 @@
             <img src="/img/logo-large.svg" alt="Andeo Lunch logo">
 
             <v-form v-model="formValid" :disabled="isBusy" @submit.prevent="login">
-                <v-text-field v-model="username" type="text" autocomplete="username"  required
+                <v-text-field v-model="username" type="text" autocomplete="username" required
                               :rules="requiredRule" autofocus label="Username"
                               :append-icon="$icons.account"
                 />
