@@ -46,10 +46,6 @@ const routes = [
         component: () => import(/* webpackChunkName: "wizards" */ '@/views/event/transfer/TransferWizardExpense.vue'),
     },
     {
-        path:      '/transfers/new/fine',
-        component: () => import(/* webpackChunkName: "wizards" */ '@/views/event/transfer/TransferWizardFine.vue'),
-    },
-    {
         path:      '/transfers/new/custom',
         component: () => import(/* webpackChunkName: "wizards" */ '@/views/event/transfer/TransferWizardCustom.vue'),
     },

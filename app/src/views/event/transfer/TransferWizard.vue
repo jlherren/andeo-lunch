@@ -45,20 +45,6 @@
                 </v-list-item-content>
             </v-list-item>
 
-            <v-list-item to="/transfers/new/fine" disabled>
-                <v-list-item-icon>
-                    <v-icon>{{ $icons.transferFine }}</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                    <v-list-item-title>Send points to everyone</v-list-item-title>
-                    <v-list-item-subtitle>Pay a fine</v-list-item-subtitle>
-                    <v-list-item-subtitle>
-                        <v-icon small>{{ $icons.alert }}</v-icon>
-                        Not implemented
-                    </v-list-item-subtitle>
-                </v-list-item-content>
-            </v-list-item>
-
             <v-list-item to="/transfers/new/custom">
                 <v-list-item-icon>
                     <v-icon>{{ $icons.transferCustom }}</v-icon>
