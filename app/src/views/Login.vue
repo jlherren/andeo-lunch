@@ -4,11 +4,11 @@
             <img src="/img/logo-large.svg" alt="Andeo Lunch logo">
 
             <v-form v-model="formValid" :disabled="isBusy" @submit.prevent="login">
-                <v-text-field v-model="username" type="text" required
+                <v-text-field v-model="username" type="text" autocomplete="username" required
                               :rules="requiredRule" autofocus label="Username"
                               :append-icon="$icons.account"
                 />
-                <v-text-field v-model="password" type="password" required
+                <v-text-field v-model="password" type="password" autocomplete="current-password" required
                               :rules="requiredRule" label="Password"
                               :append-icon="$icons.password"
                 />
