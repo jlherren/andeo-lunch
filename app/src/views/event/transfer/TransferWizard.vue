@@ -10,8 +10,18 @@
                     <v-icon>{{ $icons.transferIn }}</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
-                    <v-list-item-title>Log an expense</v-list-item-title>
-                    <v-list-item-subtitle>Reimbursement after paying for someone else</v-list-item-subtitle>
+                    <v-list-item-title>Simple reimbursement</v-list-item-title>
+                    <v-list-item-subtitle>Get reimbursed for paying for another person</v-list-item-subtitle>
+                </v-list-item-content>
+            </v-list-item>
+
+            <v-list-item @click="lunchReimbursementAlertOpen = true">
+                <v-list-item-icon>
+                    <v-icon>{{ $icons.transferIn }}</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                    <v-list-item-title>Reimbursement for lunch ingredients</v-list-item-title>
+                    <v-list-item-subtitle>Get reimbursed for buying additional lunch ingredients</v-list-item-subtitle>
                 </v-list-item-content>
             </v-list-item>
 
@@ -55,6 +65,23 @@
                 </v-list-item-content>
             </v-list-item>
         </v-list>
+
+        <v-dialog v-model="lunchReimbursementAlertOpen" max-width="600">
+            <v-card>
+                <v-card-title>
+                    Wrong place
+                </v-card-title>
+                <v-card-text>
+                    Reimbursements for lunch expenses should be added to the lunch itself, not here.
+                    Go to the lunch you had an expense for, tap on your own participation and add the amount
+                    you spent in the "Money credited" field.
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer/>
+                    <v-btn text @click="lunchReimbursementAlertOpen = false">Oh, okay!</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-main>
 </template>
 
@@ -66,6 +93,12 @@
 
         components: {
             TheAppBar,
+        },
+
+        data() {
+            return {
+                lunchReimbursementAlertOpen: false,
+            };
         },
     };
 </script>

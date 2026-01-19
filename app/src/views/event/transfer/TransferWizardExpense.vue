@@ -12,7 +12,7 @@
 
         <v-container>
             <p class="text-body-1 mt-4">
-                Reimburse an expense paid for someone else.
+                Get reimbursed for paying for another person.
             </p>
 
             <v-form ref="form" :disabled="isBusy" @submit.prevent="save()">
@@ -28,14 +28,6 @@
                 <v-text-field v-model="reason" label="Reason"
                               :rules="reasonRules"
                               :append-icon="$icons.label"/>
-
-                <v-checkbox label="This expense is related to an event" disabled>
-                    <template #label>
-                        Expense is related to an event
-                        <v-icon small>{{ $icons.alert }}</v-icon>
-                        Not implemented
-                    </template>
-                </v-checkbox>
 
                 <v-select label="Related event" disabled
                           :append-icon="$icons.lunch"

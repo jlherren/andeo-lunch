@@ -13,7 +13,7 @@ describe('Transfers', () => {
             .click();
         cy.get('.v-btn--fab')
             .click();
-        cy.contains('Log an expense')
+        cy.contains('Simple reimbursement')
             .click();
         cy.contains('[role=button]', 'At the expense of')
             .click();
