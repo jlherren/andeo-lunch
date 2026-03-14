@@ -6,4 +6,4 @@ cd $(dirname "$0")
 
 . ./.env
 
-$DOCKER_COMPOSE down --volume
+$DOCKER_COMPOSE down --volumes
