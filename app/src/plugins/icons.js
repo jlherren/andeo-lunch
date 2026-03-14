@@ -37,6 +37,7 @@ export const icons = {
     edit:           mdi.mdiPencil,
     groceryList:    mdi.mdiCart,
     help:           mdi.mdiHelpCircle,
+    hidden:         mdi.mdiEyeOff,
     log:            mdi.mdiNotebook,
     lunch:          mdi.mdiFoodVariant,
     menu:           mdi.mdiSilverware,

@@ -4,7 +4,8 @@
             Users
 
             <template #buttons>
-                <dynamic-button icon="$icons.plus" label="Add" @click="createUser" :disabled="isBusy"/>
+                <dynamic-button :icon="$icons.hidden" :label="showAll ? 'Hide hidden' : 'Show hidden'" @click="toggleShowAll"/>
+                <dynamic-button :icon="$icons.plus" label="Add" @click="createUser" :disabled="isBusy"/>
             </template>
         </the-app-bar>
 
@@ -22,7 +23,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="user of users" :key="user.id" @click="edit(user)">
+                        <tr v-for="user of filteredUsers" :key="user.id" @click="edit(user)">
                             <td>{{ user.username }}</td>
                             <td>{{ user.name }}</td>
                             <td>{{ getFlags(user) }}</td>
@@ -51,8 +52,9 @@
 
         data() {
             return {
-                users:  null,
-                isBusy: true,
+                users:   null,
+                isBusy:  true,
+                showAll: false,
             };
         },
 
@@ -61,9 +63,22 @@
             this.isBusy = false;
         },
 
+        computed: {
+            filteredUsers() {
+                if (this.showAll) {
+                    return this.users;
+                }
+                return this.users.filter(user => !user.hidden);
+            },
+        },
+
         methods: {
             createUser() {
                 this.$router.push('/admin/users/new');
+            },
+
+            toggleShowAll() {
+                this.showAll = !this.showAll;
             },
 
             edit(user) {

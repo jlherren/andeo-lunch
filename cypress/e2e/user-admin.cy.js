@@ -42,6 +42,10 @@ describe('User admin', () => {
         cy.contains('header button', 'Save')
             .click();
         cy.contains('tr', 'John Miller')
+            .should('not.exist');
+        cy.contains('header button', 'Show hidden')
+            .click();
+        cy.contains('tr', 'John Miller')
             .within(() => {
                 cy.contains('inactive');
                 cy.contains('hidden');
