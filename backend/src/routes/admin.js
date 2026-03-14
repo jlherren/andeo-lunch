@@ -3,6 +3,7 @@ import * as RouteUtils from './route-utils.js';
 import {Configuration, User, UserPassword} from '../db/models.js';
 import HttpErrors from 'http-errors';
 import Joi from 'joi';
+import {UniqueConstraintError} from 'sequelize';
 
 const editUserSchema = Joi.object({
     name:             Joi.string().min(1),
@@ -129,20 +130,27 @@ async function createUser(ctx) {
     let configuration = await Configuration.findOne({where: {name: 'userAdmin.defaultEditLimit'}});
     let editLimit = configuration ? parseInt(configuration.value, 10) : null;
 
-    let user = await User.create({
-        username:        data.username,
-        name:            data.name,
-        active:          data.active,
-        hidden:          data.hidden,
-        maxPastDaysEdit: editLimit,
-    });
-    await UserPassword.create({
-        user:     user.id,
-        password: await AuthUtils.hashPassword(data.password),
-    });
-    ctx.body = {
-        userId: user.id,
-    };
+    try {
+        let user = await User.create({
+            username:        data.username,
+            name:            data.name,
+            active:          data.active,
+            hidden:          data.hidden,
+            maxPastDaysEdit: editLimit,
+        });
+        await UserPassword.create({
+            user:     user.id,
+            password: await AuthUtils.hashPassword(data.password),
+        });
+        ctx.body = {
+            userId: user.id,
+        };
+    } catch (error) {
+        if (error instanceof UniqueConstraintError) {
+            throw new HttpErrors.UnprocessableEntity('Username already exists');
+        }
+        throw error;
+    }
 }
 
 /**

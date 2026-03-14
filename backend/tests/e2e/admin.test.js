@@ -110,6 +110,12 @@ describe('user admin', () => {
         expect(newUser.hiddenFromEvents).toBe(false);
     });
 
+    it('rejects duplicate username', async () => {
+        let response = await client.post('/api/admin/users')
+            .send({username: 'testuser', name: 'Test', password: 'abc123'});
+        expect(response.status).toBe(422);
+    });
+
     it('creates inactive and hidden user', async () => {
         let response = await client.post('/api/admin/users')
             .send({username: 'joe', name: 'John', password: 'abc123', active: false, hidden: true});
