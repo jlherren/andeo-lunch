@@ -15,18 +15,18 @@
         "ui": "vue ui"
     },
     "dependencies": {
-        "@babel/core": "~7.28.6",
-        "@fontsource/roboto": "~5.2.9",
+        "@babel/core": "~7.29.0",
+        "@fontsource/roboto": "~5.2.10",
         "@mdi/js": "~7.4.47",
-        "axios": "~1.13.2",
-        "core-js": "~3.47.0",
+        "axios": "~1.13.6",
+        "core-js": "~3.48.0",
         "pinia": "~2.2.8",
         "randombytes": "~2.1.0",
         "register-service-worker": "~1.7.2",
         "vue": "~2.7.16",
         "vue-router": "~3.6.5",
         "vuetify": "~2.7.2",
-        "webpack": "~5.104.1"
+        "webpack": "~5.105.4"
     },
     "devDependencies": {
         "@babel/eslint-parser": "~7.28.6",
