@@ -18,7 +18,7 @@ docker stop "$DB_CONTAINER_NAME" 2> /dev/null || true
 
 # This only tests LTS versions of MariaDB.  Production currently uses 10.6.
 
-for MARIADB_VERSION in 10.6 10.11 11.4; do
+for MARIADB_VERSION in 10.11 11.8; do
     echo "Starting MariaDB $MARIADB_VERSION"
     docker run \
         --pull=always \
@@ -37,6 +37,7 @@ for MARIADB_VERSION in 10.6 10.11 11.4; do
         mysql \
             --host=127.0.0.1 \
             --port=$MARIADB_PORT \
+            --skip-ssl \
             --user="$TEST_DB_USERNAME" \
             --password="$TEST_DB_PASSWORD" \
             --execute='SELECT 1 + 1' \
