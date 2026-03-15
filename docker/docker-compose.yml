@@ -5,7 +5,7 @@ version: '3.6'
 # You may remove the db container and use an existing database server.
 
 # To create users:
-# docker exec -ti andeo-lunch-backend yarn db:createUser
+# docker exec -ti andeo-lunch-backend npm run db:createUser
 
 services:
     db:

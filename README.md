@@ -2,7 +2,7 @@
 
 ## Development quick start
 
-1. Make sure you have Node 16+ and Yarn installed.
+1. Make sure you have Node 16+ and npm installed.
 
 2. Create a file `backend/config.json` with this content:
 
@@ -20,16 +20,16 @@
 
 4. Install all dependencies:
 
-       yarn install
+       npm install
 
 5. In the directory `backend/`, run:
 
        bin/createUser      # This will prompt for a username & password
-       yarn serve:watch    # Leave this running
+       npm run serve:watch # Leave this running
 
 6. In the directory `app/`, run:
 
-       yarn serve          # Leave this running
+       npm run serve       # Leave this running
 
 7. Visit `http://localhost:8080/` (or whatever URL step 6 showed). You should be
    able to log in using the username and password you created in step 5.
@@ -74,9 +74,8 @@
 
 Run these from the root directory.
 
-- `yarn check` Performs various checks that should be run before committing,
+- `npm run check` Performs various checks that should be run before committing,
   including:
-    - Check for duplicate Yarn packages
     - Lint all the code
     - Run the backend tests
 
@@ -84,12 +83,12 @@ Run these from the root directory.
 
 Run these from the `backend/` directory.
 
-- `yarn serve` Launch backend
-- `yarn serve:watch` Launch backend with auto-reload on file changes
-- `yarn test` Run test suite using SQLite
-- `yarn test:watch` Run test suite and re-run on every file change
-- `yarn lint` Run linter
-- `yarn lint:fix` Run linter and fix automatically
+- `npm run serve` Launch backend
+- `npm run serve:watch` Launch backend with auto-reload on file changes
+- `npm test` Run test suite using SQLite
+- `npm run test:watch` Run test suite and re-run on every file change
+- `npm run lint` Run linter
+- `npm run lint:fix` Run linter and fix automatically
 - `tests/run-tests-with-mariadb.sh` Run test suite using MariaDB
 
 These are also available in production:
@@ -104,12 +103,12 @@ These are also available in production:
 
 Run these from the `app/` directory.
 
-- `yarn serve` Launch development server (with auto-reload on file change)
-- `yarn serve:public` Launch development server, binding to 0.0.0.0
-- `yarn build` Create a development build into `dist/`
-- `yarn lint` Run linter
-- `yarn lint:fix` Run linter and fix automatically
-- `yarn ui` Launch Vue UI
+- `npm run serve` Launch development server (with auto-reload on file change)
+- `npm run serve:public` Launch development server, binding to 0.0.0.0
+- `npm run build` Create a development build into `dist/`
+- `npm run lint` Run linter
+- `npm run lint:fix` Run linter and fix automatically
+- `npm run ui` Launch Vue UI
 
 ## Run cypress tests
 
@@ -125,7 +124,7 @@ Cypress tests are run against a full build running in docker images.
 
 3. Open the Cypress GUI
 
-       yarn workspace andeo-lunch-cypress run cypress:open
+       npm run cypress:open -w andeo-lunch-cypress
 
 Important: Modifications to tests will have effect immediately, but
 modifications to the app or backend will not have effect and will require the

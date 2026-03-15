@@ -1,10 +1,9 @@
 # Ignore everything by default, because we sometimes have stuff laying around.  Then include everything we need.
 *
 
-!/.yarn
-!/.yarnrc.yml
+!/.npmrc
 !/package.json
-!/yarn.lock
+!/package-lock.json
 
 !/backend/bin
 !/backend/migrations

@@ -13,11 +13,9 @@
         "node": ">= 18.18.0"
     },
     "scripts": {
-        "check": "yarn check:global && yarn check:app && yarn check:backend && yarn check:cypress",
-        "check:global": "yarn install --immutable && yarn dedupe --check",
-        "check:app": "yarn workspace andeo-lunch-app run lint",
-        "check:backend": "yarn workspace andeo-lunch-backend run lint && yarn workspace andeo-lunch-backend run test",
-        "check:cypress": "yarn workspace andeo-lunch-cypress run lint"
-    },
-    "packageManager": "yarn@4.12.0"
+        "check": "npm run check:app && npm run check:backend && npm run check:cypress",
+        "check:app": "npm run lint -w andeo-lunch-app",
+        "check:backend": "npm run lint -w andeo-lunch-backend && npm run test -w andeo-lunch-backend",
+        "check:cypress": "npm run lint -w andeo-lunch-cypress"
+    }
 }

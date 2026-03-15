@@ -2,8 +2,6 @@
 /.vscode
 /node_modules
 
-/.yarn/install-state.gz
-
 /app/.env
 /app/cypress.env.json
 /app/dist
