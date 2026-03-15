@@ -552,7 +552,7 @@ export async function up({context: sequelize}) {
 
     // Insert essential data
     await sequelize.transaction(async transaction => {
-        let now = new Date();
+        let now = new Date().toISOString().slice(0, 19);
 
         // Avoid using Models.*, because not all columns exist yet.  Adding new fields to models would otherwise break
         // this migration.

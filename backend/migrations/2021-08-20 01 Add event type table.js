@@ -30,7 +30,7 @@ export async function up({context: sequelize}) {
             allowNull: false,
         },
     }, tableDefaultOptions);
-    let now = new Date();
+    let now = new Date().toISOString().slice(0, 19);
     await queryInterface.bulkInsert('eventType', [
         {id: 1, createdAt: now, updatedAt: now},
         {id: 2, createdAt: now, updatedAt: now},

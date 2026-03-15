@@ -9,7 +9,7 @@ export async function up({context: sequelize}) {
     let queryInterface = sequelize.getQueryInterface();
 
     await sequelize.transaction(async transaction => {
-        let now = new Date();
+        let now = new Date().toISOString().slice(0, 19);
         await queryInterface.insert(null, 'participationType', {
             id:        Constants.PARTICIPATION_TYPES.OPT_IN,
             label:     'Opt-in',

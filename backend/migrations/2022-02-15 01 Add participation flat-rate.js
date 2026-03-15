@@ -13,7 +13,7 @@ export async function up({context: sequelize}) {
         after:     'vegetarianMoneyFactor',
     });
 
-    let now = new Date();
+    let now = new Date().toISOString().slice(0, 19);
 
     // Insert andeo user.
     await queryInterface.insert(null, 'user', {

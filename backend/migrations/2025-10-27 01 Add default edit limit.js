@@ -4,7 +4,7 @@
  */
 export async function up({context: sequelize}) {
     let queryInterface = sequelize.getQueryInterface();
-    let now = new Date();
+    let now = new Date().toISOString().slice(0, 19);
     await queryInterface.insert(null, 'configuration', {
         name:      'userAdmin.defaultEditLimit',
         value:     '60',

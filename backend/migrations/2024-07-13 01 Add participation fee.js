@@ -32,7 +32,7 @@ export async function up({context: sequelize}) {
         onDelete:   'restrict',
         onUpdate:   'restrict',
     });
-    let now = new Date();
+    let now = new Date().toISOString().slice(0, 19);
     await queryInterface.insert(null, 'configuration', {
         name:      'lunch.participationFeeRecipient',
         value:     '',
