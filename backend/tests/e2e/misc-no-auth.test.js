@@ -1,4 +1,5 @@
 import {AndeoLunch} from '../../src/andeoLunch.js';
+import {expect} from '../chai-setup.js';
 import {getTestConfig} from '../../src/configProvider.js';
 import supertest from 'supertest';
 
@@ -7,25 +8,25 @@ let andeoLunch = null;
 /** @type {supertest.SuperTest|null} */
 let request = null;
 
-beforeEach(async () => {
-    andeoLunch = new AndeoLunch({
-        config: await getTestConfig(),
-        quiet:  true,
-    });
-    await andeoLunch.waitReady();
-    request = supertest.agent(andeoLunch.listen());
-});
-
-afterEach(async () => {
-    await andeoLunch.close();
-});
-
 describe('misc route tests', () => {
+    beforeEach(async () => {
+        andeoLunch = new AndeoLunch({
+            config: await getTestConfig(),
+            quiet:  true,
+        });
+        await andeoLunch.waitReady();
+        request = supertest.agent(andeoLunch.listen());
+    });
+
+    afterEach(async () => {
+        await andeoLunch.close();
+    });
+
     it('responds to cors request', async () => {
         let response = await request.options('/api/')
             .set('Access-Control-Request-Method', 'GET')
             .set('Origin', 'http://www.example.com');
-        expect(response.status).toBe(204);
-        expect(response.header['access-control-allow-origin']).toBe('*');
+        expect(response.status).to.equal(204);
+        expect(response.header['access-control-allow-origin']).to.equal('*');
     });
 });

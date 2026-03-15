@@ -1,5 +1,6 @@
 import * as Helper from '../helper.js';
 import {AndeoLunch} from '../../src/andeoLunch.js';
+import {expect} from '../chai-setup.js';
 import {getTestConfig} from '../../src/configProvider.js';
 import supertest from 'supertest';
 
@@ -10,106 +11,110 @@ let request = null;
 /** @type {string|null} */
 let jwt = null;
 
-beforeEach(async () => {
-    andeoLunch = new AndeoLunch({
-        config: await getTestConfig(),
-        quiet:  true,
-    });
-    await andeoLunch.waitReady();
-    let user = await Helper.createUser('test-user');
-    request = supertest.agent(andeoLunch.listen());
-    if (jwt === null) {
-        let response = await request.post('/api/account/login')
-            .send({username: user.username, password: Helper.password});
-        jwt = response.body.token;
-    }
-    request.set('Authorization', `Bearer ${jwt}`);
-});
-
-afterEach(async () => {
-    await andeoLunch.close();
-});
-
-describe('Create groceries', () => {
-    it('Create grocery with only label', async () => {
-        let response = await request.post('/api/groceries').send({label: 'Food'});
-        expect(response.status).toBe(201);
-        let {location} = response.headers;
-        expect(typeof location).toBe('string');
-        expect(location).toMatch(/^\/api\/groceries\/\d+$/u);
-        response = await request.get(location);
-        expect(response.status).toBe(200);
-        expect(response.body.grocery).toMatchObject({label: 'Food', checked: false});
+describe('Grocery', () => {
+    beforeEach(async () => {
+        andeoLunch = new AndeoLunch({
+            config: await getTestConfig(),
+            quiet:  true,
+        });
+        await andeoLunch.waitReady();
+        let user = await Helper.createUser('test-user');
+        request = supertest.agent(andeoLunch.listen());
+        if (jwt === null) {
+            let response = await request.post('/api/account/login')
+                .send({username: user.username, password: Helper.password});
+            jwt = response.body.token;
+        }
+        request.set('Authorization', `Bearer ${jwt}`);
     });
 
-    it('Create already checked grocery', async () => {
-        let response = await request.post('/api/groceries').send({label: 'Food', checked: true});
-        expect(response.status).toBe(201);
-        response = await request.get(response.headers.location);
-        expect(response.status).toBe(200);
-        expect(response.body.grocery).toMatchObject({label: 'Food', checked: true});
-    });
-});
-
-describe('Update groceries', () => {
-    it('Update label', async () => {
-        let response = await request.post('/api/groceries').send({label: 'Food'});
-        expect(response.status).toBe(201);
-        let url = response.headers.location;
-        response = await request.post(url).send({label: 'Bananas'});
-        expect(response.status).toBe(204);
-        response = await request.get(url);
-        expect(response.status).toBe(200);
-        expect(response.body.grocery).toMatchObject({label: 'Bananas', checked: false});
+    afterEach(async () => {
+        await andeoLunch.close();
     });
 
-    it('Set to checked', async () => {
-        let response = await request.post('/api/groceries').send({label: 'Food'});
-        expect(response.status).toBe(201);
-        let url = response.headers.location;
-        response = await request.post(url).send({checked: true});
-        expect(response.status).toBe(204);
-        response = await request.get(url);
-        expect(response.status).toBe(200);
-        expect(response.body.grocery).toMatchObject({label: 'Food', checked: true});
+    describe('Create groceries', () => {
+        it('Create grocery with only label', async () => {
+            let response = await request.post('/api/groceries').send({label: 'Food'});
+            expect(response.status).to.equal(201);
+            let {location} = response.headers;
+            expect(typeof location).to.equal('string');
+            expect(location).to.match(/^\/api\/groceries\/\d+$/u);
+            response = await request.get(location);
+            expect(response.status).to.equal(200);
+            expect(response.body.grocery).to.containSubset({label: 'Food', checked: false});
+        });
+
+        it('Create already checked grocery', async () => {
+            let response = await request.post('/api/groceries').send({label: 'Food', checked: true});
+            expect(response.status).to.equal(201);
+            response = await request.get(response.headers.location);
+            expect(response.status).to.equal(200);
+            expect(response.body.grocery).to.containSubset({label: 'Food', checked: true});
+        });
     });
 
-    it('Set to unchecked', async () => {
-        let response = await request.post('/api/groceries').send({label: 'Food', checked: true});
-        expect(response.status).toBe(201);
-        let url = response.headers.location;
-        response = await request.post(url).send({checked: false});
-        expect(response.status).toBe(204);
-        response = await request.get(url);
-        expect(response.status).toBe(200);
-        expect(response.body.grocery).toMatchObject({label: 'Food', checked: false});
+    describe('Update groceries', () => {
+        it('Update label', async () => {
+            let response = await request.post('/api/groceries').send({label: 'Food'});
+            expect(response.status).to.equal(201);
+            let url = response.headers.location;
+            response = await request.post(url).send({label: 'Bananas'});
+            expect(response.status).to.equal(204);
+            response = await request.get(url);
+            expect(response.status).to.equal(200);
+            expect(response.body.grocery).to.containSubset({label: 'Bananas', checked: false});
+        });
+
+        it('Set to checked', async () => {
+            let response = await request.post('/api/groceries').send({label: 'Food'});
+            expect(response.status).to.equal(201);
+            let url = response.headers.location;
+            response = await request.post(url).send({checked: true});
+            expect(response.status).to.equal(204);
+            response = await request.get(url);
+            expect(response.status).to.equal(200);
+            expect(response.body.grocery).to.containSubset({label: 'Food', checked: true});
+        });
+
+        it('Set to unchecked', async () => {
+            let response = await request.post('/api/groceries').send({label: 'Food', checked: true});
+            expect(response.status).to.equal(201);
+            let url = response.headers.location;
+            response = await request.post(url).send({checked: false});
+            expect(response.status).to.equal(204);
+            response = await request.get(url);
+            expect(response.status).to.equal(200);
+            expect(response.body.grocery).to.containSubset({label: 'Food', checked: false});
+        });
     });
-});
 
-describe('Delete groceries', () => {
-    it('Create & delete', async () => {
-        let response = await request.post('/api/groceries').send({label: 'Food'});
-        expect(response.status).toBe(201);
-        let url = response.headers.location;
-        response = await request.delete(url);
-        expect(response.status).toBe(204);
-        response = await request.get(url);
-        expect(response.status).toBe(404);
+    describe('Delete groceries', () => {
+        it('Create & delete', async () => {
+            let response = await request.post('/api/groceries').send({label: 'Food'});
+            expect(response.status).to.equal(201);
+            let url = response.headers.location;
+            response = await request.delete(url);
+            expect(response.status).to.equal(204);
+            response = await request.get(url);
+            expect(response.status).to.equal(404);
+        });
     });
-});
 
-describe('List groceries', () => {
-    it('Create single and list', async () => {
-        let response = await request.post('/api/groceries').send({label: 'Apples'});
-        expect(response.status).toBe(201);
-        response = await request.post('/api/groceries').send({label: 'Bananas', checked: true});
-        expect(response.status).toBe(201);
+    describe('List groceries', () => {
+        it('Create single and list', async () => {
+            let response = await request.post('/api/groceries').send({label: 'Apples'});
+            expect(response.status).to.equal(201);
+            response = await request.post('/api/groceries').send({label: 'Bananas', checked: true});
+            expect(response.status).to.equal(201);
 
-        response = await request.get('/api/groceries');
-        expect(response.status).toBe(200);
-        expect(response.body.groceries).toEqual([
-            {id: expect.any(Number), label: 'Apples', checked: false},
-            {id: expect.any(Number), label: 'Bananas', checked: true},
-        ]);
+            response = await request.get('/api/groceries');
+            expect(response.status).to.equal(200);
+            let groceries = response.body.groceries;
+            expect(groceries).to.have.lengthOf(2);
+            expect(groceries[0].id).to.be.a('number');
+            expect(groceries[0]).to.containSubset({label: 'Apples', checked: false});
+            expect(groceries[1].id).to.be.a('number');
+            expect(groceries[1]).to.containSubset({label: 'Bananas', checked: true});
+        });
     });
 });

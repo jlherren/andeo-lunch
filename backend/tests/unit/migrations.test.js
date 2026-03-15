@@ -1,5 +1,6 @@
 import * as Validator from '../../src/db/validator.js';
 import {AndeoLunch} from '../../src/andeoLunch.js';
+import {expect} from '../chai-setup.js';
 import {getTestConfig} from '../../src/configProvider.js';
 
 describe('Migration test', () => {
@@ -18,7 +19,7 @@ describe('Migration test', () => {
             });
             await andeoLunch.waitReady();
             // This test has otherwise no assertions...
-            expect(true).toBe(true);
+            expect(true).to.equal(true);
         } finally {
             await andeoLunch?.close();
         }
@@ -46,7 +47,7 @@ describe('Migration test', () => {
             let refTables = await Validator.getReferenceCreateTableStatements();
             let tables = [...new Set(Object.keys(dbTables).concat(Object.keys(refTables)))];
             for (let table of tables) {
-                expect(dbTables[table]).toBe(refTables[table]);
+                expect(dbTables[table]).to.equal(refTables[table]);
             }
         } finally {
             await andeoLunch?.close();
@@ -73,7 +74,7 @@ describe('Migration test', () => {
             let refTables = await Validator.getReferenceCreateTableStatements();
             let tables = [...new Set(Object.keys(dbTables).concat(Object.keys(refTables)))];
             for (let table of tables) {
-                expect(dbTables[table]).toBe(refTables[table]);
+                expect(dbTables[table]).to.equal(refTables[table]);
             }
         } finally {
             await andeoLunch?.close();

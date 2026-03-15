@@ -2,12 +2,13 @@
     "env": {
         "commonjs": true,
         "es6": true,
+        "mocha": true,
         "node": true
     },
     "extends": [
         "eslint:recommended",
-        "plugin:jest/recommended",
-        "plugin:jsdoc/recommended"
+        "plugin:jsdoc/recommended",
+        "plugin:mocha/recommended"
     ],
     "globals": {
         "Atomics": "readonly",
@@ -18,8 +19,8 @@
         "sourceType": "module"
     },
     "plugins": [
-        "jest",
-        "jsdoc"
+        "jsdoc",
+        "mocha"
     ],
     "settings": {
         "jsdoc": {
@@ -379,6 +380,8 @@
             "error",
             "never"
         ],
+        "mocha/no-mocha-arrows": "off",
+        "mocha/no-setup-in-describe": "off",
         "jsdoc/valid-types": "off",
         "jsdoc/check-types": "off",
         "jsdoc/no-undefined-types": "off",

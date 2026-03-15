@@ -1,6 +1,7 @@
 import * as Helper from '../helper.js';
 import {AndeoLunch} from '../../src/andeoLunch.js';
 import {DeviceVersion} from '../../src/db/models.js';
+import {expect} from '../chai-setup.js';
 import {getTestConfig} from '../../src/configProvider.js';
 import supertest from 'supertest';
 
@@ -11,142 +12,144 @@ let request = null;
 /** @type {User|null} */
 let user = null;
 
-beforeEach(async () => {
-    andeoLunch = new AndeoLunch({
-        config: await getTestConfig(),
-        quiet:  true,
-    });
-    await andeoLunch.waitReady();
-    request = supertest.agent(andeoLunch.listen());
-    user = await Helper.createUser('test-user-1');
-    let response = await request.post('/api/account/login')
-        .send({username: user.username, password: Helper.password});
-    let jwt = response.body.token;
-    request.set('Authorization', `Bearer ${jwt}`);
-});
-
-afterEach(async () => {
-    await andeoLunch.close();
-});
-
-describe('version list', () => {
-    it('is denied without permission', async () => {
-        let response = await request.get('/api/tools/device-versions');
-        expect(response.status).toBe(401);
+describe('Tools', () => {
+    beforeEach(async () => {
+        andeoLunch = new AndeoLunch({
+            config: await getTestConfig(),
+            quiet:  true,
+        });
+        await andeoLunch.waitReady();
+        request = supertest.agent(andeoLunch.listen());
+        user = await Helper.createUser('test-user-1');
+        let response = await request.post('/api/account/login')
+            .send({username: user.username, password: Helper.password});
+        let jwt = response.body.token;
+        request.set('Authorization', `Bearer ${jwt}`);
     });
 
-    it('works correctly', async () => {
-        // This test requires correct aggregation, correct sorting and correct skipping old 'lastSeen'.
-        await Helper.insertPermission(user.id, 'tools.deviceVersions');
-
-        let recent = new Date();
-        recent.setDate(recent.getDate() - 10);
-        let whileAgo = new Date();
-        whileAgo.setDate(whileAgo.getDate() - 90);
-
-        await DeviceVersion.bulkCreate([{
-            version:  '1.2.3',
-            device:   'B',
-            lastSeen: recent,
-        }, {
-            version:  '1.2.2',
-            device:   'A',
-            lastSeen: recent,
-        }, {
-            version:  '1.2.4',
-            device:   'C',
-            lastSeen: recent,
-        }, {
-            version:  '1.2.3',
-            device:   'D',
-            lastSeen: recent,
-        }, {
-            version:  '1.2.1',
-            device:   'E',
-            lastSeen: whileAgo,
-        }]);
-
-        let response = await request.get('/api/tools/device-versions');
-        expect(response.status).toBe(200);
-        expect(response.body.versions).toEqual([
-            {
-                version: '1.2.2',
-                count:   1,
-            },
-            {
-                version: '1.2.3',
-                count:   2,
-            },
-            {
-                version: '1.2.4',
-                count:   1,
-            },
-        ]);
-        expect(response.body.period).toBe('60 days');
-    });
-});
-
-describe('configurations', () => {
-    it('is denied without permission', async () => {
-        let response = await request.get('/api/tools/configurations');
-        expect(response.status).toBe(401);
+    afterEach(async () => {
+        await andeoLunch.close();
     });
 
-    it('loads correctly', async () => {
-        await Helper.insertPermission(user.id, 'tools.configurations');
+    describe('version list', () => {
+        it('is denied without permission', async () => {
+            let response = await request.get('/api/tools/device-versions');
+            expect(response.status).to.equal(401);
+        });
 
-        let response = await request.get('/api/tools/configurations');
-        expect(response.status).toBe(200);
-        expect(response.body.configurations).toEqual([
-            {name: 'lunch.defaultFlatRate', value: '0.75'},
-            {name: 'lunch.defaultParticipationFee', value: '0'},
-            {name: 'lunch.participationFeeRecipient', value: ''},
-            {name: 'payUp.warningThreshold', value: '-20'},
-            {name: 'userAdmin.defaultEditLimit', value: '60'},
-        ]);
+        it('works correctly', async () => {
+            // This test requires correct aggregation, correct sorting and correct skipping old 'lastSeen'.
+            await Helper.insertPermission(user.id, 'tools.deviceVersions');
+
+            let recent = new Date();
+            recent.setDate(recent.getDate() - 10);
+            let whileAgo = new Date();
+            whileAgo.setDate(whileAgo.getDate() - 90);
+
+            await DeviceVersion.bulkCreate([{
+                version:  '1.2.3',
+                device:   'B',
+                lastSeen: recent,
+            }, {
+                version:  '1.2.2',
+                device:   'A',
+                lastSeen: recent,
+            }, {
+                version:  '1.2.4',
+                device:   'C',
+                lastSeen: recent,
+            }, {
+                version:  '1.2.3',
+                device:   'D',
+                lastSeen: recent,
+            }, {
+                version:  '1.2.1',
+                device:   'E',
+                lastSeen: whileAgo,
+            }]);
+
+            let response = await request.get('/api/tools/device-versions');
+            expect(response.status).to.equal(200);
+            expect(response.body.versions).to.deep.equal([
+                {
+                    version: '1.2.2',
+                    count:   1,
+                },
+                {
+                    version: '1.2.3',
+                    count:   2,
+                },
+                {
+                    version: '1.2.4',
+                    count:   1,
+                },
+            ]);
+            expect(response.body.period).to.equal('60 days');
+        });
     });
 
-    it('saves correctly', async () => {
-        await Helper.insertPermission(user.id, 'tools.configurations');
+    describe('configurations', () => {
+        it('is denied without permission', async () => {
+            let response = await request.get('/api/tools/configurations');
+            expect(response.status).to.equal(401);
+        });
 
-        let response = await request.post('/api/tools/configurations')
-            .send({configurations: [{name: 'lunch.defaultFlatRate', value: '0.65'}]});
-        expect(response.status).toBe(204);
+        it('loads correctly', async () => {
+            await Helper.insertPermission(user.id, 'tools.configurations');
 
-        response = await request.get('/api/tools/configurations');
-        expect(response.status).toBe(200);
-        expect(response.body.configurations).toEqual([
-            {name: 'lunch.defaultFlatRate', value: '0.65'},
-            {name: 'lunch.defaultParticipationFee', value: '0'},
-            {name: 'lunch.participationFeeRecipient', value: ''},
-            {name: 'payUp.warningThreshold', value: '-20'},
-            {name: 'userAdmin.defaultEditLimit', value: '60'},
-        ]);
-    });
+            let response = await request.get('/api/tools/configurations');
+            expect(response.status).to.equal(200);
+            expect(response.body.configurations).to.deep.equal([
+                {name: 'lunch.defaultFlatRate', value: '0.75'},
+                {name: 'lunch.defaultParticipationFee', value: '0'},
+                {name: 'lunch.participationFeeRecipient', value: ''},
+                {name: 'payUp.warningThreshold', value: '-20'},
+                {name: 'userAdmin.defaultEditLimit', value: '60'},
+            ]);
+        });
 
-    it('does not save invalid data', async () => {
-        await Helper.insertPermission(user.id, 'tools.configurations');
+        it('saves correctly', async () => {
+            await Helper.insertPermission(user.id, 'tools.configurations');
 
-        let response = await request.post('/api/tools/configurations')
-            .send({configurations: [{name: 'fake', value: 'fake'}]});
-        // It does not complain that the request was invalid.
-        expect(response.status).toBe(204);
+            let response = await request.post('/api/tools/configurations')
+                .send({configurations: [{name: 'lunch.defaultFlatRate', value: '0.65'}]});
+            expect(response.status).to.equal(204);
 
-        // But the new value was not saved
-        response = await request.get('/api/tools/configurations');
-        expect(response.status).toBe(200);
-        expect(response.body.configurations).toEqual([
-            {name: 'lunch.defaultFlatRate', value: '0.75'},
-            {name: 'lunch.defaultParticipationFee', value: '0'},
-            {name: 'lunch.participationFeeRecipient', value: ''},
-            {name: 'payUp.warningThreshold', value: '-20'},
-            {name: 'userAdmin.defaultEditLimit', value: '60'},
-        ]);
-    });
+            response = await request.get('/api/tools/configurations');
+            expect(response.status).to.equal(200);
+            expect(response.body.configurations).to.deep.equal([
+                {name: 'lunch.defaultFlatRate', value: '0.65'},
+                {name: 'lunch.defaultParticipationFee', value: '0'},
+                {name: 'lunch.participationFeeRecipient', value: ''},
+                {name: 'payUp.warningThreshold', value: '-20'},
+                {name: 'userAdmin.defaultEditLimit', value: '60'},
+            ]);
+        });
 
-    it('does not save without permission', async () => {
-        let response = await request.post('/api/tools/configurations')
-            .send({configurations: [{name: 'lunch.defaultFlatRate', value: '0.65'}]});
-        expect(response.status).toBe(401);
+        it('does not save invalid data', async () => {
+            await Helper.insertPermission(user.id, 'tools.configurations');
+
+            let response = await request.post('/api/tools/configurations')
+                .send({configurations: [{name: 'fake', value: 'fake'}]});
+            // It does not complain that the request was invalid.
+            expect(response.status).to.equal(204);
+
+            // But the new value was not saved
+            response = await request.get('/api/tools/configurations');
+            expect(response.status).to.equal(200);
+            expect(response.body.configurations).to.deep.equal([
+                {name: 'lunch.defaultFlatRate', value: '0.75'},
+                {name: 'lunch.defaultParticipationFee', value: '0'},
+                {name: 'lunch.participationFeeRecipient', value: ''},
+                {name: 'payUp.warningThreshold', value: '-20'},
+                {name: 'userAdmin.defaultEditLimit', value: '60'},
+            ]);
+        });
+
+        it('does not save without permission', async () => {
+            let response = await request.post('/api/tools/configurations')
+                .send({configurations: [{name: 'lunch.defaultFlatRate', value: '0.65'}]});
+            expect(response.status).to.equal(401);
+        });
     });
 });

@@ -1,4 +1,5 @@
 import {Configuration, Permission, User, UserPassword, UserPermission} from '../src/db/models.js';
+import {expect} from './chai-setup.js';
 
 /**
  * Create an event and return the event ID
@@ -9,8 +10,7 @@ import {Configuration, Permission, User, UserPassword, UserPermission} from '../
  */
 export async function createEvent(request, data) {
     let response = await request.post('/api/events').send(data);
-    // eslint-disable-next-line jest/no-standalone-expect
-    expect(response.status).toBe(201);
+    expect(response.status).to.equal(201);
     return parseInt(response.headers.location.match(/(?<id>\d+)/u).groups.id, 10);
 }
 
@@ -21,11 +21,9 @@ export async function createEvent(request, data) {
  */
 export async function getUserByName(request, name) {
     let response = await request.get('/api/users');
-    // eslint-disable-next-line jest/no-standalone-expect
-    expect(response.status).toBe(200);
+    expect(response.status).to.equal(200);
     let user = response.body.users.find(u => u.name === name);
-    // eslint-disable-next-line jest/no-standalone-expect
-    expect(user).not.toBe(null);
+    expect(user).to.not.be.null();
     return user;
 }
 

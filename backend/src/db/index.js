@@ -95,17 +95,7 @@ export async function applyMigrations(sequelize, quiet) {
     const umzug = new Umzug({
         migrations: {
             // glob requires forward slashes even on windows.
-            glob:    path.join(__dirname, '../../migrations/????-??-?? ?? *.js').replaceAll('\\', '/'),
-            // Custom resolver necessary at the moment, because Jest confuses Umzug https://github.com/jestjs/jest/issues/15185
-            resolve: params => {
-                const getModule = () => import(`file:///${params.path}`);
-                return {
-                    name: params.name,
-                    path: params.path,
-                    up:   async upParams => (await getModule()).up(upParams),
-                    down: async downParams => (await getModule()).down(downParams),
-                };
-            },
+            glob: path.join(__dirname, '../../migrations/????-??-?? ?? *.js').replaceAll('\\', '/'),
         },
         context:    sequelize,
         storage:    new SequelizeStorage({sequelize}),
