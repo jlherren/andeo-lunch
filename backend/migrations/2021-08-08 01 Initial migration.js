@@ -428,40 +428,36 @@ export async function up({context: sequelize}) {
         name:   'transaction_dateId_idx',
         fields: ['date', 'id'],
     });
-    // Workaround for bug https://github.com/sequelize/sequelize/issues/13268
-    // This works because SQLite doesn't implement foreign keys anyway
-    if (sequelize.getDialect() !== 'sqlite') {
-        await queryInterface.addConstraint('transaction', {
-            type:       'foreign key',
-            name:       'transaction_ibfk_1',
-            fields:     ['user'],
-            references: {
-                table: 'user',
-                field: 'id',
-            },
-            ...cascade,
-        });
-        await queryInterface.addConstraint('transaction', {
-            type:       'foreign key',
-            name:       'transaction_ibfk_2',
-            fields:     ['contraUser'],
-            references: {
-                table: 'user',
-                field: 'id',
-            },
-            ...cascade,
-        });
-        await queryInterface.addConstraint('transaction', {
-            type:       'foreign key',
-            name:       'transaction_ibfk_3',
-            fields:     ['event'],
-            references: {
-                table: 'event',
-                field: 'id',
-            },
-            ...cascade,
-        });
-    }
+    await queryInterface.addConstraint('transaction', {
+        type:       'foreign key',
+        name:       'transaction_ibfk_1',
+        fields:     ['user'],
+        references: {
+            table: 'user',
+            field: 'id',
+        },
+        ...cascade,
+    });
+    await queryInterface.addConstraint('transaction', {
+        type:       'foreign key',
+        name:       'transaction_ibfk_2',
+        fields:     ['contraUser'],
+        references: {
+            table: 'user',
+            field: 'id',
+        },
+        ...cascade,
+    });
+    await queryInterface.addConstraint('transaction', {
+        type:       'foreign key',
+        name:       'transaction_ibfk_3',
+        fields:     ['event'],
+        references: {
+            table: 'event',
+            field: 'id',
+        },
+        ...cascade,
+    });
 
     await queryInterface.createTable('absence', {
         id:        {
