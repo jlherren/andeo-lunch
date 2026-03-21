@@ -20,7 +20,7 @@ const STATUS_COLORS = {
  * @return {function}
  */
 export default function LoggerMiddleware(stream) {
-    stream = stream ?? process.stdout;
+    stream ??= process.stdout;
 
     return async function log(ctx, next) {
         let start = new Date();

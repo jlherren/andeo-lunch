@@ -86,23 +86,23 @@ export function snapshotDiff(before, after) {
     }
 
     if (typeof before === 'object' && before !== null || typeof after === 'object' && after !== null) {
-        before = before ?? {};
-        after = after ?? {};
+        before ??= {};
+        after ??= {};
         let keys = [...new Set(Object.keys(before).concat(Object.keys(after)))];
         keys.sort();
         let diff = undefined;
         for (let key of keys) {
             let d = snapshotDiff(before[key], after[key]);
             if (d) {
-                diff = diff ?? {};
+                diff ??= {};
                 diff[key] = d;
             }
         }
         return diff;
     }
 
-    before = before ?? null;
-    after = after ?? null;
+    before ??= null;
+    after ??= null;
 
     if (before === after) {
         return undefined;
