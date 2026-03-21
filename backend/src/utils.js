@@ -78,8 +78,15 @@ export function parseDate(str) {
  * @return {any}
  */
 export function snapshotDiff(before, after) {
-    if (before instanceof Date && after instanceof Date) {
-        if (before.getTime() === after.getTime()) {
+    before ??= null;
+    after ??= null;
+
+    if (before === after) {
+        return undefined;
+    }
+
+    if ((before === null || before instanceof Date) && (after === null || after instanceof Date)) {
+        if (before?.getTime() === after?.getTime()) {
             return undefined;
         }
         return [before, after];
@@ -99,13 +106,6 @@ export function snapshotDiff(before, after) {
             }
         }
         return diff;
-    }
-
-    before ??= null;
-    after ??= null;
-
-    if (before === after) {
-        return undefined;
     }
 
     return [before, after];
