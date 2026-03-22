@@ -1,4 +1,4 @@
-import * as Utils from '../../src/utils.js';
+import * as Utils from '../../src/utils.ts';
 import {expect} from '../chai-setup.js';
 
 describe('Snapshot diffs', () => {

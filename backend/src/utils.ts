@@ -1,14 +1,9 @@
-/**
- * @template T
- * @template K
- * @param {Array<T>} array
- * @param {string|function(item: T): K} key
- * @return {Object<K, T>}
- */
-export function indexBy(array, key) {
-    let ret = {};
+export function indexBy<T>(array: T[], key: string|((item: T) => string)): Record<string, T> {
+    let ret: Record<string, T> = {};
     for (let item of array) {
-        let keyValue = typeof key === 'string' ? item[key] : item[key(item)];
+        let keyValue = typeof key === 'string'
+            ? (item as Record<string, string>)[key]
+            : (item as Record<string, string>)[key(item)];
         if (keyValue in ret) {
             throw new Error('Non-unique key in toMap');
         }
@@ -17,17 +12,10 @@ export function indexBy(array, key) {
     return ret;
 }
 
-/**
- * @template T
- * @template K
- * @param {Array<T>} array
- * @param {string|function(item: T): K} key
- * @return {Object<K, Array<T>>}
- */
-export function groupBy(array, key) {
-    let ret = {};
+export function groupBy<T>(array: T[], key: string|((item: T) => string)): Record<string, T[]> {
+    let ret: Record<string, T[]> = {};
     for (let item of array) {
-        let keyValue = typeof key === 'string' ? item[key] : key(item);
+        let keyValue = typeof key === 'string' ? (item as Record<string, string>)[key] : key(item);
         if (keyValue in ret) {
             ret[keyValue].push(item);
         } else {
@@ -37,13 +25,11 @@ export function groupBy(array, key) {
     return ret;
 }
 
-/**
- * @param {object} object
- * @param {boolean} numericKey
- * @return {object}
- */
-export function objectFlip(object, numericKey) {
-    let ret = {};
+export function objectFlip(object: Record<string, string>, numericKey: true): Record<string, number>;
+export function objectFlip(object: Record<string, string>, numericKey: false): Record<string, string>;
+
+export function objectFlip(object: Record<string, string>, numericKey: boolean = false): Record<string, string|number> {
+    let ret: Record<string, string|number> = {};
     for (let key in object) {
         let value = object[key];
         if (value in ret) {
@@ -54,30 +40,22 @@ export function objectFlip(object, numericKey) {
             if (isNaN(intKey)) {
                 throw new Error(`Key is not numeric: ${key}`);
             }
-            key = intKey;
+            ret[value] = intKey;
+        } else {
+            ret[value] = key;
         }
-        ret[value] = key;
     }
     return ret;
 }
 
-/**
- * Parse a string to a Date, returning null if it is invalid
- *
- * @param {string} str
- * @return {Date|null}
- */
-export function parseDate(str) {
+export function parseDate(str: string): Date|null {
     let date = new Date(str);
     return isNaN(date.getTime()) ? null : date;
 }
 
-/**
- * @param {any} before
- * @param {any} after
- * @return {any}
- */
-export function snapshotDiff(before, after) {
+type SnapshotArgument = number|string|Date|Record<string, number|string|Date>|null|undefined;
+
+export function snapshotDiff(before: SnapshotArgument, after: SnapshotArgument): unknown {
     before ??= null;
     after ??= null;
 
@@ -92,12 +70,12 @@ export function snapshotDiff(before, after) {
         return [before, after];
     }
 
-    if (typeof before === 'object' && before !== null || typeof after === 'object' && after !== null) {
+    if (typeof before === 'object' && typeof after === 'object' && !(before instanceof Date) && !(after instanceof Date)) {
         before ??= {};
         after ??= {};
         let keys = [...new Set(Object.keys(before).concat(Object.keys(after)))];
         keys.sort();
-        let diff = undefined;
+        let diff: Record<string, unknown>|undefined = undefined;
         for (let key of keys) {
             let d = snapshotDiff(before[key], after[key]);
             if (d) {

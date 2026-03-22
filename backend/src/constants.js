@@ -1,4 +1,4 @@
-import * as Utils from './utils.js';
+import * as Utils from './utils.ts';
 
 export const SYSTEM_USER_USERNAME = 'system';
 export const ANDEO_USER_USERNAME = 'andeo';

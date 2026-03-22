@@ -3,7 +3,7 @@ import * as Constants from '../constants.js';
 import * as EventManager from '../eventManager.js';
 import * as RouteUtils from './route-utils.js';
 import * as TransactionRebuilder from '../transactionRebuilder.js';
-import * as Utils from '../utils.js';
+import * as Utils from '../utils.ts';
 import {Absence, Configuration, Event, Lunch, Participation, Transaction, Transfer, User} from '../db/models.js';
 import {Op, Sequelize} from 'sequelize';
 import HttpErrors from 'http-errors';

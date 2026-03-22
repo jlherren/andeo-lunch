@@ -1,6 +1,6 @@
 import * as AuditManager from '../auditManager.js';
 import * as RouteUtils from './route-utils.js';
-import * as Utils from '../utils.js';
+import * as Utils from '../utils.ts';
 import {Grocery} from '../db/models.js';
 import HttpErrors from 'http-errors';
 import Joi from 'joi';
