@@ -7,6 +7,7 @@
         "node": ">= 18.18.0"
     },
     "scripts": {
+        "check": "npm run lint",
         "lint": "eslint e2e helpers plugins support",
         "lint:fix": "eslint --fix e2e helpers plugins support",
         "cypress:open": "cypress open",

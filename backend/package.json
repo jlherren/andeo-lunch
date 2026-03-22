@@ -9,6 +9,7 @@
     "scripts": {
         "serve": "node bin/andeoLunch",
         "serve:watch": "nodemon bin/andeoLunch",
+        "check": "npm run lint && npm run test",
         "test": "mocha --parallel",
         "test:mariadb": "TEST_DB=mariadb mocha",
         "test:watch": "mocha --watch",
