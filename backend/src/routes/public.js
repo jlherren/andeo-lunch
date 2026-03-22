@@ -1,6 +1,6 @@
 import * as Constants from '../constants.ts';
 import * as IcsUtils from '../icsUtils.js';
-import {Event} from '../db/models.js';
+import {Event} from '../db/models.ts';
 import HttpErrors from 'http-errors';
 import {Op} from 'sequelize';
 import ics from 'ics';

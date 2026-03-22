@@ -1,6 +1,6 @@
 import * as AuthUtils from '../../src/authUtils.js';
 import * as Helper from '../helper.js';
-import {DeviceVersion, Permission, UserPermission} from '../../src/db/models.js';
+import {DeviceVersion, Permission, UserPermission} from '../../src/db/models.ts';
 import {AndeoLunch} from '../../src/andeoLunch.js';
 import JsonWebToken from 'jsonwebtoken';
 import {expect} from '../chai-setup.js';

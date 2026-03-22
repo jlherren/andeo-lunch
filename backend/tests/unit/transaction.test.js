@@ -1,7 +1,7 @@
 import * as Constants from '../../src/constants.ts';
 import * as Helper from '../helper.js';
 import * as TransactionRebuilder from '../../src/transactionRebuilder.js';
-import {Event, Lunch, Participation, Transaction} from '../../src/db/models.js';
+import {Event, Lunch, Participation, Transaction} from '../../src/db/models.ts';
 import {AndeoLunch} from '../../src/andeoLunch.js';
 import {expect} from '../chai-setup.js';
 import {getTestConfig} from '../../src/configProvider.js';

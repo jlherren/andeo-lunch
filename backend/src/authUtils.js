@@ -1,5 +1,5 @@
 import * as AuthUtils from './authUtils.js';
-import {Secret} from './db/models.js';
+import {Secret} from './db/models.ts';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 

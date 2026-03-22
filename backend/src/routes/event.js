@@ -1,10 +1,10 @@
 import * as AuditManager from '../auditManager.js';
 import * as Constants from '../constants.ts';
-import * as EventManager from '../eventManager.js';
+import * as EventManager from '../eventManager.ts';
 import * as RouteUtils from './route-utils.js';
 import * as TransactionRebuilder from '../transactionRebuilder.js';
 import * as Utils from '../utils.ts';
-import {Absence, Configuration, Event, Lunch, Participation, Transaction, Transfer, User} from '../db/models.js';
+import {Absence, Configuration, Event, Lunch, Participation, Transaction, Transfer, User} from '../db/models.ts';
 import {Op, Sequelize} from 'sequelize';
 import HttpErrors from 'http-errors';
 import Joi from 'joi';

@@ -1,59 +1,44 @@
 import * as Constants from '../constants.ts';
-import * as EventManager from '../eventManager.js';
-import {DataTypes, Model} from 'sequelize';
+import * as EventManager from '../eventManager.ts';
+import type {ApiAbsence, ApiAudit, ApiEvent, ApiGrocery, ApiParticipation, ApiTransaction, ApiTransfer, ApiUser} from '../apiTypes.ts';
+import type {CurrencyId, EventTypeId, ParticipationTypeId} from '../constants.ts';
+import {DataTypes, Model, Sequelize} from 'sequelize';
 import {ColumnHelper} from './columnHelper.ts';
 import jsonWebToken from 'jsonwebtoken';
 
-/**
- * @class Model
- * @property {number} id
- * @property {Date} createdAt
- * @property {Date} updatedAt
- */
-
-/**
- * @property {string} name
- * @property {string} value
- */
 export class Configuration extends Model {
+    declare id: number;
+    declare name: string;
+    declare value: string;
 }
 
-/**
- * @property {string} name
- * @property {string} value
- */
 export class Secret extends Model {
+    declare id: number;
+    declare name: string;
+    declare value: string;
 }
 
-/**
- * @property {string} username
- * @property {boolean} active Whether this user can log in, and can be added or removed from events
- * @property {boolean} hidden Whether the user should be displayed in a normal user listing
- * @property {string} name
- * @property {number} points
- * @property {number} money
- * @property {number|null} maxPastDaysEdit
- * @property {boolean} pointExempted
- * @property {boolean} hiddenFromEvents
- * @property {Object} settings
- * @property {Array<Permission>} Permissions
- */
 export class User extends Model {
-    /**
-     * @param {string} secret
-     * @param {object} [options]
-     * @param {object} [extraPayload] Only for testing.
-     * @return {string}
-     */
-    generateToken(secret, options, extraPayload = {}) {
+    declare id: number;
+    declare username: string;
+    /** Whether this user can log in, and can be added or removed from events */
+    declare active: boolean;
+    /** Whether the user should be displayed in a normal user listing */
+    declare hidden: boolean;
+    declare name: string;
+    declare points: number;
+    declare money: number;
+    declare maxPastDaysEdit: number|null;
+    declare pointExempted: boolean;
+    declare hiddenFromEvents: boolean;
+    declare settings: Object;
+    declare Permissions: Array<Permission>;
+
+    generateToken(secret: string, options: object, extraPayload: object = {}): string {
         return jsonWebToken.sign({...extraPayload, id: this.id}, secret, options);
     }
 
-    /**
-     * @param {string} name
-     * @return {boolean}
-     */
-    hasPermission(name) {
+    hasPermission(name: string): boolean {
         if (!this.Permissions) {
             throw new Error('User object was not loaded with Permissions');
         }
@@ -62,10 +47,8 @@ export class User extends Model {
 
     /**
      * Map a user to an object suitable to return over the API
-     *
-     * @return {ApiUser}
      */
-    toApi() {
+    toApi(): ApiUser {
         return {
             id:               this.id,
             name:             this.name,
@@ -80,46 +63,40 @@ export class User extends Model {
     }
 }
 
-/**
- * @property {string} password
- * @property {Date|null} lastPasswordChange
- */
 export class UserPassword extends Model {
+    declare id: number;
+    declare password: string;
+    declare lastPasswordChange: Date|null;
 }
 
-/**
- * @property {string} name
- */
 export class Permission extends Model {
+    declare id: number;
+    declare name: string;
 }
 
-/**
- * @property {number} user
- * @property {number} permission
- */
 export class UserPermission extends Model {
+    declare id: number;
+    declare user: number;
+    declare permission: number;
 }
 
 export class EventType extends Model {
+    declare id: number;
 }
 
-/**
- * @property {number} type
- * @property {Date} date
- * @property {string} name
- * @property {Lunch} [Lunch]
- * @property {Array<Transfer>} [Transfers]
- * @property {boolean} immutable
- */
 export class Event extends Model {
+    declare id: number;
+    declare type: EventTypeId;
+    declare date: Date;
+    declare name: string;
+    declare Lunch?: Lunch;
+    declare Transfers?: Array<Transfer>;
+    declare immutable: boolean;
+
     /**
      * Map a user to an object suitable to return over the API
-     *
-     * @param {User} user
-     * @param {number} systemUserId
-     * @return {ApiEvent}
      */
-    toApi(user, systemUserId) {
+    toApi(user: User, systemUserId: number): ApiEvent {
         return {
             id:                          this.id,
             type:                        Constants.EVENT_TYPE_NAMES[this.type],
@@ -168,39 +145,35 @@ export class Event extends Model {
     }
 }
 
-/**
- * @property {number} pointsCost
- * @property {number} moneyCost
- * @property {number} vegetarianMoneyFactor
- * @property {number|null} participationFlatRate
- * @property {number} participationFee
- * @property {number|null} participationFeeRecipient
- * @property {User} [ParticipationFeeRecipient]
- * @property {string|null} comment
- * @property {number} event
- * @property {Event} [Event]
- */
 export class Lunch extends Model {
+    declare id: number;
+    declare pointsCost: number;
+    declare moneyCost: number;
+    declare vegetarianMoneyFactor: number;
+    declare participationFlatRate: number|null;
+    declare participationFee: number;
+    declare participationFeeRecipient: number|null;
+    declare ParticipationFeeRecipient?: User;
+    declare comment: string|null;
+    declare event: number;
+    declare Event?: Event;
 }
 
-/**
- * @property {number} event
- * @property {Event} [Event]
- * @property {number} sender
- * @property {User} [Sender]
- * @property {number} recipient
- * @property {User} [Recipient]
- * @property {number} currency
- * @property {number} amount
- */
 export class Transfer extends Model {
+    declare id: number;
+    declare event: number;
+    declare Event?: Event;
+    declare sender: number;
+    declare Sender?: User;
+    declare recipient: number;
+    declare Recipient?: User;
+    declare currency: CurrencyId;
+    declare amount: number;
+
     /**
      * Map to an object suitable to return over the API
-     *
-     * @param {number} systemUserId
-     * @return {ApiTransfer}
      */
-    toApi(systemUserId) {
+    toApi(systemUserId: number): ApiTransfer {
         return {
             id:          this.id,
             eventId:     this.event,
@@ -212,7 +185,7 @@ export class Transfer extends Model {
         };
     }
 
-    toSnapshot(systemUserId) {
+    toSnapshot(systemUserId: number) {
         return {
             sender:    systemUserId === this.sender ? -1 : this.sender,
             recipient: systemUserId === this.recipient ? -1 : this.recipient,
@@ -222,29 +195,26 @@ export class Transfer extends Model {
     }
 }
 
-/**
- * @property {string} label
- */
 export class ParticipationType extends Model {
+    declare id: number;
+    declare label: string;
 }
 
-/**
- * @property {number} user
- * @property {User} [User]
- * @property {number} event
- * @property {Event} [Event]
- * @property {number} type
- * @property {number} pointsCredited
- * @property {number} moneyCredited
- * @property {number} moneyFactor
- */
 export class Participation extends Model {
+    declare id: number;
+    declare user: number;
+    declare User?: User;
+    declare event: number;
+    declare Event?: Event;
+    declare type: ParticipationTypeId;
+    declare pointsCredited: number;
+    declare moneyCredited: number;
+    declare moneyFactor: number;
+
     /**
      * Map an event participation to an object suitable to return over the API
-     *
-     * @return {ApiParticipation}
      */
-    toApi() {
+    toApi(): ApiParticipation {
         return {
             userId:  this.user,
             eventId: this.event,
@@ -273,25 +243,23 @@ export class Participation extends Model {
     }
 }
 
-/**
- * @property {Date} date
- * @property {number} user
- * @property {User} [User]
- * @property {number} contraUser
- * @property {User} [ContraUser]
- * @property {number} currency
- * @property {number} amount
- * @property {number} balance
- * @property {number} event
- * @property {Event} [Event]
- */
 export class Transaction extends Model {
+    declare id: number;
+    declare date: Date;
+    declare user: number;
+    declare User?: User;
+    declare contraUser: number;
+    declare ContraUser?: User;
+    declare currency: CurrencyId;
+    declare amount: number;
+    declare balance: number;
+    declare event: number;
+    declare Event?: Event;
+
     /**
      * Map a transaction to an object suitable to return over the API
-     *
-     * @return {ApiTransaction}
      */
-    toApi() {
+    toApi(): ApiTransaction {
         return {
             id:           this.id,
             date:         this.date,
@@ -306,17 +274,14 @@ export class Transaction extends Model {
     }
 }
 
-/**
- * @property {number} user
- * @property {User} [User]
- * @property {Date} start
- * @property {Date} end
- */
 export class Absence extends Model {
-    /**
-     * @return {ApiAbsence}
-     */
-    toApi() {
+    declare id: number;
+    declare user: number;
+    declare User?: User;
+    declare start: Date;
+    declare end: Date;
+
+    toApi(): ApiAbsence {
         return {
             id:     this.id,
             start:  this.start,
@@ -333,26 +298,24 @@ export class Absence extends Model {
     }
 }
 
-/**
- * @property {Date} date
- * @property {number} actingUser
- * @property {User|null} [ActingUser]
- * @property {string} type
- * @property {number|null} event
- * @property {Event|null} Event
- * @property {number|null} grocery
- * @property {Grocery|null} Grocery
- * @property {number|null} affectedUser
- * @property {User|null} AffectedUser
- * @property {object|null} values
- */
 export class Audit extends Model {
+    declare id: number;
+    declare date: Date;
+    declare actingUser: number;
+    declare ActingUser?: User|null;
+    declare type: string;
+    declare event: number|null;
+    declare Event: Event|null;
+    declare grocery: number|null;
+    declare Grocery: Grocery|null;
+    declare affectedUser: number|null;
+    declare AffectedUser: User|null;
+    declare values: object|null;
+
     /**
      * Map an audit to an object suitable to return over the API
-     *
-     * @return {ApiAudit}
      */
-    toApi() {
+    toApi(): ApiAudit {
         if (this.Event === undefined) {
             throw new Error('Cannot convert audit to ApiAudit, event was not joined');
         }
@@ -424,10 +387,12 @@ export class Audit extends Model {
 }
 
 export class Grocery extends Model {
-    /**
-     * @return {ApiGrocery}
-     */
-    toApi() {
+    declare id: number;
+    declare label: string;
+    declare checked: boolean;
+    declare order: number;
+
+    toApi(): ApiGrocery {
         return {
             id:      this.id,
             label:   this.label,
@@ -444,12 +409,13 @@ export class Grocery extends Model {
 }
 
 export class DeviceVersion extends Model {
+    declare id: number;
+    declare device: string;
+    declare version: string;
+    declare lastSeen: Date;
 }
 
-/**
- * @param {Sequelize} sequelize
- */
-export function initModels(sequelize) {
+export function initModels(sequelize: Sequelize) {
     let ch = new ColumnHelper(sequelize);
 
     // Default cascading options

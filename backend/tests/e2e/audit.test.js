@@ -1,6 +1,6 @@
 import * as Constants from '../../src/constants.ts';
 import * as Helper from '../helper.js';
-import {Audit, Event, Grocery, User} from '../../src/db/models.js';
+import {Audit, Event, Grocery, User} from '../../src/db/models.ts';
 import {AndeoLunch} from '../../src/andeoLunch.js';
 import {expect} from '../chai-setup.js';
 import {getTestConfig} from '../../src/configProvider.js';

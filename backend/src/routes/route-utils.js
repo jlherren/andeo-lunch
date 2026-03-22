@@ -1,7 +1,7 @@
 import * as AuthUtils from '../authUtils.js';
 import HttpErrors from 'http-errors';
 import JsonWebToken from 'jsonwebtoken';
-import {User} from '../db/models.js';
+import {User} from '../db/models.ts';
 
 /**
  * @param {Request} request

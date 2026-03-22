@@ -1,6 +1,6 @@
 import * as Constants from '../../src/constants.ts';
 import * as Helper from '../helper.js';
-import {Absence} from '../../src/db/models.js';
+import {Absence} from '../../src/db/models.ts';
 import {AndeoLunch} from '../../src/andeoLunch.js';
 import {expect} from '../chai-setup.js';
 import {getTestConfig} from '../../src/configProvider.js';

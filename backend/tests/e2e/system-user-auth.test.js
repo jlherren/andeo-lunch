@@ -1,7 +1,7 @@
 import * as AuthUtils from '../../src/authUtils.js';
 import * as Helper from '../helper.js';
 import {AndeoLunch} from '../../src/andeoLunch.js';
-import {User} from '../../src/db/models.js';
+import {User} from '../../src/db/models.ts';
 import {expect} from '../chai-setup.js';
 import {getTestConfig} from '../../src/configProvider.js';
 import supertest from 'supertest';

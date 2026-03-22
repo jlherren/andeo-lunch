@@ -1,5 +1,5 @@
 import * as IcsUtils from '../icsUtils.js';
-import {Configuration} from '../db/models.js';
+import {Configuration} from '../db/models.ts';
 import HttpErrors from 'http-errors';
 
 /**

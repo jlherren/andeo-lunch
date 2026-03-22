@@ -1,6 +1,6 @@
 import * as Helper from '../helper.js';
 import {AndeoLunch} from '../../src/andeoLunch.js';
-import {DeviceVersion} from '../../src/db/models.js';
+import {DeviceVersion} from '../../src/db/models.ts';
 import {expect} from '../chai-setup.js';
 import {getTestConfig} from '../../src/configProvider.js';
 import supertest from 'supertest';

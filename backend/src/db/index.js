@@ -1,4 +1,4 @@
-import * as Models from './models.js';
+import * as Models from './models.ts';
 import {ConnectionRefusedError, Sequelize} from 'sequelize';
 import {SequelizeStorage, Umzug} from 'umzug';
 import {promises as fs} from 'fs';

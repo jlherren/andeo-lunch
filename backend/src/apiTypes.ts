@@ -42,12 +42,13 @@ export type ApiEvent = {
     costs?: ApiBalances;
     factors?: {vegetarian?: {money?: number}};
     transfers?: Array<ApiTransfer>;
-    comment?: string;
+    comment?: string|null;
     participationFlatRate?: number|null;
     participationFee?: number;
     participationFeeRecipientId?: number|null;
     triggerDefaultOptIn?: boolean;
     immutable?: boolean;
+    canEdit: boolean;
 };
 
 export type ApiParticipation = {

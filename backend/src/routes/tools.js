@@ -1,5 +1,5 @@
 import * as RouteUtils from './route-utils.js';
-import {Configuration, DeviceVersion} from '../db/models.js';
+import {Configuration, DeviceVersion} from '../db/models.ts';
 import {Op, Sequelize} from 'sequelize';
 import Joi from 'joi';
 import ms from 'ms';

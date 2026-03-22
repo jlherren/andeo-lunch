@@ -1,6 +1,6 @@
 import * as Constants from './constants.ts';
 import * as Utils from './utils.ts';
-import {Event, Lunch, Participation, Transaction, Transfer, User} from './db/models.js';
+import {Event, Lunch, Participation, Transaction, Transfer, User} from './db/models.ts';
 import {Op, Sequelize} from 'sequelize';
 
 let OPT_IN_PARTICIPATION_TYPES = [

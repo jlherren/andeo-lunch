@@ -1,7 +1,7 @@
 import * as AuditManager from '../auditManager.js';
 import * as Factory from './factory.js';
 import * as RouteUtils from './route-utils.js';
-import {Absence, Configuration, Transaction, User} from '../db/models.js';
+import {Absence, Configuration, Transaction, User} from '../db/models.ts';
 import HttpErrors from 'http-errors';
 import Joi from 'joi';
 

@@ -1,6 +1,6 @@
 import * as AuthUtils from '../authUtils.js';
 import * as RouteUtils from './route-utils.js';
-import {Configuration, User, UserPassword} from '../db/models.js';
+import {Configuration, User, UserPassword} from '../db/models.ts';
 import HttpErrors from 'http-errors';
 import Joi from 'joi';
 import {UniqueConstraintError} from 'sequelize';

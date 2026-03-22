@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import * as AuthUtils from '../src/authUtils.js';
-import {User, UserPassword} from '../src/db/models.js';
+import {User, UserPassword} from '../src/db/models.ts';
 import {AndeoLunch} from '../src/andeoLunch.js';
 import {Cli} from '../src/cli.js';
 import chalk from 'chalk';

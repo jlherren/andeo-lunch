@@ -1,4 +1,4 @@
-import {Configuration, Permission, User, UserPassword, UserPermission} from '../src/db/models.js';
+import {Configuration, Permission, User, UserPassword, UserPermission} from '../src/db/models.ts';
 import {expect} from './chai-setup.js';
 
 /**

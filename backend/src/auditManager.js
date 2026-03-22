@@ -1,4 +1,4 @@
-import {Audit} from './db/models.js';
+import {Audit} from './db/models.ts';
 
 /**
  * @param {Transaction} transaction

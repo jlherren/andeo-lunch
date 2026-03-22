@@ -155,7 +155,7 @@
             "unix"
         ],
         "lines-around-directive": "error",
-        "lines-between-class-members": "error",
+        "lines-between-class-members": "off",
         "max-depth": "error",
         "max-len": "off",
         "max-lines": [
@@ -270,10 +270,7 @@
         "no-unmodified-loop-condition": "error",
         "no-unneeded-ternary": "error",
         "no-unused-expressions": "error",
-        "no-use-before-define": [
-            "error",
-            "nofunc"
-        ],
+        "no-use-before-define": "off",
         "no-useless-call": "error",
         "no-useless-computed-key": "error",
         "no-useless-concat": "error",

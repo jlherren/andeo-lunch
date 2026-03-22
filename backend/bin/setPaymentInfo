@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import {Configuration, User} from '../src/db/models.js';
+import {Configuration, User} from '../src/db/models.ts';
 import {AndeoLunch} from '../src/andeoLunch.js';
 import {Cli} from '../src/cli.js';
 import chalk from 'chalk';

@@ -1,11 +1,9 @@
+import type {User} from './db/models.ts';
+
 /**
  * Check whether the given date is editable by the user.
- *
- * @param {User} user
- * @param {Date} date
- * @return {boolean}
  */
-export function userCanEditDate(user, date) {
+export function userCanEditDate(user: User, date: Date): boolean {
     let maxPastDaysEdit = user.maxPastDaysEdit;
     if (maxPastDaysEdit === null) {
         return true;
