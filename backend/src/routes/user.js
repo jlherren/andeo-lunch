@@ -72,6 +72,11 @@ async function getUserAbsences(ctx) {
 async function createUserAbsence(ctx) {
     /** @type {ApiAbsence} */
     let apiAbsence = RouteUtils.validateBody(ctx.request, absenceCreateSchema);
+
+    if (apiAbsence.end.getTime() < apiAbsence.start.getTime()) {
+        throw new HttpErrors.UnprocessableEntity('End date cannot be before start date');
+    }
+
     let userId = ctx.params.user;
     let absenceId = await ctx.sequelize.transaction(async transaction => {
         let absence = await Absence.create({
