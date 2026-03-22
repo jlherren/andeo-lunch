@@ -1,5 +1,3 @@
-version: '3.6'
-
 # Docker compose to set up the testing instance
 
 services:

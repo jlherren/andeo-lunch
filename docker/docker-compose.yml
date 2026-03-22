@@ -1,5 +1,3 @@
-version: '3.6'
-
 # This is an example deployment which will need to be adapted to your needs!
 
 # You may remove the db container and use an existing database server.
