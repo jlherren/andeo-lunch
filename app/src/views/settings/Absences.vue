@@ -139,8 +139,8 @@
                     date.setHours(23, 59, 59, 999);
                     return {
                         id:    absence.id,
-                        start: absence.start ? absence.start : '\u221e',
-                        end:   absence.end ? absence.end : '\u221e',
+                        start: absence.start,
+                        end:   absence.end,
                         past:  date.getTime() < now,
                     };
                 });

@@ -310,8 +310,8 @@ export class Transaction extends Model {
 /**
  * @property {number} user
  * @property {User} [User]
- * @property {Date|null} start
- * @property {Date|null} end
+ * @property {Date} start
+ * @property {Date} end
  */
 export class Absence extends Model {
     /**
@@ -649,8 +649,8 @@ export function initModels(sequelize) {
 
     Absence.init({
         user:  {type: DataTypes.INTEGER, allowNull: false},
-        start: {type: DataTypes.DATEONLY, allowNull: true, defaultValue: null},
-        end:   {type: DataTypes.DATEONLY, allowNull: true, defaultValue: null},
+        start: {type: DataTypes.DATEONLY, allowNull: false},
+        end:   {type: DataTypes.DATEONLY, allowNull: false},
     }, {
         sequelize,
         modelName: 'absence',

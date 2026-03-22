@@ -1,8 +1,8 @@
 CREATE TABLE `absence` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user` int(11) NOT NULL,
-  `start` date DEFAULT NULL,
-  `end` date DEFAULT NULL,
+  `start` date NOT NULL,
+  `end` date NOT NULL,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL,
   PRIMARY KEY (`id`),
