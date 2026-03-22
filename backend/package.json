@@ -9,12 +9,13 @@
     "scripts": {
         "serve": "node bin/andeoLunch",
         "serve:watch": "nodemon bin/andeoLunch",
-        "check": "npm run lint && npm run test",
+        "check": "npm run typecheck && npm run lint && npm run test",
         "test": "mocha --parallel",
         "test:mariadb": "TEST_DB=mariadb mocha",
         "test:watch": "mocha --watch",
-        "lint": "eslint src tests migrations",
-        "lint:fix": "eslint --fix src tests migrations"
+        "typecheck": "tsc --noEmit",
+        "lint": "eslint --ext .js,.ts src tests migrations",
+        "lint:fix": "eslint --fix --ext .js,.ts src tests migrations"
     },
     "dependencies": {
         "@koa/cors": "~5.0.0",
@@ -43,6 +44,8 @@
         "@types/koa-router": "~7.4.9",
         "@types/mocha": "~10.0.10",
         "@types/supertest": "~6.0.3",
+        "@typescript-eslint/eslint-plugin": "~8.57.1",
+        "@typescript-eslint/parser": "~8.57.1",
         "chai": "~6.2.2",
         "chai-subset": "~1.6.0",
         "dirty-chai": "~3.0.0",
@@ -52,6 +55,7 @@
         "mocha": "~11.7.5",
         "nodemon": "~3.1.14",
         "sqlite3": "~5.1.7",
-        "supertest": "~7.2.2"
+        "supertest": "~7.2.2",
+        "typescript": "~5.9.0"
     }
 }
