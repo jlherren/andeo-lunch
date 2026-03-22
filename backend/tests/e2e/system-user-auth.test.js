@@ -24,7 +24,7 @@ describe('system user authentication', () => {
         await systemUser.update({active: true});
         await Helper.insertPermission(systemUser.id, 'admin.user');
         let secret = await AuthUtils.getAuthSecret();
-        let token = await systemUser.generateToken(secret);
+        let token = systemUser.generateToken(secret);
         client = supertest.agent(andeoLunch.listen());
         client.set('Authorization', `Bearer ${token}`);
     });

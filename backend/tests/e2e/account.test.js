@@ -95,7 +95,7 @@ describe('Account', () => {
         it('returns a new token after renewing', async () => {
             // Create a valid token
             let secret = await AuthUtils.getAuthSecret();
-            let token = await user.generateToken(secret);
+            let token = user.generateToken(secret);
             let response = await request.post('/api/account/renew').set('Authorization', `Bearer ${token}`);
             expect(response.status).to.equal(200);
             let data = await JsonWebToken.verify(response.body.token, secret);
@@ -110,7 +110,7 @@ describe('Account', () => {
         it('returns an error when renewing an expired token', async () => {
             // Create an expired token
             let secret = await AuthUtils.getAuthSecret();
-            let token = await user.generateToken(secret, {expiresIn: '-1 day'});
+            let token = user.generateToken(secret, {expiresIn: '-1 day'});
             let response = await request.post('/api/account/renew').set('Authorization', `Bearer ${token}`);
             expect(response.status).to.equal(401);
         });
@@ -118,7 +118,7 @@ describe('Account', () => {
         it('returns an error when renewing a newly inactive user', async () => {
             // Create a valid token
             let secret = await AuthUtils.getAuthSecret();
-            let token = await inactiveUser.generateToken(secret);
+            let token = inactiveUser.generateToken(secret);
             let response = await request.post('/api/account/renew').set('Authorization', `Bearer ${token}`);
             expect(response.status).to.equal(401);
         });
@@ -144,7 +144,7 @@ describe('Account', () => {
         it('works when providing an expired token', async () => {
             // Create an expired token
             let secret = await AuthUtils.getAuthSecret();
-            let token = await user.generateToken(secret, {expiresIn: '-1 day'});
+            let token = user.generateToken(secret, {expiresIn: '-1 day'});
             let response = await request.get('/api/account/check').set('Authorization', `Bearer ${token}`);
             expect(response.status).to.equal(200);
             expect(response.body.userId).to.be.null();
@@ -155,7 +155,7 @@ describe('Account', () => {
         it('works when providing a valid token', async () => {
             // Create a valid token
             let secret = await AuthUtils.getAuthSecret();
-            let token = await user.generateToken(secret);
+            let token = user.generateToken(secret);
             let response = await request.get('/api/account/check').set('Authorization', `Bearer ${token}`);
             expect(response.status).to.equal(200);
             expect(response.body.userId).to.equal(user.id);
@@ -167,7 +167,7 @@ describe('Account', () => {
             // Create a valid token that expires soon
             let secret = await AuthUtils.getAuthSecret();
             let thirtyDaysAgo = Math.floor(Date.now() / 1000) - 30 * 24 * 60 * 60;
-            let token = await user.generateToken(secret, {expiresIn: '31 days'}, {iat: thirtyDaysAgo});
+            let token = user.generateToken(secret, {expiresIn: '31 days'}, {iat: thirtyDaysAgo});
             let response = await request.get('/api/account/check').set('Authorization', `Bearer ${token}`);
             expect(response.status).to.equal(200);
             expect(response.body.userId).to.equal(user.id);
@@ -179,7 +179,7 @@ describe('Account', () => {
             let permission = await Permission.create({name: 'admin'});
             await UserPermission.create({user: user.id, permission: permission.id});
             let secret = await AuthUtils.getAuthSecret();
-            let token = await user.generateToken(secret);
+            let token = user.generateToken(secret);
             let response = await request.get('/api/account/check').set('Authorization', `Bearer ${token}`);
             expect(response.status).to.equal(200);
             expect(response.body.permissions).to.deep.equal(['admin']);
@@ -204,7 +204,7 @@ describe('Account', () => {
 
         beforeEach(async () => {
             let secret = await AuthUtils.getAuthSecret();
-            token = await user.generateToken(secret);
+            token = user.generateToken(secret);
         });
 
         it('allows to change password', async () => {
