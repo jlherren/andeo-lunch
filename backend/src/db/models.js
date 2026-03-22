@@ -33,8 +33,8 @@ export class Secret extends Model {
  * @property {number} points
  * @property {number} money
  * @property {number|null} maxPastDaysEdit
- * @property {number} pointExempted
- * @property {number} hiddenFromEvents
+ * @property {boolean} pointExempted
+ * @property {boolean} hiddenFromEvents
  * @property {Object} settings
  * @property {Array<Permission>} Permissions
  */
@@ -172,7 +172,7 @@ export class Event extends Model {
 /**
  * @property {number} pointsCost
  * @property {number} moneyCost
- * @property {number|null} vegetarianMoneyFactor
+ * @property {number} vegetarianMoneyFactor
  * @property {number|null} participationFlatRate
  * @property {number} participationFee
  * @property {number|null} participationFeeRecipient
@@ -337,7 +337,7 @@ export class Absence extends Model {
 
 /**
  * @property {Date} date
- * @property {number|null} actingUser
+ * @property {number} actingUser
  * @property {User|null} [ActingUser]
  * @property {string} type
  * @property {number|null} event
