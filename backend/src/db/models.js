@@ -319,7 +319,6 @@ export class Absence extends Model {
     toApi() {
         return {
             id:     this.id,
-            userId: this.user.id,
             start:  this.start,
             end:    this.end,
         };

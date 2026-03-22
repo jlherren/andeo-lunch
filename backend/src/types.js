@@ -30,14 +30,15 @@
  * @property {Date} date
  * @property {string} name
  * @property {{points: number, money: number}} [costs]
- * @property {{vegetarian: number}} [factors]
+ * @property {{vegetarian: {money: number}}} [factors]
  * @property {Array<ApiTransfer>} [transfers]
- * @property {string} [comment]
+ * @property {string|null} [comment]
  * @property {number|null} [participationFlatRate]
  * @property {number} [participationFee]
  * @property {number|null} [participationFeeRecipientId]
  * @property {boolean} [triggerDefaultOptIn]
  * @property {boolean} [immutable]
+ * @property {boolean} canEdit
  */
 
 /**
@@ -61,7 +62,7 @@
  * @property {number|null} eventId
  * @property {string|null} eventName
  * @property {number|null} groceryId
- * @property {string|null} groceryName
+ * @property {string|null} groceryLabel
  * @property {Date|null} eventDate
  * @property {object|null} values
  */
@@ -69,7 +70,6 @@
 /**
  * @typedef {Object} ApiAbsence
  * @property {number} id
- * @property {number} userId
  * @property {Date} start
  * @property {Date} end
  */
