@@ -13,6 +13,7 @@ export const CURRENCY_NAMES = Object.freeze({
     [CURRENCIES.MONEY]:  'money',
 });
 export const CURRENCY_IDS = Object.freeze(Utils.objectFlip(CURRENCY_NAMES, true));
+export type CurrencyId = (typeof CURRENCIES)[keyof typeof CURRENCIES];
 
 export const EVENT_TYPES = Object.freeze({
     LUNCH:    1,
@@ -27,6 +28,7 @@ export const EVENT_TYPE_NAMES = Object.freeze({
     [EVENT_TYPES.TRANSFER]: 'transfer',
 });
 export const EVENT_TYPE_IDS = Object.freeze(Utils.objectFlip(EVENT_TYPE_NAMES, true));
+export type EventTypeId = (typeof EVENT_TYPES)[keyof typeof EVENT_TYPES];
 
 export const PARTICIPATION_TYPES = Object.freeze({
     OMNIVOROUS: 1,
@@ -43,8 +45,9 @@ export const PARTICIPATION_TYPE_NAMES = Object.freeze({
     [PARTICIPATION_TYPES.UNDECIDED]:  'undecided',
 });
 export const PARTICIPATION_TYPE_IDS = Object.freeze(Utils.objectFlip(PARTICIPATION_TYPE_NAMES, true));
+export type ParticipationTypeId = (typeof PARTICIPATION_TYPES)[keyof typeof PARTICIPATION_TYPES];
 
-export const EVENT_TYPE_VALID_PARTICIPATIONS = Object.freeze({
+export const EVENT_TYPE_VALID_PARTICIPATIONS: Readonly<Record<number, Array<number>>> = Object.freeze({
     [EVENT_TYPES.LUNCH]:   [
         // First one is the default
         PARTICIPATION_TYPES.UNDECIDED,

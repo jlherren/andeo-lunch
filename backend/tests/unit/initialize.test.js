@@ -1,4 +1,4 @@
-import * as Constants from '../../src/constants.js';
+import * as Constants from '../../src/constants.ts';
 import * as TransactionRebuilder from '../../src/transactionRebuilder.js';
 import {Absence, Event, Grocery, Lunch, Participation, Transaction, User} from '../../src/db/models.js';
 import {AndeoLunch} from '../../src/andeoLunch.js';

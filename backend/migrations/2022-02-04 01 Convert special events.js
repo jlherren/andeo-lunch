@@ -1,4 +1,4 @@
-import * as Constants from '../src/constants.js';
+import * as Constants from '../src/constants.ts';
 import {QueryTypes} from 'sequelize';
 
 /**

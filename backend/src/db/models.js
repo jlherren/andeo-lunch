@@ -1,7 +1,7 @@
-import * as Constants from '../constants.js';
+import * as Constants from '../constants.ts';
 import * as EventManager from '../eventManager.js';
 import {DataTypes, Model} from 'sequelize';
-import {ColumnHelper} from './columnHelper.js';
+import {ColumnHelper} from './columnHelper.ts';
 import jsonWebToken from 'jsonwebtoken';
 
 /**

@@ -1,4 +1,4 @@
-import * as Constants from './constants.js';
+import * as Constants from './constants.ts';
 import * as Utils from './utils.ts';
 import {Event, Lunch, Participation, Transaction, Transfer, User} from './db/models.js';
 import {Op, Sequelize} from 'sequelize';

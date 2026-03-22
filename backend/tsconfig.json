@@ -12,6 +12,7 @@
         "noUnusedLocals": true
     },
     "include": [
+        "migrations/**/*.ts",
         "src/**/*.ts"
     ]
 }

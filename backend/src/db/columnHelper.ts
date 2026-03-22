@@ -1,21 +1,17 @@
-import {DataTypes} from 'sequelize';
+import {DataTypes, Sequelize} from 'sequelize';
+import type {DataType} from 'sequelize/types/data-types';
 
 /**
  * Helper class to create columns
  */
 export class ColumnHelper {
-    /**
-     * @param {Sequelize} sequelize
-     */
-    constructor(sequelize) {
+    sequelize: Sequelize;
+
+    constructor(sequelize: Sequelize) {
         this.sequelize = sequelize;
     }
 
-    /**
-     * @param {number} len
-     * @return {any}
-     */
-    ascii(len) {
+    ascii(len: number): DataType {
         switch (this.sequelize.getDialect()) {
             case 'mysql':
             case 'mariadb':

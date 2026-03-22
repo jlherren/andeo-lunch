@@ -1,4 +1,4 @@
-import {ColumnHelper} from '../src/db/columnHelper.js';
+import {ColumnHelper} from '../src/db/columnHelper.ts';
 import {DataTypes} from 'sequelize';
 
 /**

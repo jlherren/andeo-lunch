@@ -1,4 +1,4 @@
-import * as Constants from '../constants.js';
+import * as Constants from '../constants.ts';
 import * as RouteUtils from './route-utils.js';
 import Joi from 'joi';
 

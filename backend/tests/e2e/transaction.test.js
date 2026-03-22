@@ -1,4 +1,4 @@
-import * as Constants from '../../src/constants.js';
+import * as Constants from '../../src/constants.ts';
 import * as Helper from '../helper.js';
 import {AndeoLunch} from '../../src/andeoLunch.js';
 import {User} from '../../src/db/models.js';

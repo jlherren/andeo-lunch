@@ -1,5 +1,5 @@
 import * as AuditManager from '../auditManager.js';
-import * as Constants from '../constants.js';
+import * as Constants from '../constants.ts';
 import * as EventManager from '../eventManager.js';
 import * as RouteUtils from './route-utils.js';
 import * as TransactionRebuilder from '../transactionRebuilder.js';
