@@ -22,7 +22,7 @@
         "bcryptjs": "~3.0.3",
         "bytes": "~3.1.2",
         "chalk": "~4.1.2",
-        "http-errors": "^2.0.1",
+        "http-errors": "~2.0.1",
         "ics": "~3.8.1",
         "jest-diff": "~29.7.0",
         "joi": "~18.0.2",
