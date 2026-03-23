@@ -11,7 +11,15 @@ async function main() {
     console.log(chalk.bold('Starting Andeo Lunch backend...'));
 
     let mainConfig = await getMainConfig();
+
+    let isCypress = process.env.ANDEO_LUNCH_CYPRESS !== undefined;
+    if (isCypress) {
+        // Do not migrate in Cypress mode, since the migrations and the reset before the first test might clash with each other.
+        console.log('Cypress mode is one, not migrating DB unless asked to');
+    }
+
     let lm = new AndeoLunch({
+        migrate: !isCypress,
         config:  mainConfig,
         logging: true,
     });
