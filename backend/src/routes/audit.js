@@ -5,10 +5,8 @@ import {Audit} from '../db/models.js';
  * @return {Promise<void>}
  */
 async function listAudits(ctx) {
-    let include = ctx.query.with === 'names' ? ['Event', 'Grocery', 'ActingUser', 'AffectedUser'] : [];
-
     let audits = await Audit.findAll({
-        include,
+        include: ['Event', 'Grocery', 'ActingUser', 'AffectedUser'],
         order:   [
             ['date', 'DESC'],
             ['id', 'DESC'],

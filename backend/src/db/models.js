@@ -353,6 +353,9 @@ export class Audit extends Model {
      * @return {ApiAudit}
      */
     toApi() {
+        if (this.Event === undefined) {
+            throw new Error('Cannot convert audit to ApiAudit, event was not joined');
+        }
         return {
             id:               this.id,
             date:             this.date,
@@ -361,7 +364,7 @@ export class Audit extends Model {
             actingUserName:   this.getActingUserName(),
             eventId:          this.event,
             eventName:        this.getEventName(),
-            eventDate:        this.Event?.date,
+            eventDate:        this.Event?.date ?? null,
             groceryId:        this.grocery,
             groceryLabel:     this.getGroceryLabel(),
             affectedUserId:   this.affectedUser,
@@ -371,36 +374,49 @@ export class Audit extends Model {
     }
 
     getActingUserName() {
-        if (this.ActingUser) {
-            return this.ActingUser.name;
-        } else if (this.ActingUser === null && this.actingUser !== null) {
+        if (this.ActingUser === undefined) {
+            throw new Error('Cannot get acting user name, it was not joined');
+        }
+        if (this.ActingUser === null) {
             return 'Deleted user';
         }
-        return null;
+        return this.ActingUser.name;
     }
 
     getEventName() {
-        if (this.Event) {
+        if (this.Event === undefined) {
+            throw new Error('Cannot get event name, it was not joined');
+        }
+        if (this.Event !== null) {
             return this.Event.name;
-        } else if (this.Event === null && this.event !== null) {
+        }
+        if (this.event !== null) {
             return 'Deleted event';
         }
         return null;
     }
 
     getGroceryLabel() {
-        if (this.Grocery) {
+        if (this.Grocery === undefined) {
+            throw new Error('Cannot get grocery label, it was not joined');
+        }
+        if (this.Grocery !== null) {
             return this.Grocery.label;
-        } else if (this.Grocery === null && this.grocery !== null) {
+        }
+        if (this.grocery !== null) {
             return 'Deleted grocery';
         }
         return null;
     }
 
     getAffectedUserName() {
-        if (this.AffectedUser) {
+        if (this.AffectedUser === undefined) {
+            throw new Error('Cannot get affected user name, it was not joined');
+        }
+        if (this.AffectedUser !== null) {
             return this.AffectedUser.name;
-        } else if (this.AffectedUser === null && this.affectedUser !== null) {
+        }
+        if (this.affectedUser !== null) {
             return 'Deleted user';
         }
         return null;

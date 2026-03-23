@@ -376,7 +376,7 @@ export let useStore = defineStore('main', {
                 Cache.invalidate('audits');
             }
             return Cache.ifNotFresh('audits', 0, 5000, async () => {
-                let response = await Backend.get('/audits?with=names');
+                let response = await Backend.get('/audits');
                 let audits = response.data.audits;
                 for (let audit of audits) {
                     audit.date = new Date(audit.date);
