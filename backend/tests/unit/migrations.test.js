@@ -1,4 +1,4 @@
-import * as Validator from '../../src/db/validator.js';
+import * as Validator from '../../src/db/validator.ts';
 import {AndeoLunch} from '../../src/andeoLunch.js';
 import {expect} from '../chai-setup.js';
 import {getTestConfig} from '../../src/configProvider.js';
