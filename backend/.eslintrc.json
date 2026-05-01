@@ -399,15 +399,17 @@
         {
             "files": ["**/*.ts"],
             "parser": "@typescript-eslint/parser",
-            "plugins": ["@typescript-eslint"],
-            "parserOptions": {
-                "ecmaVersion": 2020,
-                "sourceType": "module"
-            },
+            "plugins": [
+                "@typescript-eslint"
+            ],
+            "extends": [
+                "plugin:@typescript-eslint/recommended"
+            ],
             "rules": {
                 "no-unused-vars": "off",
                 "@typescript-eslint/no-unused-vars": "error",
                 "require-jsdoc": "off",
+                "prefer-const": "off",
                 "jsdoc/require-jsdoc": "off",
                 "jsdoc/require-param": "off",
                 "jsdoc/require-param-type": "off",

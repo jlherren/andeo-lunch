@@ -31,7 +31,7 @@ export class User extends Model {
     declare maxPastDaysEdit: number|null;
     declare pointExempted: boolean;
     declare hiddenFromEvents: boolean;
-    declare settings: Object;
+    declare settings: object;
     declare Permissions: Array<Permission>;
 
     generateToken(secret: string, options: object, extraPayload: object = {}): string {
