@@ -1,4 +1,4 @@
-import * as AuditManager from '../auditManager.js';
+import * as AuditManager from '../auditManager.ts';
 import * as Factory from './factory.js';
 import * as RouteUtils from './route-utils.js';
 import {Absence, Configuration, Transaction, User} from '../db/models.ts';

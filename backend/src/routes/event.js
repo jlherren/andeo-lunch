@@ -1,4 +1,4 @@
-import * as AuditManager from '../auditManager.js';
+import * as AuditManager from '../auditManager.ts';
 import * as Constants from '../constants.ts';
 import * as EventManager from '../eventManager.ts';
 import * as RouteUtils from './route-utils.js';
