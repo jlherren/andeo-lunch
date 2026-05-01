@@ -3,7 +3,7 @@
 import * as AuthUtils from '../src/authUtils.ts';
 import {User, UserPassword} from '../src/db/models.ts';
 import {AndeoLunch} from '../src/andeoLunch.js';
-import {Cli} from '../src/cli.js';
+import {Cli} from '../src/cli.ts';
 import chalk from 'chalk';
 import {getMainConfig} from '../src/configProvider.js';
 import {sprintf} from 'sprintf-js';

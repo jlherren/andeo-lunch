@@ -1,19 +1,25 @@
 import {Writable} from 'stream';
 import readline from 'readline';
 
-let mutableStdout = new Writable({
-    write: function (chunk, encoding, callback) {
+class MutableStdout extends Writable {
+    muted: boolean = false;
+
+    _write(chunk: Uint8Array, encoding: BufferEncoding, callback: (error?: Error | null) => void): void {
         if (!this.muted) {
             process.stdout.write(chunk, encoding);
         }
         callback();
-    },
-});
+    }
+}
+
+let mutableStdout = new MutableStdout();
 
 /**
  * Simple CLI interface for prompting
  */
 export class Cli {
+    private rl: readline.Interface;
+
     constructor() {
         this.rl = readline.createInterface({
             input:    process.stdin,
@@ -23,10 +29,9 @@ export class Cli {
     }
 
     /**
-     * @param {string} question
-     * @return {Promise<string>}
+     * Prompts the user with a question.
      */
-    question(question) {
+    question(question: string): Promise<string> {
         return new Promise(resolve => {
             this.rl.question(question, answer => {
                 resolve(answer);
@@ -35,10 +40,9 @@ export class Cli {
     }
 
     /**
-     * @param {string} question
-     * @return {Promise<string>}
+     * Prompts the user for a password securely.
      */
-    password(question) {
+    password(question: string): Promise<string> {
         return new Promise(resolve => {
             this.rl.question(question, answer => {
                 console.log();
@@ -50,9 +54,9 @@ export class Cli {
     }
 
     /**
-     * Close the CLI
+     * Close the CLI interface.
      */
-    close() {
+    close(): void {
         this.rl.close();
     }
 }
