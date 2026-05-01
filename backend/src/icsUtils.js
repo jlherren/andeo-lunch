@@ -1,4 +1,4 @@
-import * as AuthUtils from './authUtils.js';
+import * as AuthUtils from './authUtils.ts';
 import HttpErrors from 'http-errors';
 import {createHmac} from 'node:crypto';
 

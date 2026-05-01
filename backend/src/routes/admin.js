@@ -1,4 +1,4 @@
-import * as AuthUtils from '../authUtils.js';
+import * as AuthUtils from '../authUtils.ts';
 import * as RouteUtils from './route-utils.js';
 import {Configuration, User, UserPassword} from '../db/models.ts';
 import HttpErrors from 'http-errors';

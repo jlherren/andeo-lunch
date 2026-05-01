@@ -1,4 +1,4 @@
-import * as AuthUtils from '../src/authUtils.js';
+import * as AuthUtils from '../src/authUtils.ts';
 import * as Constants from '../src/constants.ts';
 import {ColumnHelper} from '../src/db/columnHelper.ts';
 import {DataTypes} from 'sequelize';

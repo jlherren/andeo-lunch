@@ -1,4 +1,4 @@
-import * as AuthUtils from '../../src/authUtils.js';
+import * as AuthUtils from '../../src/authUtils.ts';
 import * as Helper from '../helper.js';
 import {DeviceVersion, Permission, UserPermission} from '../../src/db/models.ts';
 import {AndeoLunch} from '../../src/andeoLunch.js';
