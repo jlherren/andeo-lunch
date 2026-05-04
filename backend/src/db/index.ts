@@ -18,14 +18,12 @@ const ENV_FALLBACKS = {
 // eslint-disable-next-line no-underscore-dangle
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
-/**
- * @param {object} options
- * @param {boolean} [options.migrate]
- * @param {boolean} [options.quiet]
- * @param {Object<string, any>} sequelizeOptions
- * @return {Promise<Sequelize>}
- */
-export async function connect(options, sequelizeOptions) {
+type DbConnectOptions = {
+    migrate?: boolean;
+    quiet?: boolean;
+};
+
+export async function connect({migrate = true, quiet = false}: DbConnectOptions, sequelizeOptions: Record<string, unknown>): Promise<Sequelize> {
     sequelizeOptions = {
         logging: sequelizeOptions.logSql ? console.log : false,
         define:  {
@@ -37,19 +35,21 @@ export async function connect(options, sequelizeOptions) {
     };
 
     // Use environment for missing config
-    for (let confKey in ENV_FALLBACKS) {
+    for (let [confKey, envName] of Object.entries(ENV_FALLBACKS)) {
         if (sequelizeOptions[confKey] !== undefined) {
             continue;
         }
-        let envName = ENV_FALLBACKS[confKey];
-        if (process.env[envName] !== undefined) {
+        let value = process.env[envName];
+        if (value !== undefined) {
             console.log(`Loading missing DB config '${confKey}' from environment variable ${envName}`);
-            sequelizeOptions[confKey] = process.env[envName];
+            sequelizeOptions[confKey] = value;
             continue;
         }
-        if (process.env[`${envName}_FILE`] !== undefined) {
-            console.log(`Loading missing DB config '${confKey}' from environment variable ${envName}_FILE`);
-            let str = await fs.readFile(process.env[`${envName}_FILE`], 'utf-8');
+        envName += '_FILE';
+        value = process.env[envName];
+        if (value !== undefined) {
+            console.log(`Loading missing DB config '${confKey}' from environment variable ${envName}`);
+            let str = await fs.readFile(value, 'utf-8');
             sequelizeOptions[confKey] = str.trim();
         }
     }
@@ -76,8 +76,8 @@ export async function connect(options, sequelizeOptions) {
     // Models need to be initialized before the migrations, since migrations may want to insert data.
     Models.initModels(sequelize);
 
-    if (options.migrate) {
-        await applyMigrations(sequelize, options.quiet);
+    if (migrate) {
+        await applyMigrations(sequelize, quiet);
     }
 
     return sequelize;
@@ -85,12 +85,8 @@ export async function connect(options, sequelizeOptions) {
 
 /**
  * Apply migrations to the DB
- *
- * @param {Sequelize} sequelize
- * @param {boolean} quiet
- * @return {Promise<void>}
  */
-export async function applyMigrations(sequelize, quiet) {
+export async function applyMigrations(sequelize: Sequelize, quiet: boolean): Promise<void> {
     // Apply migrations
     const umzug = new Umzug({
         migrations: {
