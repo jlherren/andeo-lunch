@@ -57,10 +57,10 @@ function processError(error) {
  * Send an authenticated (if possible) GET request
  *
  * @param {string} url
- * @param {object} config
  * @return {Promise<AxiosResponse<any>>}
  */
-async function get(url, config = {}) {
+async function get(url) {
+    let config = {};
     addAuthorizationHeader(config);
     try {
         return await axios.get(BACKEND_URL + url, config);
@@ -76,10 +76,10 @@ async function get(url, config = {}) {
  *
  * @param {string} url
  * @param {object} data
- * @param {object} config
  * @return {Promise<AxiosResponse<any>>}
  */
-async function post(url, data, config = {}) {
+async function post(url, data) {
+    let config = {};
     addAuthorizationHeader(config);
     try {
         return await axios.post(BACKEND_URL + url, data, config);
@@ -94,10 +94,10 @@ async function post(url, data, config = {}) {
  * Send an authenticated (if possible) DELETE request
  *
  * @param {string} url
- * @param {object} config
  * @return {Promise<AxiosResponse<any>>}
  */
-async function delete0(url, config = {}) {
+async function delete0(url) {
+    let config = {};
     addAuthorizationHeader(config);
     try {
         return await axios.delete(BACKEND_URL + url, config);

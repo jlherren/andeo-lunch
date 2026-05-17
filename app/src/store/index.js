@@ -210,9 +210,22 @@ export let useStore = defineStore('main', {
         },
 
         // Events
+
+        /**
+         * @param {Record<string, string|Date>} params
+         * @return {Promise<void>}
+         */
         fetchEvents(params) {
-            return Cache.ifNotFresh('events', JSON.stringify(params), 10000, async () => {
-                let response = await Backend.get('/events', {params});
+            let urlParams = new URLSearchParams();
+            for (let [key, value] of Object.entries(params)) {
+                if (value instanceof Date) {
+                    value = value.toISOString();
+                }
+                urlParams.set(key, value);
+            }
+            let paramsString = urlParams.toString();
+            return Cache.ifNotFresh('events', paramsString, 10000, async () => {
+                let response = await Backend.get(`/events?${paramsString}`);
                 for (let event of response.data.events) {
                     event.date = new Date(event.date);
                     Vue.set(this._events, event.id, event);
