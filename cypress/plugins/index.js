@@ -1,5 +1,4 @@
 import MariaDB from 'mariadb';
-import axios from 'axios';
 
 /** @type {MariaDB.Connection|null} */
 let dbConnection = null;
@@ -53,7 +52,10 @@ export async function dbPurge(config) {
     await connection.query('CREATE DATABASE andeolunchtest');
     // Dropping the database will reset the 'current db'
     await connection.query('USE andeolunchtest');
-    await axios.get(`${config.baseUrl}/api/migrate`);
+    let response = await fetch(`${config.baseUrl}/api/migrate`);
+    if (!response.ok) {
+        throw new Error(`Migration request failed: ${response.status} ${response.statusText}`);
+    }
     return null;
 }
 
