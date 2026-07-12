@@ -1,4 +1,4 @@
-FROM node:24.15-bookworm-slim AS app-build
+FROM node:24.18-bookworm-slim AS app-build
 ARG VUE_APP_BACKEND_URL
 ARG VUE_APP_BRANDING_TITLE
 ARG VUE_APP_BUILD_COMMIT

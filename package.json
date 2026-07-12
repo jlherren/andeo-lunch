@@ -17,5 +17,12 @@
         "check:app": "npm run check -w andeo-lunch-app",
         "check:backend": "npm run check -w andeo-lunch-backend",
         "check:cypress": "npm run check -w andeo-lunch-cypress"
+    },
+    "allowScripts": {
+        "core-js@3.49.0": true,
+        "cypress@15.18.1": true,
+        "sqlite3@5.1.7": true,
+        "vue-demi@0.14.10": true,
+        "yorkie@2.0.0": true
     }
 }

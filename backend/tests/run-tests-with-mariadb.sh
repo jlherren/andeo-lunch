@@ -16,7 +16,7 @@ cd $(dirname "$0")/..
 echo "Removing existing container"
 docker stop "$DB_CONTAINER_NAME" 2> /dev/null || true
 
-# This only tests LTS versions of MariaDB.  Production currently uses 10.6.
+# This only tests LTS versions of MariaDB. Production currently uses 10.11.
 
 for MARIADB_VERSION in 10.11 11.8; do
     echo "Starting MariaDB $MARIADB_VERSION"
