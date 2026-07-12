@@ -1,10 +1,8 @@
 import {Audit} from '../db/models.ts';
+import type {Context} from 'koa';
+import type Router from '@koa/router';
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function listAudits(ctx) {
+async function listAudits(ctx: Context): Promise<void> {
     let audits = await Audit.findAll({
         include: ['Event', 'Grocery', 'ActingUser', 'AffectedUser'],
         order:   [
@@ -19,9 +17,6 @@ async function listAudits(ctx) {
     };
 }
 
-/**
- * @param {Router} router
- */
-export default function register(router) {
+export default function register(router: Router): void {
     router.get('/audits', listAudits);
 }
