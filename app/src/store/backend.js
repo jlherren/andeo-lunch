@@ -1,4 +1,3 @@
-import Axios from 'axios';
 import {EventService} from '@/services/eventService';
 
 if (!process.env.VUE_APP_BACKEND_URL) {
@@ -6,8 +5,6 @@ if (!process.env.VUE_APP_BACKEND_URL) {
 }
 
 const BACKEND_URL = process.env.VUE_APP_BACKEND_URL;
-
-let axios = Axios.create();
 
 /**
  * Check whether an authorization token exists at all
@@ -29,46 +26,93 @@ function getToken() {
 }
 
 /**
- * @param {object} config
+ * Parse a fetch response body.
+ *
+ * @param {Response} response
+ * @return {Promise<string|Record<string, string>>}
  */
-function addAuthorizationHeader(config) {
-    let token = getToken();
-    // TODO: Validate the token locally before sending it?
-    if (token !== null) {
-        config.headers ??= {};
-        config.headers.Authorization = `Bearer ${token}`;
+async function parseResponseData(response) {
+    let text = await response.text();
+    if (text.length === 0) {
+        return '';
     }
+
+    let contentType = response.headers.get('content-type') ?? '';
+    if (contentType.startsWith('application/json')) {
+        return JSON.parse(text);
+    }
+    return text;
 }
 
 /**
- * Process an Axios thrown error to contain a better error message
- *
- * @param {Error} error
+ * @typedef {{body: string|Record<string, any>, status: number, headers: Headers}} MyResponse
  */
-function processError(error) {
-    let message = error?.response?.data;
-    if (message) {
-        // These error statuses are known to contain meaningful messages in the body
-        error.message = message;
+
+/**
+ * Send an HTTP request, without any error handling.
+ *
+ * @param {string} method
+ * @param {string} url
+ * @param {object|null} data
+ * @return {Promise<MyResponse>}
+ */
+async function request(method, url, data = null) {
+    let headers = {};
+    let body = null;
+
+    let token = getToken();
+    // TODO: Validate the token locally before sending it?
+    if (token !== null) {
+        headers.Authorization = `Bearer ${token}`;
     }
+
+    if (data !== null && data !== undefined) {
+        headers['Content-Type'] = 'application/json';
+        body = JSON.stringify(data);
+    }
+
+    // eslint-disable-next-line init-declarations
+    let response;
+    try {
+        response = await fetch(BACKEND_URL + url, {method, headers, body});
+    } catch (error) {
+        // May throw TypeError on connectivity errors (which is weird but documented behavior).
+        EventService.error.dispatch(error);
+        throw error;
+    }
+
+    let myResponse = {
+        body:       await parseResponseData(response),
+        status:     response.status,
+        headers:    response.headers,
+    };
+
+    if (!response.ok) {
+        // eslint-disable-next-line init-declarations
+        let error;
+        if (typeof myResponse.body === 'string') {
+            // These error statuses are known to contain meaningful messages in the body
+            error = new Error(myResponse.body);
+        } else {
+            error = new Error(`Request failed with status code ${response.status}`);
+        }
+        error.response = myResponse;
+        EventService.error.dispatch(error);
+        throw error;
+    }
+
+    return myResponse;
 }
 
 /**
  * Send an authenticated (if possible) GET request
  *
  * @param {string} url
- * @return {Promise<AxiosResponse<any>>}
+ * @return {Promise<Record<string, any>>}
  */
 async function get(url) {
-    let config = {};
-    addAuthorizationHeader(config);
-    try {
-        return await axios.get(BACKEND_URL + url, config);
-    } catch (err) {
-        processError(err);
-        EventService.error.dispatch(err);
-        throw err;
-    }
+    let response = await request('GET', url);
+    return response.body;
 }
 
 /**
@@ -76,41 +120,28 @@ async function get(url) {
  *
  * @param {string} url
  * @param {object} data
- * @return {Promise<AxiosResponse<any>>}
+ * @return {Promise<Record<string, any>>}
  */
 async function post(url, data) {
-    let config = {};
-    addAuthorizationHeader(config);
-    try {
-        return await axios.post(BACKEND_URL + url, data, config);
-    } catch (err) {
-        processError(err);
-        EventService.error.dispatch(err);
-        throw err;
-    }
+    let response = await request('POST', url, data);
+    return response.body;
 }
 
 /**
  * Send an authenticated (if possible) DELETE request
  *
  * @param {string} url
- * @return {Promise<AxiosResponse<any>>}
+ * @return {Promise<MyResponse>}
  */
-async function delete0(url) {
-    let config = {};
-    addAuthorizationHeader(config);
-    try {
-        return await axios.delete(BACKEND_URL + url, config);
-    } catch (err) {
-        processError(err);
-        EventService.error.dispatch(err);
-        throw err;
-    }
+function delete0(url) {
+    // A body on DELETE requests is uncommon, so return the entire response, not just the body.
+    return request('DELETE', url);
 }
 
 export default {
     get,
     post,
     delete: delete0,
+    request,
     hasToken,
 };

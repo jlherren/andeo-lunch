@@ -89,7 +89,7 @@
             this.$vuetify.theme.dark = localStorage.getItem('dark-mode') === 'true';
 
             this.unregisterErrors = EventService.error.register(error => {
-                this.$store().setGlobalSnackbar(`Error: ${error.message}`);
+                this.$store().setGlobalSnackbar(`${error.constructor.name}: ${error.message}`);
             });
             this.unregisterSystemMessage = EventService.systemMessage.register(message => {
                 this.$store().setGlobalSnackbar(message);

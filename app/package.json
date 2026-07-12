@@ -19,7 +19,6 @@
         "@babel/core": "~7.29.0",
         "@fontsource/roboto": "~5.2.10",
         "@mdi/js": "~7.4.47",
-        "axios": "~1.13.6",
         "core-js": "~3.48.0",
         "pinia": "~2.2.8",
         "randombytes": "~2.1.0",

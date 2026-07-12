@@ -112,13 +112,13 @@ export let useStore = defineStore('main', {
         // Account
         async login(data) {
             let response = await Backend.post('/account/login', data);
-            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('token', response.token);
             // Fetch all users, see comment in checkLogin()
             await this.fetchUsers();
             // Don't set the following until after the user is fetched, otherwise 'ownUser' won't be reliable
-            this.account.userId = response.data.userId;
-            this.account.username = response.data.username;
-            this.account.permissions = response.data.permissions;
+            this.account.userId = response.userId;
+            this.account.username = response.username;
+            this.account.permissions = response.permissions;
         },
 
         logout() {
@@ -136,7 +136,7 @@ export let useStore = defineStore('main', {
             let shouldRenew = false;
             if (Backend.hasToken()) {
                 let response = await Backend.get(`/account/check?device=${deviceId}&version=${this.version}`);
-                ({userId, username, shouldRenew, permissions} = response.data);
+                ({userId, username, shouldRenew, permissions} = response);
             }
 
             if (userId) {
@@ -160,7 +160,7 @@ export let useStore = defineStore('main', {
 
         async renewToken() {
             let response = await Backend.post('/account/renew');
-            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('token', response.token);
         },
 
         /**
@@ -171,10 +171,10 @@ export let useStore = defineStore('main', {
          */
         async changePassword(data) {
             let response = await Backend.post('/account/password', data);
-            if (response.data.success) {
+            if (response.success) {
                 return true;
             }
-            return response.data.reason;
+            return response.reason;
         },
 
         // Users
@@ -184,7 +184,7 @@ export let useStore = defineStore('main', {
             }
             await Cache.ifNotFresh('user', userId, 10000, async () => {
                 let response = await Backend.get(`/users/${userId}`);
-                let user = response.data.user;
+                let user = response.user;
                 Vue.set(this.usersById, user.id, user);
             });
         },
@@ -196,15 +196,15 @@ export let useStore = defineStore('main', {
             return Cache.ifNotFresh('users', 0, 10000, async () => {
                 let response = await Backend.get('/users');
                 let users = {};
-                for (let user of response.data.users) {
+                for (let user of response.users) {
                     users[user.id] = user;
                     Cache.validate('user', user.id);
                 }
                 Vue.set(this, 'usersById', users);
-                this._visibleUserIds = response.data.users
+                this._visibleUserIds = response.users
                     .filter(user => !user.hidden)
                     .map(user => user.id);
-                this._allUserIds = response.data.users
+                this._allUserIds = response.users
                     .map(user => user.id);
             });
         },
@@ -226,12 +226,12 @@ export let useStore = defineStore('main', {
             let paramsString = urlParams.toString();
             return Cache.ifNotFresh('events', paramsString, 10000, async () => {
                 let response = await Backend.get(`/events?${paramsString}`);
-                for (let event of response.data.events) {
+                for (let event of response.events) {
                     event.date = new Date(event.date);
                     Vue.set(this._events, event.id, event);
                 }
-                if (response.data.participations) {
-                    for (let participation of response.data.participations) {
+                if (response.participations) {
+                    for (let participation of response.participations) {
                         let key = `${participation.eventId}/${participation.userId}`;
                         Vue.set(this._singleParticipations, key, participation);
                     }
@@ -242,7 +242,7 @@ export let useStore = defineStore('main', {
         fetchEvent(eventId) {
             return Cache.ifNotFresh('event', eventId, 10000, async () => {
                 let response = await Backend.get(`/events/${eventId}`);
-                let event = response.data.event;
+                let event = response.event;
                 event.date = new Date(event.date);
                 Vue.set(this._events, event.id, event);
             });
@@ -251,7 +251,7 @@ export let useStore = defineStore('main', {
         async fetchParticipations(eventId) {
             await Cache.ifNotFresh('participations', eventId, 10000, async () => {
                 let response = await Backend.get(`/events/${eventId}/participations`);
-                let participations = response.data.participations;
+                let participations = response.participations;
                 Vue.set(this._participations, eventId, participations);
 
                 for (let participation of participations) {
@@ -291,7 +291,7 @@ export let useStore = defineStore('main', {
         async fetchTransfers(eventId) {
             await Cache.ifNotFresh('transfers', eventId, 10000, async () => {
                 let response = await Backend.get(`/events/${eventId}/transfers`);
-                let transfers = response.data.transfers;
+                let transfers = response.transfers;
                 Vue.set(this.transfersById, eventId, transfers);
             });
 
@@ -322,7 +322,8 @@ export let useStore = defineStore('main', {
 
         async saveEvent(data) {
             let url = data.id ? `/events/${data.id}` : '/events';
-            let response = await Backend.post(url, {...data, id: undefined});
+            // Not using Backend.post() because we need the headers.
+            let response = await Backend.request('POST', url, {...data, id: undefined});
 
             Cache.invalidate('user');
             Cache.invalidate('users');
@@ -335,7 +336,7 @@ export let useStore = defineStore('main', {
                 Cache.invalidate('participation');
                 Cache.invalidate('participations', eventId);
             } else {
-                let location = response.headers.location;
+                let location = response.headers.get('location');
                 let match = location.match(/^\/api\/events\/(?<id>\d+)$/u);
                 if (match) {
                     eventId = parseInt(match.groups.id, 10);
@@ -370,13 +371,13 @@ export let useStore = defineStore('main', {
          */
         async suggestEvent(date) {
             let response = await Backend.get(`/events/suggest?date=${date}`);
-            return response.data.suggestion;
+            return response.suggestion;
         },
 
         fetchTransactions(userId) {
             return Cache.ifNotFresh('transactions', userId, 10000, async () => {
                 let response = await Backend.get(`/users/${userId}/transactions?with=eventName`);
-                let transactions = response.data.transactions;
+                let transactions = response.transactions;
                 for (let transaction of transactions) {
                     transaction.date = new Date(transaction.date);
                 }
@@ -390,7 +391,7 @@ export let useStore = defineStore('main', {
             }
             return Cache.ifNotFresh('audits', 0, 5000, async () => {
                 let response = await Backend.get('/audits');
-                let audits = response.data.audits;
+                let audits = response.audits;
                 for (let audit of audits) {
                     audit.date = new Date(audit.date);
                     if (audit.eventDate) {
@@ -404,7 +405,7 @@ export let useStore = defineStore('main', {
         fetchSettings() {
             return Cache.ifNotFresh('settings', 0, 5000, async () => {
                 let response = await Backend.get('/settings');
-                let settings = response.data.settings;
+                let settings = response.settings;
                 // Complete default opt-ins
                 for (let i = 1; i <= 5; i++) {
                     settings[`defaultOptIn${i}`] ??= 'undecided';
@@ -427,7 +428,7 @@ export let useStore = defineStore('main', {
         fetchConfiguration(key) {
             return Cache.ifNotFresh('configuration', key, 60000, async () => {
                 let response = await Backend.get(`/configuration?key=${key}`);
-                let value = response.data.value;
+                let value = response.value;
                 if (value?.match(/^-?(?:\d+(?:\.\d*)?|\.\d+)$/u)) {
                     value = parseFloat(value);
                 }
@@ -438,14 +439,14 @@ export let useStore = defineStore('main', {
         fetchUserPaymentInfo(userId) {
             return Cache.ifNotFresh('paymentInfo', userId, 60000, async () => {
                 let response = await Backend.get(`/users/${userId}/payment-info`);
-                Vue.set(this.paymentInfosById, userId, response.data.paymentInfo);
+                Vue.set(this.paymentInfosById, userId, response.paymentInfo);
             });
         },
 
         fetchAbsences(userId) {
             return Cache.ifNotFresh('absences', userId, 60000, async () => {
                 let response = await Backend.get(`/users/${userId}/absences`);
-                Vue.set(this._absences, userId, response.data.absences);
+                Vue.set(this._absences, userId, response.absences);
             });
         },
 
@@ -467,7 +468,7 @@ export let useStore = defineStore('main', {
         fetchGroceries() {
             return Cache.ifNotFresh('groceries', 0, 5000, async () => {
                 let response = await Backend.get('/groceries');
-                this.groceries = response.data.groceries;
+                this.groceries = response.groceries;
             });
         },
 
@@ -498,9 +499,8 @@ export let useStore = defineStore('main', {
          *     period: string,
          * }>}
          */
-        async deviceVersions() {
-            let response = await Backend.get('/tools/device-versions');
-            return response.data;
+        deviceVersions() {
+            return Backend.get('/tools/device-versions');
         },
 
         /**
@@ -508,7 +508,7 @@ export let useStore = defineStore('main', {
          */
         async fetchConfigurations() {
             let response = await Backend.get('/tools/configurations');
-            return response.data.configurations;
+            return response.configurations;
         },
 
         /**
@@ -529,7 +529,7 @@ export let useStore = defineStore('main', {
          */
         async adminFetchUsers() {
             let response = await Backend.get('/admin/users');
-            return response.data.users;
+            return response.users;
         },
 
         /**
@@ -548,7 +548,7 @@ export let useStore = defineStore('main', {
          */
         async adminCreateUser(user) {
             let response = await Backend.post('/admin/users', user);
-            return response.data.userId;
+            return response.userId;
         },
 
         /**
@@ -562,16 +562,16 @@ export let useStore = defineStore('main', {
                 newPassword,
                 ownPassword,
             });
-            if (response.data.success) {
+            if (response.success) {
                 return true;
             }
-            return response.data.reason;
+            return response.reason;
         },
 
         fetchSnowfall() {
             return Cache.ifNotFresh('nSnowFlakes', 0, 60000, async () => {
                 let response = await Backend.get('/snowfall');
-                this.nSnowFlakes = response.data.nFlakes;
+                this.nSnowFlakes = response.nFlakes;
             });
         },
 
@@ -581,7 +581,7 @@ export let useStore = defineStore('main', {
          */
         async icsLink(options) {
             let response = await Backend.post('/ics/link', options);
-            return response.data.url;
+            return response.url;
         },
     },
 });
