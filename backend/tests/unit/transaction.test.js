@@ -4,7 +4,7 @@ import * as TransactionRebuilder from '../../src/transactionRebuilder.js';
 import {Event, Lunch, Participation, Transaction} from '../../src/db/models.ts';
 import {AndeoLunch} from '../../src/andeoLunch.js';
 import {expect} from '../chai-setup.ts';
-import {getTestConfig} from '../../src/configProvider.js';
+import {getTestConfig} from '../../src/configProvider.ts';
 
 /** @type {AndeoLunch|null} */
 let andeoLunch = null;

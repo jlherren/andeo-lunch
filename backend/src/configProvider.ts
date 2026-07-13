@@ -4,21 +4,29 @@ import {promises as fs} from 'fs';
 import path from 'path';
 import url from 'url';
 
+interface Config {
+    database: {
+        dialect?: string;
+        host?: string;
+        port?: number;
+        database?: string;
+        username?: string;
+        password?: string;
+        storage?: string;
+    };
+    port?: number|null;
+    bind: string;
+    tokenExpiry: string;
+    lag?: number;
+    frontendUrl?: string;
+}
+
 // Any string understood by package 'ms'.
 const DEFAULT_TOKEN_EXPIRY = '60 days';
 
 // eslint-disable-next-line no-underscore-dangle
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
-/**
- * @typedef {Object} Config
- * @property {Object<string, any>} database
- * @property {number} [port]
- * @property {string} bind
- * @property {string} tokenExpiry
- * @property {number} [lag]
- * @property {string} [frontendUrl]
- */
 const configSchema = Joi.object({
     database:    Joi.object({
         dialect: Joi.string().required(),
@@ -30,11 +38,7 @@ const configSchema = Joi.object({
     frontendUrl: Joi.string(),
 }).unknown(true);
 
-/**
- * @param {Config} config
- * @return {Config}
- */
-function validateConfig(config) {
+function validateConfig(config: Config): Config {
     let {error, value} = configSchema.validate(config);
     if (error) {
         throw error;
@@ -44,17 +48,15 @@ function validateConfig(config) {
 
 /**
  * Return the main configuration file (config.json)
- *
- * @return {Promise<Config>}
  */
-export async function getMainConfig() {
+export async function getMainConfig(): Promise<Config> {
     let fullPath = path.resolve(`${__dirname}/../config.json`);
     try {
         let fileContent = await fs.readFile(fullPath);
         let config = JSON.parse(fileContent.toString('utf-8'));
         return validateConfig(config);
-    } catch (err) {
-        if (err.code === 'ENOENT') {
+    } catch (err: unknown) {
+        if ((err as NodeJS.ErrnoException).code === 'ENOENT') {
             throw new Error(`No configuration file found at ${fullPath}!  Please read README.md first`);
         }
         throw err;
@@ -64,14 +66,14 @@ export async function getMainConfig() {
 /**
  * Return the testing configuration, either using a MariaDB database from the environment, or an
  * in-memory sqlite database.
- *
- * @return {Promise<Config>}
  */
-export async function getTestConfig() {
-    /** @type {Config} */
-    let config = {
+export async function getTestConfig(): Promise<Config> {
+    let config: Config = {
         frontendUrl: 'https://app.example.com',
         port:        null,
+        bind:        '127.0.0.1',
+        tokenExpiry: DEFAULT_TOKEN_EXPIRY,
+        database:    {},
     };
 
     if (process.env.TEST_DB === 'mariadb') {
@@ -81,7 +83,7 @@ export async function getTestConfig() {
         config.database = {
             dialect:  'mariadb',
             host:     process.env.TEST_DB_HOST,
-            port:     process.env.TEST_DB_PORT,
+            port:     process.env.TEST_DB_PORT ? parseInt(process.env.TEST_DB_PORT, 10) : undefined,
             database: process.env.TEST_DB_NAME,
             username: process.env.TEST_DB_USERNAME,
             password: process.env.TEST_DB_PASSWORD,

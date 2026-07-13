@@ -1,7 +1,7 @@
 import * as Validator from '../../src/db/validator.ts';
 import {AndeoLunch} from '../../src/andeoLunch.js';
 import {expect} from '../chai-setup.ts';
-import {getTestConfig} from '../../src/configProvider.js';
+import {getTestConfig} from '../../src/configProvider.ts';
 
 describe('Migration test', () => {
     it('Can apply all migrations on SQLite', async () => {

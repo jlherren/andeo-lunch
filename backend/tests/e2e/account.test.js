@@ -4,7 +4,7 @@ import {DeviceVersion, Permission, UserPermission} from '../../src/db/models.ts'
 import {AndeoLunch} from '../../src/andeoLunch.js';
 import JsonWebToken from 'jsonwebtoken';
 import {expect} from '../chai-setup.ts';
-import {getTestConfig} from '../../src/configProvider.js';
+import {getTestConfig} from '../../src/configProvider.ts';
 import supertest from 'supertest';
 
 /** @type {AndeoLunch|null} */

@@ -3,7 +3,7 @@ import * as Helper from '../helper.js';
 import {Absence} from '../../src/db/models.ts';
 import {AndeoLunch} from '../../src/andeoLunch.js';
 import {expect} from '../chai-setup.ts';
-import {getTestConfig} from '../../src/configProvider.js';
+import {getTestConfig} from '../../src/configProvider.ts';
 import supertest from 'supertest';
 
 /** @type {AndeoLunch|null} */
