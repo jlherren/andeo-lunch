@@ -1,18 +1,38 @@
+import type {Context} from 'koa';
 import HttpErrors from 'http-errors';
+import type {Model} from 'sequelize';
+
+type ModelCtor = typeof Model & { new(): Model };
+
+interface SingleObjectOptions {
+    /**
+     * Model class of the object
+     */
+    model: ModelCtor;
+    /**
+     * Mapper function for the DB row to returned object
+     */
+    mapper: (object: Model) => Record<string, unknown>;
+    /**
+     * Additional WHERE parameters
+     */
+    where?: Record<string, unknown>;
+}
+
+interface ObjectListOptions extends SingleObjectOptions {
+    /**
+     * Additional ORDER BY
+     */
+    order?: Array<[string, 'ASC'|'DESC']>;
+}
 
 /**
  * Create a controller that returns a single object by its ID
- *
- * @param {object} options Options
- * @param {typeof Model} options.model Model class of the object
- * @param {Function} options.mapper Mapper function for the DB row to returned object
- * @param {object} [options.where] Additional WHERE string
- * @return {Function}
  */
-export function makeSingleObjectController(options) {
+export function makeSingleObjectController(options: SingleObjectOptions): (ctx: Context) => Promise<void> {
     let singular = options.model.name.toLowerCase();
 
-    return async function (ctx) {
+    return async function (ctx: Context): Promise<void> {
         // Note: Not using findByPk() because it doesn't allow options.where
         let where = {
             id: ctx.params[singular],
@@ -31,18 +51,11 @@ export function makeSingleObjectController(options) {
 
 /**
  * Create a controller that returns a list of objects
- *
- * @param {object} options Options
- * @param {typeof Model} options.model Model class of the object
- * @param {Function} options.mapper Mapper function for the DB row to returned object
- * @param {object} [options.where] Additional WHERE condition
- * @param {Array<Array<string>>} [options.order] Additional ORDER BY
- * @return {Function}
  */
-export function makeObjectListController(options) {
+export function makeObjectListController(options: ObjectListOptions): (ctx: Context) => Promise<void> {
     let plural = `${options.model.name.toLowerCase()}s`;
 
-    return async function (ctx) {
+    return async function (ctx: Context): Promise<void> {
         let objects = await options.model.findAll({
             where: options.where,
             order: options.order,
