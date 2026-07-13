@@ -121,7 +121,7 @@ export class Event extends Model {
         };
     }
 
-    toSnapshot() {
+    toSnapshot(): Record<string, unknown> {
         // null comments don't need to appear in the log at all
         let comment = this.Lunch?.comment;
         if (comment === null) {
@@ -185,7 +185,7 @@ export class Transfer extends Model {
         };
     }
 
-    toSnapshot(systemUserId: number) {
+    toSnapshot(systemUserId: number): Record<string, unknown> {
         return {
             sender:    systemUserId === this.sender ? -1 : this.sender,
             recipient: systemUserId === this.recipient ? -1 : this.recipient,
@@ -229,7 +229,7 @@ export class Participation extends Model {
         };
     }
 
-    toSnapshot() {
+    toSnapshot(): Record<string, unknown> {
         return {
             type:    this.type,
             credits: {
@@ -289,7 +289,7 @@ export class Absence extends Model {
         };
     }
 
-    toSnapshot() {
+    toSnapshot(): Record<string, unknown> {
         return {
             user:  this.user,
             start: this.start,
@@ -336,7 +336,7 @@ export class Audit extends Model {
         };
     }
 
-    getActingUserName() {
+    getActingUserName(): string {
         if (this.ActingUser === undefined) {
             throw new Error('Cannot get acting user name, it was not joined');
         }
@@ -346,7 +346,7 @@ export class Audit extends Model {
         return this.ActingUser.name;
     }
 
-    getEventName() {
+    getEventName(): string|null {
         if (this.Event === undefined) {
             throw new Error('Cannot get event name, it was not joined');
         }
@@ -359,7 +359,7 @@ export class Audit extends Model {
         return null;
     }
 
-    getGroceryLabel() {
+    getGroceryLabel(): string|null {
         if (this.Grocery === undefined) {
             throw new Error('Cannot get grocery label, it was not joined');
         }
@@ -372,7 +372,7 @@ export class Audit extends Model {
         return null;
     }
 
-    getAffectedUserName() {
+    getAffectedUserName(): string|null {
         if (this.AffectedUser === undefined) {
             throw new Error('Cannot get affected user name, it was not joined');
         }
@@ -400,7 +400,7 @@ export class Grocery extends Model {
         };
     }
 
-    toSnapshot() {
+    toSnapshot(): Record<string, unknown> {
         return {
             label:   this.label,
             checked: this.checked,
@@ -415,7 +415,7 @@ export class DeviceVersion extends Model {
     declare lastSeen: Date;
 }
 
-export function initModels(sequelize: Sequelize) {
+export function initModels(sequelize: Sequelize): void {
     let ch = new ColumnHelper(sequelize);
 
     // Default cascading options
