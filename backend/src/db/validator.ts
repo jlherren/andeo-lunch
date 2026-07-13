@@ -1,4 +1,4 @@
-import {Sequelize} from 'sequelize';
+import type {Sequelize} from 'sequelize';
 import {promises as fs} from 'fs';
 import path from 'path';
 import url from 'url';

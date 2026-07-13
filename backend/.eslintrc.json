@@ -409,6 +409,8 @@
                 "no-unused-vars": "off",
                 "@typescript-eslint/no-unused-vars": "error",
                 "@typescript-eslint/explicit-function-return-type": "error",
+                "@typescript-eslint/consistent-type-imports": "error",
+                "sort-imports": "off",
                 "require-jsdoc": "off",
                 "prefer-const": "off",
                 "jsdoc/require-jsdoc": "off",

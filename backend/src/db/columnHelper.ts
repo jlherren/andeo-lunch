@@ -1,4 +1,4 @@
-import {DataTypes, Sequelize} from 'sequelize';
+import {DataTypes, type Sequelize} from 'sequelize';
 import type {DataType} from 'sequelize/types/data-types';
 
 /**

@@ -1,4 +1,4 @@
-import {Audit, User} from './db/models.ts';
+import {Audit, type User} from './db/models.ts';
 import type {Transaction} from 'sequelize';
 
 interface AuditRest {

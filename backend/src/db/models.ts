@@ -2,7 +2,7 @@ import * as Constants from '../constants.ts';
 import * as EventManager from '../eventManager.ts';
 import type {ApiAbsence, ApiAudit, ApiEvent, ApiGrocery, ApiParticipation, ApiTransaction, ApiTransfer, ApiUser} from '../apiTypes.ts';
 import type {CurrencyId, EventTypeId, ParticipationTypeId} from '../constants.ts';
-import {DataTypes, Model, Sequelize} from 'sequelize';
+import {DataTypes, Model, type Sequelize} from 'sequelize';
 import {ColumnHelper} from './columnHelper.ts';
 import jsonWebToken from 'jsonwebtoken';
 
