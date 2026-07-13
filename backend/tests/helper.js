@@ -1,5 +1,5 @@
 import {Configuration, Permission, User, UserPassword, UserPermission} from '../src/db/models.ts';
-import {expect} from './chai-setup.js';
+import {expect} from './chai-setup.ts';
 
 /**
  * Create an event and return the event ID

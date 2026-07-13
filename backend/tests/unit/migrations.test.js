@@ -1,6 +1,6 @@
 import * as Validator from '../../src/db/validator.ts';
 import {AndeoLunch} from '../../src/andeoLunch.js';
-import {expect} from '../chai-setup.js';
+import {expect} from '../chai-setup.ts';
 import {getTestConfig} from '../../src/configProvider.js';
 
 describe('Migration test', () => {

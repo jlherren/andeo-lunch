@@ -2,7 +2,7 @@ import * as Constants from '../../src/constants.ts';
 import * as TransactionRebuilder from '../../src/transactionRebuilder.js';
 import {Absence, Event, Grocery, Lunch, Participation, Transaction, User} from '../../src/db/models.ts';
 import {AndeoLunch} from '../../src/andeoLunch.js';
-import {expect} from '../chai-setup.js';
+import {expect} from '../chai-setup.ts';
 import {getTestConfig} from '../../src/configProvider.js';
 
 /** @type {AndeoLunch|null} */

@@ -3,7 +3,7 @@ import * as Helper from '../helper.js';
 import {DeviceVersion, Permission, UserPermission} from '../../src/db/models.ts';
 import {AndeoLunch} from '../../src/andeoLunch.js';
 import JsonWebToken from 'jsonwebtoken';
-import {expect} from '../chai-setup.js';
+import {expect} from '../chai-setup.ts';
 import {getTestConfig} from '../../src/configProvider.js';
 import supertest from 'supertest';
 

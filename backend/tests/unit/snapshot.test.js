@@ -1,5 +1,5 @@
 import * as Utils from '../../src/utils.ts';
-import {expect} from '../chai-setup.js';
+import {expect} from '../chai-setup.ts';
 
 describe('Snapshot diffs', () => {
     it('undefined with undefined', () => {
