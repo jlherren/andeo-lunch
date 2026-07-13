@@ -8,7 +8,7 @@ import EventRoutes from './routes/event.js';
 import GroceryRoutes from './routes/grocery.js';
 import Koa from 'koa';
 import KoaLogger from './koa-logger.ts';
-import MiscRoutes from './routes/misc.js';
+import MiscRoutes from './routes/misc.ts';
 import PublicRoutes from './routes/public.js';
 import Router from '@koa/router';
 import SettingsRoutes from './routes/settings.js';

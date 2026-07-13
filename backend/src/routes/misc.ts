@@ -1,12 +1,10 @@
 import * as IcsUtils from '../icsUtils.ts';
 import {Configuration} from '../db/models.ts';
 import HttpErrors from 'http-errors';
+import type Router from '@koa/router';
+import type {Context} from 'koa';
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function getPayUpDefaultRecipient(ctx) {
+async function getPayUpDefaultRecipient(ctx: Context): Promise<void> {
     let config = await Configuration.findOne({
         where: {
             name: 'payUp.defaultRecipient',
@@ -17,11 +15,7 @@ async function getPayUpDefaultRecipient(ctx) {
     };
 }
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function getDefaultFlatRate(ctx) {
+async function getDefaultFlatRate(ctx: Context): Promise<void> {
     let config = await Configuration.findOne({
         where: {
             name: 'lunch.defaultFlatRate',
@@ -32,11 +26,7 @@ async function getDefaultFlatRate(ctx) {
     };
 }
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function getDefaultParticipationFee(ctx) {
+async function getDefaultParticipationFee(ctx: Context): Promise<void> {
     let config = await Configuration.findOne({
         where: {
             name: 'lunch.defaultParticipationFee',
@@ -47,11 +37,7 @@ async function getDefaultParticipationFee(ctx) {
     };
 }
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function getDecommissionContraUser(ctx) {
+async function getDecommissionContraUser(ctx: Context): Promise<void> {
     let config = await Configuration.findOne({
         where: {
             name: 'userAdmin.decommissionContraUser',
@@ -62,11 +48,7 @@ async function getDecommissionContraUser(ctx) {
     };
 }
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function getConfiguration(ctx) {
+async function getConfiguration(ctx: Context): Promise<void> {
     if (!ctx.query.key) {
         throw new HttpErrors.BadRequest('Query parameter "key" is required');
     }
@@ -81,11 +63,7 @@ async function getConfiguration(ctx) {
     };
 }
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function migrate(ctx) {
+async function migrate(ctx: Context): Promise<void> {
     if (!process.env.ANDEO_LUNCH_CYPRESS) {
         throw new HttpErrors.Gone('This endpoint only exists in testing environments');
     }
@@ -96,18 +74,18 @@ async function migrate(ctx) {
     };
 }
 
-let weatherCache = null;
+type WeatherData = {
+    timestamp: number;
+    nFlakes: number;
+};
+let weatherCache: WeatherData|null = null;
 const WEATHER_TTL = 300 * 1000;
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function getSnowfall(ctx) {
+async function getSnowfall(ctx: Context): Promise<void> {
     if (weatherCache === null || weatherCache.timestamp + WEATHER_TTL < Date.now()) {
         try {
-            let response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=47.4979387&longitude=8.7259215&current=snowfall');
-            let data = await response.json();
+            let response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=47.4979387&longitude=8.7259205&current=snowfall');
+            let data = await response.json() as {current: {snowfall: number}};
             weatherCache = {
                 timestamp: Date.now(),
                 nFlakes:   Math.min(Math.round(data.current.snowfall * 250), 500),
@@ -121,11 +99,7 @@ async function getSnowfall(ctx) {
     };
 }
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function createIcsLink(ctx) {
+async function createIcsLink(ctx: Context&{request: {body: {all?: boolean, alarm?: boolean}}}): Promise<void> {
     let packed = IcsUtils.pack({
         u: ctx.user.id,
         a: ctx.request.body.all === true,
@@ -138,10 +112,7 @@ async function createIcsLink(ctx) {
     };
 }
 
-/**
- * @param {Router} router
- */
-export default function register(router) {
+export default function register(router: Router): void {
     router.get('/pay-up/default-recipient', getPayUpDefaultRecipient);
     router.get('/options/default-flat-rate', getDefaultFlatRate);
     router.get('/options/default-participation-fee', getDefaultParticipationFee);
