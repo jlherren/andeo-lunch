@@ -6,8 +6,8 @@ import supertest from 'supertest';
 
 /** @type {AndeoLunch|null} */
 let andeoLunch = null;
-/** @type {supertest.SuperTest|null} */
-let request = null;
+/** @type {supertest.Agent|null} */
+let agent = null;
 /** @type {string|null} */
 let jwt = null;
 /** @type {User} */
@@ -100,13 +100,13 @@ describe('Lunch event', () => {
         await andeoLunch.waitReady();
         user1 = await Helper.createUser('test-user-1');
         user2 = await Helper.createUser('test-user-2');
-        request = supertest.agent(andeoLunch.listen());
+        agent = supertest.agent(andeoLunch.listen());
         if (jwt === null) {
-            let response = await request.post('/api/account/login')
+            let response = await agent.post('/api/account/login')
                 .send({username: user1.username, password: Helper.password});
             jwt = response.body.token;
         }
-        request.set('Authorization', `Bearer ${jwt}`);
+        agent.set('Authorization', `Bearer ${jwt}`);
     });
 
     afterEach(async () => {
@@ -115,46 +115,46 @@ describe('Lunch event', () => {
 
     describe('Create lunch events', () => {
         it('Accepts a simple event', async () => {
-            let response = await request.post('/api/events').send(sampleEvent);
+            let response = await agent.post('/api/events').send(sampleEvent);
             expect(response.status).to.equal(201);
             let {location} = response.headers;
             expect(typeof location).to.equal('string');
             expect(location).to.match(/^\/api\/events\/\d+$/u);
-            response = await request.get(location);
+            response = await agent.get(location);
             expect(response.body.event).to.containSubset(sampleEvent);
         });
 
         it('Accepts an event with minimal data', async () => {
-            let response = await request.post('/api/events').send(minimalEvent);
+            let response = await agent.post('/api/events').send(minimalEvent);
             expect(response.status).to.equal(201);
             let {location} = response.headers;
             expect(typeof location).to.equal('string');
-            response = await request.get(location);
+            response = await agent.get(location);
             expect(response.body.event).to.containSubset({...minimalEvent, ...defaultValues});
         });
 
         it('Accepts an event with participation fee', async () => {
-            let response = await request.post('/api/events').send({...minimalEvent, participationFee: 0.5});
+            let response = await agent.post('/api/events').send({...minimalEvent, participationFee: 0.5});
             expect(response.status).to.equal(201);
             let {location} = response.headers;
             expect(typeof location).to.equal('string');
-            response = await request.get(location);
+            response = await agent.get(location);
             expect(response.body.event.participationFee).to.equal(0.5);
         });
 
         it('Sets default participation fee if not sent along', async () => {
             await Helper.setConfiguration('lunch.defaultParticipationFee', 0.5);
-            let response = await request.post('/api/events').send(minimalEvent);
+            let response = await agent.post('/api/events').send(minimalEvent);
             expect(response.status).to.equal(201);
             let {location} = response.headers;
             expect(typeof location).to.equal('string');
-            response = await request.get(location);
+            response = await agent.get(location);
             expect(response.body.event.participationFee).to.equal(0.5);
         });
 
         it('Rejects missing data', async () => {
             for (let key of ['name', 'type', 'date']) {
-                let response = await request.post('/api/events').send({...sampleEvent, [key]: undefined});
+                let response = await agent.post('/api/events').send({...sampleEvent, [key]: undefined});
                 expect(response.status).to.equal(400);
             }
         });
@@ -162,7 +162,7 @@ describe('Lunch event', () => {
         it('Rejects invalid data', async () => {
             for (let key of Object.keys(invalidData)) {
                 for (let value of invalidData[key]) {
-                    let response = await request.post('/api/events').send({...sampleEvent, [key]: value});
+                    let response = await agent.post('/api/events').send({...sampleEvent, [key]: value});
                     expect(response.status).to.equal(400);
                 }
             }
@@ -175,14 +175,14 @@ describe('Lunch event', () => {
                 date:      '2020-01-15T11:00:00.000Z',
                 transfers: [makeSampleTransfer()],
             };
-            let response = await request.post('/api/events').send(event);
+            let response = await agent.post('/api/events').send(event);
             expect(response.status).to.equal(400);
             expect(response.text).to.equal('Event type cannot have transfers');
         });
 
         it('Accepts event in the past when edit limit is not reached', async () => {
             await user1.update({maxPastDaysEdit: 5});
-            let response = await request.post('/api/events').send({
+            let response = await agent.post('/api/events').send({
                 name: 'Lunch',
                 type: 'lunch',
                 date: Helper.daysAgo(4),
@@ -192,7 +192,7 @@ describe('Lunch event', () => {
 
         it('Rejects event in the past when edit limit is reached', async () => {
             await user1.update({maxPastDaysEdit: 5});
-            let response = await request.post('/api/events').send({
+            let response = await agent.post('/api/events').send({
                 name: 'Lunch',
                 type: 'lunch',
                 date: Helper.daysAgo(6),
@@ -206,23 +206,23 @@ describe('Lunch event', () => {
                 ...minimalEvent,
                 immutable: true,
             };
-            let response = await request.post('/api/events').send(event);
+            let response = await agent.post('/api/events').send(event);
             expect(response.status).to.equal(400);
             expect(response.text).to.equal('Event type cannot be immutable');
         });
 
         it('Does not set participation fee recipient if not configured', async () => {
-            let response = await request.post('/api/events').send(minimalEvent);
+            let response = await agent.post('/api/events').send(minimalEvent);
             expect(response.status).to.equal(201);
-            response = await request.get(response.headers.location);
+            response = await agent.get(response.headers.location);
             expect(response.body.event.participationFeeRecipientId).to.be.null();
         });
 
         it('Sets participation fee recipient if configured', async () => {
             await Helper.setConfiguration('lunch.participationFeeRecipient', user2.id);
-            let response = await request.post('/api/events').send(minimalEvent);
+            let response = await agent.post('/api/events').send(minimalEvent);
             expect(response.status).to.equal(201);
-            response = await request.get(response.headers.location);
+            response = await agent.get(response.headers.location);
             expect(response.body.event.participationFeeRecipientId).to.equal(user2.id);
         });
     });
@@ -231,24 +231,24 @@ describe('Lunch event', () => {
         let eventUrl = null;
 
         beforeEach(async () => {
-            let eventId = await Helper.createEvent(request, sampleEvent);
+            let eventId = await Helper.createEvent(agent, sampleEvent);
             eventUrl = `/api/events/${eventId}`;
         });
 
         it('allows to update an event', async () => {
             let expected = {...sampleEvent};
             for (let key of Object.keys(eventUpdates)) {
-                let response = await request.post(eventUrl).send({[key]: eventUpdates[key]});
+                let response = await agent.post(eventUrl).send({[key]: eventUpdates[key]});
                 expect(response.status).to.equal(204);
                 expected[key] = eventUpdates[key];
-                response = await request.get(eventUrl);
+                response = await agent.get(eventUrl);
                 expect(response.body.event).to.containSubset(expected);
             }
         });
 
         it('rejects disallowed updates', async () => {
             for (let key of Object.keys(disallowedUpdate)) {
-                let response = await request.post(eventUrl).send({[key]: disallowedUpdate[key]});
+                let response = await agent.post(eventUrl).send({[key]: disallowedUpdate[key]});
                 expect(response.status).to.equal(400);
             }
         });
@@ -256,7 +256,7 @@ describe('Lunch event', () => {
         it('rejects invalid updates', async () => {
             for (let key of Object.keys(invalidData)) {
                 for (let value of invalidData[key]) {
-                    let response = await request.post(eventUrl).send({[key]: value});
+                    let response = await agent.post(eventUrl).send({[key]: value});
                     expect(response.status).to.equal(400);
                 }
             }
@@ -267,7 +267,7 @@ describe('Lunch event', () => {
         let eventUrl = null;
 
         beforeEach(async () => {
-            let eventId = await Helper.createEvent(request, {
+            let eventId = await Helper.createEvent(agent, {
                 name: 'Lunch',
                 type: 'lunch',
                 date: Helper.daysAgo(5),
@@ -277,7 +277,7 @@ describe('Lunch event', () => {
 
         it('accepts update for past event when edit limit is not reached', async () => {
             await user1.update({maxPastDaysEdit: 6});
-            let response = await request.post(eventUrl).send({
+            let response = await agent.post(eventUrl).send({
                 name: 'Spaghetti',
             });
             expect(response.status).to.equal(204);
@@ -285,7 +285,7 @@ describe('Lunch event', () => {
 
         it('rejects update for past event when edit limit is reached', async () => {
             await user1.update({maxPastDaysEdit: 4});
-            let response = await request.post(eventUrl).send({
+            let response = await agent.post(eventUrl).send({
                 name: 'Lasagna',
             });
             expect(response.status).to.equal(403);
@@ -294,14 +294,14 @@ describe('Lunch event', () => {
 
         it('marks the event as editable when edit limit is not reached', async () => {
             await user1.update({maxPastDaysEdit: 6});
-            let response = await request.get(eventUrl);
+            let response = await agent.get(eventUrl);
             expect(response.status).to.equal(200);
             expect(response.body.event?.canEdit).to.equal(true);
         });
 
         it('marks the event as not editable when edit limit is reached', async () => {
             await user1.update({maxPastDaysEdit: 4});
-            let response = await request.get(eventUrl);
+            let response = await agent.get(eventUrl);
             expect(response.status).to.equal(200);
             expect(response.body.event?.canEdit).to.equal(false);
         });
@@ -311,30 +311,30 @@ describe('Lunch event', () => {
         let eventUrl = null;
 
         beforeEach(async () => {
-            let eventId = await Helper.createEvent(request, sampleEvent);
+            let eventId = await Helper.createEvent(agent, sampleEvent);
             eventUrl = `/api/events/${eventId}`;
         });
 
         it('can no longer retrieve a deleted event', async () => {
-            let response = await request.delete(eventUrl);
+            let response = await agent.delete(eventUrl);
             expect(response.status).to.equal(204);
 
-            response = await request.get(eventUrl);
+            response = await agent.get(eventUrl);
             expect(response.status).to.equal(404);
         });
 
         it('deleting twice results in an error', async () => {
-            await request.delete(eventUrl);
-            let response = await request.delete(eventUrl);
+            await agent.delete(eventUrl);
+            let response = await agent.delete(eventUrl);
             expect(response.status).to.equal(404);
         });
 
         it('deleting an event with participations works', async () => {
-            let response = await request.post(`${eventUrl}/participations/${user1.id}`)
+            let response = await agent.post(`${eventUrl}/participations/${user1.id}`)
                 .send({type: 'omnivorous'});
             expect(response.status).to.equal(204);
 
-            response = await request.delete(eventUrl);
+            response = await agent.delete(eventUrl);
             expect(response.status).to.equal(204);
         });
     });
@@ -343,7 +343,7 @@ describe('Lunch event', () => {
         let eventUrl = null;
 
         beforeEach(async () => {
-            let eventId = await Helper.createEvent(request, {
+            let eventId = await Helper.createEvent(agent, {
                 name: 'Lunch',
                 type: 'lunch',
                 date: Helper.daysAgo(5),
@@ -353,13 +353,13 @@ describe('Lunch event', () => {
 
         it('can delete an event when edit limit not reached', async () => {
             await user1.update({maxPastDaysEdit: 6});
-            let response = await request.delete(eventUrl);
+            let response = await agent.delete(eventUrl);
             expect(response.status).to.equal(204);
         });
 
         it('cannot delete an event when edit limit reached', async () => {
             await user1.update({maxPastDaysEdit: 4});
-            let response = await request.delete(eventUrl);
+            let response = await agent.delete(eventUrl);
             expect(response.status).to.equal(403);
             expect(response.text).to.equal('Event is too old for you to edit');
         });
@@ -367,18 +367,18 @@ describe('Lunch event', () => {
 
     describe('Event lists', () => {
         beforeEach(async () => {
-            await Helper.createEvent(request, sampleEvent);
+            await Helper.createEvent(agent, sampleEvent);
         });
 
         it('Lists the event when querying by date', async () => {
-            let response = await request.get('/api/events?from=2020-01-14T11:00:00.000Z&to=2020-01-16T11:00:00.000Z');
+            let response = await agent.get('/api/events?from=2020-01-14T11:00:00.000Z&to=2020-01-16T11:00:00.000Z');
             expect(response.status).to.equal(200);
             expect(response.body.events).to.have.lengthOf(1);
             expect(response.body.events[0]).to.containSubset(sampleEvent);
         });
 
         it('Lists the event including empty participations when querying by date', async () => {
-            let response = await request.get('/api/events?from=2020-01-14T11:00:00.000Z&to=2020-01-16T11:00:00.000Z&with=ownParticipations');
+            let response = await agent.get('/api/events?from=2020-01-14T11:00:00.000Z&to=2020-01-16T11:00:00.000Z&with=ownParticipations');
             expect(response.status).to.equal(200);
             expect(response.body.events).to.have.lengthOf(1);
             expect(response.body.events[0]).to.containSubset(sampleEvent);
@@ -386,23 +386,23 @@ describe('Lunch event', () => {
         });
 
         it('Does not list the event when querying by date before', async () => {
-            let response = await request.get('/api/events?from=2020-01-13T11:00:00.000Z&to=2020-01-14T11:00:00.000Z');
+            let response = await agent.get('/api/events?from=2020-01-13T11:00:00.000Z&to=2020-01-14T11:00:00.000Z');
             expect(response.status).to.equal(200);
             expect(response.body.events).to.have.lengthOf(0);
         });
 
         it('Does not list the event when querying by date after', async () => {
-            let response = await request.get('/api/events?from=2020-01-16T11:00:00.000Z&to=2020-01-17T11:00:00.000Z');
+            let response = await agent.get('/api/events?from=2020-01-16T11:00:00.000Z&to=2020-01-17T11:00:00.000Z');
             expect(response.status).to.equal(200);
             expect(response.body.events).to.have.lengthOf(0);
         });
 
         it('Returns only events of the specified type', async () => {
-            let response = await request.get('/api/events?types=lunch');
+            let response = await agent.get('/api/events?types=lunch');
             expect(response.status).to.equal(200);
             expect(response.body.events).to.have.lengthOf(1);
 
-            response = await request.get('/api/events?types=label');
+            response = await agent.get('/api/events?types=label');
             expect(response.status).to.equal(200);
             expect(response.body.events).to.have.lengthOf(0);
         });
@@ -410,7 +410,7 @@ describe('Lunch event', () => {
 
     describe('Event lists with edit limit', () => {
         beforeEach(async () => {
-            await Helper.createEvent(request, {
+            await Helper.createEvent(agent, {
                 name: 'Burgers and fries',
                 type: 'lunch',
                 date: Helper.daysAgo(5),
@@ -419,7 +419,7 @@ describe('Lunch event', () => {
 
         it('Lists events as editable when edit limit is not reached', async () => {
             await user1.update({maxPastDaysEdit: 6});
-            let response = await request.get('/api/events');
+            let response = await agent.get('/api/events');
             expect(response.status).to.equal(200);
             expect(response.body.events).to.have.lengthOf(1);
             expect(response.body.events[0]?.canEdit).to.equal(true);
@@ -427,7 +427,7 @@ describe('Lunch event', () => {
 
         it('Lists events as not editable when edit limit is reached', async () => {
             await user1.update({maxPastDaysEdit: 4});
-            let response = await request.get('/api/events');
+            let response = await agent.get('/api/events');
             expect(response.status).to.equal(200);
             expect(response.body.events).to.have.lengthOf(1);
             expect(response.body.events[0]?.canEdit).to.equal(false);
@@ -438,18 +438,18 @@ describe('Lunch event', () => {
         let today = new Date().toISOString().substring(0, 10);
 
         it('Rejects when date is missing', async () => {
-            let response = await request.get('/api/events/suggest');
+            let response = await agent.get('/api/events/suggest');
             expect(response.status).to.equal(400);
         });
 
         it('Suggests nothing if there is no event', async () => {
-            let response = await request.get('/api/events/suggest?date=2020-01-01');
+            let response = await agent.get('/api/events/suggest?date=2020-01-01');
             expect(response.status).to.equal(200);
             expect(response.body.suggestion).to.be.null();
         });
 
         it('Suggests events', async () => {
-            await Helper.createEvent(request, {
+            await Helper.createEvent(agent, {
                 name:    'Burgers',
                 type:    'lunch',
                 date:    Helper.daysAgo(180),
@@ -459,7 +459,7 @@ describe('Lunch event', () => {
                 },
                 comment: 'Medium rare please',
             });
-            await Helper.createEvent(request, {
+            await Helper.createEvent(agent, {
                 name:    'Red curry',
                 type:    'lunch',
                 date:    Helper.daysAgo(90),
@@ -469,7 +469,7 @@ describe('Lunch event', () => {
                 },
                 comment: 'Buy coconut milk',
             });
-            await Helper.createEvent(request, {
+            await Helper.createEvent(agent, {
                 name:    'Pizza',
                 type:    'lunch',
                 date:    Helper.daysAgo(30),
@@ -479,7 +479,7 @@ describe('Lunch event', () => {
                 },
                 comment: 'With mushrooms!',
             });
-            let response = await request.get(`/api/events/suggest?date=${today}`);
+            let response = await agent.get(`/api/events/suggest?date=${today}`);
             expect(response.status).to.equal(200);
             expect(response.body.suggestion).to.not.be.null();
             expect(['Burgers', 'Red curry', 'Pizza']).to.include(response.body.suggestion?.name);

@@ -6,8 +6,8 @@ import supertest from 'supertest';
 
 /** @type {AndeoLunch|null} */
 let andeoLunch = null;
-/** @type {supertest.SuperTest|null} */
-let request = null;
+/** @type {supertest.Agent|null} */
+let agent = null;
 /** @type {User|null} */
 let user1 = null;
 /** @type {string|null} */
@@ -21,11 +21,11 @@ describe('ICS links', () => {
         });
         await andeoLunch.waitReady();
         user1 = await Helper.createUser('test-user-1');
-        request = supertest.agent(andeoLunch.listen());
-        let response = await request.post('/api/account/login')
+        agent = supertest.agent(andeoLunch.listen());
+        let response = await agent.post('/api/account/login')
             .send({username: user1.username, password: Helper.password});
         jwt = response.body.token;
-        request.set('Authorization', `Bearer ${jwt}`);
+        agent.set('Authorization', `Bearer ${jwt}`);
     });
 
     afterEach(async () => {
@@ -37,7 +37,7 @@ describe('ICS links', () => {
      * @return {string}
      */
     async function createLink(data = {}) {
-        let response = await request.post('/api/ics/link')
+        let response = await agent.post('/api/ics/link')
             .send(data);
         expect(response.status).to.equal(200);
         let link = response.body.url;
@@ -52,14 +52,14 @@ describe('ICS links', () => {
      * @return {Promise<string>}
      */
     async function createEvent(name, date, participation = null) {
-        let eventId = await Helper.createEvent(request, {
+        let eventId = await Helper.createEvent(agent, {
             name,
             type: 'lunch',
             date: date.toISOString(),
         });
         let eventUrl = `/api/events/${eventId}`;
         if (participation) {
-            let response = await request.post(`${eventUrl}/participations/${user1.id}`)
+            let response = await agent.post(`${eventUrl}/participations/${user1.id}`)
                 .send(participation);
             expect(response.status).to.equal(204);
         }
@@ -128,35 +128,35 @@ describe('ICS links', () => {
     it('Rejects invalid signatures', async () => {
         let link = await createLink();
         link = link.replace(/\/(?<params>\w+)-\w+\/(?<filename>\w+\.ics)$/u, '/$1-abcdef/$2');
-        let response = await request.get(`${link}?format=json`);
+        let response = await agent.get(`${link}?format=json`);
         expect(response.status).to.equal(400);
     });
 
     it('Old lunch is not listed', async () => {
         await createEvent('Pizza', makeDate(-70), {type: 'omnivorous'});
         let link = await createLink();
-        let response = await request.get(`${link}?format=json`);
+        let response = await agent.get(`${link}?format=json`);
         expect(response.body.events).to.have.lengthOf(0);
     });
 
     it('Recent lunch is listed', async () => {
         await createEvent('Pasta', makeDate(-3), {type: 'omnivorous'});
         let link = await createLink();
-        let response = await request.get(`${link}?format=json`);
+        let response = await agent.get(`${link}?format=json`);
         expect(response.body.events).to.have.lengthOf(1);
     });
 
     it('Future lunch is listed', async () => {
         await createEvent('Cannelloni', makeDate(70), {type: 'omnivorous'});
         let link = await createLink();
-        let response = await request.get(`${link}?format=json`);
+        let response = await agent.get(`${link}?format=json`);
         expect(response.body.events).to.have.lengthOf(1);
     });
 
     it('Omnivorous is listed as opaque', async () => {
         await createEvent('Spaghetti', new Date(), {type: 'vegetarian'});
         let link = await createLink();
-        let response = await request.get(`${link}?format=json`);
+        let response = await agent.get(`${link}?format=json`);
         expect(response.body.events).to.have.lengthOf(1);
         expect(response.body.events[0]).to.containSubset({
             busyStatus: 'BUSY',
@@ -167,7 +167,7 @@ describe('ICS links', () => {
     it('Vegetarian is listed as opaque', async () => {
         await createEvent('Spaghetti', new Date(), {type: 'vegetarian'});
         let link = await createLink();
-        let response = await request.get(`${link}?format=json`);
+        let response = await agent.get(`${link}?format=json`);
         expect(response.body.events).to.have.lengthOf(1);
         expect(response.body.events[0]).to.containSubset({
             busyStatus: 'BUSY',
@@ -178,21 +178,21 @@ describe('ICS links', () => {
     it('Opt-out is not listed', async () => {
         await createEvent('Fajita', new Date(), {type: 'opt-out'});
         let link = await createLink();
-        let response = await request.get(`${link}?format=json`);
+        let response = await agent.get(`${link}?format=json`);
         expect(response.body.events).to.have.lengthOf(0);
     });
 
     it('Undecided is not listed', async () => {
         await createEvent('Kebab', new Date(), {type: 'undecided'});
         let link = await createLink();
-        let response = await request.get(`${link}?format=json`);
+        let response = await agent.get(`${link}?format=json`);
         expect(response.body.events).to.have.lengthOf(0);
     });
 
     it('Cooking causes a prefix', async () => {
         await createEvent('Gratin', new Date(), {type: 'omnivorous', credits: {points: 1}});
         let link = await createLink();
-        let response = await request.get(`${link}?format=json`);
+        let response = await agent.get(`${link}?format=json`);
         expect(response.body.events).to.have.lengthOf(1);
         expect(response.body.events[0]).to.containSubset({
             title:  'Cooking: Gratin',
@@ -204,7 +204,7 @@ describe('ICS links', () => {
         let date = new Date();
         await createEvent('Fried rice', date, {type: 'omnivorous', credits: {points: 1}});
         let link = await createLink({alarm: true});
-        let response = await request.get(`${link}?format=json`);
+        let response = await agent.get(`${link}?format=json`);
         expect(response.body.events).to.have.lengthOf(1);
         date.setMinutes(date.getMinutes() - 30);
         expect(response.body.events[0]).to.containSubset({
@@ -225,7 +225,7 @@ describe('ICS links', () => {
     it('Cooking causes an alarm, if requested', async () => {
         await createEvent('Stuffed peppers', new Date(), {type: 'omnivorous', credits: {points: 1}});
         let link = await createLink({alarm: true});
-        let response = await request.get(`${link}?format=json`);
+        let response = await agent.get(`${link}?format=json`);
         expect(response.body.events).to.have.lengthOf(1);
         expect(response.body.events[0]).to.containSubset({
             alarms: [
@@ -243,7 +243,7 @@ describe('ICS links', () => {
     it('Out-out lunch is listed when cooking', async () => {
         await createEvent('Hot dogs', new Date(), {type: 'opt-out', credits: {points: 1}});
         let link = await createLink();
-        let response = await request.get(`${link}?format=json`);
+        let response = await agent.get(`${link}?format=json`);
         expect(response.body.events).to.have.lengthOf(1);
         expect(response.body.events[0]).to.containSubset({
             title: 'Cooking: Hot dogs',
@@ -253,14 +253,14 @@ describe('ICS links', () => {
     it('Out-out lunch is not listed when only paying', async () => {
         await createEvent('Quinoa salad', new Date(), {type: 'opt-out', credits: {money: 1}});
         let link = await createLink();
-        let response = await request.get(`${link}?format=json`);
+        let response = await agent.get(`${link}?format=json`);
         expect(response.body.events).to.have.lengthOf(0);
     });
 
     it('Out-out lunch is listed as non-busy when requesting all lunches', async () => {
         await createEvent('Red curry', new Date(), {type: 'opt-out'});
         let link = await createLink({all: true});
-        let response = await request.get(`${link}?format=json`);
+        let response = await agent.get(`${link}?format=json`);
         expect(response.body.events).to.have.lengthOf(1);
         expect(response.body.events[0]).to.containSubset({
             title:      'Red curry',

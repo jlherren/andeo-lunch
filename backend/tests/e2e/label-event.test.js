@@ -6,8 +6,8 @@ import supertest from 'supertest';
 
 /** @type {AndeoLunch|null} */
 let andeoLunch = null;
-/** @type {supertest.SuperTest|null} */
-let request = null;
+/** @type {supertest.Agent|null} */
+let agent = null;
 /** @type {string|null} */
 let jwt = null;
 /** @type {User} */
@@ -44,13 +44,13 @@ describe('Label event', () => {
         await andeoLunch.waitReady();
         user1 = await Helper.createUser('test-user-1');
         user2 = await Helper.createUser('test-user-2');
-        request = supertest.agent(andeoLunch.listen());
+        agent = supertest.agent(andeoLunch.listen());
         if (jwt === null) {
-            let response = await request.post('/api/account/login')
+            let response = await agent.post('/api/account/login')
                 .send({username: user1.username, password: Helper.password});
             jwt = response.body.token;
         }
-        request.set('Authorization', `Bearer ${jwt}`);
+        agent.set('Authorization', `Bearer ${jwt}`);
     });
 
     afterEach(async () => {
@@ -59,7 +59,7 @@ describe('Label event', () => {
 
     describe('Create label events', () => {
         it('Accepts a label event', async () => {
-            let response = await request.post('/api/events').send(sampleEvent);
+            let response = await agent.post('/api/events').send(sampleEvent);
             expect(response.status).to.equal(201);
         });
 
@@ -72,7 +72,7 @@ describe('Label event', () => {
                     points: 10,
                 },
             };
-            let response = await request.post('/api/events').send(event);
+            let response = await agent.post('/api/events').send(event);
             expect(response.status).to.equal(400);
             expect(response.text).to.equal('Event type cannot have point costs');
         });
@@ -86,7 +86,7 @@ describe('Label event', () => {
                     },
                 },
             };
-            let response = await request.post('/api/events').send(event);
+            let response = await agent.post('/api/events').send(event);
             expect(response.status).to.equal(400);
             expect(response.text).to.equal('Event type cannot have a vegetarian money factor');
         });
@@ -98,7 +98,7 @@ describe('Label event', () => {
                 date:             '2020-01-15T11:00:00.000Z',
                 participationFee: 0.5,
             };
-            let response = await request.post('/api/events').send(event);
+            let response = await agent.post('/api/events').send(event);
             expect(response.status).to.equal(400);
             expect(response.text).to.equal('Event type cannot have a participation fee');
         });
@@ -108,7 +108,7 @@ describe('Label event', () => {
                 ...sampleEvent,
                 transfers: [makeSampleTransfer()],
             };
-            let response = await request.post('/api/events').send(event);
+            let response = await agent.post('/api/events').send(event);
             expect(response.status).to.equal(400);
             expect(response.text).to.equal('Event type cannot have transfers');
         });
@@ -118,7 +118,7 @@ describe('Label event', () => {
                 ...sampleEvent,
                 immutable: true,
             };
-            let response = await request.post('/api/events').send(event);
+            let response = await agent.post('/api/events').send(event);
             expect(response.status).to.equal(400);
             expect(response.text).to.equal('Event type cannot be immutable');
         });
@@ -133,53 +133,53 @@ describe('Label event', () => {
         let eventUrl = null;
 
         beforeEach(async () => {
-            let eventId = await Helper.createEvent(request, labelEvent);
+            let eventId = await Helper.createEvent(agent, labelEvent);
             eventUrl = `/api/events/${eventId}`;
         });
 
         it('Can update without any changes', async () => {
-            let response = await request.post(eventUrl).send({});
+            let response = await agent.post(eventUrl).send({});
             expect(response.status).to.equal(204);
-            response = await request.get(eventUrl);
+            response = await agent.get(eventUrl);
             expect(response.status).to.equal(200);
             expect(response.body.event).to.containSubset(labelEvent);
         });
 
         it('Can update name', async () => {
             let update = {name: 'Christmas'};
-            let response = await request.post(eventUrl).send(update);
+            let response = await agent.post(eventUrl).send(update);
             expect(response.status).to.equal(204);
-            response = await request.get(eventUrl);
+            response = await agent.get(eventUrl);
             expect(response.status).to.equal(200);
             expect(response.body.event).to.containSubset({...labelEvent, ...update});
         });
 
         it('Cannot update point costs', async () => {
-            let response = await request.post(eventUrl).send({costs: {points: 1}});
+            let response = await agent.post(eventUrl).send({costs: {points: 1}});
             expect(response.status).to.equal(400);
             expect(response.text).to.equal('Event type cannot have point costs');
         });
 
         it('Cannot update money costs', async () => {
-            let response = await request.post(eventUrl).send({costs: {money: 1}});
+            let response = await agent.post(eventUrl).send({costs: {money: 1}});
             expect(response.status).to.equal(400);
             expect(response.text).to.equal('"costs.money" is not allowed');
         });
 
         it('Cannot update vegetarian money factor', async () => {
-            let response = await request.post(eventUrl).send({factors: {vegetarian: {money: 1}}});
+            let response = await agent.post(eventUrl).send({factors: {vegetarian: {money: 1}}});
             expect(response.status).to.equal(400);
             expect(response.text).to.equal('Event type cannot have a vegetarian money factor');
         });
 
         it('Cannot update participation flat-rate', async () => {
-            let response = await request.post(eventUrl).send({participationFlatRate: 0.5});
+            let response = await agent.post(eventUrl).send({participationFlatRate: 0.5});
             expect(response.status).to.equal(400);
             expect(response.text).to.equal('Event type cannot have a participation flat-rate');
         });
 
         it('Cannot update participation fee', async () => {
-            let response = await request.post(eventUrl).send({participationFee: 0.5});
+            let response = await agent.post(eventUrl).send({participationFee: 0.5});
             expect(response.status).to.equal(400);
             expect(response.text).to.equal('Event type cannot have a participation fee');
         });

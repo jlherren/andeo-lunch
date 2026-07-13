@@ -14,8 +14,8 @@ const EVENT_DATE_3 = '2020-04-01T12:30:00.000Z';
 
 /** @type {AndeoLunch|null} */
 let andeoLunch = null;
-/** @type {supertest.SuperTest|null} */
-let request = null;
+/** @type {supertest.Agent|null} */
+let agent = null;
 /** @type {User|null} */
 let user1 = null;
 /** @type {User|null} */
@@ -54,13 +54,13 @@ describe('Transaction', () => {
         user1 = await Helper.createUser('test-user-1');
         user2 = await Helper.createUser('test-user-2');
         user3 = await Helper.createUser('test-user-3');
-        request = supertest.agent(andeoLunch.listen());
+        agent = supertest.agent(andeoLunch.listen());
         if (jwt === null) {
-            let response = await request.post('/api/account/login')
+            let response = await agent.post('/api/account/login')
                 .send({username: user1.username, password: Helper.password});
             jwt = response.body.token;
         }
-        request.set('Authorization', `Bearer ${jwt}`);
+        agent.set('Authorization', `Bearer ${jwt}`);
     });
 
     afterEach(async () => {
@@ -72,7 +72,7 @@ describe('Transaction', () => {
         let eventUrl = null;
 
         beforeEach(async () => {
-            eventId = await Helper.createEvent(request, {
+            eventId = await Helper.createEvent(agent, {
                 name:    'Test event',
                 date:    EVENT_DATE_1,
                 type:    Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.LUNCH],
@@ -89,11 +89,11 @@ describe('Transaction', () => {
         });
 
         it('Two participants, one vegetarian', async () => {
-            await request.post(`${eventUrl}/participations/${user1.id}`).send(participation1);
-            await request.post(`${eventUrl}/participations/${user2.id}`).send(participation2);
+            await agent.post(`${eventUrl}/participations/${user1.id}`).send(participation1);
+            await agent.post(`${eventUrl}/participations/${user2.id}`).send(participation2);
 
             // Check user 1
-            let response = await request.get(`/api/users/${user1.id}/transactions`);
+            let response = await agent.get(`/api/users/${user1.id}/transactions`);
             expect(response.status).to.equal(200);
             expect(response.body.transactions).to.have.lengthOf(3);
             expect(response.body.transactions[0]).to.containSubset({
@@ -123,12 +123,12 @@ describe('Transaction', () => {
                 amount:       -20,
                 balance:      -20,
             });
-            response = await request.get(`/api/users/${user1.id}`);
+            response = await agent.get(`/api/users/${user1.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.deep.equal({points: 4, money: -20});
 
             // Check user 2
-            response = await request.get(`/api/users/${user2.id}/transactions`);
+            response = await agent.get(`/api/users/${user2.id}/transactions`);
             expect(response.status).to.equal(200);
             expect(response.body.transactions).to.have.lengthOf(3);
             expect(response.body.transactions[0]).to.containSubset({
@@ -158,27 +158,27 @@ describe('Transaction', () => {
                 amount:       -10,
                 balance:      20,
             });
-            response = await request.get(`/api/users/${user2.id}`);
+            response = await agent.get(`/api/users/${user2.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.deep.equal({points: -4, money: 20});
 
-            let user = await Helper.getSystemUser(request);
+            let user = await Helper.getSystemUser(agent);
             expect(user.balances).to.deep.equal({points: 0, money: 0});
         });
 
         it('No participants and no cook', async () => {
-            let response = await request.get(`/api/users/${user1.id}`);
+            let response = await agent.get(`/api/users/${user1.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.deep.equal({points: 0, money: 0});
 
-            let user = await Helper.getSystemUser(request);
+            let user = await Helper.getSystemUser(agent);
             expect(user.balances).to.deep.equal({points: 0, money: 0});
-            user = await Helper.getAndeoUser(request);
+            user = await Helper.getAndeoUser(agent);
             expect(user.balances).to.deep.equal({points: 0, money: 0});
         });
 
         it('No participants but there is a cook', async () => {
-            await request.post(`${eventUrl}/participations/${user1.id}`).send({
+            await agent.post(`${eventUrl}/participations/${user1.id}`).send({
                 type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OPT_OUT],
                 credits: {
                     points: 8,
@@ -186,21 +186,21 @@ describe('Transaction', () => {
                 },
             });
 
-            let response = await request.get(`/api/users/${user1.id}/transactions`);
+            let response = await agent.get(`/api/users/${user1.id}/transactions`);
             expect(response.body.transactions).to.have.lengthOf(0);
 
-            response = await request.get(`/api/users/${user1.id}`);
+            response = await agent.get(`/api/users/${user1.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.deep.equal({points: 0, money: 0});
 
-            let user = await Helper.getSystemUser(request);
+            let user = await Helper.getSystemUser(agent);
             expect(user.balances).to.deep.equal({points: 0, money: 0});
-            user = await Helper.getAndeoUser(request);
+            user = await Helper.getAndeoUser(agent);
             expect(user.balances).to.deep.equal({points: 0, money: 0});
         });
 
         it('No cook but there is a participant', async () => {
-            await request.post(`${eventUrl}/participations/${user1.id}`).send({
+            await agent.post(`${eventUrl}/participations/${user1.id}`).send({
                 type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OMNIVOROUS],
                 credits: {
                     points: 0,
@@ -208,27 +208,27 @@ describe('Transaction', () => {
                 },
             });
 
-            let response = await request.get(`/api/users/${user1.id}/transactions`);
+            let response = await agent.get(`/api/users/${user1.id}/transactions`);
             expect(response.status).to.equal(200);
             expect(response.body.transactions).to.have.lengthOf(0);
 
-            response = await request.get(`/api/users/${user1.id}`);
+            response = await agent.get(`/api/users/${user1.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.deep.equal({points: 0, money: 0});
 
-            let user = await Helper.getSystemUser(request);
+            let user = await Helper.getSystemUser(agent);
             expect(user.balances).to.deep.equal({points: 0, money: 0});
-            user = await Helper.getAndeoUser(request);
+            user = await Helper.getAndeoUser(agent);
             expect(user.balances).to.deep.equal({points: 0, money: 0});
         });
 
         it('Recalculates transactions and balances after event costs change', async () => {
-            await request.post(`${eventUrl}/participations/${user1.id}`).send(participation1);
-            await request.post(`${eventUrl}/participations/${user2.id}`).send(participation2);
+            await agent.post(`${eventUrl}/participations/${user1.id}`).send(participation1);
+            await agent.post(`${eventUrl}/participations/${user2.id}`).send(participation2);
 
             // Lower the points cost (note that participation points remain the same!), and increase the vegetarian
             // factor
-            await request.post(eventUrl).send({
+            await agent.post(eventUrl).send({
                 costs:   {
                     points: 6,
                 },
@@ -240,7 +240,7 @@ describe('Transaction', () => {
             });
 
             // Check user 1
-            let response = await request.get(`/api/users/${user1.id}/transactions`);
+            let response = await agent.get(`/api/users/${user1.id}/transactions`);
             expect(response.status).to.equal(200);
             expect(response.body.transactions).to.have.lengthOf(3);
             expect(response.body.transactions[0]).to.containSubset({
@@ -270,12 +270,12 @@ describe('Transaction', () => {
                 amount:       -18.75,
                 balance:      -18.75,
             });
-            response = await request.get(`/api/users/${user1.id}`);
+            response = await agent.get(`/api/users/${user1.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.deep.equal({points: 3, money: -18.75});
 
             // Check user 2
-            response = await request.get(`/api/users/${user2.id}/transactions`);
+            response = await agent.get(`/api/users/${user2.id}/transactions`);
             expect(response.status).to.equal(200);
             expect(response.body.transactions).to.have.lengthOf(3);
             expect(response.body.transactions[0]).to.containSubset({
@@ -305,39 +305,39 @@ describe('Transaction', () => {
                 amount:       -11.25,
                 balance:      18.75,
             });
-            response = await request.get(`/api/users/${user2.id}`);
+            response = await agent.get(`/api/users/${user2.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.deep.equal({points: -3, money: 18.75});
 
-            let user = await Helper.getSystemUser(request);
+            let user = await Helper.getSystemUser(agent);
             expect(user.balances).to.deep.equal({points: 0, money: 0});
         });
 
         it('Recalculates transactions and balances after event is deleted', async () => {
             // Add participations
-            await request.post(`${eventUrl}/participations/${user1.id}`).send(participation1);
-            await request.post(`${eventUrl}/participations/${user2.id}`).send(participation2);
+            await agent.post(`${eventUrl}/participations/${user1.id}`).send(participation1);
+            await agent.post(`${eventUrl}/participations/${user2.id}`).send(participation2);
 
             // Delete event
-            await request.delete(eventUrl);
+            await agent.delete(eventUrl);
 
             // Check user 1
-            let response = await request.get(`/api/users/${user1.id}/transactions`);
+            let response = await agent.get(`/api/users/${user1.id}/transactions`);
             expect(response.status).to.equal(200);
             expect(response.body.transactions).to.have.lengthOf(0);
-            response = await request.get(`/api/users/${user1.id}`);
+            response = await agent.get(`/api/users/${user1.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.deep.equal({points: 0, money: 0});
 
             // Check user 2
-            response = await request.get(`/api/users/${user2.id}/transactions`);
+            response = await agent.get(`/api/users/${user2.id}/transactions`);
             expect(response.status).to.equal(200);
             expect(response.body.transactions).to.have.lengthOf(0);
-            response = await request.get(`/api/users/${user2.id}`);
+            response = await agent.get(`/api/users/${user2.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.deep.equal({points: 0, money: 0});
 
-            let user = await Helper.getSystemUser(request);
+            let user = await Helper.getSystemUser(agent);
             expect(user.balances).to.deep.equal({points: 0, money: 0});
         });
 
@@ -346,17 +346,17 @@ describe('Transaction', () => {
                 pointExempted: true,
             });
 
-            await request.post(`${eventUrl}/participations/${user1.id}`).send(participation1);
-            await request.post(`${eventUrl}/participations/${user2.id}`).send(participation2);
+            await agent.post(`${eventUrl}/participations/${user1.id}`).send(participation1);
+            await agent.post(`${eventUrl}/participations/${user2.id}`).send(participation2);
 
-            let response = await request.get(`/api/users/${user1.id}`);
+            let response = await agent.get(`/api/users/${user1.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.deep.equal({
                 money:  -20,
                 points: 8,
             });
 
-            response = await request.get(`/api/users/${user2.id}`);
+            response = await agent.get(`/api/users/${user2.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.deep.equal({
                 money:  20,
@@ -369,17 +369,17 @@ describe('Transaction', () => {
                 pointExempted: true,
             });
 
-            await request.post(`${eventUrl}/participations/${user1.id}`).send(participation1);
-            await request.post(`${eventUrl}/participations/${user2.id}`).send(participation2);
+            await agent.post(`${eventUrl}/participations/${user1.id}`).send(participation1);
+            await agent.post(`${eventUrl}/participations/${user2.id}`).send(participation2);
 
-            let response = await request.get(`/api/users/${user1.id}`);
+            let response = await agent.get(`/api/users/${user1.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.deep.equal({
                 money:  -20,
                 points: 0,
             });
 
-            response = await request.get(`/api/users/${user2.id}`);
+            response = await agent.get(`/api/users/${user2.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.deep.equal({
                 money:  20,
@@ -393,7 +393,7 @@ describe('Transaction', () => {
         let event2Id = null;
 
         beforeEach(async () => {
-            event1Id = await Helper.createEvent(request, {
+            event1Id = await Helper.createEvent(agent, {
                 name:  'Test event 1',
                 date:  EVENT_DATE_1,
                 type:  Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.LUNCH],
@@ -401,7 +401,7 @@ describe('Transaction', () => {
                     points: 8,
                 },
             });
-            event2Id = await Helper.createEvent(request, {
+            event2Id = await Helper.createEvent(agent, {
                 name:  'Test event 2',
                 date:  EVENT_DATE_2,
                 type:  Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.LUNCH],
@@ -412,67 +412,67 @@ describe('Transaction', () => {
         });
 
         it('Recalculates balances after event date moves to be earlier', async () => {
-            await request.post(`/api/events/${event1Id}/participations/${user1.id}`).send(participation1);
-            await request.post(`/api/events/${event1Id}/participations/${user2.id}`).send(participation2);
-            await request.post(`/api/events/${event2Id}/participations/${user1.id}`).send(participation1);
-            await request.post(`/api/events/${event2Id}/participations/${user2.id}`).send(participation2);
+            await agent.post(`/api/events/${event1Id}/participations/${user1.id}`).send(participation1);
+            await agent.post(`/api/events/${event1Id}/participations/${user2.id}`).send(participation2);
+            await agent.post(`/api/events/${event2Id}/participations/${user1.id}`).send(participation1);
+            await agent.post(`/api/events/${event2Id}/participations/${user2.id}`).send(participation2);
 
             // Get user balances
-            let response = await request.get(`/api/users/${user1.id}`);
+            let response = await agent.get(`/api/users/${user1.id}`);
             expect(response.status).to.equal(200);
             let userBalances1 = response.body.user.balances;
-            response = await request.get(`/api/users/${user2.id}`);
+            response = await agent.get(`/api/users/${user2.id}`);
             expect(response.status).to.equal(200);
             let userBalances2 = response.body.user.balances;
 
             // Move event 2 to be before event 1
-            await request.post(`/api/events/${event2Id}`).send({date: EVENT_DATE_0});
+            await agent.post(`/api/events/${event2Id}`).send({date: EVENT_DATE_0});
 
             // Final balances must remain the same
-            response = await request.get(`/api/users/${user1.id}`);
+            response = await agent.get(`/api/users/${user1.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.deep.equal(userBalances1);
-            response = await request.get(`/api/users/${user2.id}`);
+            response = await agent.get(`/api/users/${user2.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.deep.equal(userBalances2);
 
-            let user = await Helper.getSystemUser(request);
+            let user = await Helper.getSystemUser(agent);
             expect(user.balances).to.deep.equal({points: 0, money: 0});
         });
 
         it('Recalculates balances after event date moves to be later', async () => {
-            await request.post(`/api/events/${event1Id}/participations/${user1.id}`).send(participation1);
-            await request.post(`/api/events/${event1Id}/participations/${user2.id}`).send(participation2);
-            await request.post(`/api/events/${event2Id}/participations/${user1.id}`).send(participation1);
-            await request.post(`/api/events/${event2Id}/participations/${user2.id}`).send(participation2);
+            await agent.post(`/api/events/${event1Id}/participations/${user1.id}`).send(participation1);
+            await agent.post(`/api/events/${event1Id}/participations/${user2.id}`).send(participation2);
+            await agent.post(`/api/events/${event2Id}/participations/${user1.id}`).send(participation1);
+            await agent.post(`/api/events/${event2Id}/participations/${user2.id}`).send(participation2);
 
             // Get user balances
-            let response = await request.get(`/api/users/${user1.id}`);
+            let response = await agent.get(`/api/users/${user1.id}`);
             expect(response.status).to.equal(200);
             let userBalances1 = response.body.user.balances;
-            response = await request.get(`/api/users/${user2.id}`);
+            response = await agent.get(`/api/users/${user2.id}`);
             expect(response.status).to.equal(200);
             let userBalances2 = response.body.user.balances;
 
             // Move event 1 to be after event 2
-            await request.post(`/api/events/${event2Id}`).send({date: EVENT_DATE_3});
+            await agent.post(`/api/events/${event2Id}`).send({date: EVENT_DATE_3});
 
             // Final balances must remain the same
-            response = await request.get(`/api/users/${user1.id}`);
+            response = await agent.get(`/api/users/${user1.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.deep.equal(userBalances1);
-            response = await request.get(`/api/users/${user2.id}`);
+            response = await agent.get(`/api/users/${user2.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.deep.equal(userBalances2);
 
-            let user = await Helper.getSystemUser(request);
+            let user = await Helper.getSystemUser(agent);
             expect(user.balances).to.deep.equal({points: 0, money: 0});
         });
     });
 
     describe('Events with vegetarian participation', () => {
         it('Calculates correctly when vegetarian factor is more than 100%', async () => {
-            let eventId = await Helper.createEvent(request, {
+            let eventId = await Helper.createEvent(agent, {
                 name:    'Test event',
                 date:    EVENT_DATE_0,
                 type:    Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.LUNCH],
@@ -486,20 +486,20 @@ describe('Transaction', () => {
                 },
             });
 
-            await request.post(`/api/events/${eventId}/participations/${user1.id}`).send(participation1);
-            await request.post(`/api/events/${eventId}/participations/${user2.id}`).send(participation2);
+            await agent.post(`/api/events/${eventId}/participations/${user1.id}`).send(participation1);
+            await agent.post(`/api/events/${eventId}/participations/${user2.id}`).send(participation2);
 
             // Get user balances
-            let response = await request.get(`/api/users/${user1.id}`);
+            let response = await agent.get(`/api/users/${user1.id}`);
             expect(response.body.user.balances).to.deep.equal({points: 4, money: -12});
-            response = await request.get(`/api/users/${user2.id}`);
+            response = await agent.get(`/api/users/${user2.id}`);
             expect(response.body.user.balances).to.deep.equal({points: -4, money: -18 + 30});
         });
     });
 
     describe('Special events', () => {
         it('Distributes points and money correctly', async () => {
-            let eventId = await Helper.createEvent(request, {
+            let eventId = await Helper.createEvent(agent, {
                 name:  'Special event',
                 date:  EVENT_DATE_0,
                 type:  Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.SPECIAL],
@@ -508,7 +508,7 @@ describe('Transaction', () => {
                 },
             });
 
-            let response = await request.post(`/api/events/${eventId}/participations/${user1.id}`)
+            let response = await agent.post(`/api/events/${eventId}/participations/${user1.id}`)
                 .send({
                     type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OPT_IN],
                     credits: {
@@ -517,7 +517,7 @@ describe('Transaction', () => {
                     },
                 });
             expect(response.status).to.equal(204);
-            response = await request.post(`/api/events/${eventId}/participations/${user2.id}`)
+            response = await agent.post(`/api/events/${eventId}/participations/${user2.id}`)
                 .send({
                     type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OPT_IN],
                     credits: {
@@ -526,7 +526,7 @@ describe('Transaction', () => {
                     },
                 });
             expect(response.status).to.equal(204);
-            response = await request.post(`/api/events/${eventId}/participations/${user3.id}`)
+            response = await agent.post(`/api/events/${eventId}/participations/${user3.id}`)
                 .send({
                     type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OPT_OUT],
                     credits: {
@@ -536,16 +536,16 @@ describe('Transaction', () => {
                 });
 
             // Get user balances
-            response = await request.get(`/api/users/${user1.id}`);
+            response = await agent.get(`/api/users/${user1.id}`);
             expect(response.body.user.balances).to.deep.equal({points: 2, money: 4});
-            response = await request.get(`/api/users/${user2.id}`);
+            response = await agent.get(`/api/users/${user2.id}`);
             expect(response.body.user.balances).to.deep.equal({points: -2, money: -6});
-            response = await request.get(`/api/users/${user3.id}`);
+            response = await agent.get(`/api/users/${user3.id}`);
             expect(response.body.user.balances).to.deep.equal({points: 0, money: 2});
         });
 
         it('Correctly considers money factors', async () => {
-            let eventId = await Helper.createEvent(request, {
+            let eventId = await Helper.createEvent(agent, {
                 name:  'Special event',
                 date:  EVENT_DATE_0,
                 type:  Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.SPECIAL],
@@ -554,7 +554,7 @@ describe('Transaction', () => {
                 },
             });
 
-            let response = await request.post(`/api/events/${eventId}/participations/${user1.id}`)
+            let response = await agent.post(`/api/events/${eventId}/participations/${user1.id}`)
                 .send({
                     type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OPT_IN],
                     credits: {
@@ -563,7 +563,7 @@ describe('Transaction', () => {
                     },
                 });
             expect(response.status).to.equal(204);
-            response = await request.post(`/api/events/${eventId}/participations/${user2.id}`)
+            response = await agent.post(`/api/events/${eventId}/participations/${user2.id}`)
                 .send({
                     type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OPT_IN],
                     credits: {
@@ -575,7 +575,7 @@ describe('Transaction', () => {
                     },
                 });
             expect(response.status).to.equal(204);
-            response = await request.post(`/api/events/${eventId}/participations/${user3.id}`)
+            response = await agent.post(`/api/events/${eventId}/participations/${user3.id}`)
                 .send({
                     type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OPT_OUT],
                     credits: {
@@ -585,16 +585,16 @@ describe('Transaction', () => {
                 });
 
             // Get user balances
-            response = await request.get(`/api/users/${user1.id}`);
+            response = await agent.get(`/api/users/${user1.id}`);
             expect(response.body.user.balances).to.deep.equal({points: 2, money: 2});
-            response = await request.get(`/api/users/${user2.id}`);
+            response = await agent.get(`/api/users/${user2.id}`);
             expect(response.body.user.balances).to.deep.equal({points: -2, money: -4});
-            response = await request.get(`/api/users/${user3.id}`);
+            response = await agent.get(`/api/users/${user3.id}`);
             expect(response.body.user.balances).to.deep.equal({points: 0, money: 2});
         });
 
         it('Point exempted user', async () => {
-            let eventId = await Helper.createEvent(request, {
+            let eventId = await Helper.createEvent(agent, {
                 name:  'Special event',
                 date:  EVENT_DATE_0,
                 type:  'special',
@@ -607,14 +607,14 @@ describe('Transaction', () => {
             });
 
             let eventUrl = `/api/events/${eventId}`;
-            await request.post(`${eventUrl}/participations/${user1.id}`).send({
+            await agent.post(`${eventUrl}/participations/${user1.id}`).send({
                 type:    'opt-in',
                 credits: {
                     points: 0,
                     money:  30,
                 },
             });
-            await request.post(`${eventUrl}/participations/${user2.id}`).send({
+            await agent.post(`${eventUrl}/participations/${user2.id}`).send({
                 type:    'opt-in',
                 credits: {
                     points: 8,
@@ -622,14 +622,14 @@ describe('Transaction', () => {
                 },
             });
 
-            let response = await request.get(`/api/users/${user1.id}`);
+            let response = await agent.get(`/api/users/${user1.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.deep.equal({
                 money:  15,
                 points: -8,
             });
 
-            response = await request.get(`/api/users/${user2.id}`);
+            response = await agent.get(`/api/users/${user2.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.deep.equal({
                 money:  -15,
@@ -643,7 +643,7 @@ describe('Transaction', () => {
         let eventUrl = null;
 
         beforeEach(async () => {
-            eventId = await Helper.createEvent(request, {
+            eventId = await Helper.createEvent(agent, {
                 name:                  'Flat lunch',
                 date:                  EVENT_DATE_1,
                 type:                  Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.LUNCH],
@@ -661,14 +661,14 @@ describe('Transaction', () => {
         });
 
         it('Transactions and balances for event look correct', async () => {
-            await request.post(`${eventUrl}/participations/${user1.id}`).send({
+            await agent.post(`${eventUrl}/participations/${user1.id}`).send({
                 type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OMNIVOROUS],
                 credits: {
                     points: 6,
                     money:  0,
                 },
             });
-            await request.post(`${eventUrl}/participations/${user2.id}`).send({
+            await agent.post(`${eventUrl}/participations/${user2.id}`).send({
                 type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.VEGETARIAN],
                 credits: {
                     points: 0,
@@ -677,7 +677,7 @@ describe('Transaction', () => {
             });
 
             // Check user 1
-            let response = await request.get(`/api/users/${user1.id}/transactions`);
+            let response = await agent.get(`/api/users/${user1.id}/transactions`);
             expect(response.status).to.equal(200);
             expect(response.body.transactions).to.have.lengthOf(3);
             expect(response.body.transactions[0]).to.containSubset({
@@ -707,12 +707,12 @@ describe('Transaction', () => {
                 amount:       -20,
                 balance:      -20,
             });
-            response = await request.get(`/api/users/${user1.id}`);
+            response = await agent.get(`/api/users/${user1.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.deep.equal({points: 5.5, money: -20});
 
             // Check user 2
-            response = await request.get(`/api/users/${user2.id}/transactions`);
+            response = await agent.get(`/api/users/${user2.id}/transactions`);
             expect(response.status).to.equal(200);
             expect(response.body.transactions).to.have.lengthOf(3);
             expect(response.body.transactions[0]).to.containSubset({
@@ -742,25 +742,25 @@ describe('Transaction', () => {
                 amount:       -10,
                 balance:      20,
             });
-            response = await request.get(`/api/users/${user2.id}`);
+            response = await agent.get(`/api/users/${user2.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.deep.equal({points: -0.5, money: 20});
 
-            let user = await Helper.getSystemUser(request);
+            let user = await Helper.getSystemUser(agent);
             expect(user.balances).to.deep.equal({points: 0, money: 0});
-            user = await Helper.getAndeoUser(request);
+            user = await Helper.getAndeoUser(agent);
             expect(user.balances).to.deep.equal({points: -5, money: 0});
         });
 
         it('Regression: Ignore opt-out participation', async () => {
-            await request.post(`${eventUrl}/participations/${user1.id}`).send({
+            await agent.post(`${eventUrl}/participations/${user1.id}`).send({
                 type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OMNIVOROUS],
                 credits: {
                     points: 6,
                     money:  0,
                 },
             });
-            await request.post(`${eventUrl}/participations/${user2.id}`).send({
+            await agent.post(`${eventUrl}/participations/${user2.id}`).send({
                 type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OPT_OUT],
                 credits: {
                     points: 0,
@@ -769,7 +769,7 @@ describe('Transaction', () => {
             });
 
             // Check user 1
-            let response = await request.get(`/api/users/${user1.id}/transactions`);
+            let response = await agent.get(`/api/users/${user1.id}/transactions`);
             expect(response.status).to.equal(200);
             expect(response.body.transactions).to.have.lengthOf(2);
             expect(response.body.transactions[0]).to.containSubset({
@@ -790,21 +790,21 @@ describe('Transaction', () => {
                 amount:       -0.5,
                 balance:      5.5,
             });
-            response = await request.get(`/api/users/${user1.id}`);
+            response = await agent.get(`/api/users/${user1.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.deep.equal({points: 5.5, money: 0});
 
             // Check user 2
-            response = await request.get(`/api/users/${user2.id}/transactions`);
+            response = await agent.get(`/api/users/${user2.id}/transactions`);
             expect(response.status).to.equal(200);
             expect(response.body.transactions).to.have.lengthOf(0);
-            response = await request.get(`/api/users/${user2.id}`);
+            response = await agent.get(`/api/users/${user2.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.deep.equal({points: 0, money: 0});
 
-            let user = await Helper.getSystemUser(request);
+            let user = await Helper.getSystemUser(agent);
             expect(user.balances).to.deep.equal({points: 0, money: 0});
-            user = await Helper.getAndeoUser(request);
+            user = await Helper.getAndeoUser(agent);
             expect(user.balances).to.deep.equal({points: -5.5, money: 0});
         });
     });
@@ -816,7 +816,7 @@ describe('Transaction', () => {
         beforeEach(async () => {
             await Helper.setConfiguration('lunch.participationFeeRecipient', user3.id);
             await Helper.setConfiguration('lunch.defaultParticipationFee', '0.5');
-            eventId = await Helper.createEvent(request, {
+            eventId = await Helper.createEvent(agent, {
                 name:             'Ravioli',
                 date:             EVENT_DATE_1,
                 type:             'lunch',
@@ -829,11 +829,11 @@ describe('Transaction', () => {
         });
 
         it('Fee is paid by all participants', async () => {
-            await request.post(`${eventUrl}/participations/${user1.id}`).send(participation1);
-            await request.post(`${eventUrl}/participations/${user2.id}`).send(participation2);
+            await agent.post(`${eventUrl}/participations/${user1.id}`).send(participation1);
+            await agent.post(`${eventUrl}/participations/${user2.id}`).send(participation2);
 
             // Check user 1
-            let response = await request.get(`/api/users/${user1.id}/transactions`);
+            let response = await agent.get(`/api/users/${user1.id}/transactions`);
             expect(response.status).to.equal(200);
             expect(response.body.transactions).to.have.lengthOf(4);
             expect(response.body.transactions[0]).to.containSubset({
@@ -864,12 +864,12 @@ describe('Transaction', () => {
                 amount:       -15,
                 balance:      -15.5,
             });
-            response = await request.get(`/api/users/${user1.id}`);
+            response = await agent.get(`/api/users/${user1.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.deep.equal({points: 3, money: -15.5});
 
             // Check user 2
-            response = await request.get(`/api/users/${user2.id}/transactions`);
+            response = await agent.get(`/api/users/${user2.id}/transactions`);
             expect(response.status).to.equal(200);
             expect(response.body.transactions).to.have.lengthOf(4);
             expect(response.body.transactions[0]).to.containSubset({
@@ -900,12 +900,12 @@ describe('Transaction', () => {
                 amount:       -15,
                 balance:      14.5,
             });
-            response = await request.get(`/api/users/${user2.id}`);
+            response = await agent.get(`/api/users/${user2.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.deep.equal({points: -3, money: 14.5});
 
             // Check user 3
-            response = await request.get(`/api/users/${user3.id}/transactions`);
+            response = await agent.get(`/api/users/${user3.id}/transactions`);
             expect(response.status).to.equal(200);
             expect(response.body.transactions).to.have.lengthOf(2);
             expect(response.body.transactions[0]).to.containSubset({
@@ -922,40 +922,40 @@ describe('Transaction', () => {
                 amount:       0.5,
                 balance:      1,
             });
-            response = await request.get(`/api/users/${user3.id}`);
+            response = await agent.get(`/api/users/${user3.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.deep.equal({points: 0, money: 1.0});
         });
 
         it('Fee is not paid by non-participants', async () => {
-            await request.post(`${eventUrl}/participations/${user1.id}`).send({
+            await agent.post(`${eventUrl}/participations/${user1.id}`).send({
                 type:    'opt-out',
             });
-            await request.post(`${eventUrl}/participations/${user2.id}`).send({
+            await agent.post(`${eventUrl}/participations/${user2.id}`).send({
                 type:    'undecided',
             });
 
             // Check user 1
-            let response = await request.get(`/api/users/${user1.id}/transactions`);
+            let response = await agent.get(`/api/users/${user1.id}/transactions`);
             expect(response.status).to.equal(200);
             expect(response.body.transactions).to.have.lengthOf(0);
-            response = await request.get(`/api/users/${user1.id}`);
+            response = await agent.get(`/api/users/${user1.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.deep.equal({points: 0, money: 0});
 
             // Check user 2
-            response = await request.get(`/api/users/${user2.id}/transactions`);
+            response = await agent.get(`/api/users/${user2.id}/transactions`);
             expect(response.status).to.equal(200);
             expect(response.body.transactions).to.have.lengthOf(0);
-            response = await request.get(`/api/users/${user2.id}`);
+            response = await agent.get(`/api/users/${user2.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.deep.equal({points: 0, money: 0});
 
             // Check user 3
-            response = await request.get(`/api/users/${user3.id}/transactions`);
+            response = await agent.get(`/api/users/${user3.id}/transactions`);
             expect(response.status).to.equal(200);
             expect(response.body.transactions).to.have.lengthOf(0);
-            response = await request.get(`/api/users/${user3.id}`);
+            response = await agent.get(`/api/users/${user3.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.deep.equal({points: 0, money: 0});
         });

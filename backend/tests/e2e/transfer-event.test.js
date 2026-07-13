@@ -6,8 +6,8 @@ import supertest from 'supertest';
 
 /** @type {AndeoLunch|null} */
 let andeoLunch = null;
-/** @type {supertest.SuperTest|null} */
-let request = null;
+/** @type {supertest.Agent|null} */
+let agent = null;
 /** @type {User|null} */
 let user1 = null;
 /** @type {User|null} */
@@ -47,11 +47,11 @@ describe('Transfer event', () => {
         user1 = await Helper.createUser('test-user-1');
         user2 = await Helper.createUser('test-user-2');
         user3 = await Helper.createUser('test-user-3');
-        request = supertest.agent(andeoLunch.listen());
-        let response = await request.post('/api/account/login')
+        agent = supertest.agent(andeoLunch.listen());
+        let response = await agent.post('/api/account/login')
             .send({username: user1.username, password: Helper.password});
         jwt = response.body.token;
-        request.set('Authorization', `Bearer ${jwt}`);
+        agent.set('Authorization', `Bearer ${jwt}`);
     });
 
     afterEach(async () => {
@@ -60,23 +60,23 @@ describe('Transfer event', () => {
 
     describe('Create transfer events', () => {
         it('Accepts a transfer event', async () => {
-            let response = await request.post('/api/events').send(minimalEvent);
+            let response = await agent.post('/api/events').send(minimalEvent);
             expect(response.status).to.equal(201);
             let {location} = response.headers;
             expect(typeof location).to.equal('string');
             expect(location).to.match(/^\/api\/events\/\d+$/u);
-            response = await request.get(location);
+            response = await agent.get(location);
             expect(response.body.event).to.containSubset(minimalEvent);
         });
 
         it('Accepts a transfer event with transfers', async () => {
-            let response = await request.post('/api/events').send({
+            let response = await agent.post('/api/events').send({
                 ...minimalEvent,
                 transfers: [makeSampleTransfer()],
             });
             expect(response.status).to.equal(201);
             let {location} = response.headers;
-            response = await request.get(`${location}/transfers`);
+            response = await agent.get(`${location}/transfers`);
             expect(response.body.transfers.length).to.equal(1);
             expect(response.body.transfers[0]).to.containSubset(makeSampleTransfer());
         });
@@ -87,23 +87,23 @@ describe('Transfer event', () => {
         let eventUrl = null;
 
         beforeEach(async () => {
-            eventId = await Helper.createEvent(request, minimalEvent);
+            eventId = await Helper.createEvent(agent, minimalEvent);
             eventUrl = `/api/events/${eventId}`;
         });
 
         it('initially has no transfers', async () => {
-            let response = await request.get(`${eventUrl}/transfers`);
+            let response = await agent.get(`${eventUrl}/transfers`);
             expect(response.status).to.equal(200);
             expect(response.body.transfers).to.deep.equal([]);
         });
 
         it('can create a transfer', async () => {
             let transfer = makeSampleTransfer();
-            let response = await request.post(`${eventUrl}/transfers`).send([transfer]);
+            let response = await agent.post(`${eventUrl}/transfers`).send([transfer]);
             expect(response.status).to.equal(204);
 
             // Fetch again
-            response = await request.get(`${eventUrl}/transfers`);
+            response = await agent.get(`${eventUrl}/transfers`);
             expect(response.status).to.equal(200);
             expect(response.body.transfers.length).to.equal(1);
             expect(response.body.transfers[0]).to.containSubset({
@@ -113,7 +113,7 @@ describe('Transfer event', () => {
         });
 
         it('can add another transfer', async () => {
-            let response = await request.post(`${eventUrl}/transfers`).send([makeSampleTransfer()]);
+            let response = await agent.post(`${eventUrl}/transfers`).send([makeSampleTransfer()]);
             expect(response.status).to.equal(204);
             let transfers = [{
                 senderId:    user2.id,
@@ -121,11 +121,11 @@ describe('Transfer event', () => {
                 amount:      10,
                 currency:    'points',
             }];
-            response = await request.post(`${eventUrl}/transfers`).send(transfers);
+            response = await agent.post(`${eventUrl}/transfers`).send(transfers);
             expect(response.status).to.equal(204);
 
             // Fetch again
-            response = await request.get(`${eventUrl}/transfers`);
+            response = await agent.get(`${eventUrl}/transfers`);
             expect(response.status).to.equal(200);
             expect(response.body.transfers.length).to.equal(2);
         });
@@ -137,10 +137,10 @@ describe('Transfer event', () => {
                 amount:      10,
                 currency:    'money',
             }];
-            let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+            let response = await agent.post(`${eventUrl}/transfers`).send(transfers);
             expect(response.status).to.equal(204);
 
-            response = await request.get(`${eventUrl}/transfers`);
+            response = await agent.get(`${eventUrl}/transfers`);
             expect(response.status).to.equal(200);
 
             let transferId = response.body.transfers[0].id;
@@ -150,11 +150,11 @@ describe('Transfer event', () => {
                 amount:      11,
                 currency:    'points',
             };
-            response = await request.post(`${eventUrl}/transfers/${transferId}`).send(newTransfer);
+            response = await agent.post(`${eventUrl}/transfers/${transferId}`).send(newTransfer);
             expect(response.status).to.equal(204);
 
             // Fetch again
-            response = await request.get(`${eventUrl}/transfers`);
+            response = await agent.get(`${eventUrl}/transfers`);
             expect(response.status).to.equal(200);
             expect(response.body.transfers.length).to.equal(1);
             expect(response.body.transfers[0]).to.containSubset({
@@ -167,19 +167,19 @@ describe('Transfer event', () => {
         });
 
         it('can delete a transfer', async () => {
-            let response = await request.post(`${eventUrl}/transfers`).send([makeSampleTransfer()]);
+            let response = await agent.post(`${eventUrl}/transfers`).send([makeSampleTransfer()]);
             expect(response.status).to.equal(204);
 
-            response = await request.get(`${eventUrl}/transfers`);
+            response = await agent.get(`${eventUrl}/transfers`);
             expect(response.status).to.equal(200);
             expect(response.body.transfers.length).to.equal(1);
             let transferId = response.body.transfers[0].id;
 
-            response = await request.delete(`${eventUrl}/transfers/${transferId}`);
+            response = await agent.delete(`${eventUrl}/transfers/${transferId}`);
             expect(response.status).to.equal(204);
 
             // Fetch again
-            response = await request.get(`${eventUrl}/transfers`);
+            response = await agent.get(`${eventUrl}/transfers`);
             expect(response.status).to.equal(200);
             expect(response.body.transfers.length).to.equal(0);
         });
@@ -191,22 +191,22 @@ describe('Transfer event', () => {
                 amount:      10,
                 currency:    'money',
             }];
-            let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+            let response = await agent.post(`${eventUrl}/transfers`).send(transfers);
             expect(response.status).to.equal(400);
             expect(response.text).to.equal('Cannot transfer back to sender');
 
             // Fetch again
-            response = await request.get(`${eventUrl}/transfers`);
+            response = await agent.get(`${eventUrl}/transfers`);
             expect(response.status).to.equal(200);
             expect(response.body.transfers.length).to.equal(0);
         });
 
         it('refuses to transfer to itself on update', async () => {
-            let response = await request.post(`${eventUrl}/transfers`).send([makeSampleTransfer()]);
+            let response = await agent.post(`${eventUrl}/transfers`).send([makeSampleTransfer()]);
             expect(response.status).to.equal(204);
 
             // Fetch again
-            response = await request.get(`${eventUrl}/transfers`);
+            response = await agent.get(`${eventUrl}/transfers`);
             expect(response.status).to.equal(200);
 
             let transferId = response.body.transfers[0].id;
@@ -216,7 +216,7 @@ describe('Transfer event', () => {
                 amount:      10,
                 currency:    'money',
             };
-            response = await request.post(`${eventUrl}/transfers/${transferId}`).send(newTransfer);
+            response = await agent.post(`${eventUrl}/transfers/${transferId}`).send(newTransfer);
             expect(response.status).to.equal(400);
             expect(response.text).to.equal('Cannot transfer back to sender');
         });
@@ -229,7 +229,7 @@ describe('Transfer event', () => {
         let transferUpdate = null;
 
         beforeEach(async () => {
-            eventId = await Helper.createEvent(request, {
+            eventId = await Helper.createEvent(agent, {
                 name: 'Bet settlement',
                 type: 'transfer',
                 date: Helper.daysAgo(5),
@@ -251,13 +251,13 @@ describe('Transfer event', () => {
 
         it('can create a transfer when edit limit is not reached', async () => {
             await user1.update({maxPastDaysEdit: 6});
-            let response = await request.post(`${eventUrl}/transfers`).send([transfer]);
+            let response = await agent.post(`${eventUrl}/transfers`).send([transfer]);
             expect(response.status).to.equal(204);
         });
 
         it('cannot create a transfer when edit limit is reached', async () => {
             await user1.update({maxPastDaysEdit: 4});
-            let response = await request.post(`${eventUrl}/transfers`).send([transfer]);
+            let response = await agent.post(`${eventUrl}/transfers`).send([transfer]);
             expect(response.status).to.equal(403);
             expect(response.text).to.equal('Event is too old for you to edit');
         });
@@ -266,34 +266,34 @@ describe('Transfer event', () => {
             let transferId = null;
 
             beforeEach(async () => {
-                let response = await request.post(`${eventUrl}/transfers`).send([transfer]);
+                let response = await agent.post(`${eventUrl}/transfers`).send([transfer]);
                 expect(response.status).to.equal(204);
-                response = await request.get(`${eventUrl}/transfers`);
+                response = await agent.get(`${eventUrl}/transfers`);
                 transferId = response.body.transfers[0].id;
             });
 
             it('can update a transfer when edit limit is not reached', async () => {
                 await user1.update({maxPastDaysEdit: 6});
-                let response = await request.post(`${eventUrl}/transfers/${transferId}`).send(transferUpdate);
+                let response = await agent.post(`${eventUrl}/transfers/${transferId}`).send(transferUpdate);
                 expect(response.status).to.equal(204);
             });
 
             it('cannot update a transfer when edit limit is reached', async () => {
                 await user1.update({maxPastDaysEdit: 4});
-                let response = await request.post(`${eventUrl}/transfers/${transferId}`).send(transferUpdate);
+                let response = await agent.post(`${eventUrl}/transfers/${transferId}`).send(transferUpdate);
                 expect(response.status).to.equal(403);
                 expect(response.text).to.equal('Event is too old for you to edit');
             });
 
             it('can delete a transfer when edit limit is not reached', async () => {
                 await user1.update({maxPastDaysEdit: 6});
-                let response = await request.delete(`${eventUrl}/transfers/${transferId}`);
+                let response = await agent.delete(`${eventUrl}/transfers/${transferId}`);
                 expect(response.status).to.equal(204);
             });
 
             it('cannot delete a transfer when edit limit is reached', async () => {
                 await user1.update({maxPastDaysEdit: 4});
-                let response = await request.delete(`${eventUrl}/transfers/${transferId}`);
+                let response = await agent.delete(`${eventUrl}/transfers/${transferId}`);
                 expect(response.status).to.equal(403);
                 expect(response.text).to.equal('Event is too old for you to edit');
             });
@@ -304,7 +304,7 @@ describe('Transfer event', () => {
         let eventUrl = null;
 
         beforeEach(async () => {
-            let eventId = await Helper.createEvent(request, minimalEvent);
+            let eventId = await Helper.createEvent(agent, minimalEvent);
             eventUrl = `/api/events/${eventId}`;
         });
 
@@ -315,13 +315,13 @@ describe('Transfer event', () => {
                 amount:      10,
                 currency:    'money',
             }];
-            let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+            let response = await agent.post(`${eventUrl}/transfers`).send(transfers);
             expect(response.status).to.equal(204);
 
-            response = await request.get(`/api/users/${user1.id}`);
+            response = await agent.get(`/api/users/${user1.id}`);
             expect(response.body.user.balances).to.containSubset({points: 0, money: -10});
 
-            response = await request.get(`/api/users/${user2.id}`);
+            response = await agent.get(`/api/users/${user2.id}`);
             expect(response.body.user.balances).to.containSubset({points: 0, money: 10});
         });
 
@@ -332,13 +332,13 @@ describe('Transfer event', () => {
                 amount:      10,
                 currency:    'points',
             }];
-            let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+            let response = await agent.post(`${eventUrl}/transfers`).send(transfers);
             expect(response.status).to.equal(204);
 
-            response = await request.get(`/api/users/${user1.id}`);
+            response = await agent.get(`/api/users/${user1.id}`);
             expect(response.body.user.balances).to.containSubset({points: -10, money: 0});
 
-            response = await request.get(`/api/users/${user2.id}`);
+            response = await agent.get(`/api/users/${user2.id}`);
             expect(response.body.user.balances).to.containSubset({points: 10, money: 0});
         });
 
@@ -354,13 +354,13 @@ describe('Transfer event', () => {
                 amount:      15,
                 currency:    'money',
             }];
-            let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+            let response = await agent.post(`${eventUrl}/transfers`).send(transfers);
             expect(response.status).to.equal(204);
 
-            response = await request.get(`/api/users/${user1.id}`);
+            response = await agent.get(`/api/users/${user1.id}`);
             expect(response.body.user.balances).to.containSubset({points: -10, money: 15});
 
-            response = await request.get(`/api/users/${user2.id}`);
+            response = await agent.get(`/api/users/${user2.id}`);
             expect(response.body.user.balances).to.containSubset({points: 10, money: -15});
         });
 
@@ -371,10 +371,10 @@ describe('Transfer event', () => {
                 amount:      10,
                 currency:    'money',
             }];
-            let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+            let response = await agent.post(`${eventUrl}/transfers`).send(transfers);
             expect(response.status).to.equal(204);
 
-            response = await request.get(`${eventUrl}/transfers`);
+            response = await agent.get(`${eventUrl}/transfers`);
             expect(response.status).to.equal(200);
 
             let transferId = response.body.transfers[0].id;
@@ -384,13 +384,13 @@ describe('Transfer event', () => {
                 amount:      15,
                 currency:    'points',
             };
-            response = await request.post(`${eventUrl}/transfers/${transferId}`).send(newTransfer);
+            response = await agent.post(`${eventUrl}/transfers/${transferId}`).send(newTransfer);
             expect(response.status).to.equal(204);
 
-            response = await request.get(`/api/users/${user1.id}`);
+            response = await agent.get(`/api/users/${user1.id}`);
             expect(response.body.user.balances).to.containSubset({points: -15, money: 0});
 
-            response = await request.get(`/api/users/${user2.id}`);
+            response = await agent.get(`/api/users/${user2.id}`);
             expect(response.body.user.balances).to.containSubset({points: 15, money: 0});
         });
 
@@ -401,20 +401,20 @@ describe('Transfer event', () => {
                 amount:      10,
                 currency:    'money',
             }];
-            let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+            let response = await agent.post(`${eventUrl}/transfers`).send(transfers);
             expect(response.status).to.equal(204);
 
-            response = await request.get(`${eventUrl}/transfers`);
+            response = await agent.get(`${eventUrl}/transfers`);
             expect(response.status).to.equal(200);
 
             let transferId = response.body.transfers[0].id;
-            response = await request.delete(`${eventUrl}/transfers/${transferId}`);
+            response = await agent.delete(`${eventUrl}/transfers/${transferId}`);
             expect(response.status).to.equal(204);
 
-            response = await request.get(`/api/users/${user1.id}`);
+            response = await agent.get(`/api/users/${user1.id}`);
             expect(response.body.user.balances).to.containSubset({points: 0, money: 0});
 
-            response = await request.get(`/api/users/${user2.id}`);
+            response = await agent.get(`/api/users/${user2.id}`);
             expect(response.body.user.balances).to.containSubset({points: 0, money: 0});
         });
 
@@ -425,16 +425,16 @@ describe('Transfer event', () => {
                 amount:      10,
                 currency:    'money',
             }];
-            let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+            let response = await agent.post(`${eventUrl}/transfers`).send(transfers);
             expect(response.status).to.equal(204);
 
-            response = await request.delete(eventUrl);
+            response = await agent.delete(eventUrl);
             expect(response.status).to.equal(204);
 
-            response = await request.get(`/api/users/${user1.id}`);
+            response = await agent.get(`/api/users/${user1.id}`);
             expect(response.body.user.balances).to.containSubset({points: 0, money: 0});
 
-            response = await request.get(`/api/users/${user2.id}`);
+            response = await agent.get(`/api/users/${user2.id}`);
             expect(response.body.user.balances).to.containSubset({points: 0, money: 0});
         });
     });
@@ -443,7 +443,7 @@ describe('Transfer event', () => {
         let eventUrl = null;
 
         beforeEach(async () => {
-            let eventId = await Helper.createEvent(request, {
+            let eventId = await Helper.createEvent(agent, {
                 name: 'Test label',
                 date: '2020-01-01',
                 type: 'label',
@@ -452,7 +452,7 @@ describe('Transfer event', () => {
         });
 
         it('has no transfers', async () => {
-            let response = await request.get(`${eventUrl}/transfers`);
+            let response = await agent.get(`${eventUrl}/transfers`);
             expect(response.status).to.equal(200);
             expect(response.body.transfers).to.deep.equal([]);
         });
@@ -464,7 +464,7 @@ describe('Transfer event', () => {
                 amount:      10,
                 currency:    'money',
             }];
-            let response = await request.post(`${eventUrl}/transfers`).send(data);
+            let response = await agent.post(`${eventUrl}/transfers`).send(data);
             expect(response.status).to.equal(400);
             expect(response.text).to.equal('Event type cannot have transfers');
         });
@@ -474,7 +474,7 @@ describe('Transfer event', () => {
         let eventUrl = null;
 
         beforeEach(async () => {
-            let eventId = await Helper.createEvent(request, {
+            let eventId = await Helper.createEvent(agent, {
                 name: 'Test transfer',
                 date: '2020-01-01',
                 type: 'transfer',
@@ -494,14 +494,14 @@ describe('Transfer event', () => {
                 amount:      5,
                 currency:    'points',
             }];
-            let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+            let response = await agent.post(`${eventUrl}/transfers`).send(transfers);
             expect(response.status).to.equal(204);
 
-            response = await request.get(`/api/users/${user1.id}`);
+            response = await agent.get(`/api/users/${user1.id}`);
             expect(response.body.user.balances).to.containSubset({points: -10, money: 0});
-            response = await request.get(`/api/users/${user2.id}`);
+            response = await agent.get(`/api/users/${user2.id}`);
             expect(response.body.user.balances).to.containSubset({points: 10, money: 0});
-            let user = await Helper.getSystemUser(request);
+            let user = await Helper.getSystemUser(agent);
             expect(user.balances).to.deep.equal({points: 0, money: 0});
         });
 
@@ -522,16 +522,16 @@ describe('Transfer event', () => {
                 amount:      2,
                 currency:    'points',
             }];
-            let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+            let response = await agent.post(`${eventUrl}/transfers`).send(transfers);
             expect(response.status).to.equal(204);
 
-            response = await request.get(`/api/users/${user1.id}`);
+            response = await agent.get(`/api/users/${user1.id}`);
             expect(response.body.user.balances).to.containSubset({points: -3, money: 0});
-            response = await request.get(`/api/users/${user2.id}`);
+            response = await agent.get(`/api/users/${user2.id}`);
             expect(response.body.user.balances).to.containSubset({points: -7, money: 0});
-            response = await request.get(`/api/users/${user3.id}`);
+            response = await agent.get(`/api/users/${user3.id}`);
             expect(response.body.user.balances).to.containSubset({points: 10, money: 0});
-            let user = await Helper.getSystemUser(request);
+            let user = await Helper.getSystemUser(agent);
             expect(user.balances).to.deep.equal({points: 0, money: 0});
         });
 
@@ -552,16 +552,16 @@ describe('Transfer event', () => {
                 amount:      2,
                 currency:    'points',
             }];
-            let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+            let response = await agent.post(`${eventUrl}/transfers`).send(transfers);
             expect(response.status).to.equal(204);
 
-            response = await request.get(`/api/users/${user1.id}`);
+            response = await agent.get(`/api/users/${user1.id}`);
             expect(response.body.user.balances).to.containSubset({points: -30, money: 0});
-            response = await request.get(`/api/users/${user2.id}`);
+            response = await agent.get(`/api/users/${user2.id}`);
             expect(response.body.user.balances).to.containSubset({points: 10, money: 0});
-            response = await request.get(`/api/users/${user3.id}`);
+            response = await agent.get(`/api/users/${user3.id}`);
             expect(response.body.user.balances).to.containSubset({points: 20, money: 0});
-            let user = await Helper.getSystemUser(request);
+            let user = await Helper.getSystemUser(agent);
             expect(user.balances).to.deep.equal({points: 0, money: 0});
         });
 
@@ -638,16 +638,16 @@ describe('Transfer event', () => {
                 amount:      16,
                 currency:    'money',
             }];
-            let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+            let response = await agent.post(`${eventUrl}/transfers`).send(transfers);
             expect(response.status).to.equal(204);
 
-            response = await request.get(`/api/users/${user1.id}`);
+            response = await agent.get(`/api/users/${user1.id}`);
             expect(response.body.user.balances).to.containSubset({points: 5, money: -13});
-            response = await request.get(`/api/users/${user2.id}`);
+            response = await agent.get(`/api/users/${user2.id}`);
             expect(response.body.user.balances).to.containSubset({points: -5, money: 2});
-            response = await request.get(`/api/users/${user3.id}`);
+            response = await agent.get(`/api/users/${user3.id}`);
             expect(response.body.user.balances).to.containSubset({points: 0, money: 11});
-            let user = await Helper.getSystemUser(request);
+            let user = await Helper.getSystemUser(agent);
             expect(user.balances).to.deep.equal({points: 0, money: 0});
         });
 
@@ -668,14 +668,14 @@ describe('Transfer event', () => {
                 amount:      1,
                 currency:    'points',
             }];
-            let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+            let response = await agent.post(`${eventUrl}/transfers`).send(transfers);
             expect(response.status).to.equal(204);
 
-            response = await request.get(`/api/users/${user1.id}`);
+            response = await agent.get(`/api/users/${user1.id}`);
             expect(response.body.user.balances).to.containSubset({points: -12, money: 0});
-            response = await request.get(`/api/users/${user2.id}`);
+            response = await agent.get(`/api/users/${user2.id}`);
             expect(response.body.user.balances).to.containSubset({points: 12, money: 0});
-            let user = await Helper.getSystemUser(request);
+            let user = await Helper.getSystemUser(agent);
             expect(user.balances).to.deep.equal({points: 0, money: 0});
         });
 
@@ -696,22 +696,22 @@ describe('Transfer event', () => {
                 amount:      1,
                 currency:    'money',
             }];
-            let response = await request.post(`${eventUrl}/transfers`).send(transfers);
+            let response = await agent.post(`${eventUrl}/transfers`).send(transfers);
             expect(response.status).to.equal(204);
 
-            response = await request.get(`/api/users/${user1.id}`);
+            response = await agent.get(`/api/users/${user1.id}`);
             expect(response.body.user.balances).to.containSubset({points: -7, money: 0});
-            response = await request.get(`/api/users/${user2.id}`);
+            response = await agent.get(`/api/users/${user2.id}`);
             expect(response.body.user.balances).to.containSubset({points: 7, money: 0});
-            let user = await Helper.getSystemUser(request);
+            let user = await Helper.getSystemUser(agent);
             expect(user.balances).to.deep.equal({points: 0, money: 0});
         });
     });
 
     describe('Immutable transfer events', () => {
         it('Transfer event are not immutable by default', async () => {
-            let eventId = await Helper.createEvent(request, minimalEvent);
-            let response = await request.get(`/api/events/${eventId}`);
+            let eventId = await Helper.createEvent(agent, minimalEvent);
+            let response = await agent.get(`/api/events/${eventId}`);
             expect(response.status).to.equal(200);
             expect(response.body.event.immutable).to.equal(false);
 
@@ -719,25 +719,25 @@ describe('Transfer event', () => {
         });
 
         it('Immutable transfer event can be deleted', async () => {
-            let eventId = await Helper.createEvent(request, {
+            let eventId = await Helper.createEvent(agent, {
                 ...minimalEvent,
                 immutable: true,
             });
-            let response = await request.get(`/api/events/${eventId}`);
+            let response = await agent.get(`/api/events/${eventId}`);
             expect(response.status).to.equal(200);
             expect(response.body.event.immutable).to.equal(true);
 
             // Delete it
-            response = await request.delete(`/api/events/${eventId}`);
+            response = await agent.delete(`/api/events/${eventId}`);
             expect(response.status).to.equal(204);
 
             // Should no longer exist
-            response = await request.get(`/api/events/${eventId}`);
+            response = await agent.get(`/api/events/${eventId}`);
             expect(response.status).to.equal(404);
         });
 
         it('Adding transfers to immutable transfer event is disallowed', async () => {
-            let eventId = await Helper.createEvent(request, {
+            let eventId = await Helper.createEvent(agent, {
                 ...minimalEvent,
                 immutable: true,
             });
@@ -747,24 +747,24 @@ describe('Transfer event', () => {
                 amount:      10,
                 currency:    'money',
             }];
-            let response = await request.post(`/api/events/${eventId}/transfers`).send(transfers);
+            let response = await agent.post(`/api/events/${eventId}/transfers`).send(transfers);
             expect(response.status).to.equal(403);
             expect(response.text).to.equal('Event is immutable');
 
             // Verify it's unaltered
-            response = await request.get(`/api/events/${eventId}/transfers`);
+            response = await agent.get(`/api/events/${eventId}/transfers`);
             expect(response.status).to.equal(200);
             expect(response.body.transfers.length).to.equal(0);
         });
 
         it('Updating transfer on immutable transfer event is disallowed', async () => {
-            let eventId = await Helper.createEvent(request, {
+            let eventId = await Helper.createEvent(agent, {
                 ...minimalEvent,
                 transfers: [makeSampleTransfer()],
                 immutable: true,
             });
 
-            let response = await request.get(`/api/events/${eventId}/transfers`);
+            let response = await agent.get(`/api/events/${eventId}/transfers`);
             expect(response.status).to.equal(200);
             let transfer = response.body.transfers[0];
 
@@ -772,33 +772,33 @@ describe('Transfer event', () => {
                 ...makeSampleTransfer(),
                 amount:      20,
             };
-            response = await request.post(`/api/events/${eventId}/transfers/${transfer.id}`).send(update);
+            response = await agent.post(`/api/events/${eventId}/transfers/${transfer.id}`).send(update);
             expect(response.status).to.equal(403);
             expect(response.text).to.equal('Event is immutable');
 
             // Fetch again
-            response = await request.get(`/api/events/${eventId}/transfers`);
+            response = await agent.get(`/api/events/${eventId}/transfers`);
             expect(response.status).to.equal(200);
             expect(response.body.transfers[0].amount).to.equal(10);
         });
 
         it('Deleting transfer on immutable transfer event is disallowed', async () => {
-            let eventId = await Helper.createEvent(request, {
+            let eventId = await Helper.createEvent(agent, {
                 ...minimalEvent,
                 transfers: [makeSampleTransfer()],
                 immutable: true,
             });
 
-            let response = await request.get(`/api/events/${eventId}/transfers`);
+            let response = await agent.get(`/api/events/${eventId}/transfers`);
             expect(response.status).to.equal(200);
             let transfer = response.body.transfers[0];
 
-            response = await request.delete(`/api/events/${eventId}/transfers/${transfer.id}`);
+            response = await agent.delete(`/api/events/${eventId}/transfers/${transfer.id}`);
             expect(response.status).to.equal(403);
             expect(response.text).to.equal('Event is immutable');
 
             // Fetch again
-            response = await request.get(`/api/events/${eventId}/transfers`);
+            response = await agent.get(`/api/events/${eventId}/transfers`);
             expect(response.status).to.equal(200);
             expect(response.body.transfers.length).to.equal(1);
         });
@@ -808,7 +808,7 @@ describe('Transfer event', () => {
         it('Correct transaction balances when submitting milliseconds', async () => {
             // Note: This test reveals the bug only when running against MariaDB, not SQLite.
 
-            let response = await request.post('/api/events').send({
+            let response = await agent.post('/api/events').send({
                 ...minimalEvent,
                 date:      new Date('2020-01-04T12:24:12.497Z'),
                 transfers: [makeSampleTransfer()],
@@ -816,11 +816,11 @@ describe('Transfer event', () => {
             });
             expect(response.status).to.equal(201);
 
-            response = await request.get(`/api/users/${user1.id}`);
+            response = await agent.get(`/api/users/${user1.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.containSubset({points: 0, money: -10});
 
-            response = await request.get(`/api/users/${user2.id}`);
+            response = await agent.get(`/api/users/${user2.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.user.balances).to.containSubset({points: 0, money: 10});
         });

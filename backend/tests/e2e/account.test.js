@@ -9,8 +9,8 @@ import supertest from 'supertest';
 
 /** @type {AndeoLunch|null} */
 let andeoLunch = null;
-/** @type {supertest.SuperTest|null} */
-let request = null;
+/** @type {supertest.Agent|null} */
+let agent = null;
 /** @type {User|null} */
 let user = null;
 /** @type {User|null} */
@@ -30,7 +30,7 @@ describe('Account', () => {
             password: await AuthUtils.hashPassword('qwe456'),
             active:   false,
         });
-        request = supertest.agent(andeoLunch.listen());
+        agent = supertest.agent(andeoLunch.listen());
     });
 
     afterEach(async () => {
@@ -39,7 +39,7 @@ describe('Account', () => {
 
     describe('account login route', () => {
         it('returns a token and data after correct login', async () => {
-            let response = await request.post('/api/account/login')
+            let response = await agent.post('/api/account/login')
                 .send({username: 'testuser', password: 'abc123'});
             expect(response.status).to.equal(200);
             let secret = await AuthUtils.getAuthSecret();
@@ -53,38 +53,38 @@ describe('Account', () => {
         it('returns correct permission', async () => {
             let permission = await Permission.create({name: 'admin'});
             await UserPermission.create({user: user.id, permission: permission.id});
-            let response = await request.post('/api/account/login')
+            let response = await agent.post('/api/account/login')
                 .send({username: 'testuser', password: 'abc123'});
             expect(response.status).to.equal(200);
             expect(response.body.permissions).to.deep.equal(['admin']);
         });
 
         it('returns failure for wrong password', async () => {
-            let response = await request.post('/api/account/login')
+            let response = await agent.post('/api/account/login')
                 .send({username: 'testuser', password: 'wrongPa$$w0rd'});
             expect(response.status).to.equal(401);
         });
 
         it('returns failure for non-existent user', async () => {
-            let response = await request.post('/api/account/login')
+            let response = await agent.post('/api/account/login')
                 .send({username: 'nosuchuser', password: 'abc123'});
             expect(response.status).to.equal(401);
         });
 
         it('returns failure for inactive user', async () => {
-            let response = await request.post('/api/account/login')
+            let response = await agent.post('/api/account/login')
                 .send({username: 'inactiveuser', password: 'qwe456'});
             expect(response.status).to.equal(401);
         });
 
         it('returns failure on missing fields', async () => {
-            let response = await request.post('/api/account/login')
+            let response = await agent.post('/api/account/login')
                 .send({});
             expect(response.status).to.equal(400);
         });
 
         it('returns failure on invalid content type', async () => {
-            let response = await request.post('/api/account/login')
+            let response = await agent.post('/api/account/login')
                 .set('Content-Type', 'text/plain')
                 .send('Hi!');
             expect(response.status).to.equal(400);
@@ -96,14 +96,14 @@ describe('Account', () => {
             // Create a valid token
             let secret = await AuthUtils.getAuthSecret();
             let token = user.generateToken(secret);
-            let response = await request.post('/api/account/renew').set('Authorization', `Bearer ${token}`);
+            let response = await agent.post('/api/account/renew').set('Authorization', `Bearer ${token}`);
             expect(response.status).to.equal(200);
             let data = await JsonWebToken.verify(response.body.token, secret);
             expect(data.id).to.equal(user.id);
         });
 
         it('returns an error when renewing an unparsable token', async () => {
-            let response = await request.post('/api/account/renew').set('Authorization', 'Bearer WHATEVER');
+            let response = await agent.post('/api/account/renew').set('Authorization', 'Bearer WHATEVER');
             expect(response.status).to.equal(401);
         });
 
@@ -111,7 +111,7 @@ describe('Account', () => {
             // Create an expired token
             let secret = await AuthUtils.getAuthSecret();
             let token = user.generateToken(secret, {expiresIn: '-1 day'});
-            let response = await request.post('/api/account/renew').set('Authorization', `Bearer ${token}`);
+            let response = await agent.post('/api/account/renew').set('Authorization', `Bearer ${token}`);
             expect(response.status).to.equal(401);
         });
 
@@ -119,14 +119,14 @@ describe('Account', () => {
             // Create a valid token
             let secret = await AuthUtils.getAuthSecret();
             let token = inactiveUser.generateToken(secret);
-            let response = await request.post('/api/account/renew').set('Authorization', `Bearer ${token}`);
+            let response = await agent.post('/api/account/renew').set('Authorization', `Bearer ${token}`);
             expect(response.status).to.equal(401);
         });
     });
 
     describe('account check route', () => {
         it('works when not providing a token', async () => {
-            let response = await request.get('/api/account/check');
+            let response = await agent.get('/api/account/check');
             expect(response.status).to.equal(200);
             expect(response.body.userId).to.be.null();
             expect(response.body.username).to.be.null();
@@ -134,7 +134,7 @@ describe('Account', () => {
         });
 
         it('works when providing a non-parsable token', async () => {
-            let response = await request.get('/api/account/check').set('Authorization', 'Bearer WHATEVER');
+            let response = await agent.get('/api/account/check').set('Authorization', 'Bearer WHATEVER');
             expect(response.status).to.equal(200);
             expect(response.body.userId).to.be.null();
             expect(response.body.username).to.be.null();
@@ -145,7 +145,7 @@ describe('Account', () => {
             // Create an expired token
             let secret = await AuthUtils.getAuthSecret();
             let token = user.generateToken(secret, {expiresIn: '-1 day'});
-            let response = await request.get('/api/account/check').set('Authorization', `Bearer ${token}`);
+            let response = await agent.get('/api/account/check').set('Authorization', `Bearer ${token}`);
             expect(response.status).to.equal(200);
             expect(response.body.userId).to.be.null();
             expect(response.body.username).to.be.null();
@@ -156,7 +156,7 @@ describe('Account', () => {
             // Create a valid token
             let secret = await AuthUtils.getAuthSecret();
             let token = user.generateToken(secret);
-            let response = await request.get('/api/account/check').set('Authorization', `Bearer ${token}`);
+            let response = await agent.get('/api/account/check').set('Authorization', `Bearer ${token}`);
             expect(response.status).to.equal(200);
             expect(response.body.userId).to.equal(user.id);
             expect(response.body.username).to.equal('testuser');
@@ -168,7 +168,7 @@ describe('Account', () => {
             let secret = await AuthUtils.getAuthSecret();
             let thirtyDaysAgo = Math.floor(Date.now() / 1000) - 30 * 24 * 60 * 60;
             let token = user.generateToken(secret, {expiresIn: '31 days'}, {iat: thirtyDaysAgo});
-            let response = await request.get('/api/account/check').set('Authorization', `Bearer ${token}`);
+            let response = await agent.get('/api/account/check').set('Authorization', `Bearer ${token}`);
             expect(response.status).to.equal(200);
             expect(response.body.userId).to.equal(user.id);
             expect(response.body.username).to.equal('testuser');
@@ -180,14 +180,14 @@ describe('Account', () => {
             await UserPermission.create({user: user.id, permission: permission.id});
             let secret = await AuthUtils.getAuthSecret();
             let token = user.generateToken(secret);
-            let response = await request.get('/api/account/check').set('Authorization', `Bearer ${token}`);
+            let response = await agent.get('/api/account/check').set('Authorization', `Bearer ${token}`);
             expect(response.status).to.equal(200);
             expect(response.body.permissions).to.deep.equal(['admin']);
         });
 
         it('updates version stats', async () => {
             let device = 'abcd-efgh';
-            let response = await request.get(`/api/account/check?device=${device}&version=1.2.3`);
+            let response = await agent.get(`/api/account/check?device=${device}&version=1.2.3`);
             expect(response.status).to.equal(200);
             let dv = await DeviceVersion.findOne({
                 where: {
@@ -208,25 +208,25 @@ describe('Account', () => {
         });
 
         it('allows to change password', async () => {
-            let response = await request.post('/api/account/password')
+            let response = await agent.post('/api/account/password')
                 .set('Authorization', `Bearer ${token}`)
                 .send({oldPassword: 'abc123', newPassword: 'qwe456'});
             expect(response.status).to.equal(200);
             expect(response.body).to.deep.equal({success: true});
 
             // Login with old password does not work anymore
-            response = await request.post('/api/account/login')
+            response = await agent.post('/api/account/login')
                 .send({username: 'testuser', password: 'abc123'});
             expect(response.status).to.equal(401);
 
             // Login with new password works
-            response = await request.post('/api/account/login')
+            response = await agent.post('/api/account/login')
                 .send({username: 'testuser', password: 'qwe456'});
             expect(response.status).to.equal(200);
         });
 
         it('rejects wrong old password', async () => {
-            let response = await request.post('/api/account/password')
+            let response = await agent.post('/api/account/password')
                 .set('Authorization', `Bearer ${token}`)
                 .send({oldPassword: 'wrong', newPassword: 'qwe456'});
             expect(response.status).to.equal(200);
@@ -234,7 +234,7 @@ describe('Account', () => {
         });
 
         it('rejects short new password', async () => {
-            let response = await request.post('/api/account/password')
+            let response = await agent.post('/api/account/password')
                 .set('Authorization', `Bearer ${token}`)
                 .send({oldPassword: 'abc123', newPassword: 'lol'});
             expect(response.status).to.equal(200);

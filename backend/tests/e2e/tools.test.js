@@ -7,8 +7,8 @@ import supertest from 'supertest';
 
 /** @type {AndeoLunch|null} */
 let andeoLunch = null;
-/** @type {supertest.SuperTest|null} */
-let request = null;
+/** @type {supertest.Agent|null} */
+let agent = null;
 /** @type {User|null} */
 let user = null;
 
@@ -19,12 +19,12 @@ describe('Tools', () => {
             quiet:  true,
         });
         await andeoLunch.waitReady();
-        request = supertest.agent(andeoLunch.listen());
+        agent = supertest.agent(andeoLunch.listen());
         user = await Helper.createUser('test-user-1');
-        let response = await request.post('/api/account/login')
+        let response = await agent.post('/api/account/login')
             .send({username: user.username, password: Helper.password});
         let jwt = response.body.token;
-        request.set('Authorization', `Bearer ${jwt}`);
+        agent.set('Authorization', `Bearer ${jwt}`);
     });
 
     afterEach(async () => {
@@ -33,7 +33,7 @@ describe('Tools', () => {
 
     describe('version list', () => {
         it('is denied without permission', async () => {
-            let response = await request.get('/api/tools/device-versions');
+            let response = await agent.get('/api/tools/device-versions');
             expect(response.status).to.equal(401);
         });
 
@@ -68,7 +68,7 @@ describe('Tools', () => {
                 lastSeen: whileAgo,
             }]);
 
-            let response = await request.get('/api/tools/device-versions');
+            let response = await agent.get('/api/tools/device-versions');
             expect(response.status).to.equal(200);
             expect(response.body.versions).to.deep.equal([
                 {
@@ -90,14 +90,14 @@ describe('Tools', () => {
 
     describe('configurations', () => {
         it('is denied without permission', async () => {
-            let response = await request.get('/api/tools/configurations');
+            let response = await agent.get('/api/tools/configurations');
             expect(response.status).to.equal(401);
         });
 
         it('loads correctly', async () => {
             await Helper.insertPermission(user.id, 'tools.configurations');
 
-            let response = await request.get('/api/tools/configurations');
+            let response = await agent.get('/api/tools/configurations');
             expect(response.status).to.equal(200);
             expect(response.body.configurations).to.deep.equal([
                 {name: 'lunch.defaultFlatRate', value: '0.75'},
@@ -111,11 +111,11 @@ describe('Tools', () => {
         it('saves correctly', async () => {
             await Helper.insertPermission(user.id, 'tools.configurations');
 
-            let response = await request.post('/api/tools/configurations')
+            let response = await agent.post('/api/tools/configurations')
                 .send({configurations: [{name: 'lunch.defaultFlatRate', value: '0.65'}]});
             expect(response.status).to.equal(204);
 
-            response = await request.get('/api/tools/configurations');
+            response = await agent.get('/api/tools/configurations');
             expect(response.status).to.equal(200);
             expect(response.body.configurations).to.deep.equal([
                 {name: 'lunch.defaultFlatRate', value: '0.65'},
@@ -129,13 +129,13 @@ describe('Tools', () => {
         it('does not save invalid data', async () => {
             await Helper.insertPermission(user.id, 'tools.configurations');
 
-            let response = await request.post('/api/tools/configurations')
+            let response = await agent.post('/api/tools/configurations')
                 .send({configurations: [{name: 'fake', value: 'fake'}]});
             // It does not complain that the request was invalid.
             expect(response.status).to.equal(204);
 
             // But the new value was not saved
-            response = await request.get('/api/tools/configurations');
+            response = await agent.get('/api/tools/configurations');
             expect(response.status).to.equal(200);
             expect(response.body.configurations).to.deep.equal([
                 {name: 'lunch.defaultFlatRate', value: '0.75'},
@@ -147,7 +147,7 @@ describe('Tools', () => {
         });
 
         it('does not save without permission', async () => {
-            let response = await request.post('/api/tools/configurations')
+            let response = await agent.post('/api/tools/configurations')
                 .send({configurations: [{name: 'lunch.defaultFlatRate', value: '0.65'}]});
             expect(response.status).to.equal(401);
         });

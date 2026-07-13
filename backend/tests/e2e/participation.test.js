@@ -8,8 +8,8 @@ import supertest from 'supertest';
 
 /** @type {AndeoLunch|null} */
 let andeoLunch = null;
-/** @type {supertest.SuperTest|null} */
-let request = null;
+/** @type {supertest.Agent|null} */
+let agent = null;
 /** @type {User|null} */
 let user1 = null;
 /** @type {User|null} */
@@ -59,11 +59,11 @@ describe('Participation', () => {
         user1 = await Helper.createUser('test-user-1');
         user2 = await Helper.createUser('test-user-2');
         user3 = await Helper.createUser('test-user-3');
-        request = supertest.agent(andeoLunch.listen());
-        let response = await request.post('/api/account/login')
+        agent = supertest.agent(andeoLunch.listen());
+        let response = await agent.post('/api/account/login')
             .send({username: user1.username, password: Helper.password});
         jwt = response.body.token;
-        request.set('Authorization', `Bearer ${jwt}`);
+        agent.set('Authorization', `Bearer ${jwt}`);
     });
 
     afterEach(async () => {
@@ -75,7 +75,7 @@ describe('Participation', () => {
         let eventUrl = null;
 
         beforeEach(async () => {
-            eventId = await Helper.createEvent(request, {
+            eventId = await Helper.createEvent(agent, {
                 name:  'Test event',
                 date:  '2020-01-01',
                 type:  Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.LUNCH],
@@ -87,18 +87,18 @@ describe('Participation', () => {
         });
 
         it('Initially has no participations', async () => {
-            let response = await request.get(`${eventUrl}/participations`);
+            let response = await agent.get(`${eventUrl}/participations`);
             expect(response.status).to.equal(200);
             expect(response.body.participations).to.deep.equal([]);
         });
 
         it('Can create a participations', async () => {
             let url = `${eventUrl}/participations/${user1.id}`;
-            let response = await request.post(url).send(sampleParticipation1);
+            let response = await agent.post(url).send(sampleParticipation1);
             expect(response.status).to.equal(204);
 
             // retrieve again
-            response = await request.get(url);
+            response = await agent.get(url);
             expect(response.status).to.equal(200);
             expect(response.body.participation).to.containSubset({
                 ...sampleParticipation1,
@@ -110,15 +110,15 @@ describe('Participation', () => {
         it('Can update a participations', async () => {
             // Create
             let url = `${eventUrl}/participations/${user1.id}`;
-            let response = await request.post(url).send(sampleParticipation1);
+            let response = await agent.post(url).send(sampleParticipation1);
             expect(response.status).to.equal(204);
 
             // update it
-            response = await request.post(url).send(sampleParticipation2);
+            response = await agent.post(url).send(sampleParticipation2);
             expect(response.status).to.equal(204);
 
             // retrieve again
-            response = await request.get(url);
+            response = await agent.get(url);
             expect(response.status).to.equal(200);
             expect(response.body.participation).to.containSubset({
                 ...sampleParticipation2,
@@ -130,11 +130,11 @@ describe('Participation', () => {
         it('Can update a participations without updating the type', async () => {
             // Create
             let url = `${eventUrl}/participations/${user1.id}`;
-            let response = await request.post(url).send(sampleParticipation1);
+            let response = await agent.post(url).send(sampleParticipation1);
             expect(response.status).to.equal(204);
 
             // update it
-            response = await request.post(url).send({
+            response = await agent.post(url).send({
                 credits: {
                     points: 2,
                 },
@@ -142,7 +142,7 @@ describe('Participation', () => {
             expect(response.status).to.equal(204);
 
             // retrieve again
-            response = await request.get(url);
+            response = await agent.get(url);
             expect(response.status).to.equal(200);
             expect(response.body.participation).to.containSubset({
                 type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OMNIVOROUS],
@@ -157,43 +157,43 @@ describe('Participation', () => {
 
         it('Can delete a participations', async () => {
             let url = `${eventUrl}/participations/${user1.id}`;
-            let response = await request.post(url).send(sampleParticipation1);
+            let response = await agent.post(url).send(sampleParticipation1);
             expect(response.status).to.equal(204);
 
             // delete
-            response = await request.delete(url);
+            response = await agent.delete(url);
             expect(response.status).to.equal(204);
 
             // retrieve again
-            await request.delete(url);
-            response = await request.get(url);
+            await agent.delete(url);
+            response = await agent.get(url);
             expect(response.status).to.equal(404);
         });
 
         it('Cannot delete a non-existing participation', async () => {
             let url = `${eventUrl}/participations/${user1.id}`;
-            let response = await request.delete(url);
+            let response = await agent.delete(url);
             expect(response.status).to.equal(404);
         });
 
         it('Adjusts money costs on new money-providing participations', async () => {
             // Add participant
             let url = `${eventUrl}/participations/${user1.id}`;
-            let response = await request.post(url).send(sampleParticipation2);
+            let response = await agent.post(url).send(sampleParticipation2);
             expect(response.status).to.equal(204);
 
             // Retrieve event
-            response = await request.get(eventUrl);
+            response = await agent.get(eventUrl);
             expect(response.status).to.equal(200);
             expect(response.body.event.costs.money).to.equal(sampleParticipation2.credits.money);
 
             // Add another participant
             url = `${eventUrl}/participations/${user2.id}`;
-            response = await request.post(url).send(sampleParticipation3);
+            response = await agent.post(url).send(sampleParticipation3);
             expect(response.status).to.equal(204);
 
             // Retrieve event
-            response = await request.get(eventUrl);
+            response = await agent.get(eventUrl);
             expect(response.status).to.equal(200);
             expect(response.body.event.costs.money).to.equal(sampleParticipation2.credits.money + sampleParticipation3.credits.money);
         });
@@ -201,7 +201,7 @@ describe('Participation', () => {
         it('Can save participation without specifying its type', async () => {
             // Add participant
             let url = `${eventUrl}/participations/${user1.id}`;
-            let response = await request.post(url).send({
+            let response = await agent.post(url).send({
                 credits: {
                     points: 1,
                 },
@@ -209,7 +209,7 @@ describe('Participation', () => {
             expect(response.status).to.equal(204);
 
             // Retrieve again
-            response = await request.get(url);
+            response = await agent.get(url);
             expect(response.status).to.equal(200);
             expect(response.body.participation).to.containSubset({
                 userId:  user1.id,
@@ -222,7 +222,7 @@ describe('Participation', () => {
         });
 
         it('Rejects participation type \'opt-in\'', async () => {
-            let response = await request.post(`${eventUrl}/participations/${user1.id}`)
+            let response = await agent.post(`${eventUrl}/participations/${user1.id}`)
                 .send({type: Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OPT_IN]});
             expect(response.status).to.equal(400);
             expect(response.text).to.equal('This type of participation is not allowed for this type of event');
@@ -230,7 +230,7 @@ describe('Participation', () => {
 
         it('Refuses to save invalid money factor', async () => {
             let url = `${eventUrl}/participations/${user1.id}`;
-            let response = await request.post(url)
+            let response = await agent.post(url)
                 .send({
                     type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OMNIVOROUS],
                     factors: {
@@ -240,7 +240,7 @@ describe('Participation', () => {
             expect(response.status).to.equal(400);
 
             // Check event again
-            response = await request.get(url);
+            response = await agent.get(url);
             expect(response.status).to.equal(404);
         });
     });
@@ -250,7 +250,7 @@ describe('Participation', () => {
         let eventUrl = null;
 
         beforeEach(async () => {
-            eventId = await Helper.createEvent(request, {
+            eventId = await Helper.createEvent(agent, {
                 name:  'Test event',
                 date:  '2020-01-01',
                 type:  Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.LUNCH],
@@ -263,7 +263,7 @@ describe('Participation', () => {
 
         it('Bulk-save several participations', async () => {
             let url = `${eventUrl}/participations`;
-            let response = await request.post(url).send({
+            let response = await agent.post(url).send({
                 participations: [
                     {
                         userId:  user1.id,
@@ -286,11 +286,11 @@ describe('Participation', () => {
             expect(response.status).to.equal(204);
 
             // retrieve again
-            response = await request.get(url);
+            response = await agent.get(url);
             expect(response.status).to.equal(200);
             expect(response.body.participations).to.have.lengthOf(3);
 
-            response = await request.get(`${url}/${user1.id}`);
+            response = await agent.get(`${url}/${user1.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.participation).to.containSubset({
                 userId:  user1.id,
@@ -305,7 +305,7 @@ describe('Participation', () => {
                 },
             });
 
-            response = await request.get(`${url}/${user2.id}`);
+            response = await agent.get(`${url}/${user2.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.participation).to.containSubset({
                 userId:  user2.id,
@@ -320,7 +320,7 @@ describe('Participation', () => {
                 },
             });
 
-            response = await request.get(`${url}/${user3.id}`);
+            response = await agent.get(`${url}/${user3.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.participation).to.containSubset({
                 userId:  user3.id,
@@ -343,7 +343,7 @@ describe('Participation', () => {
         let eventUrl = null;
 
         beforeEach(async () => {
-            eventId = await Helper.createEvent(request, {
+            eventId = await Helper.createEvent(agent, {
                 name:  'Greek salad',
                 date:  Helper.daysAgo(5),
                 type:  'lunch',
@@ -353,35 +353,35 @@ describe('Participation', () => {
 
         it('Allows saving participation when edit limit is not reached', async () => {
             await user1.update({maxPastDaysEdit: 6});
-            let response = await request.post(`${eventUrl}/participations/${user1.id}`)
+            let response = await agent.post(`${eventUrl}/participations/${user1.id}`)
                 .send({type: 'vegetarian'});
             expect(response.status).to.equal(204);
         });
 
         it('Rejects saving participation when edit limit is reached', async () => {
             await user1.update({maxPastDaysEdit: 4});
-            let response = await request.post(`${eventUrl}/participations/${user1.id}`)
+            let response = await agent.post(`${eventUrl}/participations/${user1.id}`)
                 .send({type: 'vegetarian'});
             expect(response.status).to.equal(403);
             expect(response.text).to.equal('Event is too old for you to edit');
         });
 
         it('Allows deleting participation when edit limit is not reached', async () => {
-            let response = await request.post(`${eventUrl}/participations/${user1.id}`)
+            let response = await agent.post(`${eventUrl}/participations/${user1.id}`)
                 .send({type: 'vegetarian'});
             expect(response.status).to.equal(204);
             await user1.update({maxPastDaysEdit: 6});
-            response = await request.delete(`${eventUrl}/participations/${user1.id}`)
+            response = await agent.delete(`${eventUrl}/participations/${user1.id}`)
                 .send({type: 'vegetarian'});
             expect(response.status).to.equal(204);
         });
 
         it('Rejects deleting participation when edit limit is reached', async () => {
-            let response = await request.post(`${eventUrl}/participations/${user1.id}`)
+            let response = await agent.post(`${eventUrl}/participations/${user1.id}`)
                 .send({type: 'vegetarian'});
             expect(response.status).to.equal(204);
             await user1.update({maxPastDaysEdit: 4});
-            response = await request.post(`${eventUrl}/participations/${user1.id}`)
+            response = await agent.post(`${eventUrl}/participations/${user1.id}`)
                 .send({type: 'vegetarian'});
             expect(response.status).to.equal(403);
             expect(response.text).to.equal('Event is too old for you to edit');
@@ -392,7 +392,7 @@ describe('Participation', () => {
         let eventUrl = null;
 
         beforeEach(async () => {
-            let eventId = await Helper.createEvent(request, {
+            let eventId = await Helper.createEvent(agent, {
                 name: 'Test label',
                 date: '2020-01-01',
                 type: Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.LABEL],
@@ -401,13 +401,13 @@ describe('Participation', () => {
         });
 
         it('initially has no participations', async () => {
-            let response = await request.get(`${eventUrl}/participations`);
+            let response = await agent.get(`${eventUrl}/participations`);
             expect(response.status).to.equal(200);
             expect(response.body.participations).to.deep.equal([]);
         });
 
         it('cannot create a participations', async () => {
-            let response = await request.post(`${eventUrl}/participations/${user1.id}`).send(sampleParticipation1);
+            let response = await agent.post(`${eventUrl}/participations/${user1.id}`).send(sampleParticipation1);
             expect(response.status).to.equal(400);
             expect(response.text).to.equal('This type of event cannot have participations');
         });
@@ -416,7 +416,7 @@ describe('Participation', () => {
             let name = Constants.PARTICIPATION_TYPE_NAMES[type];
             // eslint-disable-next-line no-loop-func
             it(`Rejects participation type '${name}'`, async () => {
-                let response = await request.post(`${eventUrl}/participations/${user1.id}`)
+                let response = await agent.post(`${eventUrl}/participations/${user1.id}`)
                     .send({type: name});
                 expect(response.status).to.equal(400);
                 expect(response.text).to.equal('This type of event cannot have participations');
@@ -428,7 +428,7 @@ describe('Participation', () => {
         let eventUrl = null;
 
         beforeEach(async () => {
-            let eventId = await Helper.createEvent(request, {
+            let eventId = await Helper.createEvent(agent, {
                 name:  'Special event',
                 date:  '2020-01-01',
                 type:  Constants.EVENT_TYPE_NAMES[Constants.EVENT_TYPES.SPECIAL],
@@ -440,13 +440,13 @@ describe('Participation', () => {
         });
 
         it('initially has no participations', async () => {
-            let response = await request.get(`${eventUrl}/participations`);
+            let response = await agent.get(`${eventUrl}/participations`);
             expect(response.status).to.equal(200);
             expect(response.body.participations).to.deep.equal([]);
         });
 
         it('Participations correctly updates money', async () => {
-            let response = await request.post(`${eventUrl}/participations/${user1.id}`)
+            let response = await agent.post(`${eventUrl}/participations/${user1.id}`)
                 .send({
                     type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OPT_OUT],
                     credits: {
@@ -455,7 +455,7 @@ describe('Participation', () => {
                     },
                 });
             expect(response.status).to.equal(204);
-            response = await request.post(`${eventUrl}/participations/${user2.id}`)
+            response = await agent.post(`${eventUrl}/participations/${user2.id}`)
                 .send({
                     type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OPT_IN],
                     credits: {
@@ -466,7 +466,7 @@ describe('Participation', () => {
             expect(response.status).to.equal(204);
 
             // Check event again
-            response = await request.get(eventUrl);
+            response = await agent.get(eventUrl);
             expect(response.status).to.equal(200);
             expect(response.body.event.costs).to.containSubset({
                 points: 8,
@@ -483,7 +483,7 @@ describe('Participation', () => {
             let name = Constants.PARTICIPATION_TYPE_NAMES[type];
             // eslint-disable-next-line no-loop-func
             it(`Rejects participation type '${name}'`, async () => {
-                let response = await request.post(`${eventUrl}/participations/${user1.id}`)
+                let response = await agent.post(`${eventUrl}/participations/${user1.id}`)
                     .send({type: name});
                 expect(response.status).to.equal(400);
                 expect(response.text).to.equal('This type of participation is not allowed for this type of event');
@@ -492,7 +492,7 @@ describe('Participation', () => {
 
         it('Can save money factor', async () => {
             let url = `${eventUrl}/participations/${user1.id}`;
-            let response = await request.post(url)
+            let response = await agent.post(url)
                 .send({
                     type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OPT_IN],
                     factors: {
@@ -502,13 +502,13 @@ describe('Participation', () => {
             expect(response.status).to.equal(204);
 
             // Check event again
-            response = await request.get(url);
+            response = await agent.get(url);
             expect(response.body?.participation?.factors?.money).to.equal(0.5);
         });
 
         it('Does not save money factor on opt-out', async () => {
             let url = `${eventUrl}/participations/${user1.id}`;
-            let response = await request.post(url)
+            let response = await agent.post(url)
                 .send({
                     type:    Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.OPT_OUT],
                     factors: {
@@ -518,7 +518,7 @@ describe('Participation', () => {
             expect(response.status).to.equal(204);
 
             // Check event again
-            response = await request.get(url);
+            response = await agent.get(url);
             expect(response.body?.participation?.factors?.money).to.equal(1.0);
         });
     });
@@ -528,10 +528,10 @@ describe('Participation', () => {
             let settings = {
                 defaultOptIn1: 'omnivorous',
             };
-            await request.post('/api/settings')
+            await agent.post('/api/settings')
                 .send(settings);
-            let eventId = await Helper.createEvent(request, {...minimalEvent, date: '1980-01-07T12:00:00Z'});
-            let response = await request.get(`/api/events/${eventId}/participations/${user1.id}`);
+            let eventId = await Helper.createEvent(agent, {...minimalEvent, date: '1980-01-07T12:00:00Z'});
+            let response = await agent.get(`/api/events/${eventId}/participations/${user1.id}`);
             expect(response.status).to.equal(404);
         });
 
@@ -542,10 +542,10 @@ describe('Participation', () => {
                 defaultOptIn3: 'opt-out',
                 defaultOptIn4: 'undecided',
             };
-            await request.post('/api/settings')
+            await agent.post('/api/settings')
                 .send(settings);
-            let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
-            let response = await request.get(`/api/events/${eventId}/participations/${user1.id}`);
+            let eventId = await Helper.createEvent(agent, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
+            let response = await agent.get(`/api/events/${eventId}/participations/${user1.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.participation.type).to.equal('omnivorous');
         });
@@ -555,12 +555,12 @@ describe('Participation', () => {
                 defaultOptIn1: 'omnivorous',
                 defaultOptIn2: 'omnivorous',
             };
-            await request.post('/api/settings')
+            await agent.post('/api/settings')
                 .send(settings);
-            let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
-            await request.post(`/api/events/${eventId}`)
+            let eventId = await Helper.createEvent(agent, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
+            await agent.post(`/api/events/${eventId}`)
                 .send({date: '2036-01-08T12:00:00Z'});
-            let response = await request.get(`/api/events/${eventId}/participations/${user1.id}`);
+            let response = await agent.get(`/api/events/${eventId}/participations/${user1.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.participation.type).to.equal('omnivorous');
         });
@@ -570,8 +570,8 @@ describe('Participation', () => {
                 active:   false,
                 settings: {defaultOptIn1: 'omnivorous'},
             });
-            let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
-            let response = await request.get(`/api/events/${eventId}/participations/${bob.id}`);
+            let eventId = await Helper.createEvent(agent, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
+            let response = await agent.get(`/api/events/${eventId}/participations/${bob.id}`);
             expect(response.status).to.equal(404);
         });
 
@@ -584,10 +584,10 @@ describe('Participation', () => {
             let settings = {
                 defaultOptIn1: 'omnivorous',
             };
-            await request.post('/api/settings')
+            await agent.post('/api/settings')
                 .send(settings);
-            let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
-            let response = await request.get(`/api/events/${eventId}/participations/${user1.id}`);
+            let eventId = await Helper.createEvent(agent, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
+            let response = await agent.get(`/api/events/${eventId}/participations/${user1.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.participation.type).to.equal('opt-out');
         });
@@ -601,10 +601,10 @@ describe('Participation', () => {
             let settings = {
                 defaultOptIn1: 'omnivorous',
             };
-            await request.post('/api/settings')
+            await agent.post('/api/settings')
                 .send(settings);
-            let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
-            let response = await request.get(`/api/events/${eventId}/participations/${user1.id}`);
+            let eventId = await Helper.createEvent(agent, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
+            let response = await agent.get(`/api/events/${eventId}/participations/${user1.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.participation.type).to.equal('omnivorous');
         });
@@ -618,10 +618,10 @@ describe('Participation', () => {
             let settings = {
                 defaultOptIn1: 'omnivorous',
             };
-            await request.post('/api/settings')
+            await agent.post('/api/settings')
                 .send(settings);
-            let eventId = await Helper.createEvent(request, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
-            let response = await request.get(`/api/events/${eventId}/participations/${user1.id}`);
+            let eventId = await Helper.createEvent(agent, {...minimalEvent, date: '2036-01-07T12:00:00Z'});
+            let response = await agent.get(`/api/events/${eventId}/participations/${user1.id}`);
             expect(response.status).to.equal(200);
             expect(response.body.participation.type).to.equal('omnivorous');
         });

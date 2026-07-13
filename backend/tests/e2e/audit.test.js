@@ -8,8 +8,8 @@ import supertest from 'supertest';
 
 /** @type {AndeoLunch|null} */
 let andeoLunch = null;
-/** @type {supertest.SuperTest|null} */
-let request = null;
+/** @type {supertest.Agent|null} */
+let agent = null;
 /** @type {string|null} */
 let jwt = null;
 /** @type {User|null} */
@@ -24,13 +24,13 @@ describe('Audit', () => {
         });
         await andeoLunch.waitReady();
         user1 = await Helper.createUser('user1');
-        request = supertest.agent(andeoLunch.listen());
+        agent = supertest.agent(andeoLunch.listen());
         if (jwt === null) {
-            let response = await request.post('/api/account/login')
+            let response = await agent.post('/api/account/login')
                 .send({username: user1.username, password: Helper.password});
             jwt = response.body.token;
         }
-        request.set('Authorization', `Bearer ${jwt}`);
+        agent.set('Authorization', `Bearer ${jwt}`);
     });
 
     afterEach(async () => {
@@ -38,7 +38,7 @@ describe('Audit', () => {
     });
 
     it('Can fetch empty audit', async () => {
-        let response = await request.get('/api/audits');
+        let response = await agent.get('/api/audits');
         expect(response.status).to.equal(200);
         expect(response.body.audits).to.have.lengthOf(0);
     });
@@ -49,7 +49,7 @@ describe('Audit', () => {
             type:       'some.action',
             actingUser: user1.id,
         });
-        let response = await request.get('/api/audits');
+        let response = await agent.get('/api/audits');
         expect(response.status).to.equal(200);
         expect(response.body.audits).to.have.lengthOf(1);
         expect(response.body.audits[0]).to.containSubset({
@@ -94,7 +94,7 @@ describe('Audit', () => {
             event:        102,
             grocery:      103,
         });
-        let response = await request.get('/api/audits');
+        let response = await agent.get('/api/audits');
         expect(response.status).to.equal(200);
         expect(response.body.audits).to.have.lengthOf(1);
         expect(response.body.audits[0]).to.containSubset({
@@ -122,7 +122,7 @@ describe('Audit', () => {
             event:        102,
             grocery:      103,
         });
-        let response = await request.get('/api/audits');
+        let response = await agent.get('/api/audits');
         expect(response.status).to.equal(200);
         expect(response.body.audits).to.have.lengthOf(1);
         expect(response.body.audits[0]).to.containSubset({

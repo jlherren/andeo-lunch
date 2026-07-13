@@ -6,8 +6,8 @@ import supertest from 'supertest';
 
 /** @type {AndeoLunch|null} */
 let andeoLunch = null;
-/** @type {supertest.SuperTest|null} */
-let request = null;
+/** @type {supertest.Agent|null} */
+let agent = null;
 /** @type {User|null} */
 let user1 = null;
 /** @type {User|null} */
@@ -24,13 +24,13 @@ describe('Users', () => {
         await andeoLunch.waitReady();
         user1 = await Helper.createUser('test-user-1');
         user2 = await Helper.createUser('test-user-2');
-        request = supertest.agent(andeoLunch.listen());
+        agent = supertest.agent(andeoLunch.listen());
         if (jwt === null) {
-            let response = await request.post('/api/account/login')
+            let response = await agent.post('/api/account/login')
                 .send({username: user1.username, password: Helper.password});
             jwt = response.body.token;
         }
-        request.set('Authorization', `Bearer ${jwt}`);
+        agent.set('Authorization', `Bearer ${jwt}`);
     });
 
     afterEach(async () => {
@@ -43,7 +43,7 @@ describe('Users', () => {
             hiddenFromEvents: true,
         });
 
-        let response = await request.get('/api/users');
+        let response = await agent.get('/api/users');
         expect(response.status).to.equal(200);
         expect(response.body.users).to.have.lengthOf(4);
         expect(response.body.users[0]).to.containSubset({

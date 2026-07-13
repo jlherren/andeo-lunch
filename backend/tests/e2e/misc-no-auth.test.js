@@ -5,8 +5,8 @@ import supertest from 'supertest';
 
 /** @type {AndeoLunch|null} */
 let andeoLunch = null;
-/** @type {supertest.SuperTest|null} */
-let request = null;
+/** @type {supertest.Agent|null} */
+let agent = null;
 
 describe('misc route tests', () => {
     beforeEach(async () => {
@@ -15,7 +15,7 @@ describe('misc route tests', () => {
             quiet:  true,
         });
         await andeoLunch.waitReady();
-        request = supertest.agent(andeoLunch.listen());
+        agent = supertest.agent(andeoLunch.listen());
     });
 
     afterEach(async () => {
@@ -23,7 +23,7 @@ describe('misc route tests', () => {
     });
 
     it('responds to cors request', async () => {
-        let response = await request.options('/api/')
+        let response = await agent.options('/api/')
             .set('Access-Control-Request-Method', 'GET')
             .set('Origin', 'http://www.example.com');
         expect(response.status).to.equal(204);

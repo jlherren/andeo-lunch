@@ -6,8 +6,8 @@ import supertest from 'supertest';
 
 /** @type {AndeoLunch|null} */
 let andeoLunch = null;
-/** @type {supertest.SuperTest|null} */
-let request = null;
+/** @type {supertest.Agent|null} */
+let agent = null;
 /** @type {User|null} */
 let user = null;
 
@@ -18,15 +18,15 @@ describe('Misc routes', () => {
             quiet:  true,
         });
         await andeoLunch.waitReady();
-        request = supertest.agent(andeoLunch.listen());
+        agent = supertest.agent(andeoLunch.listen());
         user = await Helper.createUser('test-user-1');
-        let response = await request.post('/api/account/login')
+        let response = await agent.post('/api/account/login')
             .send({username: user.username, password: Helper.password});
         if (response.status !== 200) {
             throw new Error('Could not log in');
         }
         let jwt = response.body.token;
-        request.set('Authorization', `Bearer ${jwt}`);
+        agent.set('Authorization', `Bearer ${jwt}`);
     });
 
     afterEach(async () => {
@@ -34,23 +34,23 @@ describe('Misc routes', () => {
     });
 
     it('can get configuration', async () => {
-        let response = await request.get('/api/configuration?key=lunch.defaultFlatRate');
+        let response = await agent.get('/api/configuration?key=lunch.defaultFlatRate');
         expect(response.status).to.equal(200);
         expect(response.body.value).to.equal('0.75');
 
-        response = await request.get('/api/configuration?key=lunch.defaultParticipationFee');
+        response = await agent.get('/api/configuration?key=lunch.defaultParticipationFee');
         expect(response.status).to.equal(200);
         expect(response.body.value).to.equal('0');
     });
 
     it('returns null when getting nonexistent configuration', async () => {
-        let response = await request.get('/api/configuration?key=does-not-exist');
+        let response = await agent.get('/api/configuration?key=does-not-exist');
         expect(response.body.value).to.be.null();
         expect(response.status).to.equal(200);
     });
 
     it('fails when query parameter is missing', async () => {
-        let response = await request.get('/api/configuration');
+        let response = await agent.get('/api/configuration');
         expect(response.status).to.equal(400);
     });
 });
