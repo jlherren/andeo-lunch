@@ -44,7 +44,7 @@ describe('Transaction', () => {
     async function createLunch() {
         let event = await Event.create({
             type: Constants.EVENT_TYPES.LUNCH,
-            date: new Date('2020-01-10 12:00'),
+            date: new Date('2020-01-10T12:00:00.000Z'),
             name: 'Test lunch',
         });
         event.Lunch = await Lunch.create({

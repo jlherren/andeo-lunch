@@ -45,7 +45,7 @@ describe('Audit', () => {
 
     it('Can get trivial audit event', async () => {
         await Audit.create({
-            date:       new Date('2020-01-04 12:00:00'),
+            date:       new Date('2020-01-04T12:00:00.000Z'),
             type:       'some.action',
             actingUser: user1.id,
         });
@@ -57,7 +57,7 @@ describe('Audit', () => {
             actingUserName:   'User user1',
             affectedUserId:   null,
             affectedUserName: null,
-            date:             '2020-01-04T11:00:00.000Z',
+            date:             '2020-01-04T12:00:00.000Z',
             eventId:          null,
             eventDate:        null,
             eventName:        null,
@@ -87,7 +87,7 @@ describe('Audit', () => {
             order: 1,
         });
         await Audit.create({
-            date:         new Date('2020-01-04 12:00:00'),
+            date:         new Date('2020-01-04T12:00:00.000Z'),
             type:         'some.action',
             actingUser:   user1.id,
             affectedUser: 101,
@@ -102,7 +102,7 @@ describe('Audit', () => {
             actingUserName:   'User user1',
             affectedUserId:   101,
             affectedUserName: 'Joe',
-            date:             '2020-01-04T11:00:00.000Z',
+            date:             '2020-01-04T12:00:00.000Z',
             eventId:          102,
             eventDate:        '2020-01-05T13:00:00.000Z',
             eventName:        'Just a label',
@@ -115,7 +115,7 @@ describe('Audit', () => {
 
     it('Can get audit event with deleted foreign keys', async () => {
         await Audit.create({
-            date:         new Date('2020-01-04 12:00:00'),
+            date:         new Date('2020-01-04T12:00:00.000Z'),
             type:         'some.action',
             actingUser:   100,
             affectedUser: 101,
@@ -130,7 +130,7 @@ describe('Audit', () => {
             actingUserName:   'Deleted user',
             affectedUserId:   101,
             affectedUserName: 'Deleted user',
-            date:             '2020-01-04T11:00:00.000Z',
+            date:             '2020-01-04T12:00:00.000Z',
             eventId:          102,
             eventDate:        null,
             eventName:        'Deleted event',
