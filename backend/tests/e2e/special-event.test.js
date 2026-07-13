@@ -1,4 +1,4 @@
-import * as Helper from '../helper.js';
+import * as Helper from '../helper.ts';
 import {AndeoLunch} from '../../src/andeoLunch.js';
 import {expect} from '../chai-setup.ts';
 import {getTestConfig} from '../../src/configProvider.ts';

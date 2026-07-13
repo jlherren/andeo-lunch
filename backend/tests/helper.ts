@@ -1,46 +1,31 @@
 import {Configuration, Permission, User, UserPassword, UserPermission} from '../src/db/models.ts';
+import type {ApiUser} from '../src/apiTypes.ts';
 import {expect} from './chai-setup.ts';
+import type {Agent} from 'supertest';
 
 /**
  * Create an event and return the event ID
- *
- * @param {SuperTest} request
- * @param {object} data
- * @return {Promise<number>}
  */
-export async function createEvent(request, data) {
-    let response = await request.post('/api/events').send(data);
+export async function createEvent(agent: Agent, data: Record<string, unknown>): Promise<number> {
+    let response = await agent.post('/api/events').send(data);
     expect(response.status).to.equal(201);
     return parseInt(response.headers.location.match(/(?<id>\d+)/u).groups.id, 10);
 }
 
-/**
- * @param {SuperTest} request
- * @param {string} name
- * @return {Promise<ApiUser>}
- */
-export async function getUserByName(request, name) {
-    let response = await request.get('/api/users');
+export async function getUserByName(agent: Agent, name: string): Promise<ApiUser> {
+    let response = await agent.get('/api/users');
     expect(response.status).to.equal(200);
-    let user = response.body.users.find(u => u.name === name);
+    let user = response.body.users.find((u: ApiUser) => u.name === name);
     expect(user).to.not.be.null();
     return user;
 }
 
-/**
- * @param {SuperTest} request
- * @return {Promise<ApiUser>}
- */
-export function getSystemUser(request) {
-    return getUserByName(request, 'System user');
+export function getSystemUser(agent: Agent): Promise<ApiUser> {
+    return getUserByName(agent, 'System user');
 }
 
-/**
- * @param {SuperTest} request
- * @return {Promise<ApiUser>}
- */
-export function getAndeoUser(request) {
-    return getUserByName(request, 'Andeo');
+export function getAndeoUser(agent: Agent): Promise<ApiUser> {
+    return getUserByName(agent, 'Andeo');
 }
 
 // Password used during unit tests
@@ -50,12 +35,7 @@ export const password = 'abc123';
 // testing any security related things.
 export const passwordHash = '$2a$04$coj9eKcxliBzr47q1nyOV.TiH0dI2v.fbQeLoMUAhJURm6yKFe8Ge';
 
-/**
- * @param {string} username
- * @param {object} attributes
- * @return {Promise<User>}
- */
-export async function createUser(username, attributes = {}) {
+export async function createUser(username: string, attributes: Record<string, unknown> = {}): Promise<User> {
     let user = await User.create({
         username,
         active: true,
@@ -70,12 +50,7 @@ export async function createUser(username, attributes = {}) {
     return user;
 }
 
-/**
- * @param {number} userId
- * @param {string} name
- * @return {Promise<void>}
- */
-export async function insertPermission(userId, name) {
+export async function insertPermission(userId: number, name: string): Promise<void> {
     let permission = await Permission.findOne({
         where: {name},
     });
@@ -85,22 +60,13 @@ export async function insertPermission(userId, name) {
     });
 }
 
-/**
- * @param {number} days
- * @return {Date}
- */
-export function daysAgo(days) {
+export function daysAgo(days: number): Date {
     let date = new Date();
     date.setDate(date.getDate() - days);
     return date;
 }
 
-/**
- * @param {string} name
- * @param {string|number} value
- * @return {Promise<void>}
- */
-export async function setConfiguration(name, value) {
+export async function setConfiguration(name: string, value: string): Promise<void> {
     let configuration = await Configuration.findOne({where: {name}});
     configuration.value = value;
     await configuration.save();

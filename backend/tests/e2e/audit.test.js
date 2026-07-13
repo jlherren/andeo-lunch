@@ -1,5 +1,5 @@
 import * as Constants from '../../src/constants.ts';
-import * as Helper from '../helper.js';
+import * as Helper from '../helper.ts';
 import {Audit, Event, Grocery, User} from '../../src/db/models.ts';
 import {AndeoLunch} from '../../src/andeoLunch.js';
 import {expect} from '../chai-setup.ts';

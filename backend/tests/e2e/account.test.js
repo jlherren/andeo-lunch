@@ -1,5 +1,5 @@
 import * as AuthUtils from '../../src/authUtils.ts';
-import * as Helper from '../helper.js';
+import * as Helper from '../helper.ts';
 import {DeviceVersion, Permission, UserPermission} from '../../src/db/models.ts';
 import {AndeoLunch} from '../../src/andeoLunch.js';
 import JsonWebToken from 'jsonwebtoken';
