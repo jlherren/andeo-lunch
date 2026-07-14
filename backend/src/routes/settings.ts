@@ -1,6 +1,8 @@
 import * as Constants from '../constants.ts';
 import * as RouteUtils from './route-utils.ts';
 import Joi from 'joi';
+import type Router from '@koa/router';
+import type {Context} from 'koa';
 
 let participationTypeSchema = Joi.string().valid(...Object.values(Constants.PARTICIPATION_TYPE_NAMES));
 
@@ -13,20 +15,13 @@ const saveSettingsSchema = Joi.object({
     quickOptIn:    Joi.string().valid('omnivorous', 'vegetarian'),
 });
 
-/**
- * @param {Application.Context} ctx
- */
-function getSettings(ctx) {
+function getSettings(ctx: Context): void {
     ctx.body = {
         settings: ctx.user.settings ?? {},
     };
 }
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function saveSettings(ctx) {
+async function saveSettings(ctx: Context): Promise<void> {
     let settings = RouteUtils.validateBody(ctx.request, saveSettingsSchema);
 
     ctx.user.settings = {
@@ -39,10 +34,7 @@ async function saveSettings(ctx) {
     ctx.status = 204;
 }
 
-/**
- * @param {Router} router
- */
-export default function register(router) {
+export default function register(router: Router): void {
     router.get('/settings', getSettings);
     router.post('/settings', saveSettings);
 }
