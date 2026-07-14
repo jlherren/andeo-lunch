@@ -1,5 +1,5 @@
 import * as Db from './db/index.ts';
-import * as RouteUtils from './routes/route-utils.js';
+import * as RouteUtils from './routes/route-utils.ts';
 import AccountRoutes from './routes/account.js';
 import AdminRoutes from './routes/admin.js';
 import AuditRoutes from './routes/audit.ts';

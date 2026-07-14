@@ -1,5 +1,5 @@
 import * as AuthUtils from '../authUtils.ts';
-import * as RouteUtils from './route-utils.js';
+import * as RouteUtils from './route-utils.ts';
 import {Configuration, User, UserPassword} from '../db/models.ts';
 import HttpErrors from 'http-errors';
 import Joi from 'joi';

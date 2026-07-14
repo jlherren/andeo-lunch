@@ -1,5 +1,5 @@
 import * as AuditManager from '../auditManager.ts';
-import * as RouteUtils from './route-utils.js';
+import * as RouteUtils from './route-utils.ts';
 import * as Utils from '../utils.ts';
 import {Grocery} from '../db/models.ts';
 import HttpErrors from 'http-errors';

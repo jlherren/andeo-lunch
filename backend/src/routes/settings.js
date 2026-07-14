@@ -1,5 +1,5 @@
 import * as Constants from '../constants.ts';
-import * as RouteUtils from './route-utils.js';
+import * as RouteUtils from './route-utils.ts';
 import Joi from 'joi';
 
 let participationTypeSchema = Joi.string().valid(...Object.values(Constants.PARTICIPATION_TYPE_NAMES));

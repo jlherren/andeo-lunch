@@ -1,7 +1,7 @@
 import * as AuditManager from '../auditManager.ts';
 import * as Constants from '../constants.ts';
 import * as EventManager from '../eventManager.ts';
-import * as RouteUtils from './route-utils.js';
+import * as RouteUtils from './route-utils.ts';
 import * as TransactionRebuilder from '../transactionRebuilder.js';
 import * as Utils from '../utils.ts';
 import {Absence, Configuration, Event, Lunch, Participation, Transaction, Transfer, User} from '../db/models.ts';
