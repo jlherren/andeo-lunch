@@ -12,7 +12,7 @@ import MiscRoutes from './routes/misc.ts';
 import PublicRoutes from './routes/public.js';
 import Router from '@koa/router';
 import SettingsRoutes from './routes/settings.ts';
-import ToolsRoutes from './routes/tools.js';
+import ToolsRoutes from './routes/tools.ts';
 import UserRoutes from './routes/user.js';
 import cors from '@koa/cors';
 

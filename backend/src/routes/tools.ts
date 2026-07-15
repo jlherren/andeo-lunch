@@ -1,8 +1,10 @@
-import * as RouteUtils from './route-utils.ts';
 import {Configuration, DeviceVersion} from '../db/models.ts';
-import {Op, Sequelize} from 'sequelize';
+import * as RouteUtils from './route-utils.ts';
+import {Op, Sequelize, type Transaction} from 'sequelize';
 import ms from 'ms';
 import naturalCompare from 'natural-compare';
+import type Router from '@koa/router';
+import type {Context} from 'koa';
 import {z} from 'zod';
 
 const saveConfigurationSchema = z.strictObject({
@@ -12,15 +14,11 @@ const saveConfigurationSchema = z.strictObject({
     })),
 });
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function versions(ctx) {
+async function versions(ctx: Context): Promise<void> {
     RouteUtils.requirePermission(ctx, 'tools.deviceVersions');
 
     let config = ctx.andeoLunch.getConfig();
-    let period = ms(config.tokenExpiry);
+    let period = ms(config.tokenExpiry as '60 days');
     let cutoff = new Date(Date.now() - period);
 
     let rows = await DeviceVersion.findAll({
@@ -43,11 +41,7 @@ async function versions(ctx) {
     };
 }
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function getConfigurations(ctx) {
+async function getConfigurations(ctx: Context): Promise<void> {
     RouteUtils.requirePermission(ctx, 'tools.configurations');
 
     // We could use Op.regexp, but Sequelize does not allow it for SQLite.
@@ -62,16 +56,12 @@ async function getConfigurations(ctx) {
     };
 }
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function saveConfigurations(ctx) {
+async function saveConfigurations(ctx: Context): Promise<void> {
     RouteUtils.requirePermission(ctx, 'tools.configurations');
 
     let body = RouteUtils.validateBody(ctx.request, saveConfigurationSchema);
 
-    await ctx.sequelize.transaction(async transaction => {
+    await ctx.sequelize.transaction(async (transaction: Transaction) => {
         for (let configuration of body.configurations) {
             await Configuration.update({
                 value: configuration.value,
@@ -88,10 +78,7 @@ async function saveConfigurations(ctx) {
     ctx.body = '';
 }
 
-/**
- * @param {Router} router
- */
-export default function register(router) {
+export default function register(router: Router): void {
     router.get('/tools/device-versions', versions);
     router.get('/tools/configurations', getConfigurations);
     router.post('/tools/configurations', saveConfigurations);
