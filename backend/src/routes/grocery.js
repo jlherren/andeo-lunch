@@ -3,18 +3,18 @@ import * as RouteUtils from './route-utils.ts';
 import * as Utils from '../utils.ts';
 import {Grocery} from '../db/models.ts';
 import HttpErrors from 'http-errors';
-import Joi from 'joi';
+import {z} from 'zod';
 
-const groceryLabelSchema = Joi.string().normalize().min(1).regex(/\S/u);
+const groceryLabelSchema = z.string().transform(s => s.normalize()).pipe(z.string().min(1).regex(/\S/u));
 
-const groceryCreateSchema = Joi.object({
-    label:   groceryLabelSchema.required(),
-    checked: Joi.boolean(),
+const groceryCreateSchema = z.strictObject({
+    label:   groceryLabelSchema,
+    checked: z.boolean().optional(),
 });
 
-const groceryUpdateSchema = Joi.object({
-    label:   groceryLabelSchema,
-    checked: Joi.boolean(),
+const groceryUpdateSchema = z.strictObject({
+    label:   groceryLabelSchema.optional(),
+    checked: z.boolean().optional(),
 });
 
 /**

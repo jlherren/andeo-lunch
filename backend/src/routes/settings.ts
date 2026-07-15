@@ -1,18 +1,18 @@
 import * as Constants from '../constants.ts';
 import * as RouteUtils from './route-utils.ts';
-import Joi from 'joi';
+import {z} from 'zod';
 import type Router from '@koa/router';
 import type {Context} from 'koa';
 
-let participationTypeSchema = Joi.string().valid(...Object.values(Constants.PARTICIPATION_TYPE_NAMES));
+const participationTypeSchema = z.enum(Object.values(Constants.PARTICIPATION_TYPE_NAMES));
 
-const saveSettingsSchema = Joi.object({
-    defaultOptIn1: participationTypeSchema,
-    defaultOptIn2: participationTypeSchema,
-    defaultOptIn3: participationTypeSchema,
-    defaultOptIn4: participationTypeSchema,
-    defaultOptIn5: participationTypeSchema,
-    quickOptIn:    Joi.string().valid('omnivorous', 'vegetarian'),
+const saveSettingsSchema = z.strictObject({
+    defaultOptIn1: participationTypeSchema.optional(),
+    defaultOptIn2: participationTypeSchema.optional(),
+    defaultOptIn3: participationTypeSchema.optional(),
+    defaultOptIn4: participationTypeSchema.optional(),
+    defaultOptIn5: participationTypeSchema.optional(),
+    quickOptIn:    z.enum(['omnivorous', 'vegetarian']).optional(),
 });
 
 function getSettings(ctx: Context): void {

@@ -3,19 +3,39 @@ import HttpErrors from 'http-errors';
 import JsonWebToken, {type JwtPayload} from 'jsonwebtoken';
 import {User} from '../db/models.ts';
 import type {Context, Request} from 'koa';
-import type Joi from 'joi';
+import {z, ZodError, type ZodType} from 'zod';
 
-export function validateBody(request: Request, schema: Joi.AnySchema): Record<string, unknown> {
+export const isoDateSchema = z.string()
+    .refine(s => !isNaN(Date.parse(s)), 'Invalid date')
+    .transform(s => new Date(s));
+
+export function validateBody<T>(request: Request, schema: ZodType<T>): T {
     let contentType = request.headers['content-type'];
     if (contentType === undefined || contentType.split(';')[0].trim() !== 'application/json') {
         throw new HttpErrors.BadRequest('Content type should be application/json');
     }
 
-    let {value, error} = schema.validate(request.body);
-    if (error) {
-        throw new HttpErrors.BadRequest(error.message);
+    try {
+        return schema.parse(request.body);
+    } catch (error) {
+        if (error instanceof ZodError) {
+            throw new HttpErrors.BadRequest(formatZodError(error));
+        }
+        throw error;
     }
-    return value as Record<string, unknown>;
+}
+
+function formatZodError(error: ZodError): string {
+    return error.issues.map(issue => {
+        if (issue.code === 'unrecognized_keys') {
+            return issue.keys.map(key => {
+                let fullPath = [...issue.path, key].join('.');
+                return `"${fullPath}" is not allowed`;
+            }).join('. ');
+        }
+        let path = issue.path.length ? `"${issue.path.join('.')}" ` : '';
+        return `${path}${issue.message}`;
+    }).join('. ');
 }
 
 export function getAuthorizationToken(request: Request): string|null {

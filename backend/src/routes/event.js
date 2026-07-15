@@ -7,77 +7,75 @@ import * as Utils from '../utils.ts';
 import {Absence, Configuration, Event, Lunch, Participation, Transaction, Transfer, User} from '../db/models.ts';
 import {Op, Sequelize} from 'sequelize';
 import HttpErrors from 'http-errors';
-import Joi from 'joi';
+import {z} from 'zod';
 
-const eventNameSchema = Joi.string().normalize().min(1).regex(/\S/u);
-const eventTypeSchema = Joi.string().valid(...Object.values(Constants.EVENT_TYPE_NAMES));
-const participationTypeSchema = Joi.string().valid(...Object.values(Constants.PARTICIPATION_TYPE_NAMES));
-const currencySchema = Joi.string().valid(...Object.values(Constants.CURRENCY_NAMES));
-const factorSchema = Joi.number().min(0);
+const eventNameSchema = z.string().transform(s => s.normalize()).pipe(z.string().min(1).regex(/\S/u));
+const eventTypeSchema = z.enum(Object.values(Constants.EVENT_TYPE_NAMES));
+const participationTypeSchema = z.enum(Object.values(Constants.PARTICIPATION_TYPE_NAMES));
+const currencySchema = z.enum(Object.values(Constants.CURRENCY_NAMES));
+const factorSchema = z.coerce.number().min(0);
 const vegetarianApiNameSchema = Constants.PARTICIPATION_TYPE_NAMES[Constants.PARTICIPATION_TYPES.VEGETARIAN];
 const moneyApiNameSchema = Constants.CURRENCY_NAMES[Constants.CURRENCIES.MONEY];
-const discountFactorsSchema = Joi.object({
-    [vegetarianApiNameSchema]: Joi.object({
-        [moneyApiNameSchema]: factorSchema.required(),
-    }).required(),
-});
-const nonNegativeSchema = Joi.number().min(0);
-
-const createTransferSchema = Joi.object({
-    currency:    currencySchema.required(),
-    amount:      nonNegativeSchema.required(),
-    senderId:    Joi.number().required(),
-    recipientId: Joi.number().required(),
-});
-const createTransfersSchema = Joi.array().items(createTransferSchema).required();
-
-const eventCreateSchema = Joi.object({
-    name:                  eventNameSchema.required(),
-    date:                  Joi.date().required(),
-    type:                  eventTypeSchema.required(),
-    costs:                 Joi.object({
-        points: nonNegativeSchema,
+const discountFactorsSchema = z.strictObject({
+    [vegetarianApiNameSchema]: z.strictObject({
+        [moneyApiNameSchema]: factorSchema,
     }),
-    factors:               discountFactorsSchema,
-    participationFlatRate: Joi.number().allow(null),
+});
+const nonNegativeSchema = z.coerce.number().min(0);
+
+const createTransferSchema = z.strictObject({
+    currency:    currencySchema,
+    amount:      nonNegativeSchema,
+    senderId:    z.coerce.number(),
+    recipientId: z.coerce.number(),
+});
+const createTransfersSchema = z.array(createTransferSchema);
+
+const eventCreateSchema = z.strictObject({
+    name:                  eventNameSchema,
+    date:                  RouteUtils.isoDateSchema,
+    type:                  eventTypeSchema,
+    costs:                 z.strictObject({
+        points: nonNegativeSchema.optional(),
+    }).optional(),
+    factors:               discountFactorsSchema.optional(),
+    participationFlatRate: z.coerce.number().nullable().optional(),
     // No required() to stay compatible with old clients
-    participationFee:      Joi.number(),
-    comment:               Joi.string().allow(''),
-    triggerDefaultOptIn:   Joi.boolean().default(true),
+    participationFee:      z.coerce.number().optional(),
+    comment:               z.string().optional(),
+    triggerDefaultOptIn:   z.boolean().default(true),
     transfers:             createTransfersSchema.optional(),
     // no default, to detect when it's not allowed
-    immutable:             Joi.boolean(),
+    immutable:             z.boolean().optional(),
 });
 
-const eventUpdateSchema = Joi.object({
-    type:                  Joi.forbidden(),
-    name:                  eventNameSchema,
-    date:                  Joi.forbidden(),
-    costs:                 Joi.object({
-        points: nonNegativeSchema,
-    }),
-    factors:               discountFactorsSchema,
-    participationFlatRate: Joi.number().allow(null),
-    participationFee:      Joi.number(),
-    comment:               Joi.string().allow(''),
+const eventUpdateSchema = z.strictObject({
+    name:                  eventNameSchema.optional(),
+    costs:                 z.strictObject({
+        points: nonNegativeSchema.optional(),
+    }).optional(),
+    factors:               discountFactorsSchema.optional(),
+    participationFlatRate: z.coerce.number().nullable().optional(),
+    participationFee:      z.coerce.number().optional(),
+    comment:               z.string().optional(),
 });
 
-const participationSchema = Joi.object({
-    type:    participationTypeSchema,
-    credits: Joi.object({
-        points: nonNegativeSchema,
-        money:  nonNegativeSchema,
-    }),
-    factors: Joi.object({
-        money: nonNegativeSchema,
-    }),
+const participationSchema = z.strictObject({
+    type:    participationTypeSchema.optional(),
+    credits: z.strictObject({
+        points: nonNegativeSchema.optional(),
+        money:  nonNegativeSchema.optional(),
+    }).optional(),
+    factors: z.strictObject({
+        money: nonNegativeSchema.optional(),
+    }).optional(),
 });
 
-const participationWithUserSchema = participationSchema.keys({
-    userId: Joi.number().required(),
+const participationWithUserSchema = participationSchema.extend({
+    userId: z.coerce.number(),
 });
-const participationsSchema = Joi.object({
-    participations: Joi.array().items(participationWithUserSchema).required(),
+const participationsSchema = z.strictObject({
+    participations: z.array(participationWithUserSchema),
 });
 
 /**

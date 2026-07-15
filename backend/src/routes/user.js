@@ -3,11 +3,11 @@ import * as Factory from './factory.ts';
 import * as RouteUtils from './route-utils.ts';
 import {Absence, Configuration, Transaction, User} from '../db/models.ts';
 import HttpErrors from 'http-errors';
-import Joi from 'joi';
+import {z} from 'zod';
 
-const absenceCreateSchema = Joi.object({
-    start: Joi.date().required(),
-    end:   Joi.date().required(),
+const absenceCreateSchema = z.strictObject({
+    start: RouteUtils.isoDateSchema,
+    end:   RouteUtils.isoDateSchema,
 });
 
 /**

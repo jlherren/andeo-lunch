@@ -1,16 +1,16 @@
 import * as RouteUtils from './route-utils.ts';
 import {Configuration, DeviceVersion} from '../db/models.ts';
 import {Op, Sequelize} from 'sequelize';
-import Joi from 'joi';
 import ms from 'ms';
 import naturalCompare from 'natural-compare';
+import {z} from 'zod';
 
-const saveConfigurationSchema = Joi.object({
-    configurations: Joi.array().items(Joi.object({
-        name:  Joi.string().min(1).required(),
-        value: Joi.string().required().min(0),
-    })).required(),
-}).required();
+const saveConfigurationSchema = z.strictObject({
+    configurations: z.array(z.strictObject({
+        name:  z.string().min(1),
+        value: z.string(),
+    })),
+});
 
 /**
  * @param {Application.Context} ctx

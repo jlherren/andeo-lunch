@@ -1,25 +1,8 @@
-import Joi from 'joi';
+import {z} from 'zod';
 import MariaDB from 'mariadb';
 import {promises as fs} from 'fs';
 import path from 'path';
 import url from 'url';
-
-interface Config {
-    database: {
-        dialect?: string;
-        host?: string;
-        port?: number;
-        database?: string;
-        username?: string;
-        password?: string;
-        storage?: string;
-    };
-    port?: number|null;
-    bind: string;
-    tokenExpiry: string;
-    lag?: number;
-    frontendUrl?: string;
-}
 
 // Any string understood by package 'ms'.
 const DEFAULT_TOKEN_EXPIRY = '60 days';
@@ -27,23 +10,29 @@ const DEFAULT_TOKEN_EXPIRY = '60 days';
 // eslint-disable-next-line no-underscore-dangle
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
-const configSchema = Joi.object({
-    database:    Joi.object({
-        dialect: Joi.string().required(),
-    }).required().unknown(true),
-    port:        Joi.number().allow(null).default(3000),
-    bind:        Joi.string().default('127.0.0.1'),
-    tokenExpiry: Joi.string().min(1).default(DEFAULT_TOKEN_EXPIRY),
-    lag:         Joi.number(),
-    frontendUrl: Joi.string(),
-}).unknown(true);
+const databaseSchema = z.looseObject({
+    dialect:  z.string().min(1),
+    host:     z.string().min(1).optional(),
+    port:     z.int().min(1).max(65535).optional(),
+    database: z.string().min(1).optional(),
+    username: z.string().min(1).optional(),
+    password: z.string().min(1).optional(),
+    storage:  z.string().min(1).optional(),
+});
 
-function validateConfig(config: Config): Config {
-    let {error, value} = configSchema.validate(config);
-    if (error) {
-        throw error;
-    }
-    return value;
+const configSchema = z.looseObject({
+    database:    databaseSchema,
+    port:        z.int().nullable().optional().default(3000),
+    bind:        z.string().optional().default('127.0.0.1'),
+    tokenExpiry: z.string().min(1).optional().default(DEFAULT_TOKEN_EXPIRY),
+    lag:         z.number().optional().default(0),
+    frontendUrl: z.string().optional(),
+});
+
+type Config = z.output<typeof configSchema>;
+
+function validateConfig(config: unknown): Config {
+    return configSchema.parse(config);
 }
 
 /**
@@ -68,19 +57,13 @@ export async function getMainConfig(): Promise<Config> {
  * in-memory sqlite database.
  */
 export async function getTestConfig(): Promise<Config> {
-    let config: Config = {
-        frontendUrl: 'https://app.example.com',
-        port:        null,
-        bind:        '127.0.0.1',
-        tokenExpiry: DEFAULT_TOKEN_EXPIRY,
-        database:    {},
-    };
+    let database = undefined;
 
     if (process.env.TEST_DB === 'mariadb') {
         if (!process.env.TEST_DB_NAME) {
             throw new Error('Running MariaDB tests requires TEST_DB_* environment variables to be set');
         }
-        config.database = {
+        database = {
             dialect:  'mariadb',
             host:     process.env.TEST_DB_HOST,
             port:     process.env.TEST_DB_PORT ? parseInt(process.env.TEST_DB_PORT, 10) : undefined,
@@ -88,8 +71,24 @@ export async function getTestConfig(): Promise<Config> {
             username: process.env.TEST_DB_USERNAME,
             password: process.env.TEST_DB_PASSWORD,
         };
-        config = validateConfig(config);
+    } else {
+        // Otherwise use an in-memory SQLite DB
+        database = {
+            dialect: 'sqlite',
+            storage: ':memory:',
+        };
+    }
 
+    let config = configSchema.parse({
+        frontendUrl: 'https://app.example.com',
+        // null means find a free port.
+        port:        null,
+        bind:        '127.0.0.1',
+        tokenExpiry: DEFAULT_TOKEN_EXPIRY,
+        database,
+    });
+
+    if (config.database.dialect === 'mariadb') {
         // Truncate the DB first
         const connection = await MariaDB.createConnection({
             host:     config.database.host,
@@ -101,13 +100,6 @@ export async function getTestConfig(): Promise<Config> {
         await connection.query(`DROP DATABASE ${config.database.database}`);
         await connection.query(`CREATE DATABASE ${config.database.database}`);
         await connection.end();
-    } else {
-        // Otherwise use an in-memory SQLite DB
-        config.database = {
-            dialect: 'sqlite',
-            storage: ':memory:',
-        };
-        config = validateConfig(config);
     }
 
     return config;

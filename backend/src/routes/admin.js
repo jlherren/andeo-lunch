@@ -2,29 +2,29 @@ import * as AuthUtils from '../authUtils.ts';
 import * as RouteUtils from './route-utils.ts';
 import {Configuration, User, UserPassword} from '../db/models.ts';
 import HttpErrors from 'http-errors';
-import Joi from 'joi';
 import {UniqueConstraintError} from 'sequelize';
+import {z} from 'zod';
 
-const editUserSchema = Joi.object({
-    name:             Joi.string().min(1),
-    active:           Joi.boolean(),
-    hidden:           Joi.boolean(),
-    pointExempted:    Joi.boolean(),
-    hiddenFromEvents: Joi.boolean(),
-    maxPastDaysEdit:  Joi.number().min(0).allow(null),
+const editUserSchema = z.strictObject({
+    name:             z.string().min(1).optional(),
+    active:           z.boolean().optional(),
+    hidden:           z.boolean().optional(),
+    pointExempted:    z.boolean().optional(),
+    hiddenFromEvents: z.boolean().optional(),
+    maxPastDaysEdit:  z.coerce.number().min(0).nullable().optional(),
 });
 
-const createUserSchema = Joi.object({
-    username: Joi.string().required().min(1),
-    name:     Joi.string().required().min(1),
-    password: Joi.string().required().min(1),
-    active:   Joi.boolean().default(true),
-    hidden:   Joi.boolean().default(false),
+const createUserSchema = z.strictObject({
+    username: z.string().min(1),
+    name:     z.string().min(1),
+    password: z.string().min(1),
+    active:   z.boolean().default(true),
+    hidden:   z.boolean().default(false),
 });
 
-const resetPasswordSchema = Joi.object({
-    newPassword: Joi.string().required().min(1),
-    ownPassword: Joi.string().required().min(1),
+const resetPasswordSchema = z.strictObject({
+    newPassword: z.string().min(1),
+    ownPassword: z.string().min(1),
 });
 
 /**

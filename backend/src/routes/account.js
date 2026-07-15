@@ -2,16 +2,16 @@ import * as AuthUtils from '../authUtils.ts';
 import * as RouteUtils from './route-utils.ts';
 import {DeviceVersion, User, UserPassword} from '../db/models.ts';
 import HttpErrors from 'http-errors';
-import Joi from 'joi';
+import {z} from 'zod';
 
-const loginSchema = Joi.object({
-    username: Joi.string().required().min(1),
-    password: Joi.string().required().min(1),
+const loginSchema = z.strictObject({
+    username: z.string().min(1),
+    password: z.string().min(1),
 });
 
-const changePasswordSchema = Joi.object({
-    oldPassword: Joi.string().required().min(1),
-    newPassword: Joi.string().required().min(1),
+const changePasswordSchema = z.strictObject({
+    oldPassword: z.string().min(1),
+    newPassword: z.string().min(1),
 });
 
 /**
