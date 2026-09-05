@@ -33,6 +33,7 @@ export class User extends Model {
     declare hiddenFromEvents: boolean;
     declare settings: object;
     declare Permissions: Array<Permission>;
+    declare UserPassword: UserPassword|null;
 
     generateToken(secret: string, options: object, extraPayload: object = {}): string {
         return jsonWebToken.sign({...extraPayload, id: this.id}, secret, options);
@@ -65,8 +66,9 @@ export class User extends Model {
 
 export class UserPassword extends Model {
     declare id: number;
+    declare user: number;
     declare password: string;
-    declare lastPasswordChange: Date|null;
+    declare lastChange: Date|null;
 }
 
 export class Permission extends Model {

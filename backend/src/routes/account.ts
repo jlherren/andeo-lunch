@@ -1,7 +1,9 @@
 import * as AuthUtils from '../authUtils.ts';
 import * as RouteUtils from './route-utils.ts';
-import {DeviceVersion, User, UserPassword} from '../db/models.ts';
+import {DeviceVersion, type Permission, User, UserPassword} from '../db/models.ts';
 import HttpErrors from 'http-errors';
+import type Router from '@koa/router';
+import type {Context} from 'koa';
 import {z} from 'zod';
 
 const loginSchema = z.strictObject({
@@ -14,11 +16,7 @@ const changePasswordSchema = z.strictObject({
     newPassword: z.string().min(1),
 });
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function login(ctx) {
+async function login(ctx: Context): Promise<void> {
     let requestBody = RouteUtils.validateBody(ctx.request, loginSchema);
     let user = await User.findOne(
         {
@@ -46,22 +44,14 @@ async function login(ctx) {
     throw new HttpErrors.Unauthorized('Invalid username or password');
 }
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function renew(ctx) {
+async function renew(ctx: Context): Promise<void> {
     let config = ctx.andeoLunch.getConfig();
     let secret = await AuthUtils.getAuthSecret();
     let token = ctx.user.generateToken(secret, {expiresIn: config.tokenExpiry});
     ctx.body = {token};
 }
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function check(ctx) {
+async function check(ctx: Context): Promise<void> {
     await RouteUtils.populateUser(ctx);
     let shouldRenew = false;
     if (ctx.user !== null) {
@@ -84,15 +74,11 @@ async function check(ctx) {
         userId:      ctx.user?.id ?? null,
         username:    ctx.user?.username ?? null,
         shouldRenew,
-        permissions: (ctx.user?.Permissions ?? []).map(permission => permission.name),
+        permissions: (ctx.user?.Permissions ?? []).map((permission: Permission) => permission.name),
     };
 }
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function password(ctx) {
+async function password(ctx: Context): Promise<void> {
     let requestBody = RouteUtils.validateBody(ctx.request, changePasswordSchema);
 
     let userPassword = await UserPassword.findOne({
@@ -135,10 +121,7 @@ async function password(ctx) {
     };
 }
 
-/**
- * @param {Router} router
- */
-export default function register(router) {
+export default function register(router: Router): void {
     router.post('/account/login', login);
     router.post('/account/renew', renew);
     router.get('/account/check', check);
