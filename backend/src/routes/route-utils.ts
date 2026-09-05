@@ -64,7 +64,7 @@ export async function populateUser(ctx: Context): Promise<void> {
     let tokenData: JwtPayload|string|null = null;
     try {
         tokenData = JsonWebToken.verify(token, secret);
-    } catch (err) {
+    } catch {
         // Happens on malformed tokens
         return;
     }
