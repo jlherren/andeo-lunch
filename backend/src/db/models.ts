@@ -91,8 +91,11 @@ export class Event extends Model {
     declare type: EventTypeId;
     declare date: Date;
     declare name: string;
+    declare createdAt: Date;
+    declare updatedAt: Date;
     declare Lunch?: Lunch;
     declare Transfers?: Array<Transfer>;
+    declare Participations?: Array<Participation>;
     declare immutable: boolean;
 
     /**

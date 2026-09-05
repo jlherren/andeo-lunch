@@ -3,19 +3,17 @@ import * as IcsUtils from '../icsUtils.ts';
 import {Event} from '../db/models.ts';
 import HttpErrors from 'http-errors';
 import {Op} from 'sequelize';
-import ics from 'ics';
+import ics, {type Alarm, type DurationObject, type EventAttributes} from 'ics';
+import type Router from '@koa/router';
+import type {Context} from 'koa';
 
-const OPT_IN_PARTICIPATIONS = [
+const OPT_IN_PARTICIPATIONS: Array<Constants.ParticipationTypeId> = [
     Constants.PARTICIPATION_TYPES.OMNIVOROUS,
     Constants.PARTICIPATION_TYPES.VEGETARIAN,
     Constants.PARTICIPATION_TYPES.OPT_IN,
 ];
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function getIcs(ctx) {
+async function getIcs(ctx: Context): Promise<void> {
     await IcsUtils.validateSignature(ctx.params.pack, ctx.params.signature);
     let options = IcsUtils.unpack(ctx.params.pack);
 
@@ -50,21 +48,21 @@ async function getIcs(ctx) {
 
     const {hostname} = new URL(frontendUrl);
 
-    let icsEvents = [];
+    let icsEvents: Array<EventAttributes> = [];
     for (let event of events) {
-        let participation = event.Participations[0];
+        let participation = event.Participations?.[0];
         let participationType = participation?.type ?? Constants.PARTICIPATION_TYPES.UNDECIDED;
         let pointsCredited = participation?.pointsCredited ?? 0;
 
-        let isParticipating = OPT_IN_PARTICIPATIONS.includes(participationType) || pointsCredited;
+        let isParticipating = OPT_IN_PARTICIPATIONS.includes(participationType) || Boolean(pointsCredited);
         if (!options.a && !isParticipating) {
             continue;
         }
 
         let titlePrefix = pointsCredited ? 'Cooking: ' : '';
         // Set alarms only for when cooking, but always include it in the JSON, to make tests easier.
-        let alarms = [];
-        let duration = {hours: 1};
+        let alarms: Array<Alarm> = [];
+        let duration: DurationObject = {hours: 1};
 
         if (pointsCredited) {
             // Extend by 30 minutes for cooking
@@ -81,7 +79,7 @@ async function getIcs(ctx) {
             }
         }
 
-        let icsEvent = {
+        let icsEvent: EventAttributes = {
             uid:            `event-${event.id}@${hostname}`,
             startInputType: 'utc',
             start:          [
@@ -123,10 +121,7 @@ async function getIcs(ctx) {
     }
 }
 
-/**
- * @param {Router} router
- */
-export default function register(router) {
+export default function register(router: Router): void {
     // Some clients (Thunderbird) use the basename by default as a display name, that's why it ends in lunch.ics.
     router.get('/public/ics/:pack([\\w]+)-:signature(\\w+)/lunch.ics', getIcs);
 }

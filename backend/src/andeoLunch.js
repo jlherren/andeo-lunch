@@ -9,7 +9,7 @@ import GroceryRoutes from './routes/grocery.ts';
 import Koa from 'koa';
 import KoaLogger from './koa-logger.ts';
 import MiscRoutes from './routes/misc.ts';
-import PublicRoutes from './routes/public.js';
+import PublicRoutes from './routes/public.ts';
 import Router from '@koa/router';
 import SettingsRoutes from './routes/settings.ts';
 import ToolsRoutes from './routes/tools.ts';
