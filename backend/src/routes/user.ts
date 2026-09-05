@@ -3,6 +3,9 @@ import * as Factory from './factory.ts';
 import * as RouteUtils from './route-utils.ts';
 import {Absence, Configuration, Transaction, User} from '../db/models.ts';
 import HttpErrors from 'http-errors';
+import type Router from '@koa/router';
+import type {Context} from 'koa';
+import type {Transaction as SequelizeTransaction} from 'sequelize';
 import {z} from 'zod';
 
 const absenceCreateSchema = z.strictObject({
@@ -10,11 +13,7 @@ const absenceCreateSchema = z.strictObject({
     end:   RouteUtils.isoDateSchema,
 });
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function getUserTransactionLists(ctx) {
+async function getUserTransactionLists(ctx: Context): Promise<void> {
     let transactions = await Transaction.findAll({
         include: ctx.query.with === 'eventName' ? ['Event'] : [],
         where:   {
@@ -32,11 +31,7 @@ async function getUserTransactionLists(ctx) {
     };
 }
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function getUserPaymentInfo(ctx) {
+async function getUserPaymentInfo(ctx: Context): Promise<void> {
     let config = await Configuration.findOne({
         where: {
             name: `paymentInfo.${ctx.params.user}`,
@@ -47,11 +42,7 @@ async function getUserPaymentInfo(ctx) {
     };
 }
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function getUserAbsences(ctx) {
+async function getUserAbsences(ctx: Context): Promise<void> {
     let absences = await Absence.findAll({
         where: {
             user: ctx.params.user,
@@ -65,20 +56,15 @@ async function getUserAbsences(ctx) {
     };
 }
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function createUserAbsence(ctx) {
-    /** @type {ApiAbsence} */
+async function createUserAbsence(ctx: Context): Promise<void> {
     let apiAbsence = RouteUtils.validateBody(ctx.request, absenceCreateSchema);
 
     if (apiAbsence.end.getTime() < apiAbsence.start.getTime()) {
         throw new HttpErrors.UnprocessableEntity('End date cannot be before start date');
     }
 
-    let userId = ctx.params.user;
-    let absenceId = await ctx.sequelize.transaction(async transaction => {
+    let userId = parseInt(ctx.params.user, 10);
+    let absenceId = await ctx.sequelize.transaction(async (transaction: SequelizeTransaction) => {
         let absence = await Absence.create({
             user: userId,
             ...apiAbsence,
@@ -96,12 +82,8 @@ async function createUserAbsence(ctx) {
     ctx.set('Location', `/api/users/${userId}/absences/${absenceId}`);
 }
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function deleteUserAbsence(ctx) {
-    await ctx.sequelize.transaction(async transaction => {
+async function deleteUserAbsence(ctx: Context): Promise<void> {
+    await ctx.sequelize.transaction(async (transaction: SequelizeTransaction) => {
         let absence = await Absence.findByPk(parseInt(ctx.params.absence, 10), {transaction});
         let user = parseInt(ctx.params.user, 10);
         if (!absence || absence.user !== user) {
@@ -118,11 +100,8 @@ async function deleteUserAbsence(ctx) {
     ctx.status = 204;
 }
 
-/**
- * @param {Router} router
- */
-export default function register(router) {
-    let opts = {
+export default function register(router: Router): void {
+    let opts: Factory.ObjectListOptions<User> = {
         model:  User,
         mapper: user => user.toApi(),
         order:  [

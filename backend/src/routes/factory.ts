@@ -1,25 +1,23 @@
 import type {Context} from 'koa';
 import HttpErrors from 'http-errors';
-import type {Model} from 'sequelize';
+import type {Attributes, Model, ModelStatic, WhereOptions} from 'sequelize';
 
-type ModelCtor = typeof Model & { new(): Model };
-
-interface SingleObjectOptions {
+export interface SingleObjectOptions<M extends Model> {
     /**
      * Model class of the object
      */
-    model: ModelCtor;
+    model: ModelStatic<M>;
     /**
      * Mapper function for the DB row to returned object
      */
-    mapper: (object: Model) => Record<string, unknown>;
+    mapper: (object: M) => Record<string, unknown>;
     /**
      * Additional WHERE parameters
      */
-    where?: Record<string, unknown>;
+    where?: WhereOptions<Attributes<M>>;
 }
 
-interface ObjectListOptions extends SingleObjectOptions {
+export interface ObjectListOptions<M extends Model> extends SingleObjectOptions<M> {
     /**
      * Additional ORDER BY
      */
@@ -29,7 +27,7 @@ interface ObjectListOptions extends SingleObjectOptions {
 /**
  * Create a controller that returns a single object by its ID
  */
-export function makeSingleObjectController(options: SingleObjectOptions): (ctx: Context) => Promise<void> {
+export function makeSingleObjectController<M extends Model>(options: SingleObjectOptions<M>): (ctx: Context) => Promise<void> {
     let singular = options.model.name.toLowerCase();
 
     return async function (ctx: Context): Promise<void> {
@@ -52,7 +50,7 @@ export function makeSingleObjectController(options: SingleObjectOptions): (ctx: 
 /**
  * Create a controller that returns a list of objects
  */
-export function makeObjectListController(options: ObjectListOptions): (ctx: Context) => Promise<void> {
+export function makeObjectListController<M extends Model>(options: ObjectListOptions<M>): (ctx: Context) => Promise<void> {
     let plural = `${options.model.name.toLowerCase()}s`;
 
     return async function (ctx: Context): Promise<void> {

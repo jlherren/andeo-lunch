@@ -13,7 +13,7 @@ import PublicRoutes from './routes/public.js';
 import Router from '@koa/router';
 import SettingsRoutes from './routes/settings.ts';
 import ToolsRoutes from './routes/tools.ts';
-import UserRoutes from './routes/user.js';
+import UserRoutes from './routes/user.ts';
 import cors from '@koa/cors';
 
 const URLS_WITHOUT_AUTH = [
