@@ -3,6 +3,8 @@ import * as RouteUtils from './route-utils.ts';
 import {Configuration, User, UserPassword} from '../db/models.ts';
 import HttpErrors from 'http-errors';
 import {UniqueConstraintError} from 'sequelize';
+import type Router from '@koa/router';
+import type {Context} from 'koa';
 import {z} from 'zod';
 
 const editUserSchema = z.strictObject({
@@ -27,11 +29,7 @@ const resetPasswordSchema = z.strictObject({
     ownPassword: z.string().min(1),
 });
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function getUsers(ctx) {
+async function getUsers(ctx: Context): Promise<void> {
     RouteUtils.requirePermission(ctx, 'admin.user');
 
     let users = await User.findAll({
@@ -49,11 +47,7 @@ async function getUsers(ctx) {
     };
 }
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function saveUser(ctx) {
+async function saveUser(ctx: Context): Promise<void> {
     RouteUtils.requirePermission(ctx, 'admin.user');
 
     let data = RouteUtils.validateBody(ctx.request, editUserSchema);
@@ -68,11 +62,7 @@ async function saveUser(ctx) {
     ctx.status = 204;
 }
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function resetPassword(ctx) {
+async function resetPassword(ctx: Context): Promise<void> {
     RouteUtils.requirePermission(ctx, 'admin.user');
 
     let requestBody = RouteUtils.validateBody(ctx.request, resetPasswordSchema);
@@ -93,6 +83,15 @@ async function resetPassword(ctx) {
         },
     });
 
+    if (ownUserPassword === null) {
+        await AuthUtils.fakeCompare(requestBody.ownPassword);
+        ctx.body = {
+            success: false,
+            reason:  'own-password-invalid',
+        };
+        return;
+    }
+
     if (!await AuthUtils.comparePassword(requestBody.ownPassword, ownUserPassword.password)) {
         ctx.body = {
             success: false,
@@ -109,6 +108,10 @@ async function resetPassword(ctx) {
         return;
     }
 
+    if (otherUserPassword === null) {
+        throw new HttpErrors.InternalServerError('User has no password');
+    }
+
     otherUserPassword.password = await AuthUtils.hashPassword(requestBody.newPassword);
     otherUserPassword.lastChange = new Date();
     await otherUserPassword.save();
@@ -118,11 +121,7 @@ async function resetPassword(ctx) {
     };
 }
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function createUser(ctx) {
+async function createUser(ctx: Context): Promise<void> {
     RouteUtils.requirePermission(ctx, 'admin.user');
 
     let data = RouteUtils.validateBody(ctx.request, createUserSchema);
@@ -153,10 +152,7 @@ async function createUser(ctx) {
     }
 }
 
-/**
- * @param {Router} router
- */
-export default function register(router) {
+export default function register(router: Router): void {
     router.get('/admin/users', getUsers);
     router.post('/admin/users/:user(\\d+)', saveUser);
     router.post('/admin/users/:user(\\d+)/password', resetPassword);

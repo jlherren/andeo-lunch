@@ -1,7 +1,7 @@
 import * as Db from './db/index.ts';
 import * as RouteUtils from './routes/route-utils.ts';
 import AccountRoutes from './routes/account.ts';
-import AdminRoutes from './routes/admin.js';
+import AdminRoutes from './routes/admin.ts';
 import AuditRoutes from './routes/audit.ts';
 import BodyParser from 'koa-bodyparser';
 import EventRoutes from './routes/event.js';
