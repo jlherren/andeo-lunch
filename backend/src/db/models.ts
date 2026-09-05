@@ -402,7 +402,7 @@ export class Grocery extends Model {
         };
     }
 
-    toSnapshot(): Record<string, unknown> {
+    toSnapshot(): {label: string; checked: boolean} {
         return {
             label:   this.label,
             checked: this.checked,

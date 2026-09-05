@@ -5,7 +5,7 @@ import AdminRoutes from './routes/admin.ts';
 import AuditRoutes from './routes/audit.ts';
 import BodyParser from 'koa-bodyparser';
 import EventRoutes from './routes/event.js';
-import GroceryRoutes from './routes/grocery.js';
+import GroceryRoutes from './routes/grocery.ts';
 import Koa from 'koa';
 import KoaLogger from './koa-logger.ts';
 import MiscRoutes from './routes/misc.ts';

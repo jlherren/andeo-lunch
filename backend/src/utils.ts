@@ -53,8 +53,11 @@ export function parseDate(str: string): Date|null {
     return isNaN(date.getTime()) ? null : date;
 }
 
-type SnapshotArgument = number|string|Date|Record<string, number|string|Date>|null|undefined;
+type SnapshotValue = boolean|number|string|Date|null|undefined;
+type SnapshotArgument = SnapshotValue|Record<string, SnapshotValue>;
 
+export function snapshotDiff(before: Record<string, SnapshotValue>, after: Record<string, SnapshotValue>): Record<string, unknown>|undefined;
+export function snapshotDiff(before: SnapshotArgument, after: SnapshotArgument): unknown;
 export function snapshotDiff(before: SnapshotArgument, after: SnapshotArgument): unknown {
     before ??= null;
     after ??= null;

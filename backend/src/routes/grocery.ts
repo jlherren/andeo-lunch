@@ -3,6 +3,9 @@ import * as RouteUtils from './route-utils.ts';
 import * as Utils from '../utils.ts';
 import {Grocery} from '../db/models.ts';
 import HttpErrors from 'http-errors';
+import type Router from '@koa/router';
+import type {Context} from 'koa';
+import type {Transaction} from 'sequelize';
 import {z} from 'zod';
 
 const groceryLabelSchema = z.string().transform(s => s.normalize()).pipe(z.string().min(1).regex(/\S/u));
@@ -17,14 +20,9 @@ const groceryUpdateSchema = z.strictObject({
     checked: z.boolean().optional(),
 });
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function createGrocery(ctx) {
-    /** @type {ApiGrocery} */
+async function createGrocery(ctx: Context): Promise<void> {
     let apiGrocery = RouteUtils.validateBody(ctx.request, groceryCreateSchema);
-    let groceryId = await ctx.sequelize.transaction(async transaction => {
+    let groceryId = await ctx.sequelize.transaction(async (transaction: Transaction) => {
         let grocery = await Grocery.create({
             label:   apiGrocery.label,
             checked: apiGrocery.checked,
@@ -41,12 +39,7 @@ async function createGrocery(ctx) {
     ctx.set('Location', `/api/groceries/${groceryId}`);
 }
 
-/**
- * @param {number} groceryId
- * @param {Transaction} [transaction]
- * @return {Promise<Grocery>}
- */
-async function loadGrocery(groceryId, transaction) {
+async function loadGrocery(groceryId: number, transaction?: Transaction): Promise<Grocery> {
     let options = {
         transaction,
         lock: transaction ? transaction.LOCK.UPDATE : undefined,
@@ -58,23 +51,13 @@ async function loadGrocery(groceryId, transaction) {
     return grocery;
 }
 
-/**
- * @param {Object} params
- * @param {Transaction} [transaction]
- * @return {Promise<Grocery>}
- */
-function loadGroceryFromParam(params, transaction) {
+function loadGroceryFromParam(params: Record<string, string>, transaction?: Transaction): Promise<Grocery> {
     return loadGrocery(parseInt(params.grocery, 10), transaction);
 }
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function updateGrocery(ctx) {
-    /** @type {ApiGrocery} */
+async function updateGrocery(ctx: Context): Promise<void> {
     let apiGrocery = RouteUtils.validateBody(ctx.request, groceryUpdateSchema);
-    await ctx.sequelize.transaction(async transaction => {
+    await ctx.sequelize.transaction(async (transaction: Transaction) => {
         let grocery = await loadGroceryFromParam(ctx.params, transaction);
         let before = grocery.toSnapshot();
         await grocery.update(
@@ -96,12 +79,7 @@ async function updateGrocery(ctx) {
     ctx.status = 204;
 }
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function listGroceries(ctx) {
-    /** @type {Array<Grocery>} */
+async function listGroceries(ctx: Context): Promise<void> {
     let groceries = await Grocery.findAll({
         order: [
             ['checked', 'ASC'],
@@ -114,22 +92,14 @@ async function listGroceries(ctx) {
     };
 }
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function getGroceries(ctx) {
+async function getGroceries(ctx: Context): Promise<void> {
     ctx.body = {
         grocery: await loadGroceryFromParam(ctx.params),
     };
 }
 
-/**
- * @param {Application.Context} ctx
- * @return {Promise<void>}
- */
-async function deleteGrocery(ctx) {
-    await ctx.sequelize.transaction(async transaction => {
+async function deleteGrocery(ctx: Context): Promise<void> {
+    await ctx.sequelize.transaction(async (transaction: Transaction) => {
         let grocery = await loadGroceryFromParam(ctx.params, transaction);
         let before = grocery.toSnapshot();
         await grocery.destroy({transaction});
@@ -141,10 +111,7 @@ async function deleteGrocery(ctx) {
     ctx.status = 204;
 }
 
-/**
- * @param {Router} router
- */
-export default function register(router) {
+export default function register(router: Router): void {
     router.get('/groceries', listGroceries);
     router.get('/groceries/:grocery(\\d+)', getGroceries);
     router.post('/groceries', createGrocery);
