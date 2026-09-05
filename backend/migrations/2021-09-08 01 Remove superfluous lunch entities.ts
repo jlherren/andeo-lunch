@@ -1,8 +1,6 @@
-/**
- * @param {Sequelize} sequelize
- * @return {Promise<void>}
- */
-export async function up({context: sequelize}) {
+import type {Migration} from './types.ts';
+
+export const up: Migration = async ({context: sequelize}) => {
     // Event types 3 and 4 should not have associated lunch entities.  Note that SQLite does not support DELETE
     // statements with JOIN
     await sequelize.query(`
@@ -10,11 +8,11 @@ export async function up({context: sequelize}) {
             SELECT e.id FROM event e WHERE e.type IN (3, 4)
         )
     `);
-}
+};
 
 /**
  * Undo the migration
  */
-export function down() {
+export const down: Migration = async () => {
     // Can't be undone
-}
+};

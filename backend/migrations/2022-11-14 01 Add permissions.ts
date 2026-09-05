@@ -1,11 +1,8 @@
 import {ColumnHelper} from '../src/db/columnHelper.ts';
 import {DataTypes} from 'sequelize';
+import type {Migration} from './types.ts';
 
-/**
- * @param {Sequelize} sequelize
- * @return {Promise<void>}
- */
-export async function up({context: sequelize}) {
+export const up: Migration = async ({context: sequelize}) => {
     let queryInterface = sequelize.getQueryInterface();
     let ch = new ColumnHelper(sequelize);
     let tableDefaultOptions = {
@@ -78,14 +75,10 @@ export async function up({context: sequelize}) {
         },
         ...cascade,
     });
-}
+};
 
-/**
- * @param {Sequelize} sequelize
- * @return {Promise<void>}
- */
-export async function down({context: sequelize}) {
+export const down: Migration = async ({context: sequelize}) => {
     let queryInterface = sequelize.getQueryInterface();
     await queryInterface.dropTable('userPermission');
     await queryInterface.dropTable('permission');
-}
+};

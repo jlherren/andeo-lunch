@@ -1,23 +1,16 @@
 import {DataTypes} from 'sequelize';
+import type {Migration} from './types.ts';
 
-/**
- * @param {Sequelize} sequelize
- * @return {Promise<void>}
- */
-export async function up({context: sequelize}) {
+export const up: Migration = async ({context: sequelize}) => {
     let queryInterface = sequelize.getQueryInterface();
     await queryInterface.addColumn('user', 'lastPasswordChange', {
         type:      DataTypes.DATE,
         allowNull: true,
         after:     'password',
     });
-}
+};
 
-/**
- * @param {Sequelize} sequelize
- * @return {Promise<void>}
- */
-export async function down({context: sequelize}) {
+export const down: Migration = async ({context: sequelize}) => {
     let queryInterface = sequelize.getQueryInterface();
     await queryInterface.removeColumn('user', 'lastPasswordChange');
-}
+};

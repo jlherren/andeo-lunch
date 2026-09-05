@@ -18,8 +18,14 @@ describe('Migration test', () => {
                 quiet: true,
             });
             await andeoLunch.waitReady();
-            // This test has otherwise no assertions...
-            expect(true).to.equal(true);
+            let sequelize = await andeoLunch.getSequelize();
+            let migrations = await sequelize.getQueryInterface().select(null, 'SequelizeMeta', {});
+            let migrationNames = migrations.map(migration => migration.name);
+            expect(migrationNames).to.include('2025-02-21 01 Add index on transaction.js');
+            expect(migrationNames.every(name => name.endsWith('.js'))).to.equal(true);
+
+            // Existing databases store the JavaScript name; it must still prevent the TypeScript file from rerunning.
+            await andeoLunch.reapplyMigrations();
         } finally {
             await andeoLunch?.close();
         }

@@ -1,10 +1,7 @@
 import {DataTypes} from 'sequelize';
+import type {Migration} from './types.ts';
 
-/**
- * @param {Sequelize} sequelize
- * @return {Promise<void>}
- */
-export async function up({context: sequelize}) {
+export const up: Migration = async ({context: sequelize}) => {
     let queryInterface = sequelize.getQueryInterface();
     let tableDefaultOptions = {
         charset: 'utf8mb4',
@@ -43,13 +40,9 @@ export async function up({context: sequelize}) {
         name:   'checked_order_idx',
         fields: ['checked', 'order'],
     });
-}
+};
 
-/**
- * @param {Sequelize} sequelize
- * @return {Promise<void>}
- */
-export async function down({context: sequelize}) {
+export const down: Migration = async ({context: sequelize}) => {
     let queryInterface = sequelize.getQueryInterface();
     await queryInterface.dropTable('grocery');
-}
+};

@@ -1,10 +1,7 @@
 import {DataTypes} from 'sequelize';
+import type {Migration} from './types.ts';
 
-/**
- * @param {Sequelize} sequelize
- * @return {Promise<void>}
- */
-export async function up({context: sequelize}) {
+export const up: Migration = async ({context: sequelize}) => {
     let queryInterface = sequelize.getQueryInterface();
     let cascade = {
         onDelete: 'restrict',
@@ -51,15 +48,11 @@ export async function up({context: sequelize}) {
         },
         ...cascade,
     });
-}
+};
 
-/**
- * @param {Sequelize} sequelize
- * @return {Promise<void>}
- */
-export async function down({context: sequelize}) {
+export const down: Migration = async ({context: sequelize}) => {
     let queryInterface = sequelize.getQueryInterface();
     await queryInterface.removeConstraint('event', 'event_ibfk_1');
     await queryInterface.removeIndex('event', 'event_type_idx');
     await queryInterface.dropTable('eventType');
-}
+};

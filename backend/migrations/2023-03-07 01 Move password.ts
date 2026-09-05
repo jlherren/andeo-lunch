@@ -1,11 +1,8 @@
 import {ColumnHelper} from '../src/db/columnHelper.ts';
 import {DataTypes} from 'sequelize';
+import type {Migration} from './types.ts';
 
-/**
- * @param {Sequelize} sequelize
- * @return {Promise<void>}
- */
-export async function up({context: sequelize}) {
+export const up: Migration = async ({context: sequelize}) => {
     let queryInterface = sequelize.getQueryInterface();
     let ch = new ColumnHelper(sequelize);
     await queryInterface.createTable('userPassword', {
@@ -64,13 +61,9 @@ export async function up({context: sequelize}) {
     `);
     await queryInterface.removeColumn('user', 'password');
     await queryInterface.removeColumn('user', 'lastPasswordChange');
-}
+};
 
-/**
- * @param {Sequelize} sequelize
- * @return {Promise<void>}
- */
-export async function down({context: sequelize}) {
+export const down: Migration = async ({context: sequelize}) => {
     let queryInterface = sequelize.getQueryInterface();
     let ch = new ColumnHelper(sequelize);
     await queryInterface.addColumn('user', 'password', {
@@ -91,4 +84,4 @@ export async function down({context: sequelize}) {
             u.lastPasswordChange = (SELECT up.lastChange FROM userPassword AS up WHERE up.user = u.id)
     `);
     await queryInterface.dropTable('userPassword');
-}
+};

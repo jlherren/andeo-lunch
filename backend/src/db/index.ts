@@ -1,6 +1,6 @@
 import * as Models from './models.ts';
 import {ConnectionRefusedError, Sequelize} from 'sequelize';
-import {SequelizeStorage, Umzug} from 'umzug';
+import {SequelizeStorage, Umzug, type MigrationParams, type RunnableMigration} from 'umzug';
 import {promises as fs} from 'fs';
 import path from 'path';
 import url from 'url';
@@ -14,6 +14,11 @@ const ENV_FALLBACKS = {
     username: 'MARIADB_USER',
     password: 'MARIADB_PASSWORD',
 };
+
+function resolveMigration(params: MigrationParams<Sequelize>): RunnableMigration<Sequelize> {
+    let name = params.name.replace(/\.ts$/u, '.js');
+    return Umzug.defaultResolver({...params, name});
+}
 
 // eslint-disable-next-line no-underscore-dangle
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
@@ -91,7 +96,8 @@ export async function applyMigrations(sequelize: Sequelize, quiet: boolean): Pro
     const umzug = new Umzug({
         migrations: {
             // glob requires forward slashes even on windows.
-            glob: path.join(__dirname, '../../migrations/????-??-?? ?? *.js').replaceAll('\\', '/'),
+            glob:    path.join(__dirname, '../../migrations/????-??-?? ?? *.ts').replaceAll('\\', '/'),
+            resolve: resolveMigration,
         },
         context:    sequelize,
         storage:    new SequelizeStorage({sequelize}),

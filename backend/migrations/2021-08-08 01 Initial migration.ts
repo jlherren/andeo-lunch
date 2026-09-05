@@ -2,12 +2,9 @@ import * as AuthUtils from '../src/authUtils.ts';
 import * as Constants from '../src/constants.ts';
 import {ColumnHelper} from '../src/db/columnHelper.ts';
 import {DataTypes} from 'sequelize';
+import type {Migration} from './types.ts';
 
-/**
- * @param {Sequelize} sequelize
- * @return {Promise<void>}
- */
-export async function up({context: sequelize}) {
+export const up: Migration = async ({context: sequelize}) => {
     let queryInterface = sequelize.getQueryInterface();
     let ch = new ColumnHelper(sequelize);
     let cascade = {
@@ -605,11 +602,9 @@ export async function up({context: sequelize}) {
             transaction,
         });
     });
-}
+};
 
 /**
  * Undoing this migration is not supported
  */
-export function down() {
-    throw new Error('Migrating down from initial migration is not supported');
-}
+export const down: Migration = () => Promise.reject(new Error('Migrating down from initial migration is not supported'));
