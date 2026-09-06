@@ -28,7 +28,7 @@
                                 {{ row.name }}
                             </td>
                             <td>
-                                <ParticipationTypeMiniWidget :event-type="event.type" v-model="row.type" :disabled="isBusy" @input="modified(row)"/>
+                                <ParticipationTypeMiniWidget :event-type="event.type" v-model="row.type" :disabled="isBusy" @update:modelValue="modified(row)"/>
                             </td>
                             <td>
                                 <v-text-field type="number" v-model="row.pointsCredit" min="0" class="no-spinner" :disabled="isBusy" dense hide-details

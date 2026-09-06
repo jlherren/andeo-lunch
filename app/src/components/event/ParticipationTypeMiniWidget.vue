@@ -11,8 +11,13 @@
     export default {
         name: 'ParticipationTypeMiniWidget',
 
+        model: {
+            prop:  'modelValue',
+            event: 'update:modelValue',
+        },
+
         props: {
-            value:     {
+            modelValue: {
                 type:     String,
                 required: true,
             },
@@ -34,16 +39,16 @@
 
         computed: {
             current() {
-                return this.types.find(type => type.id === this.value);
+                return this.types.find(type => type.id === this.modelValue);
             },
         },
 
         methods: {
             toggle() {
-                let index = this.types.findIndex(type => type.id === this.value);
+                let index = this.types.findIndex(type => type.id === this.modelValue);
                 // Note how this conveniently also works for i === -1
                 index = (index + 1) % this.types.length;
-                this.$emit('input', this.types[index].id);
+                this.$emit('update:modelValue', this.types[index].id);
             },
         },
     };

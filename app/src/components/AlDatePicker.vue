@@ -5,7 +5,7 @@
                           :label="label" :rules="rules" :value="formatted" readonly :disabled="disabled"
             />
         </template>
-        <v-date-picker :value="value" @input="update" first-day-of-week="1"/>
+        <v-date-picker :value="modelValue" @input="update" first-day-of-week="1"/>
     </v-dialog>
 </template>
 
@@ -15,9 +15,14 @@
     export default {
         name: 'AlDatePicker',
 
+        model: {
+            prop:  'modelValue',
+            event: 'update:modelValue',
+        },
+
         props: {
-            value:    String,
-            label:    {
+            modelValue: String,
+            label:      {
                 type:    String,
                 default: 'Date',
             },
@@ -42,17 +47,17 @@
 
         computed: {
             formatted() {
-                if (this.value === undefined || this.value === null) {
+                if (this.modelValue === undefined || this.modelValue === null) {
                     return null;
                 }
-                return DateUtils.displayFormat(new Date(this.value));
+                return DateUtils.displayFormat(new Date(this.modelValue));
             },
         },
 
         methods: {
             update(value) {
                 this.open = false;
-                this.$emit('input', value);
+                this.$emit('update:modelValue', value);
             },
         },
     };

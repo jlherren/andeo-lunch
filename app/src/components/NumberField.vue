@@ -5,7 +5,7 @@
         :max="max"
         :step="step"
         :label="label"
-        :value="value"
+        :value="modelValue"
         @input="input"
         @blur="$emit('blur', $event)"
         @change="$emit('change', $event)"
@@ -17,10 +17,10 @@
         :persistent-hint="hint !== null"
     >
         <template #append>
-            <v-btn small icon @click="addPoints(-step)" :disabled="min !== undefined && value <= min" v-if="!isDisabled && !readonly">
+            <v-btn small icon @click="addPoints(-step)" :disabled="min !== undefined && modelValue <= min" v-if="!isDisabled && !readonly">
                 <v-icon small>{{ $icons.minus }}</v-icon>
             </v-btn>
-            <v-btn small icon @click="addPoints(step)" :disabled="max !== undefined && value >= max" v-if="!isDisabled && !readonly">
+            <v-btn small icon @click="addPoints(step)" :disabled="max !== undefined && modelValue >= max" v-if="!isDisabled && !readonly">
                 <v-icon small>{{ $icons.plus }}</v-icon>
             </v-btn>
             <v-icon>{{ icon }}</v-icon>
@@ -32,15 +32,20 @@
     export default {
         name: 'NumberField',
 
+        model: {
+            prop:  'modelValue',
+            event: 'update:modelValue',
+        },
+
         inject: [
             'form',
         ],
 
         props: {
-            value:    Number,
-            disabled: Boolean,
-            readonly: Boolean,
-            min:      {
+            modelValue: Number,
+            disabled:   Boolean,
+            readonly:   Boolean,
+            min:        {
                 type:    Number,
                 default: 0,
             },
@@ -70,18 +75,18 @@
             },
 
             addPoints(increment) {
-                let value = this.validate(this.value);
+                let value = this.validate(this.modelValue);
                 value += increment;
                 if (value < this.min) {
                     value = this.min;
                 } else if (value > this.max) {
                     value = this.max;
                 }
-                this.$emit('input', value);
+                this.$emit('update:modelValue', value);
             },
 
             input(value) {
-                this.$emit('input', this.validate(value));
+                this.$emit('update:modelValue', this.validate(value));
             },
         },
     };

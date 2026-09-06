@@ -1,9 +1,9 @@
 <template>
     <div>
         <label v-if="label" class="v-label" :class="$vuetify.theme.dark ? 'theme--dark' : 'theme--light'">
-            Participation type{{ $vuetify.breakpoint.xs ? ': ' + displayName(value) : '' }}
+            Participation type{{ $vuetify.breakpoint.xs ? ': ' + displayName(modelValue) : '' }}
         </label>
-        <v-btn-toggle :value="value" @change="update" :dense="$vuetify.breakpoint.xs" mandatory class="full-width">
+        <v-btn-toggle :value="modelValue" @change="update" :dense="$vuetify.breakpoint.xs" mandatory class="full-width">
             <v-btn v-for="type of types" :key="type.id" :value="type.id" :disabled="disabled">
                 <v-icon :large="$vuetify.breakpoint.mdAndUp" left>{{ type.icon }}</v-icon>
                 <span class="hidden-xs-only">{{ type.name }}</span>
@@ -18,8 +18,13 @@
     export default {
         name: 'ParticipationTypeWidget',
 
+        model: {
+            prop:  'modelValue',
+            event: 'update:modelValue',
+        },
+
         props: {
-            value:     {
+            modelValue: {
                 type:     String,
                 required: true,
             },
@@ -41,7 +46,7 @@
 
         methods: {
             update(value) {
-                this.$emit('input', value);
+                this.$emit('update:modelValue', value);
             },
 
             displayName(value) {

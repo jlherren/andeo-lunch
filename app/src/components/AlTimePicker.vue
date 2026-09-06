@@ -2,10 +2,10 @@
     <v-dialog v-model="open" width="290px">
         <template #activator="{ on, attrs }">
             <v-text-field v-bind="attrs" v-on="on" :append-icon="$icons.clock"
-                          :label="label" :rules="rules" :value="value" readonly
+                          :label="label" :rules="rules" :value="modelValue" readonly
             />
         </template>
-        <v-time-picker :value="value" @input="update" @click:minute="open = false" format="24hr"/>
+        <v-time-picker :value="modelValue" @input="update" @click:minute="open = false" format="24hr"/>
     </v-dialog>
 </template>
 
@@ -13,9 +13,14 @@
     export default {
         name: 'AlTimePicker',
 
+        model: {
+            prop:  'modelValue',
+            event: 'update:modelValue',
+        },
+
         props: {
-            value:    String,
-            label:    {
+            modelValue: String,
+            label:      {
                 type:    String,
                 default: 'Time',
             },
@@ -37,7 +42,7 @@
         methods: {
             update(value) {
                 // this.open = false;
-                this.$emit('input', value);
+                this.$emit('update:modelValue', value);
             },
         },
     };
