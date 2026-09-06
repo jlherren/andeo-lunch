@@ -65,7 +65,7 @@ function logout() {
         .click();
     cy.getDialog()
         .within(() => {
-            cy.contains('button', 'Yes, logout')
+            cy.contains('.v-btn', 'Yes, logout')
                 .click();
         });
 }

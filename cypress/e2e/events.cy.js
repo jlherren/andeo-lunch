@@ -1,6 +1,6 @@
 import {USERS} from '../helpers/sql';
 
-describe('Create events', () => {
+describe('Events', () => {
     beforeEach(() => {
         cy.task('db:purge');
         USERS.john.insert();
@@ -23,7 +23,7 @@ describe('Create events', () => {
             .type('6');
         cy.followLabel('Vegetarian money factor')
             .should('have.value', 50);
-        cy.contains('button', 'Save')
+        cy.contains('.v-btn', 'Save')
             .click();
 
         cy.contains('.v-list-item', 'Brunch')
@@ -50,7 +50,7 @@ describe('Create events', () => {
             .type('0.5');
         cy.followLabel('Vegetarian money factor')
             .type('{selectall}100');
-        cy.contains('button', 'Save')
+        cy.contains('.v-btn', 'Save')
             .click();
 
         cy.contains('.v-list-item', 'Spätzli')
@@ -72,7 +72,7 @@ describe('Create events', () => {
             .click();
         cy.followLabel('Points')
             .type('4');
-        cy.contains('button', 'Save')
+        cy.contains('.v-btn', 'Save')
             .click();
 
         cy.contains('.v-list-item', 'AoE Zyt Pizza')
@@ -96,7 +96,7 @@ describe('Create events', () => {
             .should('not.exist');
         cy.contains('label', 'Vegetarian money factor')
             .should('not.exist');
-        cy.contains('button', 'Save')
+        cy.contains('.v-btn', 'Save')
             .click();
 
         cy.contains('.v-list-item', 'Feiertag')
@@ -112,7 +112,7 @@ describe('Create events', () => {
             .type('Complex menu');
         cy.followLabel('Comment')
             .type('Here is how to do it...');
-        cy.contains('button', 'Save')
+        cy.contains('.v-btn', 'Save')
             .click();
         cy.contains('.v-list-item', 'Complex menu')
             .click();
@@ -128,7 +128,7 @@ describe('Create events', () => {
             .type('Gratin');
         cy.followLabel('Participation cost')
             .type('{selectall}{backspace}0.5');
-        cy.contains('button', 'Save')
+        cy.contains('.v-btn', 'Save')
             .click();
         cy.contains('.v-list-item', 'Gratin')
             .click();
@@ -145,7 +145,7 @@ describe('Create events', () => {
             .type('Pizza');
         cy.followLabel('Participation flat-rate')
             .uncheck({force: true});
-        cy.contains('button', 'Save')
+        cy.contains('.v-btn', 'Save')
             .click();
 
         cy.contains('.v-list-item', 'Pizza')
@@ -163,13 +163,13 @@ describe('Create events', () => {
             .type('Brunch');
         cy.followLabel('Points')
             .type('6');
-        cy.contains('button', 'Andeo')
+        cy.contains('.v-btn', 'Andeo')
             .click();
-        cy.contains('button', 'John Doe')
+        cy.contains('.v-btn', 'John Doe')
             .click();
-        cy.contains('button', 'Andeo')
+        cy.contains('.v-btn', 'Andeo')
             .click();
-        cy.contains('button', 'Save')
+        cy.contains('.v-btn', 'Save')
             .click();
         cy.contains('.v-list-item', 'Brunch')
             .click();
@@ -190,7 +190,7 @@ describe('Create events', () => {
             .type('6');
         cy.followLabel('Vegetarian money factor')
             .type('{selectall}0.8');
-        cy.contains('button', 'Save')
+        cy.contains('.v-btn', 'Save')
             .click();
 
         cy.contains('.v-list-item', 'Stew')
@@ -199,5 +199,131 @@ describe('Create events', () => {
             .click();
         cy.followLabel('Vegetarian money factor')
             .should('have.value', 80);
+    });
+
+    it('Loads and persists edited event values', () => {
+        cy.contains('a', 'Add new lunch')
+            .first()
+            .click();
+        cy.followLabel('Name')
+            .type('Original lunch');
+        cy.followLabel('Points')
+            .type('6');
+        cy.followLabel('Vegetarian money factor')
+            .type('{selectall}80');
+        cy.followLabel('Comments')
+            .type('Original comment');
+        cy.followLabel('Participation costs')
+            .type('{selectall}0.5');
+        cy.followLabel('Participation fee')
+            .type('{selectall}1.5');
+        cy.contains('.v-btn', 'Save')
+            .click();
+        cy.contains('.v-list-item', 'Original lunch')
+            .click();
+        cy.contains('.v-btn', 'Edit')
+            .click();
+
+        cy.followLabel('Name')
+            .should('have.value', 'Original lunch')
+            .type('{selectall}Edited lunch');
+        cy.followLabel('Date')
+            .should('be.disabled')
+            .and('not.have.value', '');
+        cy.followLabel('Points')
+            .should('have.value', 6)
+            .type('{selectall}7');
+        cy.followLabel('Vegetarian money factor')
+            .should('have.value', 80)
+            .type('{selectall}60');
+        cy.followLabel('Comments')
+            .should('have.value', 'Original comment')
+            .type('{selectall}Updated comment');
+        cy.followLabel('Participation costs')
+            .should('have.value', 0.5)
+            .type('{selectall}1.25');
+        cy.followLabel('Participation fee')
+            .should('have.value', 1.5)
+            .type('{selectall}2.5');
+        cy.contains('.v-btn', 'Save')
+            .click();
+
+        cy.contains('.headline', 'Edited lunch');
+        cy.contains('Updated comment');
+        cy.contains('Participation flat-rate: 1.25');
+        cy.reload();
+        cy.contains('.v-btn', 'Edit')
+            .click();
+        cy.followLabel('Name')
+            .should('have.value', 'Edited lunch');
+        cy.followLabel('Points')
+            .should('have.value', 7);
+        cy.followLabel('Vegetarian money factor')
+            .should('have.value', 60);
+        cy.followLabel('Comments')
+            .should('have.value', 'Updated comment');
+        cy.followLabel('Participation costs')
+            .should('have.value', 1.25);
+        cy.followLabel('Participation fee')
+            .should('have.value', 2.5);
+    });
+
+    it('Disables and restores participation flat-rate input', () => {
+        cy.contains('a', 'Add new lunch')
+            .first()
+            .click();
+        cy.followLabel('Participation flat-rate')
+            .should('be.checked');
+        cy.followLabel('Participation costs')
+            .should('not.be.disabled')
+            .type('{selectall}0.5');
+
+        cy.followLabel('Participation flat-rate')
+            .uncheck({force: true});
+        cy.followLabel('Participation costs')
+            .should('be.disabled')
+            .and('have.value', 0.5);
+
+        cy.followLabel('Participation flat-rate')
+            .check({force: true});
+        cy.followLabel('Participation costs')
+            .should('not.be.disabled')
+            .and('have.value', 0.5);
+    });
+
+    it('Can cancel and confirm deleting an event', () => {
+        cy.contains('a', 'Add new lunch')
+            .first()
+            .click();
+        cy.followLabel('Name')
+            .type('Lunch to delete');
+        cy.contains('.v-btn', 'Save')
+            .click();
+        cy.contains('.v-list-item', 'Lunch to delete')
+            .click();
+
+        cy.contains('.v-btn', 'Delete')
+            .click();
+        cy.getDialog()
+            .within(() => {
+                cy.contains('Delete this event?');
+                cy.contains('.v-btn', 'No, keep it')
+                    .click();
+            });
+        cy.noDialog();
+        cy.contains('.headline', 'Lunch to delete');
+
+        cy.contains('.v-btn', 'Delete')
+            .click();
+        cy.getDialog()
+            .within(() => {
+                cy.contains('.v-btn', 'Yes, delete')
+                    .click();
+            });
+        cy.contains('.v-list-item', 'Lunch to delete')
+            .should('not.exist');
+        cy.reload();
+        cy.contains('.v-list-item', 'Lunch to delete')
+            .should('not.exist');
     });
 });

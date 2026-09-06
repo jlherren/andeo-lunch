@@ -17,7 +17,7 @@ describe('Lunch event', () => {
 
     it('Can quick opt-in', () => {
         cy.visit('/events/1');
-        cy.contains('button', 'Opt-in')
+        cy.contains('.v-btn', 'Opt-in')
             .click();
         cy.contains('[role=listitem]', USERS.john.name)
             .find('[data-type=omnivorous]');
@@ -25,7 +25,7 @@ describe('Lunch event', () => {
 
     it('Can quick opt-out', () => {
         cy.visit('/events/1');
-        cy.contains('button', 'Opt-out')
+        cy.contains('.v-btn', 'Opt-out')
             .click();
         cy.contains('[role=listitem]', USERS.john.name)
             .find('[data-type=opt-out]');
@@ -178,21 +178,21 @@ describe('Grid editor', () => {
             .click();
         cy.contains('tr', USERS.john.name)
             .within(() => {
-                cy.contains('button', 'Undecided')
+                cy.contains('.v-btn', 'Undecided')
                     .click();
                 cy.get('td:nth(2) input')
                     .type('{selectall}8');
             });
         cy.contains('tr', USERS.mike.name)
             .within(() => {
-                cy.contains('button', 'Undecided')
+                cy.contains('.v-btn', 'Undecided')
                     .click();
-                cy.contains('button', 'Omni')
+                cy.contains('.v-btn', 'Omni')
                     .click();
                 cy.get('td:nth(3) input')
                     .type('{selectall}10');
             });
-        cy.contains('button', 'Save')
+        cy.contains('.v-btn', 'Save')
             .click();
 
         cy.contains('[role=listitem]', USERS.john.name)

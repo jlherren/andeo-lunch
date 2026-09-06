@@ -23,7 +23,7 @@ describe('Transfers', () => {
             .type('10.50');
         cy.followLabel('Reason')
             .type('Burger King');
-        cy.contains('button', 'Save')
+        cy.contains('.v-btn', 'Save')
             .click();
 
         cy.contains('[role=listitem]', 'Robert Smith → John Doe')
@@ -52,7 +52,7 @@ describe('Transfers', () => {
             .type('5');
         cy.followLabel('Reason')
             .type('Points as a gift');
-        cy.contains('button', 'Save')
+        cy.contains('.v-btn', 'Save')
             .click();
 
         cy.contains('[role=listitem]', 'John Doe → Robert Smith')
@@ -79,7 +79,7 @@ describe('Transfers', () => {
             .click();
         cy.followLabel('Amount in CHF')
             .type('100');
-        cy.contains('button', 'Save')
+        cy.contains('.v-btn', 'Save')
             .click();
 
         cy.contains('[role=listitem]', 'Robert Smith → John Doe')
@@ -115,7 +115,7 @@ describe('Transfers', () => {
             .type('4');
         cy.followLabel('Total money')
             .type('40');
-        cy.contains('button', 'Save')
+        cy.contains('.v-btn', 'Save')
             .click();
 
         cy.contains('[role=listitem]', 'John Doe → Robert Smith')
@@ -140,7 +140,7 @@ describe('Transfers', () => {
             .click();
         cy.followLabel('Description')
             .type('5-Kampf');
-        cy.contains('button', 'Save')
+        cy.contains('.v-btn', 'Save')
             .click();
         cy.contains('[role=listitem]', 'Add transfer entry')
             .click();
@@ -154,7 +154,7 @@ describe('Transfers', () => {
             .click();
         cy.followLabel('Amount')
             .type('10');
-        cy.contains('button', 'Save')
+        cy.contains('.v-btn', 'Save')
             .click();
 
         cy.contains('[role=listitem]', 'Robert Smith → John Doe')
@@ -162,5 +162,89 @@ describe('Transfers', () => {
         cy.contains('[role=listitem]', 'Add transfer entry');
         // Check that delete button exists.
         cy.get('[role=listitem] button');
+    });
+});
+
+describe('Delete transfers', () => {
+    beforeEach(() => {
+        cy.task('db:purge');
+        USERS.john.insert();
+        USERS.robert.insert();
+        cy.login(USERS.john.username, USERS.john.password);
+    });
+
+    it('Can cancel and confirm deleting a transfer entry and event', () => {
+        cy.contains('.v-bottom-navigation a', 'Transfers')
+            .click();
+        cy.get('.v-btn--fab')
+            .click();
+        cy.contains('Custom')
+            .click();
+        cy.followLabel('Description')
+            .type('Transfer to delete');
+        cy.contains('.v-btn', 'Save')
+            .click();
+        cy.contains('[role=listitem]', 'Add transfer entry')
+            .click();
+        cy.contains('[role=button]', 'Sender')
+            .click();
+        cy.contains('[role=option]:visible', USERS.robert.name)
+            .click();
+        cy.contains('[role=button]', 'Recipient')
+            .click();
+        cy.contains('[role=option]:visible', USERS.john.name)
+            .click();
+        cy.followLabel('Amount')
+            .type('10');
+        cy.contains('.v-btn', 'Save')
+            .click();
+
+        cy.contains('[role=listitem]', 'Robert Smith → John Doe')
+            .find('button')
+            .click();
+        cy.getDialog()
+            .within(() => {
+                cy.contains('Delete transfer entry?');
+                cy.contains('.v-btn', 'No, keep it')
+                    .click();
+            });
+        cy.contains('[role=listitem]', 'Robert Smith → John Doe')
+            .should('exist');
+
+        cy.contains('[role=listitem]', 'Robert Smith → John Doe')
+            .find('button')
+            .click();
+        cy.getDialog()
+            .within(() => {
+                cy.contains('.v-btn', 'Yes, delete')
+                    .click();
+            });
+        cy.contains('[role=listitem]', 'Robert Smith → John Doe')
+            .should('not.exist');
+        cy.contains('[role=listitem]', 'No transfers');
+        cy.reload();
+        cy.contains('[role=listitem]', 'No transfers');
+
+        cy.contains('.v-btn', 'Delete')
+            .click();
+        cy.getDialog()
+            .within(() => {
+                cy.contains('Delete this transfer?');
+                cy.contains('.v-btn', 'No, keep it')
+                    .click();
+            });
+        cy.contains('.headline', 'Transfer to delete');
+
+        cy.contains('.v-btn', 'Delete')
+            .click();
+        cy.getDialog()
+            .within(() => {
+                cy.contains('.v-btn', 'Yes, delete')
+                    .click();
+            });
+        cy.visit('/transfers');
+        cy.contains('No transfers');
+        cy.reload();
+        cy.contains('No transfers');
     });
 });

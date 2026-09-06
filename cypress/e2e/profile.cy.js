@@ -23,7 +23,7 @@ describe('Profile', () => {
             .type(NEW_PASSWORD);
         cy.followLabel('Confirm new password')
             .type(NEW_PASSWORD);
-        cy.contains('button', 'Save')
+        cy.contains('.v-btn', 'Save')
             .click();
 
         cy.contains('[role=status]', 'Password changed successfully!')
@@ -34,7 +34,7 @@ describe('Profile', () => {
 
         cy.getDialog()
             .within(() => {
-                cy.contains('button', 'Yes, logout')
+                cy.contains('.v-btn', 'Yes, logout')
                     .click();
             });
 

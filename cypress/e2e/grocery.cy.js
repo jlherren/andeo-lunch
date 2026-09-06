@@ -83,11 +83,8 @@ function checkboxShould(name, should) {
  */
 function itemShouldNotExist(name) {
     cy.get('[role=listitem] input[type=text]')
-        .each(input => {
-            if (input.val() === name) {
-                cy.wrap(input).should('not.exist');
-            }
-        });
+        .filter((i, element) => element.value === name)
+        .should('have.length', 0);
 }
 
 /**
@@ -138,6 +135,12 @@ describe('Groceries', () => {
         checkboxShould('Coffee', 'not.be.checked');
 
         deleteItem('Bananas');
+        itemShouldNotExist('Bananas');
+
+        // Wait for the delayed refresh and verify the deletion survives a reload.
+        cy.get('input:disabled')
+            .should('not.exist');
+        cy.reload();
         itemShouldNotExist('Bananas');
 
         renameItem('Coffee', 'Coffee beans');

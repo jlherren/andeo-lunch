@@ -52,7 +52,7 @@ describe('Profile', () => {
         cy.contains('label', 'Quick opt-in as vegetarian')
             .click();
 
-        cy.contains('button', 'Save')
+        cy.contains('.v-btn', 'Save')
             .click();
 
         cy.contains('a', 'Default opt-in')
