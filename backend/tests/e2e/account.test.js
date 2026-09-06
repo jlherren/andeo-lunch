@@ -89,6 +89,38 @@ describe('Account', () => {
                 .send('Hi!');
             expect(response.status).to.equal(400);
         });
+
+        it('rate limits attempts per normalized username', async () => {
+            for (let attempt = 0; attempt < 10; attempt += 1) {
+                let username = attempt % 2 === 0 ? 'nosuchuser' : ' NoSuchUser ';
+                let response = await agent.post('/api/account/login').send({username, password: 'wrong'});
+                expect(response.status).to.equal(401);
+            }
+
+            let response = await agent.post('/api/account/login').send({username: 'nosuchuser', password: 'wrong'});
+            expect(response.status).to.equal(429);
+            expect(response.text).to.equal('Too Many Requests');
+            expect(parseInt(response.header['retry-after'], 10)).to.be.greaterThan(0);
+
+            response = await agent.post('/api/account/login').send({username: 'anotheruser', password: 'wrong'});
+            expect(response.status).to.equal(401);
+        });
+
+        it('resets the rate limit after a successful login', async () => {
+            for (let attempt = 0; attempt < 9; attempt += 1) {
+                let response = await agent.post('/api/account/login')
+                    .send({username: 'testuser', password: 'wrong'});
+                expect(response.status).to.equal(401);
+            }
+
+            let response = await agent.post('/api/account/login')
+                .send({username: 'testuser', password: 'abc123'});
+            expect(response.status).to.equal(200);
+
+            response = await agent.post('/api/account/login')
+                .send({username: 'testuser', password: 'wrong'});
+            expect(response.status).to.equal(401);
+        });
     });
 
     describe('account renew route', () => {

@@ -16,8 +16,69 @@ const changePasswordSchema = z.strictObject({
     newPassword: z.string().min(1),
 });
 
-async function login(ctx: Context): Promise<void> {
+const LOGIN_ATTEMPT_CAPACITY = 10;
+const LOGIN_ATTEMPT_REFILL_MS = 60_000;
+
+type LoginAttemptBucket = {
+    tokens: number;
+    updatedAt: number;
+};
+
+type LoginRateLimiter = {
+    consume: (username: string) => number|null;
+    reset: (username: string) => void;
+};
+
+function createLoginRateLimiter(): LoginRateLimiter {
+    let buckets = new Map<string, LoginAttemptBucket>();
+    let nextCleanup = Date.now() + LOGIN_ATTEMPT_CAPACITY * LOGIN_ATTEMPT_REFILL_MS;
+
+    function consume(username: string): number|null {
+        let now = Date.now();
+        let usernameKey = username.trim().toLowerCase();
+
+        if (now >= nextCleanup) {
+            for (let [key, bucket] of buckets) {
+                if (now - bucket.updatedAt >= LOGIN_ATTEMPT_CAPACITY * LOGIN_ATTEMPT_REFILL_MS) {
+                    buckets.delete(key);
+                }
+            }
+            nextCleanup = now + LOGIN_ATTEMPT_CAPACITY * LOGIN_ATTEMPT_REFILL_MS;
+        }
+
+        let bucket = buckets.get(usernameKey) ?? {tokens: LOGIN_ATTEMPT_CAPACITY, updatedAt: now};
+        bucket.tokens = Math.min(
+            LOGIN_ATTEMPT_CAPACITY,
+            bucket.tokens + (now - bucket.updatedAt) / LOGIN_ATTEMPT_REFILL_MS,
+        );
+        bucket.updatedAt = now;
+        buckets.set(usernameKey, bucket);
+
+        if (bucket.tokens < 1) {
+            return Math.ceil((1 - bucket.tokens) * LOGIN_ATTEMPT_REFILL_MS / 1000);
+        }
+        bucket.tokens -= 1;
+        return null;
+    }
+
+    function reset(username: string): void {
+        buckets.delete(username.trim().toLowerCase());
+    }
+
+    return {consume, reset};
+}
+
+async function login(ctx: Context, rateLimiter: LoginRateLimiter): Promise<void> {
     let requestBody = RouteUtils.validateBody(ctx.request, loginSchema);
+
+    let retryAfter = rateLimiter.consume(requestBody.username);
+    if (retryAfter !== null) {
+        ctx.set('Retry-After', retryAfter.toString());
+        ctx.status = 429;
+        ctx.body = 'Too Many Requests';
+        return;
+    }
+
     let user = await User.findOne(
         {
             where:   {username: requestBody.username},
@@ -29,6 +90,7 @@ async function login(ctx: Context): Promise<void> {
             let config = ctx.andeoLunch.getConfig();
             let secret = await AuthUtils.getAuthSecret();
             let token = user.generateToken(secret, {expiresIn: config.tokenExpiry});
+            rateLimiter.reset(requestBody.username);
             ctx.body = {
                 token,
                 userId:      user.id,
@@ -122,7 +184,8 @@ async function password(ctx: Context): Promise<void> {
 }
 
 export default function register(router: Router): void {
-    router.post('/account/login', login);
+    let loginRateLimiter = createLoginRateLimiter();
+    router.post('/account/login', (ctx: Context): Promise<void> => login(ctx, loginRateLimiter));
     router.post('/account/renew', renew);
     router.get('/account/check', check);
     router.post('/account/password', password);
