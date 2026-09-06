@@ -10,7 +10,7 @@
         "cypress"
     ],
     "engines": {
-        "node": ">= 20.17.0"
+        "node": ">= 20.19.0"
     },
     "scripts": {
         "check": "npm run check:app && npm run check:backend && npm run check:cypress",

@@ -4,7 +4,7 @@
     "private": true,
     "type": "module",
     "engines": {
-        "node": ">= 20.17.0"
+        "node": ">= 20.19.0"
     },
     "scripts": {
         "serve": "node bin/andeoLunch",
@@ -54,7 +54,7 @@
         "eslint": "~8.57.1",
         "eslint-plugin-jsdoc": "~54.7.0",
         "eslint-plugin-mocha": "~10.5.0",
-        "mocha": "~11.7.5",
+        "mocha": "~12.0.0",
         "nodemon": "~3.1.14",
         "sqlite3": "~6.0.1",
         "supertest": "~7.2.2",
