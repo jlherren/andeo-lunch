@@ -19,7 +19,7 @@
         "check:cypress": "npm run check -w andeo-lunch-cypress"
     },
     "allowScripts": {
-        "core-js@3.49.0": true,
+        "core-js@3.50.0": true,
         "cypress@15.18.1": true,
         "sqlite3@5.1.7": true,
         "vue-demi@0.14.10": true,

@@ -17,16 +17,16 @@
     },
     "dependencies": {
         "@babel/core": "~7.29.0",
-        "@fontsource/roboto": "~5.2.10",
+        "@fontsource/roboto": "~5.3.0",
         "@mdi/js": "~7.4.47",
-        "core-js": "~3.49.0",
-        "pinia": "~2.2.8",
+        "core-js": "~3.50.0",
+        "pinia": "~2.3.1",
         "randombytes": "~2.1.0",
         "register-service-worker": "~1.7.2",
         "vue": "~2.7.16",
         "vue-router": "~3.6.5",
         "vuetify": "~2.7.2",
-        "webpack": "~5.108.0"
+        "webpack": "~5.109.0"
     },
     "devDependencies": {
         "@babel/eslint-parser": "~7.29.0",
@@ -37,9 +37,9 @@
         "@vue/eslint-config-standard": "~8.0.1",
         "eslint": "~8.57.1",
         "eslint-plugin-import": "~2.32.0",
-        "eslint-plugin-jsdoc": "~54.1.1",
+        "eslint-plugin-jsdoc": "~54.7.0",
         "eslint-plugin-node": "~11.1.0",
-        "eslint-plugin-promise": "~7.2.1",
+        "eslint-plugin-promise": "~7.3.0",
         "eslint-plugin-standard": "~5.0.0",
         "eslint-plugin-vue": "~9.33.0",
         "sass": "~1.32.13",
