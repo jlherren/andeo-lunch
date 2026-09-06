@@ -60,6 +60,11 @@
     export default {
         name: 'ParticipationEdit',
 
+        emits: [
+            'close',
+            'saved',
+        ],
+
         components: {
             NumberField,
             ParticipationTypeWidget,

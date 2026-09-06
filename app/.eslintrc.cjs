@@ -406,6 +406,7 @@ module.exports = {
         ],
         'vue/multi-word-component-names':    'off',
         'vue/no-v-text-v-html-on-component': 'off',
+        'vue/require-explicit-emits':        'warn',
     },
     overrides:     [
         {

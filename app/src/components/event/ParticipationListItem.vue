@@ -41,6 +41,8 @@
     export default {
         name: 'ParticipationListItem',
 
+        emits: ['saved'],
+
         components: {
             Balance,
             ParticipationEdit,

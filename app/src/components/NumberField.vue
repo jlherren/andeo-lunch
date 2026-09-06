@@ -37,6 +37,12 @@
             event: 'update:modelValue',
         },
 
+        emits: [
+            'blur',
+            'change',
+            'update:modelValue',
+        ],
+
         inject: [
             'form',
         ],

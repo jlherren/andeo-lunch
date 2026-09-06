@@ -23,6 +23,8 @@
             event: 'update:modelValue',
         },
 
+        emits: ['update:modelValue'],
+
         props: {
             modelValue: {
                 type:     String,

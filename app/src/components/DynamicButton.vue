@@ -11,6 +11,8 @@
     export default {
         name: 'DynamicButton',
 
+        emits: ['click'],
+
         props: {
             label:    String,
             icon:     String,

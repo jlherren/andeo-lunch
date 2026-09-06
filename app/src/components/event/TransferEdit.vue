@@ -54,6 +54,8 @@
     export default {
         name: 'TransferEdit',
 
+        emits: ['close'],
+
         props: {
             event: Object,
         },
