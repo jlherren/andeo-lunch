@@ -78,7 +78,6 @@
     import NumberField from '@/components/NumberField';
     import ShyProgress from '../../components/ShyProgress';
     import TheAppBar from '../../components/TheAppBar';
-    import Vue from 'vue';
     import {mapState} from 'pinia';
     import {useStore} from '@/store';
 
@@ -233,11 +232,13 @@
             },
 
             toggleHelper(user) {
+                let helpers = {...this.helpers};
                 if (user.id in this.helpers) {
-                    Vue.delete(this.helpers, user.id);
+                    delete helpers[user.id];
                 } else {
-                    Vue.set(this.helpers, user.id, null);
+                    helpers[user.id] = null;
                 }
+                this.helpers = helpers;
             },
 
             async suggest() {

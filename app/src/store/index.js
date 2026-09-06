@@ -1,7 +1,6 @@
 import Backend from '@/store/backend';
 import Cache from '@/store/cache';
 import PackageJson from '../../../package.json';
-import Vue from 'vue';
 import {defineStore} from 'pinia';
 import {getDeviceId} from '@/utils/device';
 
@@ -185,7 +184,7 @@ export let useStore = defineStore('main', {
             await Cache.ifNotFresh('user', userId, 10000, async () => {
                 let response = await Backend.get(`/users/${userId}`);
                 let user = response.user;
-                Vue.set(this.usersById, user.id, user);
+                this.usersById = {...this.usersById, [user.id]: user};
             });
         },
 
@@ -200,7 +199,7 @@ export let useStore = defineStore('main', {
                     users[user.id] = user;
                     Cache.validate('user', user.id);
                 }
-                Vue.set(this, 'usersById', users);
+                this.usersById = users;
                 this._visibleUserIds = response.users
                     .filter(user => !user.hidden)
                     .map(user => user.id);
@@ -226,15 +225,19 @@ export let useStore = defineStore('main', {
             let paramsString = urlParams.toString();
             return Cache.ifNotFresh('events', paramsString, 10000, async () => {
                 let response = await Backend.get(`/events?${paramsString}`);
+                let events = {...this._events};
                 for (let event of response.events) {
                     event.date = new Date(event.date);
-                    Vue.set(this._events, event.id, event);
+                    events[event.id] = event;
                 }
+                this._events = events;
                 if (response.participations) {
+                    let singleParticipations = {...this._singleParticipations};
                     for (let participation of response.participations) {
                         let key = `${participation.eventId}/${participation.userId}`;
-                        Vue.set(this._singleParticipations, key, participation);
+                        singleParticipations[key] = participation;
                     }
+                    this._singleParticipations = singleParticipations;
                 }
             });
         },
@@ -244,7 +247,7 @@ export let useStore = defineStore('main', {
                 let response = await Backend.get(`/events/${eventId}`);
                 let event = response.event;
                 event.date = new Date(event.date);
-                Vue.set(this._events, event.id, event);
+                this._events = {...this._events, [event.id]: event};
             });
         },
 
@@ -252,13 +255,15 @@ export let useStore = defineStore('main', {
             await Cache.ifNotFresh('participations', eventId, 10000, async () => {
                 let response = await Backend.get(`/events/${eventId}/participations`);
                 let participations = response.participations;
-                Vue.set(this._participations, eventId, participations);
+                this._participations = {...this._participations, [eventId]: participations};
 
+                let singleParticipations = {...this._singleParticipations};
                 for (let participation of participations) {
                     let key = `${eventId}/${participation.userId}`;
                     Cache.validate('participation', key);
-                    Vue.set(this._singleParticipations, key, participation);
+                    singleParticipations[key] = participation;
                 }
+                this._singleParticipations = singleParticipations;
             });
 
             // Fetch all users, not just the ones from the participations
@@ -292,7 +297,7 @@ export let useStore = defineStore('main', {
             await Cache.ifNotFresh('transfers', eventId, 10000, async () => {
                 let response = await Backend.get(`/events/${eventId}/transfers`);
                 let transfers = response.transfers;
-                Vue.set(this.transfersById, eventId, transfers);
+                this.transfersById = {...this.transfersById, [eventId]: transfers};
             });
 
             // Fetch all users, not just the ones from the transfers
@@ -356,7 +361,9 @@ export let useStore = defineStore('main', {
         async deleteEvent(eventId) {
             let response = await Backend.delete(`/events/${eventId}`);
             if (response.status === 204) {
-                Vue.delete(this._events, eventId);
+                let events = {...this._events};
+                delete events[eventId];
+                this._events = events;
                 Cache.invalidate('event', eventId);
                 Cache.invalidate('transfers', eventId);
                 Cache.invalidate('events');
@@ -381,7 +388,7 @@ export let useStore = defineStore('main', {
                 for (let transaction of transactions) {
                     transaction.date = new Date(transaction.date);
                 }
-                Vue.set(this.transactionsById, userId, transactions);
+                this.transactionsById = {...this.transactionsById, [userId]: transactions};
             });
         },
 
@@ -432,21 +439,21 @@ export let useStore = defineStore('main', {
                 if (value?.match(/^-?(?:\d+(?:\.\d*)?|\.\d+)$/u)) {
                     value = parseFloat(value);
                 }
-                Vue.set(this._configurationsByKey, key, value);
+                this._configurationsByKey = {...this._configurationsByKey, [key]: value};
             });
         },
 
         fetchUserPaymentInfo(userId) {
             return Cache.ifNotFresh('paymentInfo', userId, 60000, async () => {
                 let response = await Backend.get(`/users/${userId}/payment-info`);
-                Vue.set(this.paymentInfosById, userId, response.paymentInfo);
+                this.paymentInfosById = {...this.paymentInfosById, [userId]: response.paymentInfo};
             });
         },
 
         fetchAbsences(userId) {
             return Cache.ifNotFresh('absences', userId, 60000, async () => {
                 let response = await Backend.get(`/users/${userId}/absences`);
-                Vue.set(this._absences, userId, response.absences);
+                this._absences = {...this._absences, [userId]: response.absences};
             });
         },
 
@@ -459,7 +466,9 @@ export let useStore = defineStore('main', {
         async deleteAbsence({userId, absenceId}) {
             let response = await Backend.delete(`/users/${userId}/absences/${absenceId}`);
             if (response.status === 204) {
-                Vue.delete(this._absences, absenceId);
+                let absences = {...this._absences};
+                delete absences[absenceId];
+                this._absences = absences;
                 Cache.invalidate('absences', userId);
             }
             await this.fetchAbsences(userId);

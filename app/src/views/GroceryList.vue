@@ -72,7 +72,6 @@
             return {
                 loading:      true,
                 busyNewItem:  true,
-                // TODO: For Vue 3 this can be replaced by new Set() and usages of Vue.set() and Vue.delete() removed.
                 busyItems:    {},
                 newItemLabel: '',
             };
@@ -141,12 +140,12 @@
                 // Check if an identical item exists already
                 let existing = this.groceries.find(grocery => grocery.label === label && grocery.checked);
                 if (existing) {
-                    Vue.set(this.busyItems, existing.id, true);
+                    this.markItemBusy(existing.id);
                     await this.$store().saveGrocery({
                         id:      existing.id,
                         checked: false,
                     });
-                    Vue.delete(this.busyItems, existing.id);
+                    this.clearItemBusy(existing.id);
                 } else {
                     this.busyNewItem = true;
                     await this.$store().saveGrocery({
@@ -158,7 +157,7 @@
             },
 
             async onChangeChecked(grocery) {
-                Vue.set(this.busyItems, grocery.id, true);
+                this.markItemBusy(grocery.id);
                 await this.$store().saveGrocery({
                     id:            grocery.id,
                     checked:       grocery.checked,
@@ -170,23 +169,33 @@
             },
 
             async onChangeLabel(grocery) {
-                Vue.set(this.busyItems, grocery.id, true);
+                this.markItemBusy(grocery.id);
                 await this.$store().saveGrocery({
                     id:            grocery.id,
                     label:         grocery.label,
                     noUpdateOrder: true,
                 });
-                Vue.delete(this.busyItems, grocery.id);
+                this.clearItemBusy(grocery.id);
             },
 
             async deleteItem(grocery) {
-                Vue.set(this.busyItems, grocery.id, true);
+                this.markItemBusy(grocery.id);
                 await this.$store().deleteGrocery({
                     id:      grocery.id,
                     refresh: false,
                 });
                 this.removeBusyOnRefresh[grocery.id] = true;
                 this.resetTimer();
+            },
+
+            markItemBusy(id) {
+                this.busyItems = {...this.busyItems, [id]: true};
+            },
+
+            clearItemBusy(id) {
+                let busyItems = {...this.busyItems};
+                delete busyItems[id];
+                this.busyItems = busyItems;
             },
 
             cancelTimer() {
@@ -200,9 +209,11 @@
 
                 this.reloadTimer = setTimeout(async () => {
                     await this.$store().fetchGroceries();
+                    let busyItems = {...this.busyItems};
                     for (let id of Object.keys(this.removeBusyOnRefresh)) {
-                        Vue.delete(this.busyItems, id);
+                        delete busyItems[id];
                     }
+                    this.busyItems = busyItems;
                     this.removeBusyOnRefresh = {};
                 }, 1000);
             },
