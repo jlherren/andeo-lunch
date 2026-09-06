@@ -10,7 +10,7 @@
         "cypress"
     ],
     "engines": {
-        "node": ">= 18.18.0"
+        "node": ">= 20.17.0"
     },
     "scripts": {
         "check": "npm run check:app && npm run check:backend && npm run check:cypress",
@@ -21,7 +21,7 @@
     "allowScripts": {
         "core-js@3.50.0": true,
         "cypress@15.18.1": true,
-        "sqlite3@5.1.7": true,
+        "sqlite3@6.0.1": true,
         "vue-demi@0.14.10": true,
         "yorkie@2.0.0": true
     }
