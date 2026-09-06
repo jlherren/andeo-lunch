@@ -18,7 +18,7 @@
 
                 <v-text-field type="password" v-model="newPassword" :label="`New password for ${name}`"
                               :rules="newRules"
-                              :append-icon="$icons.password"/>
+                              :append-icon="icons.password"/>
 
                 <p class="text-body-1 mt-4">
                     As a safety measure, please enter your own password:
@@ -26,7 +26,7 @@
 
                 <v-text-field type="password" v-model="ownPassword" label="Own password"
                               :rules="ownRules"
-                              :append-icon="$icons.password"/>
+                              :append-icon="icons.password"/>
 
                 <!-- Button is to make it submittable by pressing enter -->
                 <v-btn type="submit" :disabled="isBusy" v-show="false">Reset password</v-btn>
@@ -38,8 +38,13 @@
 <script>
     import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
+    import {icons} from '@/plugins/icons';
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'UserResetPassword',
 
         components: {

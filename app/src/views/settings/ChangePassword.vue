@@ -19,15 +19,15 @@
             <v-form ref="form" :disabled="isBusy" @submit.prevent="save()">
                 <v-text-field type="password" v-model="oldPassword" label="Current password" autofocus
                               :rules="oldRules"
-                              :append-icon="$icons.password"/>
+                              :append-icon="icons.password"/>
 
                 <v-text-field type="password" v-model="newPassword" label="New password"
                               :rules="newRules"
-                              :append-icon="$icons.password"/>
+                              :append-icon="icons.password"/>
 
                 <v-text-field type="password" v-model="confirmPassword" label="Confirm new password"
                               :rules="confirmRules"
-                              :append-icon="$icons.password"/>
+                              :append-icon="icons.password"/>
 
                 <!-- Button is to make it submittable by pressing enter -->
                 <v-btn type="submit" :disabled="isBusy" v-show="false">Save</v-btn>
@@ -39,8 +39,13 @@
 <script>
     import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
+    import {icons} from '@/plugins/icons';
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'ChangePassword',
 
         components: {

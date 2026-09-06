@@ -4,7 +4,7 @@
             Absences
 
             <template #buttons>
-                <dynamic-button icon="$icons.plus" label="Add" @click="addModal = true" :disabled="isBusy"/>
+                <dynamic-button icon="icons.plus" label="Add" @click="addModal = true" :disabled="isBusy"/>
             </template>
         </the-app-bar>
 
@@ -17,7 +17,7 @@
                 However, it will never affect already existing events.
             </p>
 
-            <v-banner elevation="2" single-line :icon="$icons.information" v-if="absences && absences.length === 0">
+            <v-banner elevation="2" single-line :icon="icons.information" v-if="absences && absences.length === 0">
                 You have no absences
             </v-banner>
         </v-container>
@@ -25,7 +25,7 @@
         <v-list v-if="absences != null && absences.length">
             <v-list-item v-for="absence of absences" :key="absence.id" :disabled="absence.past">
                 <v-list-item-icon>
-                    <v-icon>{{ $icons.absence }}</v-icon>
+                    <v-icon>{{ icons.absence }}</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                     <v-list-item-title>
@@ -36,7 +36,7 @@
                 <v-list-item-action>
                     <v-btn icon @click="openConfirmDelete(absence.id)" :disabled="isBusy">
                         <v-icon>
-                            {{ $icons.delete }}
+                            {{ icons.delete }}
                         </v-icon>
                     </v-btn>
                 </v-list-item-action>
@@ -92,8 +92,13 @@
     import DynamicButton from '@/components/DynamicButton';
     import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
+    import {icons} from '@/plugins/icons';
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'Absences',
 
         components: {

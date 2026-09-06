@@ -14,13 +14,13 @@
 
                 <v-row>
                     <v-col cols="6">
-                        <number-field v-model="pointsCredited" label="Points credited" :icon="$icons.points"/>
+                        <number-field v-model="pointsCredited" label="Points credited" :icon="icons.points"/>
                     </v-col>
                     <v-col cols="6">
                         <v-text-field v-model="moneyCredited" type="number" min="0"
-                                      label="Money credited" :append-icon="$icons.money"/>
+                                      label="Money credited" :append-icon="icons.money"/>
                         <number-field v-model="moneyFactor" :min="0" :step="5" v-if="event.type === 'special'"
-                                      label="Money factor" suffix="%" :icon="$icons.money" :disabled="type === 'opt-out'"/>
+                                      label="Money factor" suffix="%" :icon="icons.money" :disabled="type === 'opt-out'"/>
                     </v-col>
                 </v-row>
 
@@ -56,8 +56,13 @@
     import NumberField from '@/components/NumberField';
     import {OPT_IN_PARTICIPATIONS} from '@/utils/participationUtils';
     import ParticipationTypeWidget from '@/components/event/ParticipationTypeWidget';
+    import {icons} from '@/plugins/icons';
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'ParticipationEdit',
 
         emits: [

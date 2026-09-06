@@ -6,11 +6,11 @@
             <v-form v-model="formValid" :disabled="isBusy" @submit.prevent="login">
                 <v-text-field v-model="username" type="text" autocomplete="username" required
                               :rules="requiredRule" autofocus label="Username"
-                              :append-icon="$icons.account"
+                              :append-icon="icons.account"
                 />
                 <v-text-field v-model="password" type="password" autocomplete="current-password" required
                               :rules="requiredRule" label="Password"
-                              :append-icon="$icons.password"
+                              :append-icon="icons.password"
                 />
 
                 <v-btn type="submit" :disabled="!formValid || isBusy" color="primary" block>
@@ -26,7 +26,13 @@
 </template>
 
 <script>
+    import {icons} from '@/plugins/icons';
+
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'Login',
 
         data() {

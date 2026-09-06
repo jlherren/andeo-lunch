@@ -5,7 +5,7 @@
             <template v-if="event" #buttons>
                 <dynamic-button
                     label="Grid"
-                    :icon="$icons.grid"
+                    :icon="icons.grid"
                     :disabled="isBusy || !event.canEdit"
                     :to="`/events/${eventId}/grid`"
                     class="hidden-xs-only"
@@ -13,13 +13,13 @@
                 />
                 <dynamic-button
                     label="Edit"
-                    :icon="$icons.edit"
+                    :icon="icons.edit"
                     :disabled="isBusy || !event.canEdit"
                     :to="`/events/${eventId}/edit`"
                 />
                 <dynamic-button
                     label="Delete"
-                    :icon="$icons.delete"
+                    :icon="icons.delete"
                     :disabled="isBusy || !event.canEdit"
                     @click="openConfirmDelete"
                 />
@@ -42,7 +42,7 @@
 
                     <p v-if="event.participationFlatRate !== null" class="text--secondary">
                         Participation flat-rate: {{ event.participationFlatRate }}
-                        <v-icon small>{{ $icons.points }}</v-icon>
+                        <v-icon small>{{ icons.points }}</v-icon>
                     </p>
 
                     <p v-if="!event.canEdit" class="text--secondary">
@@ -54,11 +54,11 @@
             <v-container v-if="commentHtml !== ''" class="comment" v-html="commentHtml"/>
 
             <v-container v-if="participationsAreLoaded && event.type === 'lunch' && ownParticipationMissing && event.canEdit">
-                <v-banner elevation="2" :icon="$icons.undecided" icon-color="red">
+                <v-banner elevation="2" :icon="icons.undecided" icon-color="red">
                     Make up your mind!
                     <template #actions>
                         <v-btn color="primary" class="ml-1" :disabled="isBusy" @click="optOut">
-                            <v-icon small left>{{ $icons.optOut }}</v-icon>
+                            <v-icon small left>{{ icons.optOut }}</v-icon>
                             Opt-out
                         </v-btn>
                         <v-btn color="primary" :disabled="isBusy" @click="optIn">
@@ -70,10 +70,10 @@
             </v-container>
 
             <v-container v-if="pointsAreMismatched">
-                <v-banner elevation="2" single-line :icon="$icons.alert" icon-color="red">
+                <v-banner elevation="2" single-line :icon="icons.alert" icon-color="red">
                     Lunch costs
-                    {{ event.costs.points }} <v-icon small>{{ $icons.points }}</v-icon>, but
-                    {{ sumOfPointsCredited }} <v-icon small>{{ $icons.points }}</v-icon> have been distributed.
+                    {{ event.costs.points }} <v-icon small>{{ icons.points }}</v-icon>, but
+                    {{ sumOfPointsCredited }} <v-icon small>{{ icons.points }}</v-icon> have been distributed.
                 </v-banner>
             </v-container>
 
@@ -118,6 +118,7 @@
     import ParticipationSummary from '@/components/event/ParticipationSummary';
     import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
+    import {icons} from '@/plugins/icons';
 
     const PARTICIPATION_TYPE_TO_ORDER = {
         // order 0 is for own participation
@@ -129,6 +130,10 @@
     };
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'EventDetail',
 
         components: {
@@ -279,7 +284,7 @@
             },
 
             optInIcon() {
-                return this.$icons[this.$store().settings.quickOptIn];
+                return this.icons[this.$store().settings.quickOptIn];
             },
 
             commentHtml() {

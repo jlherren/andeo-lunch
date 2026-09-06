@@ -18,10 +18,10 @@
     >
         <template #append>
             <v-btn small icon @click="addPoints(-step)" :disabled="min !== undefined && modelValue <= min" v-if="!isDisabled && !readonly">
-                <v-icon small>{{ $icons.minus }}</v-icon>
+                <v-icon small>{{ icons.minus }}</v-icon>
             </v-btn>
             <v-btn small icon @click="addPoints(step)" :disabled="max !== undefined && modelValue >= max" v-if="!isDisabled && !readonly">
-                <v-icon small>{{ $icons.plus }}</v-icon>
+                <v-icon small>{{ icons.plus }}</v-icon>
             </v-btn>
             <v-icon>{{ icon }}</v-icon>
         </template>
@@ -29,7 +29,13 @@
 </template>
 
 <script>
+    import {icons} from '@/plugins/icons';
+
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'NumberField',
 
         model: {

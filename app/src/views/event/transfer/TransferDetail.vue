@@ -3,8 +3,8 @@
         <the-app-bar sub-page :to="`/transfers/${isoDate}`">
             {{ name }}
             <template v-if="event" #buttons>
-                <dynamic-button label="Edit" :icon="$icons.edit" disabled/>
-                <dynamic-button label="Delete" :icon="$icons.delete" :disabled="isBusy || !event.canEdit" @click="openDeleteEventDialog"/>
+                <dynamic-button label="Edit" :icon="icons.edit" disabled/>
+                <dynamic-button label="Delete" :icon="icons.delete" :disabled="isBusy || !event.canEdit" @click="openDeleteEventDialog"/>
             </template>
         </the-app-bar>
 
@@ -39,7 +39,7 @@
                         />
                         <span v-if="transfer.unspent" class="ml-4">
                             <v-icon small color="red">
-                                {{ $icons.alert }}
+                                {{ icons.alert }}
                             </v-icon>
                             Amount is unspent
                         </span>
@@ -50,7 +50,7 @@
                 </v-list-item-content>
                 <v-list-item-action v-if="!event.immutable">
                     <v-btn icon @click="openDeleteTransferDialog(transfer.id)" :disabled="!event.canEdit">
-                        <v-icon>{{ $icons.delete }}</v-icon>
+                        <v-icon>{{ icons.delete }}</v-icon>
                     </v-btn>
                 </v-list-item-action>
             </v-list-item>
@@ -67,7 +67,7 @@
 
             <v-list-item v-else-if="!event.immutable" @click="openAddTransferDialog" :disabled="isBusy || !event.canEdit">
                 <v-list-item-icon>
-                    <v-icon>{{ $icons.plus }}</v-icon>
+                    <v-icon>{{ icons.plus }}</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                     <v-list-item-title>
@@ -120,8 +120,13 @@
     import TheAppBar from '@/components/TheAppBar.vue';
     import TransferEdit from '@/components/event/TransferEdit.vue';
     import Vue from 'vue';
+    import {icons} from '@/plugins/icons';
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'TransferDetail',
 
         components: {
@@ -194,7 +199,7 @@
                         ...transfer,
                         senderName:    this.getDisplayName(transfer.senderId),
                         recipientName: this.getDisplayName(transfer.recipientId),
-                        icon:          currency === 'points' ? this.$icons.points : this.$icons.money,
+                        icon:          currency === 'points' ? this.icons.points : this.icons.money,
                         isShare,
                         actualAmount,
                         unspent:       transfer.recipientId === -1 && !totalShares[currency],

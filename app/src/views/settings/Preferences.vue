@@ -7,7 +7,7 @@
         <v-list>
             <v-list-item to="/preferences/default-opt-in">
                 <v-list-item-icon>
-                    <v-icon>{{ $icons.checkboxMultipleMarked }}</v-icon>
+                    <v-icon>{{ icons.checkboxMultipleMarked }}</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                     <v-list-item-title>
@@ -18,13 +18,13 @@
                     </v-list-item-subtitle>
                 </v-list-item-content>
                 <v-list-item-action>
-                    <v-icon>{{ $icons.chevronRight }}</v-icon>
+                    <v-icon>{{ icons.chevronRight }}</v-icon>
                 </v-list-item-action>
             </v-list-item>
 
             <v-list-item to="/preferences/absences">
                 <v-list-item-icon>
-                    <v-icon>{{ $icons.absence }}</v-icon>
+                    <v-icon>{{ icons.absence }}</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                     <v-list-item-title>
@@ -32,31 +32,31 @@
                     </v-list-item-title>
                 </v-list-item-content>
                 <v-list-item-action>
-                    <v-icon>{{ $icons.chevronRight }}</v-icon>
+                    <v-icon>{{ icons.chevronRight }}</v-icon>
                 </v-list-item-action>
             </v-list-item>
 
             <v-list-item>
                 <v-list-item-icon>
-                    <v-icon>{{ $icons.lunch }}</v-icon>
+                    <v-icon>{{ icons.lunch }}</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                     <v-list-item-title>
                         Dietary information
                     </v-list-item-title>
                     <v-list-item-subtitle>
-                        <v-icon small>{{ $icons.alert }}</v-icon>
+                        <v-icon small>{{ icons.alert }}</v-icon>
                         Not implemented yet
                     </v-list-item-subtitle>
                 </v-list-item-content>
                 <v-list-item-action>
-                    <v-icon>{{ $icons.chevronRight }}</v-icon>
+                    <v-icon>{{ icons.chevronRight }}</v-icon>
                 </v-list-item-action>
             </v-list-item>
 
             <v-list-item>
                 <v-list-item-icon>
-                    <v-icon>{{ $icons.darkMode }}</v-icon>
+                    <v-icon>{{ icons.darkMode }}</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                     <v-list-item-title>
@@ -74,8 +74,13 @@
 <script>
     import TheAppBar from '@/components/TheAppBar';
     import {WEEKDAYS} from '@/utils/dateUtils';
+    import {icons} from '@/plugins/icons';
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'Preferences',
 
         components: {

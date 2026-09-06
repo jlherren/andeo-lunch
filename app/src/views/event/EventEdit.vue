@@ -4,7 +4,7 @@
             {{ title }}
 
             <template #buttons>
-                <dynamic-button v-if="isNew && type === 'lunch'" label="I feel lucky" :icon="$icons.suggest" @click="suggest"/>
+                <dynamic-button v-if="isNew && type === 'lunch'" label="I feel lucky" :icon="icons.suggest" @click="suggest"/>
                 <v-btn :disabled="isBusy" color="primary" @click="save">Save</v-btn>
             </template>
         </the-app-bar>
@@ -14,12 +14,12 @@
         <v-container>
             <v-form :disabled="isBusy" @submit.prevent="save()" ref="form">
                 <v-text-field v-model="name" :rules="nameRules" label="Name" autofocus required
-                              :append-icon="$icons.label"/>
+                              :append-icon="icons.label"/>
                 <al-date-picker v-model="date" required :disabled="!isNew"/>
 
                 <v-row>
                     <v-col cols="6">
-                        <number-field v-model="points" label="Points" :min="0" :icon="$icons.points" v-if="type !== 'label'"/>
+                        <number-field v-model="points" label="Points" :min="0" :icon="icons.points" v-if="type !== 'label'"/>
                     </v-col>
                     <v-col cols="6">
                         <number-field v-model="vegetarianFactor" label="Vegetarian money factor" suffix="%"
@@ -38,7 +38,7 @@
                     </p>
                     <v-btn v-for="user of visibleUsers" :key="user.id" :value="user.id" :disabled="isBusy || points === 0"
                            :input-value="isHelper(user)" @click="toggleHelper(user)" small>
-                        <v-icon left :disabled="!isHelper(user)">{{ $icons.points }}</v-icon>
+                        <v-icon left :disabled="!isHelper(user)">{{ icons.points }}</v-icon>
                         {{ user.name }}
                     </v-btn>
                 </div>
@@ -54,14 +54,14 @@
                     </v-col>
                     <v-col cols="6">
                         <v-text-field type="number" v-model="participationFlatRate" label="Participation costs" class="no-spinner"
-                                      :append-icon="$icons.points" :disabled="!useParticipationFlatRate"/>
+                                      :append-icon="icons.points" :disabled="!useParticipationFlatRate"/>
                     </v-col>
                 </v-row>
 
                 <v-text-field v-model="participationFee" label="Participation fee"
                               hint="Each participant will be charged this fixed amount of money"
                               :min="0" v-if="type !== 'label'"
-                              :append-icon="$icons.money"
+                              :append-icon="icons.money"
                 />
 
                 <!-- Button is to make it submittable by pressing enter -->
@@ -78,10 +78,15 @@
     import NumberField from '@/components/NumberField';
     import ShyProgress from '../../components/ShyProgress';
     import TheAppBar from '../../components/TheAppBar';
+    import {icons} from '@/plugins/icons';
     import {mapState} from 'pinia';
     import {useStore} from '@/store';
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'EventEdit',
 
         components: {

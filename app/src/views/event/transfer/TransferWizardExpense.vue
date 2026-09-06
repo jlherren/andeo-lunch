@@ -19,18 +19,18 @@
                 <v-select v-model="sender" label="At the expense of"
                           :items="visibleUsers" item-text="name" item-value="id"
                           :rules="senderRules"
-                          :append-icon="$icons.account"/>
+                          :append-icon="icons.account"/>
 
                 <v-text-field type="number" v-model="amount" label="Amount in CHF"
                               min="0" :rules="amountRules"
-                              class="no-spinner" :append-icon="$icons.money"/>
+                              class="no-spinner" :append-icon="icons.money"/>
 
                 <v-text-field v-model="reason" label="Reason"
                               :rules="reasonRules"
-                              :append-icon="$icons.label"/>
+                              :append-icon="icons.label"/>
 
                 <v-select label="Related event" disabled
-                          :append-icon="$icons.lunch"
+                          :append-icon="icons.lunch"
                 />
 
                 <!-- Button is to make it submittable by pressing enter -->
@@ -43,10 +43,15 @@
 <script>
     import ShyProgress from '@/components/ShyProgress.vue';
     import TheAppBar from '@/components/TheAppBar.vue';
+    import {icons} from '@/plugins/icons';
     import {mapState} from 'pinia';
     import {useStore} from '@/store';
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'TransferWizardSimple',
 
         components: {

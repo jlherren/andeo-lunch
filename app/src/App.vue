@@ -39,10 +39,15 @@
     import Loading from '@/views/Loading';
     import Login from '@/views/Login';
     import SnowOverlay from '@/components/SnowOverlay.vue';
+    import {icons} from '@/plugins/icons';
     import {mapState} from 'pinia';
     import {useStore} from '@/store';
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'App',
 
         components: {
@@ -57,27 +62,27 @@
                     {
                         url:   '/',
                         title: 'Home',
-                        icon:  this.$icons.home,
+                        icon:  this.icons.home,
                     },
                     {
                         url:   '/calendar',
                         title: 'Calendar',
-                        icon:  this.$icons.calendar,
+                        icon:  this.icons.calendar,
                     },
                     // {
                     //     url:   '/menus',
                     //     title: 'Menus',
-                    //     icon:  this.$icons.menu,
+                    //     icon:  this.icons.menu,
                     // },
                     {
                         url:   '/transfers',
                         title: 'Transfers',
-                        icon:  this.$icons.transfers,
+                        icon:  this.icons.transfers,
                     },
                     {
                         url:   '/stats',
                         title: 'Stats',
-                        icon:  this.$icons.stats,
+                        icon:  this.icons.stats,
                     },
                 ],
                 drawerOpen:      false,

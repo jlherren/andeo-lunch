@@ -1,7 +1,6 @@
 import '@/registerServiceWorker';
 import {PiniaVuePlugin, createPinia} from 'pinia';
 import App from '@/App.vue';
-import IconPlugin from '@/plugins/icons';
 import StorePlugin from '@/plugins/store';
 import Vue from 'vue';
 import router from '@/router';
@@ -9,7 +8,6 @@ import vuetify from '@/plugins/vuetify';
 
 Vue.config.productionTip = false;
 
-Vue.use(IconPlugin);
 Vue.use(PiniaVuePlugin);
 Vue.use(StorePlugin);
 

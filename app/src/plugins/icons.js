@@ -65,9 +65,3 @@ export const icons = {
     update:         mdi.mdiCellphoneArrowDown,
     vegetarian:     mdi.mdiFoodApple,
 };
-
-export default {
-    install(Vue) {
-        Vue.prototype.$icons = icons;
-    },
-};

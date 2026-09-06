@@ -3,18 +3,18 @@
         <the-app-bar>
             Statistics
             <template #buttons>
-                <dynamic-button label="Refresh" :icon="$icons.refresh" @click="refresh"/>
+                <dynamic-button label="Refresh" :icon="icons.refresh" @click="refresh"/>
             </template>
         </the-app-bar>
 
         <shy-progress v-if="loading"/>
 
         <v-container>
-            <v-alert v-if="Math.abs(pointsSum) > 1e-6" type="warning" :icon="$icons.alert">
+            <v-alert v-if="Math.abs(pointsSum) > 1e-6" type="warning" :icon="icons.alert">
                 The sum of all points is {{ pointsSum.toFixed(4) }}
             </v-alert>
 
-            <v-alert v-if="Math.abs(moneySum) > 1e-6" type="warning" :icon="$icons.alert">
+            <v-alert v-if="Math.abs(moneySum) > 1e-6" type="warning" :icon="icons.alert">
                 The sum of all money is {{ moneySum.toFixed(4) }}
             </v-alert>
 
@@ -27,11 +27,11 @@
             >
                 <!-- eslint-disable-next-line vue/valid-v-slot -->
                 <template #header.points>
-                    <v-icon size="20">{{ $icons.points }}</v-icon>
+                    <v-icon size="20">{{ icons.points }}</v-icon>
                 </template>
                 <!-- eslint-disable-next-line vue/valid-v-slot -->
                 <template #header.money>
-                    <v-icon size="20">{{ $icons.money }}</v-icon>
+                    <v-icon size="20">{{ icons.money }}</v-icon>
                 </template>
 
                 <!-- eslint-disable-next-line vue/valid-v-slot -->
@@ -52,8 +52,13 @@
     import DynamicButton from '../components/DynamicButton.vue';
     import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
+    import {icons} from '@/plugins/icons';
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         components: {
             Balance,
             DynamicButton,

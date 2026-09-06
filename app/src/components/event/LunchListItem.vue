@@ -15,7 +15,7 @@
         </v-list-item-content>
 
         <v-list-item-icon v-if="showPointCreditIcon">
-            <v-icon>{{ $icons.points }}</v-icon>
+            <v-icon>{{ icons.points }}</v-icon>
         </v-list-item-icon>
         <v-list-item-icon v-if="ownParticipationIcon">
             <v-icon :color="ownParticipationIconColor">{{ ownParticipationIcon }}</v-icon>
@@ -27,8 +27,13 @@
     import * as DateUtils from '@/utils/dateUtils';
     import * as ParticipationUtils from '@/utils/participationUtils';
     import ParticipationSummary from '@/components/event/ParticipationSummary';
+    import {icons} from '@/plugins/icons';
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'LunchListItem',
 
         components: {
@@ -84,13 +89,13 @@
             icon() {
                 switch (this.event.type) {
                     case 'lunch':
-                        return this.$icons.lunch;
+                        return this.icons.lunch;
                     case 'special':
-                        return this.$icons.special;
+                        return this.icons.special;
                     case 'label':
-                        return this.$icons.label;
+                        return this.icons.label;
                     default:
-                        return this.$icons.missingIcon;
+                        return this.icons.missingIcon;
                 }
             },
 

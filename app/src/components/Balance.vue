@@ -6,7 +6,13 @@
 </template>
 
 <script>
+    import {icons} from '@/plugins/icons';
+
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'Balance',
 
         props: {
@@ -62,10 +68,10 @@
                     return this.icon;
                 }
                 if (this.points) {
-                    return this.$icons.points;
+                    return this.icons.points;
                 }
                 if (this.money) {
-                    return this.$icons.money;
+                    return this.icons.money;
                 }
                 return null;
             },

@@ -3,7 +3,7 @@
         <the-app-bar>Menus</the-app-bar>
 
         <v-container>
-            <v-banner elevation="2" :icon="$icons.alert">
+            <v-banner elevation="2" :icon="icons.alert">
                 Not implemented.  Recurring menus will appear here.
             </v-banner>
         </v-container>
@@ -12,8 +12,13 @@
 
 <script>
     import TheAppBar from '@/components/TheAppBar';
+    import {icons} from '@/plugins/icons';
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'Menus',
 
         components: {

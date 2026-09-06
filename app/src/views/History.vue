@@ -8,10 +8,10 @@
             <template #extension>
                 <v-tabs v-model="tab" align-with-title>
                     <v-tab>
-                        <v-icon size="18">{{ $icons.points }}</v-icon>
+                        <v-icon size="18">{{ icons.points }}</v-icon>
                     </v-tab>
                     <v-tab>
-                        <v-icon size="18">{{ $icons.money }}</v-icon>
+                        <v-icon size="18">{{ icons.money }}</v-icon>
                     </v-tab>
                 </v-tabs>
             </template>
@@ -20,7 +20,7 @@
         <shy-progress v-if="loading"/>
 
         <v-container v-if="!loading && transactions.length === 0">
-            <v-banner elevation="2" single-line :icon="$icons.information">
+            <v-banner elevation="2" single-line :icon="icons.information">
                 No balance history
             </v-banner>
         </v-container>
@@ -45,8 +45,13 @@
     import TheAppBar from '@/components/TheAppBar';
     import UserStats from '@/components/UserStats';
     import Vue from 'vue';
+    import {icons} from '@/plugins/icons';
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'History',
 
         components: {

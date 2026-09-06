@@ -7,7 +7,7 @@
         <v-list>
             <v-list-item to="/transfers/new/expense">
                 <v-list-item-icon>
-                    <v-icon>{{ $icons.transferIn }}</v-icon>
+                    <v-icon>{{ icons.transferIn }}</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                     <v-list-item-title>Simple reimbursement</v-list-item-title>
@@ -17,7 +17,7 @@
 
             <v-list-item @click="lunchReimbursementAlertOpen = true">
                 <v-list-item-icon>
-                    <v-icon>{{ $icons.transferIn }}</v-icon>
+                    <v-icon>{{ icons.transferIn }}</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                     <v-list-item-title>Reimbursement for lunch ingredients</v-list-item-title>
@@ -27,7 +27,7 @@
 
             <v-list-item to="/transfers/new/simple">
                 <v-list-item-icon>
-                    <v-icon>{{ $icons.transferOut }}</v-icon>
+                    <v-icon>{{ icons.transferOut }}</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                     <v-list-item-title>Virtual money or point transfer</v-list-item-title>
@@ -37,7 +37,7 @@
 
             <v-list-item to="/transfers/new/pay-up">
                 <v-list-item-icon>
-                    <v-icon>{{ $icons.transferPayUp }}</v-icon>
+                    <v-icon>{{ icons.transferPayUp }}</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                     <v-list-item-title>Pay up</v-list-item-title>
@@ -47,7 +47,7 @@
 
             <v-list-item to="/transfers/new/trade">
                 <v-list-item-icon>
-                    <v-icon>{{ $icons.transferTrade }}</v-icon>
+                    <v-icon>{{ icons.transferTrade }}</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                     <v-list-item-title>Trade points</v-list-item-title>
@@ -57,7 +57,7 @@
 
             <v-list-item to="/transfers/new/custom">
                 <v-list-item-icon>
-                    <v-icon>{{ $icons.transferCustom }}</v-icon>
+                    <v-icon>{{ icons.transferCustom }}</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                     <v-list-item-title>Custom</v-list-item-title>
@@ -87,8 +87,13 @@
 
 <script>
     import TheAppBar from '@/components/TheAppBar';
+    import {icons} from '@/plugins/icons';
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'TransferWizard',
 
         components: {

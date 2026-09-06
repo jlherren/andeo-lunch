@@ -18,7 +18,7 @@
                 <v-checkbox v-model="active" label="Active" :hint="this.active ? 'User is allowed to log in and use the app' : 'User cannot log in or use the app'" persistent-hint/>
                 <v-checkbox v-model="hidden" label="Hidden" :hint="hidden ? 'User is not displayed in lists' : 'User appears normally in all lists'" persistent-hint/>
 
-                <v-banner elevation="2" :icon="$icons.alert" icon-color="red" class="my-4" v-if="balanceWarning">
+                <v-banner elevation="2" :icon="icons.alert" icon-color="red" class="my-4" v-if="balanceWarning">
                     Do not hide users with non-zero balances!
                 </v-banner>
 
@@ -79,8 +79,13 @@
     import NumberField from '@/components/NumberField.vue';
     import ShyProgress from '@/components/ShyProgress.vue';
     import TheAppBar from '@/components/TheAppBar.vue';
+    import {icons} from '@/plugins/icons';
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'UserEdit',
 
         components: {

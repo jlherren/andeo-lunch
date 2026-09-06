@@ -15,7 +15,7 @@
                 </v-chip>
 
                 <v-chip v-if="participation.credits.money > 0" class="mr-1" small>
-                    <v-icon small data-icon="money">{{ $icons.money }}</v-icon>
+                    <v-icon small data-icon="money">{{ icons.money }}</v-icon>
                 </v-chip>
             </v-list-item-title>
         </v-list-item-content>
@@ -37,8 +37,13 @@
     import * as ParticipationUtils from '@/utils/participationUtils';
     import Balance from '@/components/Balance';
     import ParticipationEdit from '@/components/event/ParticipationEdit';
+    import {icons} from '@/plugins/icons';
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'ParticipationListItem',
 
         emits: ['saved'],

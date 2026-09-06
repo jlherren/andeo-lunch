@@ -1,7 +1,7 @@
 <template>
     <v-dialog v-model="open" width="290px">
         <template #activator="{ on, attrs }">
-            <v-text-field v-bind="attrs" v-on="on" :append-icon="$icons.calendar"
+            <v-text-field v-bind="attrs" v-on="on" :append-icon="icons.calendar"
                           :label="label" :rules="rules" :value="formatted" readonly :disabled="disabled"
             />
         </template>
@@ -11,8 +11,13 @@
 
 <script>
     import * as DateUtils from '@/utils/dateUtils';
+    import {icons} from '@/plugins/icons';
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'AlDatePicker',
 
         model: {

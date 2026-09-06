@@ -3,11 +3,11 @@
         <v-app-bar app :extension-height="extensionHeight" flat dark>
             <v-app-bar-nav-icon v-if="!subPage && !noMenu" @click="toggleDrawer">
                 <template #default>
-                    <v-icon>{{ $icons.appMenu }}</v-icon>
+                    <v-icon>{{ icons.appMenu }}</v-icon>
                 </template>
             </v-app-bar-nav-icon>
             <v-app-bar-nav-icon v-if="subPage" @click="goBack">
-                <v-icon>{{ $icons.arrowLeft }}</v-icon>
+                <v-icon>{{ icons.arrowLeft }}</v-icon>
             </v-app-bar-nav-icon>
             <v-app-bar-title>
                 <slot/>
@@ -28,8 +28,13 @@
 
 <script>
     import NavigationDrawerContent from '@/components/NavigationDrawerContent';
+    import {icons} from '@/plugins/icons';
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'TheAppBar',
 
         components: {

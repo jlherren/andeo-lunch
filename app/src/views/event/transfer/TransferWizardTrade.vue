@@ -19,22 +19,22 @@
                 <v-select v-model="buyer" label="Buyer"
                           :items="visibleUsers" item-text="name" item-value="id"
                           :rules="buyerRules"
-                          :append-icon="$icons.account"/>
+                          :append-icon="icons.account"/>
                 <v-select v-model="seller" label="Seller"
                           :items="visibleUsers" item-text="name" item-value="id"
                           :rules="sellerRules"
-                          :append-icon="$icons.account"/>
+                          :append-icon="icons.account"/>
 
                 <v-text-field type="number" v-model="points" label="Points"
                               min="0" :rules="positiveRules"
-                              class="no-spinner" :append-icon="$icons.points"/>
+                              class="no-spinner" :append-icon="icons.points"/>
 
                 <v-text-field type="number" v-model="money" label="Total money"
                               min="0" :rules="positiveRules"
-                              class="no-spinner" :append-icon="$icons.money"/>
+                              class="no-spinner" :append-icon="icons.money"/>
 
                 <v-text-field type="number" :value="price" label="Price per point"
-                              disabled class="no-spinner" :append-icon="$icons.money"/>
+                              disabled class="no-spinner" :append-icon="icons.money"/>
 
                 <!-- Button is to make it submittable by pressing enter -->
                 <v-btn type="submit" :disabled="isBusy" v-show="false">Save</v-btn>
@@ -46,10 +46,15 @@
 <script>
     import ShyProgress from '@/components/ShyProgress.vue';
     import TheAppBar from '@/components/TheAppBar.vue';
+    import {icons} from '@/plugins/icons';
     import {mapState} from 'pinia';
     import {useStore} from '@/store';
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'TransferWizardTrade',
 
         components: {

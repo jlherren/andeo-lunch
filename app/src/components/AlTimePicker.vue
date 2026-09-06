@@ -1,7 +1,7 @@
 <template>
     <v-dialog v-model="open" width="290px">
         <template #activator="{ on, attrs }">
-            <v-text-field v-bind="attrs" v-on="on" :append-icon="$icons.clock"
+            <v-text-field v-bind="attrs" v-on="on" :append-icon="icons.clock"
                           :label="label" :rules="rules" :value="modelValue" readonly
             />
         </template>
@@ -10,7 +10,13 @@
 </template>
 
 <script>
+    import {icons} from '@/plugins/icons';
+
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'AlTimePicker',
 
         model: {

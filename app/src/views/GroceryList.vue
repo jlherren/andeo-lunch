@@ -14,7 +14,7 @@
                 <v-list-item>
                     <v-list-item-icon>
                         <v-icon>
-                            {{ $icons.groceryList }}
+                            {{ icons.groceryList }}
                         </v-icon>
                     </v-list-item-icon>
                     <v-list-item-content>
@@ -27,7 +27,7 @@
                     </v-list-item-content>
                     <v-list-item-action>
                         <v-btn @click="addButton" fab small color="primary" :disabled="busyNewItem">
-                            <v-icon>{{ $icons.plus }}</v-icon>
+                            <v-icon>{{ icons.plus }}</v-icon>
                         </v-btn>
                     </v-list-item-action>
                 </v-list-item>
@@ -43,7 +43,7 @@
                     <v-list-item-action>
                         <v-btn icon @click="deleteItem(grocery)" :disabled="grocery.id in busyItems">
                             <v-icon>
-                                {{ $icons.delete }}
+                                {{ icons.delete }}
                             </v-icon>
                         </v-btn>
                     </v-list-item-action>
@@ -57,10 +57,15 @@
     import ShyProgress from '../components/ShyProgress';
     import TheAppBar from '../components/TheAppBar';
     import Vue from 'vue';
+    import {icons} from '@/plugins/icons';
     import {mapState} from 'pinia';
     import {useStore} from '@/store';
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'GroceryList',
 
         components: {

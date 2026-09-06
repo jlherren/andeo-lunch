@@ -19,26 +19,26 @@
                 <v-select v-model="sender" label="Sender"
                           :items="visibleUsers" item-text="name" item-value="id"
                           :rules="senderRules"
-                          :append-icon="$icons.account"/>
+                          :append-icon="icons.account"/>
                 <v-select v-model="recipient" label="Recipient"
                           :items="visibleUsers" item-text="name" item-value="id"
                           :rules="recipientRules"
-                          :append-icon="$icons.account"/>
+                          :append-icon="icons.account"/>
 
                 <v-row>
                     <v-col cols="6">
                         <v-text-field type="number" v-model="amount" label="Amount"
                                       min="0" :rules="amountRules"
-                                      class="no-spinner" :append-icon="currency === 'money' ? $icons.money : $icons.points"/>
+                                      class="no-spinner" :append-icon="currency === 'money' ? icons.money : icons.points"/>
                     </v-col>
                     <v-col cols="6">
                         <v-btn-toggle v-model="currency" class="full-width" mandatory>
                             <v-btn value="points">
-                                <v-icon left :large="$vuetify.breakpoint.mdAndUp">{{ $icons.points }}</v-icon>
+                                <v-icon left :large="$vuetify.breakpoint.mdAndUp">{{ icons.points }}</v-icon>
                                 <span class="hidden-xs-only">Points</span>
                             </v-btn>
                             <v-btn value="money">
-                                <v-icon left :large="$vuetify.breakpoint.mdAndUp">{{ $icons.money }}</v-icon>
+                                <v-icon left :large="$vuetify.breakpoint.mdAndUp">{{ icons.money }}</v-icon>
                                 <span class="hidden-xs-only">Money</span>
                             </v-btn>
                         </v-btn-toggle>
@@ -47,7 +47,7 @@
 
                 <v-text-field v-model="reason" label="Reason"
                               :rules="reasonRules"
-                              :append-icon="$icons.label"/>
+                              :append-icon="icons.label"/>
 
                 <!-- Button is to make it submittable by pressing enter -->
                 <v-btn type="submit" :disabled="isBusy" v-show="false">Save</v-btn>
@@ -59,10 +59,15 @@
 <script>
     import ShyProgress from '@/components/ShyProgress.vue';
     import TheAppBar from '@/components/TheAppBar.vue';
+    import {icons} from '@/plugins/icons';
     import {mapState} from 'pinia';
     import {useStore} from '@/store';
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'TransferWizardSimple',
 
         components: {

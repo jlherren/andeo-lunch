@@ -3,15 +3,15 @@
         <the-app-bar>
             Audit log
             <template #buttons>
-                <dynamic-button label="Sus" :icon="$icons.sus" :color="sus ? 'primary' : null" @click="toggleSus"/>
-                <dynamic-button label="Refresh" :icon="$icons.refresh" @click="refresh"/>
+                <dynamic-button label="Sus" :icon="icons.sus" :color="sus ? 'primary' : null" @click="toggleSus"/>
+                <dynamic-button label="Refresh" :icon="icons.refresh" @click="refresh"/>
             </template>
         </the-app-bar>
 
         <shy-progress v-if="loading"/>
 
         <v-container v-if="!loading && audits.length === 0">
-            <v-banner elevation="2" single-line :icon="$icons.information">
+            <v-banner elevation="2" single-line :icon="icons.information">
                 No audit entries
             </v-banner>
         </v-container>
@@ -41,6 +41,7 @@
     import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
     import Vue from 'vue';
+    import {icons} from '@/plugins/icons';
     import susAudio from '@/media/sus.mp3';
 
     const AUDIT_TYPES = {
@@ -96,6 +97,10 @@
     ];
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         components: {
             DynamicButton,
             ShyProgress,

@@ -1,7 +1,7 @@
 <template>
     <v-list-item :to="`/transfers/${this.event.id}`">
         <v-list-item-icon>
-            <v-icon :color="iconColor">{{ $icons.transfers }}</v-icon>
+            <v-icon :color="iconColor">{{ icons.transfers }}</v-icon>
         </v-list-item-icon>
 
         <v-list-item-content>
@@ -15,15 +15,20 @@
         </v-list-item-content>
 
         <v-list-item-action>
-            <v-icon>{{ $icons.chevronRight }}</v-icon>
+            <v-icon>{{ icons.chevronRight }}</v-icon>
         </v-list-item-action>
     </v-list-item>
 </template>
 
 <script>
     import * as DateUtils from '@/utils/dateUtils';
+    import {icons} from '@/plugins/icons';
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'TransferListItem',
 
         props: {

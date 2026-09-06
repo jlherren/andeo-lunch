@@ -16,7 +16,7 @@
         </v-list>
 
         <v-container v-if="moneyThreshold != null && ownUser.balances.money < moneyThreshold">
-            <v-banner elevation="2" :icon="$icons.alert" icon-color="red">
+            <v-banner elevation="2" :icon="icons.alert" icon-color="red">
                 Your money balance is low!  Please send money to a user with a high balance to even it out.
 
                 <template #actions>
@@ -30,7 +30,7 @@
         <v-subheader>Upcoming events</v-subheader>
 
         <v-container v-if="!loading && events.length === 0">
-            <v-banner elevation="2" single-line :icon="$icons.information">
+            <v-banner elevation="2" single-line :icon="icons.information">
                 No upcoming events
             </v-banner>
         </v-container>
@@ -55,10 +55,15 @@
     import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
     import UserStats from '@/components/UserStats';
+    import {icons} from '@/plugins/icons';
     import {mapState} from 'pinia';
     import {useStore} from '@/store';
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'Home',
 
         components: {

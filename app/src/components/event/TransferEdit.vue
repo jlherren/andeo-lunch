@@ -9,13 +9,13 @@
                         <v-select v-model="sender" label="Sender"
                                   :items="users" item-text="name" item-value="id"
                                   :rules="senderRules"
-                                  :append-icon="sender === -1 ? $icons.transferPot : $icons.account"/>
+                                  :append-icon="sender === -1 ? icons.transferPot : icons.account"/>
                     </v-col>
                     <v-col>
                         <v-select v-model="recipient" label="Recipient"
                                   :items="users" item-text="name" item-value="id"
                                   :rules="recipientRules"
-                                  :append-icon="recipient === -1 ? $icons.transferPot : $icons.account"/>
+                                  :append-icon="recipient === -1 ? icons.transferPot : icons.account"/>
                     </v-col>
                 </v-row>
 
@@ -23,16 +23,16 @@
                     <v-col>
                         <v-text-field type="number" v-model="amount" :label="sender === -1 ? 'Shares' : 'Amount'"
                                       min="0" :rules="amountRules"
-                                      class="no-spinner" :append-icon="currency === 'money' ? $icons.money : $icons.points"/>
+                                      class="no-spinner" :append-icon="currency === 'money' ? icons.money : icons.points"/>
                     </v-col>
                     <v-col>
                         <v-btn-toggle v-model="currency" class="full-width" mandatory>
                             <v-btn value="points">
-                                <v-icon left :large="$vuetify.breakpoint.mdAndUp">{{ $icons.points }}</v-icon>
+                                <v-icon left :large="$vuetify.breakpoint.mdAndUp">{{ icons.points }}</v-icon>
                                 <span class="hidden-xs-only">Points</span>
                             </v-btn>
                             <v-btn value="money">
-                                <v-icon left :large="$vuetify.breakpoint.mdAndUp">{{ $icons.money }}</v-icon>
+                                <v-icon left :large="$vuetify.breakpoint.mdAndUp">{{ icons.money }}</v-icon>
                                 <span class="hidden-xs-only">Money</span>
                             </v-btn>
                         </v-btn-toggle>
@@ -51,7 +51,13 @@
 </template>
 
 <script>
+    import {icons} from '@/plugins/icons';
+
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'TransferEdit',
 
         emits: ['close'],

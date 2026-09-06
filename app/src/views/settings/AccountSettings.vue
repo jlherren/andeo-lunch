@@ -7,7 +7,7 @@
         <v-list>
             <v-list-item>
                 <v-list-item-icon>
-                    <v-icon>{{ $icons.account }}</v-icon>
+                    <v-icon>{{ icons.account }}</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                     <v-list-item-title>
@@ -21,7 +21,7 @@
 
             <v-list-item>
                 <v-list-item-icon>
-                    <v-icon>{{ $icons.account }}</v-icon>
+                    <v-icon>{{ icons.account }}</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                     <v-list-item-title>
@@ -35,7 +35,7 @@
 
             <v-list-item to="/account/password">
                 <v-list-item-icon>
-                    <v-icon>{{ $icons.password }}</v-icon>
+                    <v-icon>{{ icons.password }}</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                     <v-list-item-title>
@@ -43,13 +43,13 @@
                     </v-list-item-title>
                 </v-list-item-content>
                 <v-list-item-action>
-                    <v-icon>{{ $icons.chevronRight }}</v-icon>
+                    <v-icon>{{ icons.chevronRight }}</v-icon>
                 </v-list-item-action>
             </v-list-item>
 
             <v-list-item @click="confirmLogout = true">
                 <v-list-item-icon>
-                    <v-icon>{{ $icons.logout }}</v-icon>
+                    <v-icon>{{ icons.logout }}</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                     <v-list-item-title>Logout</v-list-item-title>
@@ -77,10 +77,15 @@
 
 <script>
     import TheAppBar from '@/components/TheAppBar';
+    import {icons} from '@/plugins/icons';
     import {mapState} from 'pinia';
     import {useStore} from '@/store';
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'AccountSettings',
 
         components: {

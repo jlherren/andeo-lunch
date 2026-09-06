@@ -20,10 +20,10 @@
                 <v-select v-model="recipient" label="Recipient of real money"
                           :items="visibleUsers" item-text="name" item-value="id"
                           :rules="recipientRules"
-                          :append-icon="$icons.account"/>
+                          :append-icon="icons.account"/>
                 <v-text-field type="number" v-model="amount" label="Amount in CHF"
                               min="0" :rules="amountRules"
-                              class="no-spinner" :append-icon="$icons.money"/>
+                              class="no-spinner" :append-icon="icons.money"/>
 
                 <v-card v-if="recipientPaymentInfo !== null">
                     <v-card-title class="subtitle-2">
@@ -42,10 +42,15 @@
 <script>
     import ShyProgress from '@/components/ShyProgress.vue';
     import TheAppBar from '@/components/TheAppBar.vue';
+    import {icons} from '@/plugins/icons';
     import {mapState} from 'pinia';
     import {useStore} from '@/store';
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'TransferWizardPayUp',
 
         components: {

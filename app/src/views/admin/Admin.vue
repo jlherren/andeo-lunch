@@ -7,7 +7,7 @@
         <v-list>
             <v-list-item to="/admin/users" v-if="hasPermission('admin.user')">
                 <v-list-item-icon>
-                    <v-icon>{{ $icons.admin }}</v-icon>
+                    <v-icon>{{ icons.admin }}</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                     <v-list-item-title>
@@ -21,10 +21,15 @@
 
 <script>
     import TheAppBar from '@/components/TheAppBar';
+    import {icons} from '@/plugins/icons';
     import {mapState} from 'pinia';
     import {useStore} from '@/store';
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'Admin',
 
         components: {

@@ -4,8 +4,8 @@
             Users
 
             <template #buttons>
-                <dynamic-button :icon="$icons.hidden" :label="showAll ? 'Hide hidden' : 'Show hidden'" @click="toggleShowAll"/>
-                <dynamic-button :icon="$icons.plus" label="Add" @click="createUser" :disabled="isBusy"/>
+                <dynamic-button :icon="icons.hidden" :label="showAll ? 'Hide hidden' : 'Show hidden'" @click="toggleShowAll"/>
+                <dynamic-button :icon="icons.plus" label="Add" @click="createUser" :disabled="isBusy"/>
             </template>
         </the-app-bar>
 
@@ -40,8 +40,13 @@
     import DynamicButton from '@/components/DynamicButton.vue';
     import ShyProgress from '@/components/ShyProgress.vue';
     import TheAppBar from '@/components/TheAppBar.vue';
+    import {icons} from '@/plugins/icons';
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'Users',
 
         components: {

@@ -1,27 +1,32 @@
 <template>
     <span class="participants" :class="{'large': large}">
         <span class="icon-and-number">
-            <v-icon v-if="!large">{{ $icons.account }}</v-icon>
+            <v-icon v-if="!large">{{ icons.account }}</v-icon>
             {{ total }}
         </span>
         <span class="details" v-if="event.type === 'lunch'">
             <span class="icon-and-number">
-                <v-icon>{{ $icons.omnivorous }}</v-icon>
+                <v-icon>{{ icons.omnivorous }}</v-icon>
                 {{ omnivorous }}
             </span>
             <span class="icon-and-number">
-                <v-icon>{{ $icons.vegetarian }}</v-icon>
+                <v-icon>{{ icons.vegetarian }}</v-icon>
                 {{ vegetarian }}
             </span>
         </span>
-        <v-icon large v-else-if="large">{{ $icons.account }}</v-icon>
+        <v-icon large v-else-if="large">{{ icons.account }}</v-icon>
     </span>
 </template>
 
 <script>
     import {OPT_IN_PARTICIPATIONS} from '@/utils/participationUtils';
+    import {icons} from '@/plugins/icons';
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'ParticipationSummary',
 
         props: {

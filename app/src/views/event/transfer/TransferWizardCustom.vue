@@ -18,7 +18,7 @@
             <v-form ref="form" :disabled="isBusy" @submit.prevent="save()">
                 <v-text-field v-model="name" label="Description"
                               :rules="nameRules"
-                              :append-icon="$icons.label"/>
+                              :append-icon="icons.label"/>
 
                 <al-date-picker v-model="date" required/>
                 <al-time-picker v-model="time" required/>
@@ -36,8 +36,13 @@
     import AlTimePicker from '@/components/AlTimePicker.vue';
     import ShyProgress from '@/components/ShyProgress.vue';
     import TheAppBar from '@/components/TheAppBar.vue';
+    import {icons} from '@/plugins/icons';
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'TransferWizardCustom',
 
         components: {

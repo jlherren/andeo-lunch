@@ -3,8 +3,8 @@
         <the-app-bar>
             {{ title }}
             <template #buttons>
-                <dynamic-button label="Previous week" :icon="$icons.chevronLeft" @click="previousWeek"/>
-                <dynamic-button label="Next week" :icon="$icons.chevronRight" right @click="nextWeek"/>
+                <dynamic-button label="Previous week" :icon="icons.chevronLeft" @click="previousWeek"/>
+                <dynamic-button label="Next week" :icon="icons.chevronRight" right @click="nextWeek"/>
             </template>
         </the-app-bar>
 
@@ -32,24 +32,24 @@
         <v-speed-dial v-model="speedDial" fixed bottom right direction="top" transition="slide-y-reverse-transition">
             <template #activator>
                 <v-btn v-model="speedDial" color="primary" fab>
-                    <v-icon v-if="speedDial">{{ $icons.close }}</v-icon>
-                    <v-icon v-else>{{ $icons.plus }}</v-icon>
+                    <v-icon v-if="speedDial">{{ icons.close }}</v-icon>
+                    <v-icon v-else>{{ icons.plus }}</v-icon>
                 </v-btn>
             </template>
             <v-btn color="primary" fab small to="/events/new?type=lunch">
-                <v-icon>{{ $icons.lunch }}</v-icon>
+                <v-icon>{{ icons.lunch }}</v-icon>
                 <span class="label">Lunch</span>
             </v-btn>
             <v-btn color="primary" fab small to="/events/new?type=special">
-                <v-icon>{{ $icons.special }}</v-icon>
+                <v-icon>{{ icons.special }}</v-icon>
                 <span class="label">Special event</span>
             </v-btn>
             <v-btn color="primary" fab small to="/events/new?type=label">
-                <v-icon>{{ $icons.label }}</v-icon>
+                <v-icon>{{ icons.label }}</v-icon>
                 <span class="label">Label</span>
             </v-btn>
             <v-btn color="primary" fab small to="/events/help">
-                <v-icon>{{ $icons.help }}</v-icon>
+                <v-icon>{{ icons.help }}</v-icon>
                 <span class="label">Help me choose</span>
             </v-btn>
         </v-speed-dial>
@@ -62,10 +62,15 @@
     import LunchListItem from '@/components/event/LunchListItem';
     import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
+    import {icons} from '@/plugins/icons';
 
     export const EVENT_TYPES = ['lunch', 'special', 'label'];
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'Calendar',
 
         components: {

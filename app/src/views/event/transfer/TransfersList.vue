@@ -3,8 +3,8 @@
         <the-app-bar>
             {{ title }}
             <template #buttons>
-                <dynamic-button label="Previous month" :icon="$icons.chevronLeft" @click="previousMonth"/>
-                <dynamic-button label="Next month" :icon="$icons.chevronRight" right @click="nextMonth"/>
+                <dynamic-button label="Previous month" :icon="icons.chevronLeft" @click="previousMonth"/>
+                <dynamic-button label="Next month" :icon="icons.chevronRight" right @click="nextMonth"/>
             </template>
         </the-app-bar>
 
@@ -22,13 +22,13 @@
         </v-list>
 
         <v-container v-if="!loading && events.length === 0">
-            <v-banner elevation="2" single-line :icon="$icons.information">
+            <v-banner elevation="2" single-line :icon="icons.information">
                 No transfers
             </v-banner>
         </v-container>
 
         <v-btn color="primary" fixed bottom right fab to="/transfers/new">
-            <v-icon>{{ $icons.plus }}</v-icon>
+            <v-icon>{{ icons.plus }}</v-icon>
         </v-btn>
     </v-main>
 </template>
@@ -39,8 +39,13 @@
     import ShyProgress from '@/components/ShyProgress.vue';
     import TheAppBar from '@/components/TheAppBar.vue';
     import TransferListItem from '@/components/event/TransferListItem.vue';
+    import {icons} from '@/plugins/icons';
 
     export default {
+        setup() {
+            return {icons};
+        },
+
         name: 'TransferList',
 
         components: {
