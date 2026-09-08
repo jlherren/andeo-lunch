@@ -2,7 +2,7 @@
 
 ## Development quick start
 
-1. Make sure you have Node 16+ and npm installed.
+1. Make sure you have Node 22.18+ and npm installed.
 
 2. Create a file `backend/config.json` with this content:
 

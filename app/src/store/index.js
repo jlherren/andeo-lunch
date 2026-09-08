@@ -36,6 +36,10 @@ export let useStore = defineStore('main', {
             // By user ID
         },
 
+        _statisticsByUserId: {
+            // By user ID
+        },
+
         // All user IDs and visible user IDs
         _allUserIds:     [],
         _visibleUserIds: [],
@@ -80,6 +84,7 @@ export let useStore = defineStore('main', {
         allUsers:     state => state._allUserIds.map(userId => state.user(userId)),
         paymentInfo:  state => userId => state.paymentInfosById[userId] ?? null,
         absences:     state => userId => state._absences[userId] ?? null,
+        statistics:   state => userId => state._statisticsByUserId[userId] ?? null,
 
         // Own user
         isLoggedIn:          state => state.account.userId !== null,
@@ -447,6 +452,30 @@ export let useStore = defineStore('main', {
             return Cache.ifNotFresh('paymentInfo', userId, 60000, async () => {
                 let response = await Backend.get(`/users/${userId}/payment-info`);
                 this.paymentInfosById = {...this.paymentInfosById, [userId]: response.paymentInfo};
+            });
+        },
+
+        fetchUserStatistics(userId, force = false) {
+            if (force) {
+                Cache.invalidate('statistics', userId);
+            }
+            return Cache.ifNotFresh('statistics', userId, 60000, async () => {
+                let response = await Backend.get(`/users/${userId}/statistics`);
+                let statistics = response.statistics;
+                this._statisticsByUserId = {
+                    ...this._statisticsByUserId,
+                    [userId]: {
+                        optedInCount:                statistics.optedInCount,
+                        cookedCount:                 statistics.cookedCount,
+                        averageMenuCost:             statistics.averageMenuCost,
+                        favoriteCookingPartners:     statistics.favoriteCookingPartners,
+                        favoriteCookingPartnerCount: statistics.favoriteCookingPartnerCount,
+                        longestOptInStreak:          statistics.longestOptInStreak,
+                        longestOptInStreakStartDate: statistics.longestOptInStreakStartDate
+                            ? new Date(statistics.longestOptInStreakStartDate)
+                            : null,
+                    },
+                };
             });
         },
 

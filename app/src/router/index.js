@@ -102,6 +102,10 @@ const routes = [
         component: () => import('@/views/Stats'),
     },
     {
+        path:      '/statistics',
+        component: () => import('@/views/Statistics'),
+    },
+    {
         path:      '/about',
         component: () => import('@/views/settings/About'),
     },

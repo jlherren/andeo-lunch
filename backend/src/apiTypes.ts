@@ -86,3 +86,13 @@ export type ApiGrocery = {
     label: string;
     checked: boolean;
 };
+
+export type ApiStatistics = {
+    optedInCount: number;
+    cookedCount: number;
+    averageMenuCost: number|null;
+    favoriteCookingPartners: Array<number>;
+    favoriteCookingPartnerCount: number;
+    longestOptInStreak: number;
+    longestOptInStreakStartDate: Date|null;
+};

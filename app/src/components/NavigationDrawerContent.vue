@@ -52,6 +52,15 @@
             </v-list-item-content>
         </v-list-item>
 
+        <v-list-item to="/statistics">
+            <v-list-item-icon>
+                <v-icon>{{ icons.statistics }}</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+                <v-list-item-title>Statistics</v-list-item-title>
+            </v-list-item-content>
+        </v-list-item>
+
         <v-list-item to="/account">
             <v-list-item-icon>
                 <v-icon>{{ icons.accountCircle }}</v-icon>
