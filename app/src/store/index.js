@@ -455,10 +455,7 @@ export let useStore = defineStore('main', {
             });
         },
 
-        fetchUserStatistics(userId, force = false) {
-            if (force) {
-                Cache.invalidate('statistics', userId);
-            }
+        fetchUserStatistics(userId) {
             return Cache.ifNotFresh('statistics', userId, 60000, async () => {
                 let response = await Backend.get(`/users/${userId}/statistics`);
                 let statistics = response.statistics;

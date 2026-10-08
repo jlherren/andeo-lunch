@@ -2,9 +2,6 @@
     <v-main>
         <the-app-bar>
             Statistics
-            <template #buttons>
-                <dynamic-button label="Refresh" :icon="icons.refresh" @click="refresh"/>
-            </template>
         </the-app-bar>
 
         <shy-progress v-if="loading"/>
@@ -80,7 +77,6 @@
 <script>
     import * as DateUtils from '@/utils/dateUtils';
     import Balance from '@/components/Balance';
-    import DynamicButton from '../components/DynamicButton.vue';
     import ShyProgress from '@/components/ShyProgress';
     import TheAppBar from '@/components/TheAppBar';
     import {icons} from '@/plugins/icons';
@@ -92,7 +88,6 @@
 
         components: {
             Balance,
-            DynamicButton,
             ShyProgress,
             TheAppBar,
         },
@@ -120,17 +115,6 @@
             longestOptInStreakStartDate() {
                 let date = this.statistics?.longestOptInStreakStartDate;
                 return date ? DateUtils.displayFormatNoWeekday(date) : null;
-            },
-        },
-
-        methods: {
-            async refresh() {
-                try {
-                    this.loading = true;
-                    await this.$store().fetchUserStatistics(this.$store().ownUserId, true);
-                } finally {
-                    this.loading = false;
-                }
             },
         },
     };
