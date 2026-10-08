@@ -4,7 +4,7 @@
             Absences
 
             <template #buttons>
-                <dynamic-button icon="icons.plus" label="Add" @click="addModal = true" :disabled="isBusy"/>
+                <dynamic-button :icon="icons.plus" label="Add" @click="addModal = true" :disabled="isBusy"/>
             </template>
         </the-app-bar>
 
